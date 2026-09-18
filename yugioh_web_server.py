@@ -24,6 +24,7 @@ except Exception:
     pass
 
 mimetypes.add_type('font/ttf', '.ttf')
+mimetypes.add_type('font/woff', '.woff')
 mimetypes.add_type('font/woff2', '.woff2')
 
 HTTP_PORT = 8080

@@ -566,6 +566,8 @@
 			? Promise.all([
 				document.fonts.load('16px YuGiOhFont'),
 				document.fonts.load('bold 16px YuGiOhFont'),
+				document.fonts.load('16px "UTM Cafeta"'),
+				document.fonts.load('bold 16px "UTM Cafeta"'),
 				document.fonts.load('16px "Be Vietnam Pro"'),
 				document.fonts.load('bold 16px "Be Vietnam Pro"'),
 				document.fonts.ready

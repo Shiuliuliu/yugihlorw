@@ -698,7 +698,7 @@ cc.loader = (function () {
                 self._loadJs4Dependency(preDir, list, 0, callback);
             } else {
                 cc.async.map(list, function (item, index, cb1) {
-                    var jsPath = cc.path.join(preDir, item); if (jsPath.indexOf("?") < 0) jsPath += "?v=20260919v2";
+                    var jsPath = cc.path.join(preDir, item); if (jsPath.indexOf("?") < 0) jsPath += "?v=20260919v3";
                     if (_jsCache[jsPath]) return cb1(null);
                     self._createScript(jsPath, false, cb1);
                 }, callback);
@@ -2094,7 +2094,7 @@ function _load(config) {
         _afterEngineLoaded(config);
     } else {
         // Load cocos modules
-        var ccModulesPath = cc.path.join(engineDir, "moduleConfig.json?v=20260919v2");
+        var ccModulesPath = cc.path.join(engineDir, "moduleConfig.json?v=20260919v3");
         loader.loadJson(ccModulesPath, function (err, modulesJson) {
             if (err) throw new Error(err);
             var modules = config["modules"] || [];
