@@ -352,7 +352,7 @@
 
 		/* the alpha lives in <name>_mask.png beside the colour plane */
 		var url = res.base + path.replace(/^res\//, '');
-		var ver = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20260919v13';
+		var ver = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20260919v14';
 		var sep = url.indexOf('?') >= 0 ? '&' : '?';
 		var colourUrl = url + sep + 'v=' + ver;
 		var maskUrl = url.replace(/\.[A-Za-z]+$/, '_mask.png') + sep + 'v=' + ver;

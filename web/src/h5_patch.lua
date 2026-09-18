@@ -5316,6 +5316,7 @@ function M.patchLateClientData()
 					troop = {},
 					pre_rank = 1, best_rank = 1, legend_trophy = 800, pre_legend_rank = 1, best_legend_rank = 1
 				})
+			end
 		end
 
 		-- ==========================================================
