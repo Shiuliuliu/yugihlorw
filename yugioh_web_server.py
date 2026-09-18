@@ -282,20 +282,20 @@ CHAR_PACKAGE_GR = {
 SERVER_LIYA_CARDS_MAP = {}
 SERVER_CHAR_CARDS_MAP = {}
 try:
-    with open('scratch_liya_cards_map.json', 'r', encoding='utf-8') as f:
+    with open('liya_cards_map.json', 'r', encoding='utf-8') as f:
         _lm = json.load(f)
         SERVER_LIYA_CARDS_MAP = {int(k): [int(x) for x in v] for k, v in _lm.items()}
     print(f"[SERVER] Loaded {len(SERVER_LIYA_CARDS_MAP)} Liya pack mappings.")
 except Exception as e:
-    print(f"[SERVER] Error loading scratch_liya_cards_map.json: {e}")
+    print(f"[SERVER] Error loading liya_cards_map.json: {e}")
 
 try:
-    with open('scratch_char_cards_map.json', 'r', encoding='utf-8') as f:
+    with open('char_cards_map.json', 'r', encoding='utf-8') as f:
         _cm = json.load(f)
         SERVER_CHAR_CARDS_MAP = {int(k): [int(x) for x in v] for k, v in _cm.items()}
     print(f"[SERVER] Loaded {len(SERVER_CHAR_CARDS_MAP)} Character pack mappings.")
 except Exception as e:
-    print(f"[SERVER] Error loading scratch_char_cards_map.json: {e}")
+    print(f"[SERVER] Error loading char_cards_map.json: {e}")
 
 ALL_CARDS_MAP = {}
 ALL_CARDS_BY_QUALITY = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
