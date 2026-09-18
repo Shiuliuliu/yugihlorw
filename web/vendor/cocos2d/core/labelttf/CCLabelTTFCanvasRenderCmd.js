@@ -59,8 +59,9 @@ cc.LabelTTF._firsrEnglish = /^[a-zA-Z0-9_\u00C0-\u024F\u1EA0-\u1EF9]/;
             this._fontClientHeight = cc.LabelTTF.__getFontHeightByDiv(fontNameOrFontDef);
         }else {
             var deviceFontSize = fontSize * cc.view.getDevicePixelRatio();
-            this._fontStyleStr = fontStyle + " " + fontWeight + " " + deviceFontSize + "px '" + fontNameOrFontDef + "'";
-            this._fontClientHeight = cc.LabelTTF.__getFontHeightByDiv(fontNameOrFontDef, fontSize);
+            var fn = (fontNameOrFontDef || 'YuGiOhFont').replace(/^['"]+|['"]+$/g, '');
+            this._fontStyleStr = fontStyle + " " + fontWeight + " " + deviceFontSize + "px '" + fn + "', 'YuGiOhFont', sans-serif";
+            this._fontClientHeight = cc.LabelTTF.__getFontHeightByDiv(fn, fontSize);
         }
     };
 

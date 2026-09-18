@@ -814,8 +814,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
 
                 # Determine caching policy
                 is_immutable = ext_lower in IMMUTABLE_STATIC_EXTS
-                is_versioned = ('?v=' in self.path or '&v=' in self.path)
-                is_nocache = (clean_path == '/index.html' or clean_path.endswith('.html'))
+                is_dynamic_code = ext_lower in ('.js', '.json', '.html', '.css')
+                is_versioned = ('?v=' in self.path or '&v=' in self.path) and not is_dynamic_code
+                is_nocache = is_dynamic_code or (clean_path == '/index.html' or clean_path.endswith('.html'))
 
                 # ETag / 304 conditional request check
                 if_none_match = self.headers.get('If-None-Match')
