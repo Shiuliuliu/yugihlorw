@@ -1,0 +1,52 @@
+local H=require("BasePanel")local h=class("TravelPanel",H)local S=224 local s=1140 local r=538 local j={cc.rect(26,36,1,1),cc.rect(109,78,2,1),cc.rect(109,105,1,2)}local b={cc.p(144,269);cc.p(416,269),cc.p(720,269),cc.p(996,269)}local k={2;3;5}function h.create(H)local S=h.new(lc.EXTEND_LAYOUT_MASK)S:init(H)return S end function h.init(H,s)h.super.init(H,true)ClientData.loadLCRes("res/travel.lcres")H._panelName="TravelPanel"H._focusLevelId=s H._difficulty=1 local r=ClientView.createTitleArea(Str(STR.TRAVEL),function()if H._floatChapter then H:onUnselectChapter(H._floatChapter)else H:hide()end end)H:addChild(r)local j=lc.createImageView({_name="img_travel_bottom";_crect=cc.rect(124,0,4,79),_size=cc.size(920,79)})lc.addChildToPos(H,j,cc.p(lc.w(H)/2,lc.h(j)/2))H._difficultyBtns={}for h=1,3,1 do local S=ClientView.createShaderButton("img_travel_0"..h,function(h)H:onSelectDifficulty(h)end)S._index=h lc.addChildToPos(j,S,cc.p(lc.w(j)/2+192*((-2+h)),58),1)H._difficultyBtns[#H._difficultyBtns+1]=S end local b=lc.createSprite("img_travel_focus")lc.addChildToPos(j,b,cc.p(H._difficultyBtns[1]:getPosition()))H._btnFocus=b local k=lc.List.createH(cc.size(lc.w(H),lc.bottom(r)-108),50+ClientView.SCR_EDGE,10)lc.addChildToPos(H,k,cc.p(0,108))H._chapterList=k H:updateChapterList()local I=lc.createMaskLayer(255,lc.Color3B.black,cc.size(lc.w(H),lc.h(k)))I:setVisible(false)I:setTouchEnabled(false)I:setAnchorPoint(.5,.5)lc.addChildToPos(H,I,cc.p(lc.w(I)/2,lc.bottom(k)+lc.h(k)/2))H._maskLayer=I local z=lc.List.createH(cc.size((lc.w(H)-S)+8,lc.bottom(r)-108),20,0)z:setVisible(false)z:setLocalZOrder(10)lc.addChildToPos(H,z,cc.p(S-8,lc.y(H._chapterList)))H._levelList=z return true end function h.onEnter(H)h.super.onEnter(H)H._listeners={}table.insert(H._listeners,lc.addEventListener(GuideManager.Event.seek,function(h)H:onGuide(h)end))table.insert(H._listeners,lc.addEventListener(Data.Event.copy_times_dirty,function(H)return end))local S=GuideManager.getCurDifficultyStepName()if string.sub(S,1,16)=="check difficulty"then local h=tonumber(string.sub(S,18,18))+1 local s=false if h==2 and not Data.isLevelLock(20101)then s=true elseif h==3 and not Data.isLevelLock(30101)then s=true end if s then P._guideDifficultyID=P._guideDifficultyID+1 H:runAction(lc.sequence(0,function()GuideManager.showOperateLayer()local S=GuideManager.createNpcTipLayer(Data._guideInfo[P._guideDifficultyID],false,true,false,0)S:setScale(.8)GuideManager.addContainerLayer(S)GuideManager.setOperateLayer(H._difficultyBtns[h])end))return end end if H._focusLevelId then local h=math.floor(H._focusLevelId/10000)H:onSelectDifficulty(H._difficultyBtns[h])if P._playerWorld._curLevel[h]>H._focusLevelId then local h=H._focusLevelId+1 if Data._levelInfo[h]==nil then h=((math.floor(H._focusLevelId/100)+1))*100+1 end H._focusLevelId=h end local S=math.floor(H._focusLevelId/100)%100 local s=H._chapterItems[S]H:gotoChapter(s)H:onSelectChapter(s)local r=H._focusLevelId%100 H:gotoLevel(r)H._focusLevelId=nil elseif not GuideManager.isGuideEnabled()then local h=lc.UserDefault:getIntegerForKey(ClientData.ConfigKey.last_level,10101)local S=math.floor(h/10000)if S~=1 then H:onSelectDifficulty(H._difficultyBtns[S])end end if GuideManager.isGuideEnabled()then GuideManager.finishStepLater()end end function h.onExit(H)h.super.onExit(H)for H,h in ipairs(H._listeners)do lc.Dispatcher:removeEventListener(h)end end function h.onCleanup(H)h.super.onCleanup(H)ClientData.unloadLCRes({"travel.jpm","travel.png.sfb"})for H=1,#H._chapterItems,1 do print(string.format("chapter_%02d.jpm",H))ClientData.unloadLCRes({string.format("chapter_%02d.jpm",H),string.format("chapter_%02d.png.sfb",H)})end end function h.onSelectDifficulty(H,h)if h._index==2 and Data.isLevelLock(20101)then ToastManager.push(lc.str(STR.DIFFICULTY_NOT_UNLOCKED),3)return elseif h._index==3 and Data.isLevelLock(30101)then ToastManager.push(lc.str(STR.DIFFICULTY_NOT_UNLOCKED),3)return end local S=GuideManager.getCurDifficultyStepName()if string.sub(S,1,17)=="select difficulty"then P._guideDifficultyID=P._guideDifficultyID+1 ClientData.sendGuideID(P._guideDifficultyID)GuideManager.stopGuide()end H._difficulty=h._index H._btnFocus:setPosition(cc.p(H._difficultyBtns[H._difficulty]:getPosition()))H:updateChapterList()if H._floatChapter~=nil then H._maskLayer:setVisible(false)H._levelList:setVisible(false)H._levelList:scrollToLeft(.1,true)H._floatChapter:removeFromParent()H._floatChapter=nil end end function h.updateChapterList(H)H._chapterList:removeAllItems()H._chapterItems={}for h,s in pairs(Data._chapterInfo)do local r=H:createChapterItem(s,#H._chapterItems+1,cc.size(S,lc.h(H._chapterList)),false)H._chapterItems[#H._chapterItems+1]=r H._chapterList:pushBackCustomItem(r)end H._chapterList:scrollToLeft(.3,true)end function h.createChapterItem(H,h,S,s,r)local b=ccui.Widget:create()b._info=h b._index=S local I=P._playerWorld._curLevel[H._difficulty]b._locked=math.floor(I/100)%100<h._id b:setContentSize(s)b:setTouchEnabled(true)b:setTouchEndCancelRange(lc.Gesture.BUDGE_LIMIT)b:addTouchEventListener(function(h,S)if S==ccui.TouchEventType.ended then if not r then H:onSelectChapter(h)else H:onUnselectChapter(h)end end end)local z=lc.createSprite({_name="travel_bg_0"..H._difficulty,_crect=j[H._difficulty];_size=cc.size(lc.w(b)-((H._difficulty==1 and 0 or 6)),lc.h(b)-((H._difficulty==1 and 6 or 12)))})z:setEffect(H._difficulty==1 and ClientView.SHADER_COLORS[k[H._difficulty]]or nil)lc.addChildToCenter(b,z)if H._difficulty==2 then lc.offset(z,-4,4)elseif H._difficulty==3 then lc.offset(z,-6,6)end local y=string.format("travel_img_%02d",S)if ClientData.isAnotherSkin()and lc.FrameCache:getSpriteFrame(y.."_2")then y=y.."_2"end local a=cc.ShaderSprite:createWithFramename(y)lc.addChildToPos(b,a,cc.p(lc.w(b)/2-4,lc.h(b)/2),-1)if b._locked then a:setEffect(ClientView.SHADER_DISABLE)z:setEffect(ClientView.SHADER_DISABLE)end local l=cc.Label:createWithTTF(Str(h._nameSid),ClientView.TTF_FONT,ClientView.FontSize.S1)lc.addChildToPos(b,l,cc.p(lc.w(b)/2-4,90))local T,J=P._playerWorld:getChapterProgress(H._difficulty,h._id)local q=ClientView.createBMFont(ClientView.BMFont.huali_26,string.format("%d/%d",J,T))lc.addChildToPos(b,q,cc.p(lc.w(b)/2,60))return b end function h.onSelectChapter(H,h)ClientData.loadLCRes(string.format("res/chapter_%02d.lcres",h._info._id))if h._locked then ToastManager.push(lc.str(STR.BATTLE_NOT_UNLOCKED),3)return end lc.Audio.playAudio(AUDIO.E_TRAVEL_CHAPTER)H._chapterId=H._difficulty*100+h._info._id H:updateLevelList()H._maskLayer:setVisible(true)if H._chapterList then H._chapterList:setTouchEnabled(false)end local S=H:createChapterItem(h._info,h._info._id,h:getContentSize(),true)S._chapterItem=h local s=lc.convertPos(cc.p(h:getPosition()),H._chapterList,H)lc.addChildToPos(H,S,s)S:runAction(lc.sequence(lc.moveTo(.2,cc.p(lc.w(S)/2+ClientView.SCR_EDGE,lc.y(S)))))H._floatChapter=S if GuideManager.getCurStepName()=="select chapter 1"then GuideManager.finishStepLater(.5)end end function h.onUnselectChapter(H,h)lc.Audio.playAudio(AUDIO.E_TRAVEL_CHAPTER)local S=h._chapterItem ClientData.unloadLCRes({string.format("chapter_%02d.jpm",S._info._id);string.format("chapter_%02d.png.sfb",S._info._id)})local s=lc.convertPos(cc.p(S:getPosition()),H._chapterList,H)H._levelList:runAction(lc.sequence(lc.ease(lc.moveTo(.3,cc.p(-lc.w(H._levelList),lc.y(H._levelList))),"BackI",.5),function()H._levelList:setVisible(false)end))h:runAction(lc.sequence(.3,lc.moveTo(.2,s),lc.remove(),function()H._floatChapter=nil H._maskLayer:setVisible(false)if H._chapterList then H._chapterList:setTouchEnabled(true)end H._levelList:scrollToLeft(.1,true)end))end function h.gotoChapter(H,h)H._chapterList:forceDoLayout()H._chapterList:gotoPos((lc.right(h)+50)-ClientView.SCR_W)end function h.updateLevelList(H)H._levelList:removeAllItems()local h={}for S,s in pairs(Data._levelInfo)do if math.floor(s._id/100)==H._chapterId then h[#h+1]=s end end table.sort(h,function(H,h)return H._id<h._id end)local j=#h local k=ccui.Layout:create()k:setContentSize(s,r)H._levelList:pushBackCustomItem(k)for S=1,#h,1 do local s,r=H:createLevelSprite(h[S],S)lc.addChildToPos(k,s,b[S])if r then j=S end end H._levelList:setPosition(cc.p(-lc.w(H._levelList),lc.y(H._levelList)))H._levelList:setVisible(true)H._levelList:runAction(lc.sequence(.2,lc.ease(lc.moveTo(.3,cc.p((S-8)+ClientView.SCR_EDGE,lc.y(H._levelList))),"BackIO",.5),function()H:gotoLevel(j)end))end function h.createLevelSprite(H,h,S)
+	local s=false
+	local r=string.format("chapter_%02d_%02d",H._chapterId%100,S)
+	if ClientData.isAnotherSkin2()and lc.FrameCache:getSpriteFrame(r.."_3")then
+		r=r.."_3"
+	end
+	local targetLevelInfo=h
+	local j=ClientView.createTouchSpriteWithShader(r,function(sender)
+		H:onSelectLevel(sender,targetLevelInfo)
+	end)
+	j._info=h
+	j._locked=Data.isLevelLock(h._id)
+	if j._locked then
+		j._sprite:setEffect(ClientView.SHADER_DISABLE)
+	end
+	if h._id==P._playerWorld._curLevel[H._difficulty]then
+		local pNode=Particle.create("dangqian")
+		pNode:setPositionType(cc.POSITION_TYPE_GROUPED)
+		lc.addChildToPos(j._sprite,pNode,cc.p(lc.w(j._sprite)/2,lc.h(j._sprite)/2-20))
+		s=true
+	end
+	H._levelWidgets=H._levelWidgets or {}
+	H._levelWidgets[S]=j
+	return j,s
+end
+
+function h.onSelectLevel(H,sender,levelInfo)
+	levelInfo=levelInfo or (sender and sender._info)
+	if not levelInfo then
+		print("[TravelPanel] onSelectLevel: levelInfo is nil!")
+		return
+	end
+	local isLocked=Data.isLevelLock(levelInfo._id)
+	if isLocked then
+		ToastManager.push(lc.str(STR.LEVEL_NOT_UNLOCK),3)
+		return
+	end
+	print("[TravelPanel] Opening LevelForm for level id: "..tostring(levelInfo._id))
+	local ok,err=pcall(function()
+		((require("LevelForm")).create(levelInfo)):show()
+	end)
+	if not ok then
+		print("[TravelPanel Error] LevelForm.create failed: "..tostring(err))
+		ToastManager.push("Lỗi mở ải: "..tostring(err),5)
+	end
+	local S=GuideManager.getCurStepName()
+	if string.sub(S,1,12)=="select level"then
+		GuideManager.finishStepLater(.4)
+	end
+end
+
+function h.gotoLevel(H,h)H._levelList:forceDoLayout()H._levelList:gotoPos(lc.left(((H._levelList:getItems())[1]:getChildren())[h]))end function h.onGuide(H,h)local S local s=GuideManager.getCurStepName()if s=="select chapter 1"then GuideManager.setOperateLayer(H._chapterItems[1])S=true elseif string.sub(s,1,12)=="select level"then GuideManager.setOperateLayer(((H._levelList:getItems())[1]:getChildren())[tonumber(string.sub(s,14,14))])S=true end if S then h:stopPropagation()end end return h

@@ -643,8 +643,137 @@ def get_gzipped_file(full_path):
     except Exception as e:
         return None
 
+LUA_SRC_CACHE = {
+    'mtimes': {},
+    'data': {},
+    'json_bytes': None,
+    'gz_bytes': None,
+    'etag': None
+}
+
+DATA_DUMPS_CACHE = {
+    'mtimes': {},
+    'data': {},
+    'json_bytes': None,
+    'gz_bytes': None,
+    'etag': None
+}
+
+def get_live_lua_src():
+    src_dir = os.path.join(WEB_DIR, 'src')
+    if not os.path.isdir(src_dir):
+        p = os.path.join(WEB_DIR, 'lua_src.json')
+        if os.path.isfile(p):
+            with open(p, 'rb') as f:
+                b = f.read()
+            return b, gzip.compress(b, 6), f'"{int(os.path.getmtime(p))}"'
+        return b'{}', None, '"empty"'
+
+    current_files = {}
+    changed = False
+    for entry in os.scandir(src_dir):
+        if entry.is_file() and entry.name.endswith('.lua'):
+            mod_name = entry.name[:-4]
+            mtime = entry.stat().st_mtime
+            current_files[mod_name] = (entry.path, mtime)
+            if LUA_SRC_CACHE['mtimes'].get(mod_name) != mtime:
+                changed = True
+
+    if not changed and len(current_files) == len(LUA_SRC_CACHE['mtimes']) and LUA_SRC_CACHE['json_bytes']:
+        return LUA_SRC_CACHE['json_bytes'], LUA_SRC_CACHE['gz_bytes'], LUA_SRC_CACHE['etag']
+
+    for mod_name, (path, mtime) in current_files.items():
+        if LUA_SRC_CACHE['mtimes'].get(mod_name) != mtime or mod_name not in LUA_SRC_CACHE['data']:
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    LUA_SRC_CACHE['data'][mod_name] = f.read()
+                LUA_SRC_CACHE['mtimes'][mod_name] = mtime
+            except Exception as e:
+                print(f"[LUA READ ERR] {mod_name}: {e}")
+
+    deleted = set(LUA_SRC_CACHE['mtimes'].keys()) - set(current_files.keys())
+    for mod_name in deleted:
+        LUA_SRC_CACHE['data'].pop(mod_name, None)
+        LUA_SRC_CACHE['mtimes'].pop(mod_name, None)
+
+    raw = json.dumps(LUA_SRC_CACHE['data'], ensure_ascii=False).encode('utf-8')
+    LUA_SRC_CACHE['json_bytes'] = raw
+    LUA_SRC_CACHE['gz_bytes'] = gzip.compress(raw, compresslevel=6)
+    h = hashlib.md5(raw[:2048] + str(len(raw)).encode()).hexdigest()
+    LUA_SRC_CACHE['etag'] = f'"{h}"'
+    print(f"[LIVE RELOAD] Loaded {len(LUA_SRC_CACHE['data'])} Lua modules ({len(raw)//1024}KB raw, {len(LUA_SRC_CACHE['gz_bytes'])//1024}KB gzip)")
+    return LUA_SRC_CACHE['json_bytes'], LUA_SRC_CACHE['gz_bytes'], LUA_SRC_CACHE['etag']
+
+def get_live_data_dumps():
+    data_dir = os.path.join(WEB_DIR, 'data')
+    if not os.path.isdir(data_dir):
+        p = os.path.join(WEB_DIR, 'data_dumps.json')
+        if os.path.isfile(p):
+            with open(p, 'rb') as f:
+                b = f.read()
+            return b, gzip.compress(b, 6), f'"{int(os.path.getmtime(p))}"'
+        return b'{}', None, '"empty"'
+
+    current_files = {}
+    changed = False
+    for entry in os.scandir(data_dir):
+        if entry.is_file():
+            name = entry.name
+            if name.endswith('.lua') or name.endswith('.json'):
+                mtime = entry.stat().st_mtime
+                current_files[name] = (entry.path, mtime)
+                if DATA_DUMPS_CACHE['mtimes'].get(name) != mtime:
+                    changed = True
+
+    if not changed and len(current_files) == len(DATA_DUMPS_CACHE['mtimes']) and DATA_DUMPS_CACHE['json_bytes']:
+        return DATA_DUMPS_CACHE['json_bytes'], DATA_DUMPS_CACHE['gz_bytes'], DATA_DUMPS_CACHE['etag']
+
+    for name, (path, mtime) in current_files.items():
+        if DATA_DUMPS_CACHE['mtimes'].get(name) != mtime or name not in DATA_DUMPS_CACHE['data']:
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                if name == 'teach_dumps.json':
+                    dump_key = 'teach_dumps.json'
+                elif name.endswith('.bin.lua'):
+                    dump_key = name[:-4]
+                elif name.endswith('.lua'):
+                    base = name[:-4]
+                    dump_key = base if base in ('unknown_72', 'unknown_73', 'unknown_74', 'unknown_75') else base + '.bin'
+                elif name.endswith('.bin.json'):
+                    dump_key = name[:-5]
+                elif name.endswith('.json'):
+                    dump_key = name
+                else:
+                    dump_key = name
+
+                DATA_DUMPS_CACHE['data'][dump_key] = content
+                DATA_DUMPS_CACHE['mtimes'][name] = mtime
+            except Exception as e:
+                print(f"[DATA READ ERR] {name}: {e}")
+
+    deleted = set(DATA_DUMPS_CACHE['mtimes'].keys()) - set(current_files.keys())
+    for name in deleted:
+        DATA_DUMPS_CACHE['mtimes'].pop(name, None)
+
+    raw = json.dumps(DATA_DUMPS_CACHE['data'], ensure_ascii=False).encode('utf-8')
+    DATA_DUMPS_CACHE['json_bytes'] = raw
+    DATA_DUMPS_CACHE['gz_bytes'] = gzip.compress(raw, compresslevel=6)
+    h = hashlib.md5(raw[:2048] + str(len(raw)).encode()).hexdigest()
+    DATA_DUMPS_CACHE['etag'] = f'"{h}"'
+    print(f"[LIVE RELOAD] Loaded {len(DATA_DUMPS_CACHE['data'])} Data tables ({len(raw)//1024}KB raw, {len(DATA_DUMPS_CACHE['gz_bytes'])//1024}KB gzip)")
+    return DATA_DUMPS_CACHE['json_bytes'], DATA_DUMPS_CACHE['gz_bytes'], DATA_DUMPS_CACHE['etag']
+
 def preload_static_cache():
-    preload_list = ['lua_src.json', 'res_manifest.json', 'data_dumps.json']
+    try:
+        get_live_lua_src()
+    except Exception as e:
+        print(f"[PRELOAD ERR] live lua_src: {e}")
+    try:
+        get_live_data_dumps()
+    except Exception as e:
+        print(f"[PRELOAD ERR] live data_dumps: {e}")
+    preload_list = ['res_manifest.json']
     for rel in preload_list:
         p = os.path.join(WEB_DIR, rel)
         if os.path.isfile(p):
@@ -740,6 +869,10 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             self.close_connection = True
 
     def do_GET(self):
+        clean_path = self.path.split('?')[0].split('#')[0]
+        if clean_path == '/' or clean_path == '':
+            clean_path = '/index.html'
+
         if not (self.path.startswith('/res/') or self.path.startswith('/src/') or self.path.endswith('.png') or self.path.endswith('.jpg') or self.path.endswith('.js')):
             print(f"[HTTP GET REQUEST] {self.path}")
 
@@ -771,15 +904,12 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
 
         if self.path.startswith('/upd'):
             if self.path.endswith('assets/md5') or 'md5' in self.path:
-                md5_path = r"D:\yugitauapk\extracted\1.0.7\md5" if os.path.exists(r"D:\yugitauapk\extracted\1.0.7\md5") else None
-                # or read from QuyetChienChiThanh_base_sign_1.apk
-                if not md5_path or not os.path.exists(md5_path):
-                    import zipfile
-                    with zipfile.ZipFile(r"D:\yugitauapk\QuyetChienChiThanh_base_sign_1.apk") as z:
-                        md5_bytes = z.read("assets/md5")
-                else:
+                md5_path = os.path.join(WEB_DIR, 'updater_assets_md5')
+                if os.path.exists(md5_path):
                     with open(md5_path, 'rb') as f:
                         md5_bytes = f.read()
+                else:
+                    md5_bytes = b""
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/octet-stream')
                 self.send_header('Content-Length', str(len(md5_bytes)))
@@ -797,9 +927,52 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             print(f"[UPD SERVER] Responded to {self.path} with {upd_payload.decode()}")
             return
 
-        clean_path = self.path.split('?')[0].split('#')[0]
-        if clean_path == '/' or clean_path == '':
-            clean_path = '/index.html'
+        # Live dynamic loading for Lua source modules
+        if clean_path == '/lua_src.json':
+            raw_bytes, gz_bytes, etag = get_live_lua_src()
+            if self.headers.get('If-None-Match') == etag:
+                self.send_response(304)
+                self.send_header('Cache-Control', 'no-cache, must-revalidate')
+                self.send_header('ETag', etag)
+                self.end_headers()
+                return
+            accept_enc = self.headers.get('Accept-Encoding', '')
+            can_gzip = ('gzip' in accept_enc.lower()) and (gz_bytes is not None)
+            out_bytes = gz_bytes if can_gzip else raw_bytes
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            if can_gzip:
+                self.send_header('Content-Encoding', 'gzip')
+            self.send_header('Content-Length', str(len(out_bytes)))
+            self.send_header('Cache-Control', 'no-cache, must-revalidate')
+            self.send_header('ETag', etag)
+            self.end_headers()
+            self.wfile.write(out_bytes)
+            return
+
+        # Live dynamic loading for Data dumps
+        if clean_path == '/data_dumps.json':
+            raw_bytes, gz_bytes, etag = get_live_data_dumps()
+            if self.headers.get('If-None-Match') == etag:
+                self.send_response(304)
+                self.send_header('Cache-Control', 'no-cache, must-revalidate')
+                self.send_header('ETag', etag)
+                self.end_headers()
+                return
+            accept_enc = self.headers.get('Accept-Encoding', '')
+            can_gzip = ('gzip' in accept_enc.lower()) and (gz_bytes is not None)
+            out_bytes = gz_bytes if can_gzip else raw_bytes
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            if can_gzip:
+                self.send_header('Content-Encoding', 'gzip')
+            self.send_header('Content-Length', str(len(out_bytes)))
+            self.send_header('Cache-Control', 'no-cache, must-revalidate')
+            self.send_header('ETag', etag)
+            self.end_headers()
+            self.wfile.write(out_bytes)
+            return
+
         rel_path = clean_path.lstrip('/')
         full_path = os.path.normpath(os.path.join(WEB_DIR, rel_path))
 

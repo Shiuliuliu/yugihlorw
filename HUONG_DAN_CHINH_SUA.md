@@ -4,15 +4,18 @@ Tài liệu này tổng hợp chi tiết vị trí các file và cách thức ch
 
 ---
 
-## 1. TỔNG QUAN CẤU TRÚC DỰ ÁN
+## 1. TỔNG QUAN CẤU TRÚC DỰ ÁN (BẢN BUNG KHÔNG MÃ HÓA - SỬA TRỰC TIẾP)
+
+Dự án đã được **bung toàn bộ mã nguồn và dữ liệu thành các file độc lập**, không còn mã hóa hay đóng cục. Bạn có thể mở trực tiếp bất kỳ file nào bằng VS Code hoặc Notepad, sửa nội dung, bấm **Save (Ctrl + S)** và **F5 trang web** là game lập tức nhận thay đổi!
 
 | Thành phần | Vị trí thư mục / File | Vai trò |
 | :--- | :--- | :--- |
-| **Backend Server** | `yugioh_web_server.py` | Web server HTTP (cổng 8080), WebSocket PvP (cổng 9192), xử lý logic API, nạp tiền, bốc thẻ, lưu deck. |
+| **Mã nguồn Lua Client** | `web/src/*.lua` | **419 file Lua độc lập** (`ClientView.lua`, `CardList.lua`, `ShopScene.lua`, `BattleScene.lua`...). Mở sửa trực tiếp, Web Server tự động live-reload tức thì! |
+| **Dữ liệu cấu hình Game** | `web/data/*.lua` | **133 bảng dữ liệu độc lập** (`monster.lua`, `card.lua`, `drop.lua`, `magic.lua`, `trap.lua`, `rare.lua`, `package.lua`...). Định dạng Lua table cực kỳ dễ đọc. |
+| **Backend Server** | `yugioh_web_server.py` | Web server HTTP (cổng 8080), WebSocket PvP (cổng 9192), xử lý logic API, nạp tiền, bốc thẻ, nạp động mã nguồn `web/src/` và `web/data/`. |
+| **Công cụ đồng bộ** | `sync_game.py` | Script 1-click đóng gói toàn bộ `web/src/` và `web/data/` thành `lua_src.json` và `data_dumps.json` (tự động chạy trong 0.4s). |
 | **Database** | MySQL: Database `yugioh_game` | Lưu tài khoản (`accounts`), thẻ sở hữu, deck, lịch sử chat. |
 | **Giao diện Web Client** | `web/` | Thư mục chứa toàn bộ mã nguồn frontend, assets hình ảnh, âm thanh, engine game. |
-| **Mã nguồn Lua Client** | `web/lua_src.json` | Chứa toàn bộ các module mã nguồn Lua của game (ClientView, Card, Shop, Battle, UI...). |
-| **Dữ liệu cấu hình Game** | `web/data_dumps.json` | Chứa dữ liệu nhị phân đã dump: thẻ bài (`card.bin`), gói thẻ (`drop.bin`), ngôn ngữ dịch (`lan.bin`)... |
 | **Engine Cocos2d & Bridge** | `web/js/engine.js`, `web/js/res.js`, `web/js/boot.js` | Kết nối Cocos2d-html5 với Lua WASM VM, nạp tài nguyên, xử lý canvas và shader. |
 | **File font game** | `web/res/updater/HYB2GJM.TTF` | Font chữ TrueType của game (Be Vietnam Pro Bold). |
 | **File đẩy Git** | `DAY_LEN_GITHUB.bat` | Script 1-click tự động commit và đẩy lên GitHub. |
@@ -39,12 +42,13 @@ Tài liệu này tổng hợp chi tiết vị trí các file và cách thức ch
      ```javascript
      this._fontStyleStr = fontStyle + " " + fontWeight + " " + deviceFontSize + "px '" + fn + "', 'YuGiOhFont', sans-serif";
      ```
-4. **Cấu hình Font trong Lua (`web/lua_src.json`):**
-   - Mở `web/lua_src.json`, tìm tới module `"ClientView"`:
+4. **Cấu hình Font trong Lua (`web/src/ClientView.lua`):**
+   - Mở trực tiếp file `web/src/ClientView.lua` (không cần giải mã gì cả).
    - Sửa dòng:
      ```lua
      var_0_0.TTF_FONT = "YuGiOhFont"
      ```
+   - Bấm **Save (Ctrl + S)** -> F5 web là font có hiệu lực ngay!
 
 ---
 
@@ -73,9 +77,9 @@ Tài liệu này tổng hợp chi tiết vị trí các file và cách thức ch
     # Còn lại: random SR, R, N
     ```
 - **Chỉnh danh sách thẻ bài trong từng gói:**
-  - File `web/data_dumps.json`.
-  - Tìm bảng `"drop.bin"`: mỗi gói bài có 3 drop ID (tương ứng quay x1, x10, x50). Sửa mảng `_pid` để thêm/bớt danh sách ID thẻ bài trong gói đó.
-  - Tìm bảng `"package.bin"`: chứa tên gói, icon, mô tả gói bài.
+  - Mở trực tiếp file `web/data/drop.lua`: mỗi gói bài có 3 drop ID (tương ứng quay x1, x10, x50). Sửa mảng `_pid` để thêm/bớt danh sách ID thẻ bài trong gói đó.
+  - Mở trực tiếp file `web/data/package.lua`: chứa tên gói, icon, mô tả gói bài.
+  - Lưu file -> F5 web là cập nhật ngay lập tức!
 
 ---
 
@@ -87,24 +91,24 @@ Tài liệu này tổng hợp chi tiết vị trí các file và cách thức ch
 - **Ảnh toàn lá bài (Icon nhỏ):** Đặt vào thư mục `web/res/thumb_monster/`, `web/res/thumb_magic/`, `web/res/thumb_trap/` hoặc các container `.lcres`.
 
 ### B. Chỉnh sửa chỉ số thẻ bài (ATK, DEF, Sao, Hệ, Phẩm chất)
-- **Vị trí:** File `web/data_dumps.json`.
-- **Các bảng dữ liệu tương ứng:**
-  - Quái thú: Bảng `"monster.bin"` và `"card.bin"`.
+- **Vị trí:** Thư mục `web/data/`. Mở sửa trực tiếp bằng VS Code hoặc Notepad:
+  - Quái thú: File `web/data/monster.lua` và `web/data/card.lua`.
     - `_atk`: Điểm tấn công gốc.
     - `_def` hoặc `_hp`: Điểm phòng thủ gốc.
     - `_star`: Số sao (cấp độ).
     - `_quality`: Phẩm chất (1: N, 2: R, 3: SR, 4: UR, 5: GR).
     - `_nature`: Thuộc tính (Hệ: Ánh sáng, Bóng tối, Lửa, Nước...).
-  - Phép: Bảng `"magic.bin"`.
-  - Bẫy: Bảng `"trap.bin"`.
-  - Extra/Hiếm: Bảng `"rare.bin"`.
+  - Phép: File `web/data/magic.lua`.
+  - Bẫy: File `web/data/trap.lua`.
+  - Extra/Hiếm: File `web/data/rare.lua`.
+  - Bấm **Save** là server nhận diện tự động!
 
 ### C. Chỉnh sửa Tên & Mô tả hiệu ứng tiếng Việt của lá bài
-- **Vị trí:** File `web/data_dumps.json`, bảng `"lan.bin"`.
-- Mỗi lá bài trong `card.bin` có 2 mã ID chuỗi:
+- **Vị trí:** File `web/res/lan.lcres/extend.lan` (hoặc `extend_lan.txt` ở thư mục gốc).
+- Mỗi lá bài trong `web/data/card.lua` có 2 mã ID chuỗi:
   - `_nameSid`: ID của chuỗi Tên lá bài.
   - `_descSid`: ID của chuỗi Mô tả hiệu ứng lá bài.
-- Tìm ID đó trong bảng `lan.bin` và sửa nội dung văn bản tiếng Việt tương ứng.
+- Tìm dòng có ID tương ứng trong file `web/res/lan.lcres/extend.lan` để sửa nội dung văn bản tiếng Việt.
 
 ---
 
