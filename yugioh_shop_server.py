@@ -280,7 +280,9 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
 
                             # Resolve pack pool from server maps if not provided
                             if not req_pool:
-                                if 101001 <= pkg_num <= 135050:
+                                if pkg_num in (11201, 11210, 11250, 15):
+                                    req_pool = SERVER_CHAR_CARDS_MAP.get(15, []) or SERVER_CHAR_CARDS_MAP.get(11201, [])
+                                elif 101001 <= pkg_num <= 135050:
                                     liya_idx = (pkg_num - 100000) // 1000
                                     req_pool = SERVER_LIYA_CARDS_MAP.get(liya_idx, [])
                                 elif 1 <= pkg_num <= 32 and pkg_num in SERVER_LIYA_CARDS_MAP:
@@ -316,7 +318,9 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                                     gr_cids = LIYA_PACKAGE_GR.get(pkg_num, [])
                                 else:
                                     cid = pkg_num
-                                    if 10000 <= cid < 20000:
+                                    if cid in (11201, 11210, 11250, 15):
+                                        cid = 15
+                                    elif 10000 <= cid < 20000:
                                         cid = (cid - 10000) // 100
                                     elif cid > 100:
                                         cid = cid % 100

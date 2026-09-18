@@ -257,6 +257,9 @@ cc.EditBox = cc.ControlButton.extend({
         tmpEdTxt.style.color = "#ffffff";
         tmpEdTxt.style.webkitTextFillColor = "#ffffff";
         tmpEdTxt.style.caretColor = "#ffffff";
+        tmpEdTxt.style.webkitTextStroke = "1px #000000";
+        tmpEdTxt.style.textShadow = "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, -2px 0 0 #000, 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, 0 0 4px #000";
+        tmpEdTxt.style.fontWeight = "bold";
         tmpEdTxt.style.border = "0";
         tmpEdTxt.style.background = "transparent";
         tmpEdTxt.style.width = "100%";
@@ -291,6 +294,9 @@ cc.EditBox = cc.ControlButton.extend({
                 this._edTxt.value = "";
                 this._edTxt.style.fontSize = this._edFontSize + "px";
                 this._edTxt.style.color = cc.colorToHex(this._textColor);
+                this._edTxt.style.webkitTextFillColor = cc.colorToHex(this._textColor);
+                this._edTxt.style.webkitTextStroke = "1px #000000";
+                this._edTxt.style.textShadow = "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, -2px 0 0 #000, 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, 0 0 4px #000";
                 if (this._editBoxInputFlag === cc.EDITBOX_INPUT_FLAG_PASSWORD)
                     this._edTxt.type = "password";
                 else
@@ -306,6 +312,9 @@ cc.EditBox = cc.ControlButton.extend({
                 this._edTxt.value = this._placeholderText;
                 this._edTxt.style.fontSize = this._placeholderFontSize + "px";
                 this._edTxt.style.color = cc.colorToHex(this._placeholderColor);
+                this._edTxt.style.webkitTextFillColor = cc.colorToHex(this._placeholderColor);
+                this._edTxt.style.webkitTextStroke = "0.8px #000000";
+                this._edTxt.style.textShadow = "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000";
                 this._edTxt.type = "text";
             }
             if (this._delegate && this._delegate.editBoxEditingDidEnd)
@@ -406,10 +415,16 @@ cc.EditBox = cc.ControlButton.extend({
             if (text === "") {
                 this._edTxt.value = this._placeholderText;
                 this._edTxt.style.color = cc.colorToHex(this._placeholderColor);
+                this._edTxt.style.webkitTextFillColor = cc.colorToHex(this._placeholderColor);
+                this._edTxt.style.webkitTextStroke = "0.8px #000000";
+                this._edTxt.style.textShadow = "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000";
                 this._edTxt.type = "text";
             } else {
                 this._edTxt.value = text;
                 this._edTxt.style.color = cc.colorToHex(this._textColor);
+                this._edTxt.style.webkitTextFillColor = cc.colorToHex(this._textColor);
+                this._edTxt.style.webkitTextStroke = "1px #000000";
+                this._edTxt.style.textShadow = "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, -2px 0 0 #000, 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, 0 0 4px #000";
                 if (this._editBoxInputFlag === cc.EDITBOX_INPUT_FLAG_PASSWORD)
                     this._edTxt.type = "password";
                 else
@@ -426,6 +441,9 @@ cc.EditBox = cc.ControlButton.extend({
         this._textColor = color;
         if (this._edTxt.value !== this._placeholderText) {
             this._edTxt.style.color = cc.colorToHex(color);
+            this._edTxt.style.webkitTextFillColor = cc.colorToHex(color);
+            this._edTxt.style.webkitTextStroke = "1px #000000";
+            this._edTxt.style.textShadow = "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, -2px 0 0 #000, 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, 0 0 4px #000";
         }
     },
 

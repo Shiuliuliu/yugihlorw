@@ -182,10 +182,13 @@ CHAR_PACKAGE_KEYWORDS = {
     10402: ['Amazoness', 'Gió Lốc Windwitch'],
     10403: ['Amazoness', 'Gió Lốc Windwitch'],
     # Jaden Yuki (ID 15)
-    15: ['Anh Hùng Nguyên Tố'],
-    11501: ['Anh Hùng Nguyên Tố'],
-    11502: ['Anh Hùng Nguyên Tố'],
-    11503: ['Anh Hùng Nguyên Tố'],
+    15: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
+    11201: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
+    11210: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
+    11250: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
+    11501: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
+    11502: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
+    11503: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
     # Yusei Fudo (ID 16)
     16: ['Phế Liệu Sắt', 'Công Nghệ TG'],
     11601: ['Phế Liệu Sắt', 'Công Nghệ TG'],
@@ -252,7 +255,7 @@ LIYA_PACKAGE_KEYWORDS = {
     29: ['Harpie', 'Mắt Đỏ', 'Kết Giới Băng'],
     30: ['Ma Cà Rồng', 'Vampire', 'Gishki', 'Mắt Đỏ'],
     31: ['Nhập Ma', 'Ophion', 'Coppelia'],
-    32: ['HERO', 'Neos', 'Anh hùng', 'Cú Đấm Thần Thánh']
+    32: ['HERO', 'Neos', 'Anh hùng', 'Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Cú Đấm Thần Thánh']
 }
 
 # 2 distinct GR/UR cards per Liya pack, distributed across all 32 packs
