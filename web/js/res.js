@@ -558,9 +558,23 @@
 			.filter(function (f) { return /\.fnt$/i.test(f); })
 			.map(function (f) { return R.base + f.replace(/^res\//, ''); });
 
-		return new Promise(function (resolve) {
+		var loadBMFonts = new Promise(function (resolve) {
 			cc.loader.load(fonts, function () { resolve(fonts.length); });
 		});
+
+		var loadTTFFonts = (typeof document !== 'undefined' && document.fonts && document.fonts.load)
+			? Promise.all([
+				document.fonts.load('16px YuGiOhFont'),
+				document.fonts.load('bold 16px YuGiOhFont'),
+				document.fonts.load('16px "Be Vietnam Pro"'),
+				document.fonts.load('bold 16px "Be Vietnam Pro"'),
+				document.fonts.ready
+			]).catch(function (e) {
+				console.warn('[Font] Preload TTF notice:', e);
+			})
+			: Promise.resolve();
+
+		return Promise.all([loadBMFonts, loadTTFFonts]);
 	};
 
 	/* ------------------------------------------------------------------ *

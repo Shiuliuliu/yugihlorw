@@ -643,7 +643,7 @@
 			return label;
 		},
 		createWithSystemFont: function (text, font, size, dimensions, hAlign, vAlign) {
-			return new cc.LabelTTF(String(unescapeNewlines(text)), font || 'Arial', size || 20,
+			return new cc.LabelTTF(String(unescapeNewlines(text)), global.jdzcFontFamily(font), size || 20,
 					       dimensions, hAlign, vAlign);
 		},
 		createWithBMFont: function (fnt, text, hAlign, maxWidth) {
@@ -3201,18 +3201,49 @@
 	var fontFamilies = {};
 
 	global.jdzcFontFamily = function (path) {
-		if (!path) return 'Arial';
+		// Map empty, Arial, Segoe, HYB2GJM, or YuGiOhFont to the authentic Vietnamese font (Be Vietnam Pro Bold)
+		if (!path || path === 'Arial' || path === 'YuGiOhFont' || path === 'Be Vietnam Pro' ||
+		    path.indexOf('HYB2GJM') !== -1 || path.indexOf('Segoe') !== -1 || path.indexOf('sans-serif') !== -1) {
+			return 'YuGiOhFont';
+		}
 		if (fontFamilies[path]) return fontFamilies[path];
 
 		var family = 'jdzc_' + path.replace(/[^A-Za-z0-9]/g, '_');
 		var url = (config.resBase || '/res/') + String(path).replace(/^res\//, '');
 		var style = document.createElement('style');
 		style.textContent = '@font-face{font-family:"' + family +
-			'";src:url("' + url + '");}';
+			'";src:url("' + url + '");font-display:swap;}';
 		document.head.appendChild(style);
 		fontFamilies[path] = family;
 		return family;
 	};
+
+	if (cc.LabelTTF) {
+		var origInitWithString = cc.LabelTTF.prototype.initWithString;
+		cc.LabelTTF.prototype.initWithString = function (label, fontName, fontSize, dimensions, hAlignment, vAlignment) {
+			fontName = global.jdzcFontFamily ? global.jdzcFontFamily(fontName) : (fontName || 'YuGiOhFont');
+			return origInitWithString.call(this, label, fontName, fontSize, dimensions, hAlignment, vAlignment);
+		};
+
+		var origSetFontName = cc.LabelTTF.prototype.setFontName;
+		cc.LabelTTF.prototype.setFontName = function (fontName) {
+			fontName = global.jdzcFontFamily ? global.jdzcFontFamily(fontName) : (fontName || 'YuGiOhFont');
+			return origSetFontName.call(this, fontName);
+		};
+
+		cc.LabelTTF.prototype.setSystemFontName = function (fontName) {
+			this.setFontName(fontName);
+		};
+
+		cc.LabelTTF.prototype.setSystemFontSize = function (fontSize) {
+			this.setFontSize(fontSize);
+		};
+	}
+
+	if (cc.LabelBMFont) {
+		cc.LabelBMFont.prototype.setSystemFontName = function (fontName) {};
+		cc.LabelBMFont.prototype.setSystemFontSize = function (fontSize) {};
+	}
 
 	/* ------------------------------------------------------------------ *
 	 * ccui.Scale9Sprite -- handle asynchronous texture loading
