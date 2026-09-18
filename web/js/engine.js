@@ -352,8 +352,11 @@
 
 		/* the alpha lives in <name>_mask.png beside the colour plane */
 		var url = res.base + path.replace(/^res\//, '');
-		return res.maskedTexture(path, url,
-					 url.replace(/\.[A-Za-z]+$/, '_mask.png'));
+		var ver = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20260919v12';
+		var sep = url.indexOf('?') >= 0 ? '&' : '?';
+		var colourUrl = url + sep + 'v=' + ver;
+		var maskUrl = url.replace(/\.[A-Za-z]+$/, '_mask.png') + sep + 'v=' + ver;
+		return res.maskedTexture(path, colourUrl, maskUrl);
 	};
 
 	/* the game evicts textures on scene exit (TavernScene's
@@ -427,7 +430,10 @@
 		 * .lcres is an entry of a container, which the manifest lists
 		 * under the container rather than as a file of its own. */
 		if (isPath && url.indexOf('.lcres/') < 0 &&
-		    !res.exists(url.replace(res.base, 'res/'))) return null;
+		    !res.exists(url.replace(res.base, 'res/'))) {
+			if (cb) cb.call(target, null);
+			return null;
+		}
 
 		if (!isPath && !res.exists(url)) {
 			var placeholder = res.emptyTexture(url);
@@ -2389,6 +2395,16 @@
 			function (font, size) { this.setPlaceholderFontName(font); this.setPlaceholderFontSize(size); };
 		editBox.setFont = editBox.setFont ||
 			function (font, size) { this.setFontName(font); this.setFontSize(size); };
+		/* Enforce white text color for all input fields */
+		var origSetFontColor = editBox.setFontColor;
+		editBox.setFontColor = function (c) {
+			this._textColor = cc.color(255, 255, 255, 255);
+			if (this._edTxt) {
+				this._edTxt.style.color = '#ffffff';
+				this._edTxt.style.webkitTextFillColor = '#ffffff';
+				this._edTxt.style.caretColor = '#ffffff';
+			}
+		};
 	}
 
 	/* The fork's checkbox takes (background, cross, texType); html5 wants

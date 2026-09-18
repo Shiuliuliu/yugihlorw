@@ -37,10 +37,11 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 	for _, d in ipairs(decks or {}) do
 		local slot = tonumber(d.deck_slot) or 1
 		if slot >= 1 and slot <= 5 then
+			local BANNED_DECK_CARDS = { [40657] = true, [40693] = true, [40694] = true }
 			local counts, order = {}, {}
 			for _, cid in ipairs(d.cards or {}) do
 				cid = tonumber(cid)
-				if cid and cid > 0 then
+				if cid and cid > 0 and not BANNED_DECK_CARDS[cid] then
 					if not counts[cid] then
 						counts[cid] = 0
 						table.insert(order, cid)
@@ -51,7 +52,7 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 			local extra_counts, extra_order = {}, {}
 			for _, cid in ipairs(d.extra_cards or {}) do
 				cid = tonumber(cid)
-				if cid and cid > 0 then
+				if cid and cid > 0 and not BANNED_DECK_CARDS[cid] then
 					if not extra_counts[cid] then
 						extra_counts[cid] = 0
 						table.insert(extra_order, cid)

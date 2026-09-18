@@ -697,7 +697,7 @@ local function var_0_9()
 			end
 
 			local var_25_7 = Data.getInfo(var_25_5)
-			local var_25_8 = math.max(1, tonumber(var_25_7 and var_25_7._maxCount) or 1) * arg_25_3
+			local var_25_8 = math.max(0, tonumber(var_25_7 and var_25_7._maxCount) or 0) * arg_25_3
 			local var_25_9 = (var_25_2[var_25_5] or 0) + var_25_6
 
 			if var_25_8 < var_25_9 then
@@ -1478,7 +1478,7 @@ local function var_0_9()
 			end
 
 			local var_57_6 = Data.getInfo(var_57_5)
-			local var_57_7 = math.max(1, tonumber(var_57_6 and var_57_6._maxCount) or 1) * var_57_1
+			local var_57_7 = math.max(0, tonumber(var_57_6 and var_57_6._maxCount) or 0) * var_57_1
 			local var_57_8 = (var_57_0[var_57_5] or 0) + var_57_4
 
 			if var_57_7 < var_57_8 then
@@ -1514,7 +1514,7 @@ local function var_0_9()
 
 		local var_58_7 = Data.getInfo(arg_58_0)
 
-		return var_58_0 <= math.max(1, tonumber(var_58_7 and var_58_7._maxCount) or 1)
+		return var_58_0 <= math.max(0, tonumber(var_58_7 and var_58_7._maxCount) or 0)
 	end
 
 	local function var_8_25(arg_59_0)
@@ -2319,7 +2319,7 @@ local function var_0_9()
 		for iter_87_2 = 1, #var_87_0 do
 			local var_87_9 = var_87_0[iter_87_2]
 			local var_87_10 = Data.getInfo(var_87_9.baseInfoId)
-			local var_87_11 = math.max(1, tonumber(var_87_10 and var_87_10._maxCount) or 1) - (var_87_2[var_87_9.baseInfoId] or 0)
+			local var_87_11 = math.max(0, tonumber(var_87_10 and var_87_10._maxCount) or 0) - (var_87_2[var_87_9.baseInfoId] or 0)
 			local var_87_12 = math.min(var_87_9.count, math.max(0, var_87_11))
 
 			if var_87_12 > 0 then
@@ -3749,14 +3749,16 @@ local function var_0_9()
 
 			if var_124_5 > 0 then
 				local var_124_6 = Data.getInfo(var_124_3)
-				local var_124_7 = math.min(var_124_5, math.max(1, tonumber(var_124_6._maxCount) or 1))
+				local var_124_7 = math.min(var_124_5, math.max(0, tonumber(var_124_6._maxCount) or 0))
 
-				var_124_1[#var_124_1 + 1] = {
-					infoId = var_124_3,
-					num = var_124_7
-				}
-				var_124_0[var_124_4] = var_124_5 - var_124_7
-				var_124_2 = var_124_2 + var_124_7
+				if var_124_7 > 0 then
+					var_124_1[#var_124_1 + 1] = {
+						infoId = var_124_3,
+						num = var_124_7
+					}
+					var_124_0[var_124_4] = var_124_5 - var_124_7
+					var_124_2 = var_124_2 + var_124_7
+				end
 			end
 
 			if var_124_2 == 40 then
@@ -3866,7 +3868,7 @@ local function var_0_9()
 		for iter_127_2, iter_127_3 in pairs(var_127_0) do
 			local var_127_5 = Data.getInfo(iter_127_2)
 
-			if iter_127_3 > math.max(1, tonumber(var_127_5._maxCount) or 1) * arg_127_2 then
+			if iter_127_3 > math.max(0, tonumber(var_127_5._maxCount) or 0) * arg_127_2 then
 				return false
 			end
 		end
@@ -3920,14 +3922,16 @@ local function var_0_9()
 
 					if not var_128_1[var_128_9] then
 						local var_128_10 = Data.getInfo(var_128_9)
-						local var_128_11 = math.min(var_128_5, math.max(1, tonumber(var_128_10._maxCount) or 1))
+						local var_128_11 = math.min(var_128_5, math.max(0, tonumber(var_128_10._maxCount) or 0))
 
-						var_128_3[#var_128_3 + 1] = {
-							infoId = var_128_9,
-							num = var_128_11
-						}
-						var_128_1[var_128_9] = true
-						var_128_5 = var_128_5 - var_128_11
+						if var_128_11 > 0 then
+							var_128_3[#var_128_3 + 1] = {
+								infoId = var_128_9,
+								num = var_128_11
+							}
+							var_128_1[var_128_9] = true
+							var_128_5 = var_128_5 - var_128_11
+						end
 					end
 
 					var_128_7 = var_128_7 + 1

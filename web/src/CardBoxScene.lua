@@ -119,6 +119,14 @@ function var_0_4.createCardList(arg_8_0)
 	lc.addChildToPos(var_8_4, var_8_5, cc.p(20, lc.h(var_8_4) / 2))
 
 	arg_8_0._info = var_8_5
+
+	local btnDecomposeAll = ClientView.createScale9ShaderButton("img_btn_2", function()
+		local CardInfoPanel = require("CardInfoPanel")
+		CardInfoPanel.onDecomposeAll(arg_8_0)
+	end, ClientView.CRECT_BUTTON, 180)
+	btnDecomposeAll:addLabel("Phân Tách Tất Cả")
+	lc.addChildToPos(var_8_4, btnDecomposeAll, cc.p(lc.w(var_8_4) - lc.w(btnDecomposeAll) / 2 - 20, lc.h(var_8_4) / 2))
+	arg_8_0._btnDecomposeAll = btnDecomposeAll
 end
 
 function var_0_4.showTab(arg_10_0, arg_10_1)

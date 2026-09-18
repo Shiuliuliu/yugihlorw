@@ -465,6 +465,8 @@ function var_0_0.updateView(arg_18_0)
 
 	if arg_18_0._mode == var_0_0.OperateMode.recovery then
 		arg_18_0._max = var_18_0 - var_18_1
+	elseif arg_18_0._mode == var_0_0.OperateMode.decompose then
+		arg_18_0._max = math.max(0, var_18_0 - var_18_2)
 	elseif arg_18_0._mode == var_0_0.OperateMode.recall then
 		local var_18_3 = arg_18_0._card._cardsNum - (P._playerMarket._recoveryMap[arg_18_0._card._id] or 0)
 
@@ -1003,8 +1005,8 @@ function var_0_0.onDecompose(arg_44_0)
 		return
 	end
 
-	if P._playerCard:getCardCount(arg_44_0._infoId) - arg_44_0._count <= 3 then
-		return require("Dialog").showDialog(string.format(Str(STR.FEW_AFTER_DECOMPOSE)), function()
+	if P._playerCard:getCardCount(arg_44_0._infoId) - arg_44_0._count < 3 then
+		return require("Dialog").showDialog("Sau khi phân tách, số lượng lá bài này sẽ ít hơn 3 bản sao. Bạn có chắc chắn muốn phân tách không?", function()
 			arg_44_0:doDecompose()
 		end)
 	end

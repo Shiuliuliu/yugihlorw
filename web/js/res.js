@@ -414,11 +414,13 @@
 
 	R.loadTexture = function (path) {
 		/* a loose image: res/jpg/foo.jpg, res/particle/bar.png, ... */
-		var tex = cc.textureCache.getTextureForKey(path);
+		var cleanPath = (typeof path === 'string') ? path.split('?')[0] : path;
+		var tex = cc.textureCache.getTextureForKey(cleanPath) || cc.textureCache.getTextureForKey(path);
 		if (tex) return Promise.resolve(tex);
 		return new Promise(function (resolve) {
-			cc.textureCache.addImage(R.base + path.replace(/^res\//, ''),
+			var t = cc.textureCache.addImage(R.base + cleanPath.replace(/^res\//, ''),
 						 function (t) { resolve(t); });
+			if (!t) resolve(null);
 		});
 	};
 
@@ -501,14 +503,15 @@
 				}
 				if (/\.(jpg|png)$/.test(name)) {
 					return new Promise(function (resolve) {
-						cc.textureCache.addImage(dir + name, function (tex) {
+						var t = cc.textureCache.addImage(dir + name, function (tex) {
 							/* the game addresses a container's images by
 							 * entry name, not by URL */
-							if (tex) cacheUnder(name, tex);
+							if (tex && !(tex instanceof Error)) cacheUnder(name, tex);
 							R.resolvePending(name);
 							R.announce(name);
 							resolve();
 						});
+						if (!t) resolve();
 					});
 				}
 				return Promise.resolve();   /* .bin and friends: not used here */
@@ -558,6 +561,8 @@
 			.filter(function (f) { return /\.fnt$/i.test(f); })
 			.map(function (f) { return R.base + f.replace(/^res\//, ''); });
 
+		var timeout = new Promise(function (resolve) { setTimeout(resolve, 3000); });
+
 		var loadBMFonts = new Promise(function (resolve) {
 			cc.loader.load(fonts, function () { resolve(fonts.length); });
 		});
@@ -576,7 +581,7 @@
 			})
 			: Promise.resolve();
 
-		return Promise.all([loadBMFonts, loadTTFFonts]);
+		return Promise.all([Promise.race([loadBMFonts, timeout]), Promise.race([loadTTFFonts, timeout])]);
 	};
 
 	/* ------------------------------------------------------------------ *
@@ -590,8 +595,10 @@
 	 * cc.textureCache:addImage synchronous the way the game expects.
 	 * ------------------------------------------------------------------ */
 
-	function inflate(buf) {
-		var stream = new Blob([buf]).stream()
+	/* inflate() via browser DecompressionStream, available in every modern
+	 * browser since Chrome 80 / Safari 16.4 / Firefox 113 */
+	function inflate(raw) {
+		var stream = new Response(raw).body
 			.pipeThrough(new DecompressionStream('deflate'));
 		return new Response(stream).arrayBuffer();
 	}
@@ -645,7 +652,8 @@
 	};
 
 	R.exists = function (path) {
-		if (!R.manifest) return false;
+		if (!R.manifest || !path) return false;
+		if (typeof path === 'string') path = path.split('?')[0];
 		if (R.manifest.files.indexOf(path) >= 0) return true;
 		var jpgPath = path.replace(/\.jpm$/, '.jpg');
 		if (jpgPath !== path && R.manifest.files.indexOf(jpgPath) >= 0) return true;
@@ -658,7 +666,8 @@
 
 	/* [width, height] of a loose image, known before it downloads */
 	R.sizeOf = function (path) {
-		if (!R.manifest || !R.manifest.sizes) return null;
+		if (!R.manifest || !R.manifest.sizes || !path) return null;
+		if (typeof path === 'string') path = path.split('?')[0];
 		var norm = path.replace(/\.jpm$/, '.jpg');
 		return R.manifest.sizes[path] || R.manifest.sizes[norm] ||
 		       R.manifest.sizes[path.replace(/^res\//, '')] ||

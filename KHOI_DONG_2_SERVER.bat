@@ -1,13 +1,16 @@
 @echo off
 chcp 65001 >nul
-title YU-GI-OH ONLINE - CHI CHAY GAME SERVER [Port 8080 va 9192]
+title YU-GI-OH ONLINE - HE THONG 2 SERVER DOC LAP [Game: 8080/9192 - Shop: 8082]
 color 0A
 cls
 
 cd /d "%~dp0"
 
 echo ===================================================================
-echo           YU-GI-OH ONLINE WEB H5 - CHỈ CHẠY GAME SERVER
+echo     YU-GI-OH ONLINE WEB H5 - HỆ THỐNG 2 MÁY CHỦ RIÊNG BIỆT
+echo ===================================================================
+echo   1. Máy Chủ Game & Chiến Đấu (Battle / WebSocket) : Port 8080 ^& 9192
+echo   2. Máy Chủ Cửa Hàng / Mua Gói Bài (Shop / Gacha) : Port 8082
 echo ===================================================================
 echo.
 
@@ -25,13 +28,6 @@ for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8082 "') do (
 echo [2/3] Dang khoi chay Dedicated Shop Server tren Port 8082...
 start "Yu-Gi-Oh Dedicated Shop Server [Port 8082]" cmd /k "title SHOP SERVER [Port 8082] && color 0B && python yugioh_shop_server.py"
 
-echo [3/3] Dang khoi chay Game & Battle Server...
-echo.
-echo ===================================================================
-echo   Game Web Server : http://localhost:8080
-echo   PvP WebSocket   : ws://localhost:9192
-echo   Shop Server     : http://localhost:8082
-echo ===================================================================
-echo.
+echo [3/3] Dang khoi chay Game & Battle Server tren Port 8080/9192...
 python yugioh_web_server.py
 pause

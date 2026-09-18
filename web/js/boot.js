@@ -95,7 +95,7 @@
 		Boot.total = 9 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260919v5';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260919v12';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
 			done(fetchJson('lua_src.json?v=' + ver)),
@@ -121,13 +121,21 @@
 			 * be handed a complete table before Lua runs. */
 			status('Đang tải tài nguyên hình ảnh...');
 			var preloadList = config.preload || [];
+			function safe(tag, p) {
+				return p.then(function(res) {
+					return res;
+				}).catch(function(err) {
+					console.warn('[boot] ' + tag + ' notice:', err);
+					return null;
+				});
+			}
 			return Promise.all([
-				done(jdzcRes.preloadLanguage()),
-				done(jdzcRes.preloadTexts()),
-				done(jdzcRes.preloadPvr()),
-				done(jdzcRes.preloadFonts()),
-				done(jdzcRes.loadTexture('res/particle/jindutiao.png')),
-				done(global.jdzcPreloadShaders ? global.jdzcPreloadShaders() : Promise.resolve()),
+				done(safe('Language', jdzcRes.preloadLanguage())),
+				done(safe('Texts', jdzcRes.preloadTexts())),
+				done(safe('Pvr', jdzcRes.preloadPvr())),
+				done(safe('Fonts', jdzcRes.preloadFonts())),
+				done(safe('jindutiao', jdzcRes.loadTexture('res/particle/jindutiao.png'))),
+				done(safe('Shaders', global.jdzcPreloadShaders ? global.jdzcPreloadShaders() : Promise.resolve())),
 			]).then(function () {
 				/* Load containers with controlled concurrency (max 2 parallel) to prevent iOS WebKit memory spikes */
 				var index = 0;
@@ -135,7 +143,7 @@
 				function loadNext() {
 					if (index >= preloadList.length) return Promise.resolve();
 					var path = preloadList[index++];
-					return done(jdzcRes.loadContainer(path)).then(loadNext);
+					return done(safe('Container ' + path, jdzcRes.loadContainer(path))).then(loadNext);
 				}
 				var workers = [];
 				for (var w = 0; w < Math.min(concurrency, preloadList.length); w++) {

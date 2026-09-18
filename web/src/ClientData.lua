@@ -5900,6 +5900,12 @@ function var_0_0.sendCardDecompose(arg_330_0, arg_330_1)
 	var_330_1.num = arg_330_1
 
 	var_0_0.sendProtoMsg(var_330_0)
+
+	local accId = (var_0_0._account and var_0_0._account.id) or (P and P._id) or 1
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	if api and api.post then
+		api:post("decompose_card", { account_id = accId, card_id = tonumber(arg_330_0), count = tonumber(arg_330_1) or 1 })
+	end
 end
 
 function var_0_0.sendCardRecovery(arg_331_0, arg_331_1)
@@ -5934,6 +5940,12 @@ function var_0_0.sendCardDecomposeBatch()
 	var_333_0.type = SglMsgType_pb.PB_TYPE_CARD_DECOMPOSE_BATCH
 
 	var_0_0.sendProtoMsg(var_333_0)
+
+	local accId = (var_0_0._account and var_0_0._account.id) or (P and P._id) or 1
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	if api and api.post then
+		api:post("decompose_all", { account_id = accId })
+	end
 end
 
 function var_0_0.sendCardSell(arg_334_0, arg_334_1)

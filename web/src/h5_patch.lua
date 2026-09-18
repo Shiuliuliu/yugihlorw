@@ -344,13 +344,14 @@ local function syncPlayerDecksToWeb()
 		local pTroop = P._playerCard and P._playerCard._troops and P._playerCard._troops[slot]
 		local troop = (cloneTroop and #cloneTroop > 0 and cloneTroop) or pTroop
 		if troop and #troop > 0 then
+			local BANNED_CARD_IDS = { [40657] = true, [40693] = true, [40694] = true }
 			local cards = {}
 			local extra = {}
 			for _, item in ipairs(troop) do
 				local cid = type(item) == "table" and (item._infoId or item.info_id) or item
 				cid = tonumber(cid)
 				local count = type(item) == "table" and (tonumber(item._num) or tonumber(item.num)) or 1
-				if cid and cid > 0 then
+				if cid and cid > 0 and not BANNED_CARD_IDS[cid] then
 					local ctype = Data.getType(cid)
 					for cIdx = 1, count do
 						if ctype == Data.CardType.rare then
@@ -1490,11 +1491,17 @@ function patchClientData()
 					if Data._recruitInfo[pval] then
 						Data._recruitInfo[pval]._rid = cardList
 						Data._recruitInfo[pval]._cards = cardList
+						if not Data._recruitInfo[pval]._param then Data._recruitInfo[pval]._param = {} end
+						Data._recruitInfo[pval]._param[1] = Data.ResType.gold
+						Data._recruitInfo[pval]._param[2] = (suffix == 50 and 22500) or (suffix == 10 and 4500) or 500
 					end
 				end
 				if Data._recruitInfo[cid] then
 					Data._recruitInfo[cid]._rid = cardList
 					Data._recruitInfo[cid]._cards = cardList
+					if not Data._recruitInfo[cid]._param then Data._recruitInfo[cid]._param = {} end
+					Data._recruitInfo[cid]._param[1] = Data.ResType.gold
+					Data._recruitInfo[cid]._param[2] = 500
 				end
 			end
 		end
@@ -1517,11 +1524,17 @@ function patchClientData()
 					if Data._recruitInfo[pval] then
 						Data._recruitInfo[pval]._rid = cardList
 						Data._recruitInfo[pval]._cards = cardList
+						if not Data._recruitInfo[pval]._param then Data._recruitInfo[pval]._param = {} end
+						Data._recruitInfo[pval]._param[1] = Data.ResType.gold
+						Data._recruitInfo[pval]._param[2] = (suffix == 50 and 28500) or (suffix == 10 and 6000) or 600
 					end
 				end
 				if Data._recruitInfo[liyaIdx] then
 					Data._recruitInfo[liyaIdx]._rid = cardList
 					Data._recruitInfo[liyaIdx]._cards = cardList
+					if not Data._recruitInfo[liyaIdx]._param then Data._recruitInfo[liyaIdx]._param = {} end
+					Data._recruitInfo[liyaIdx]._param[1] = Data.ResType.gold
+					Data._recruitInfo[liyaIdx]._param[2] = 600
 				end
 			end
 		end
@@ -5087,18 +5100,19 @@ function M.patchLateClientData()
 				liyaIdx = boxId
 			end
 
+			local costType = (resType == Data.ResType.ingot and "gem") or "gold"
 			local costVal = 0
-			if actualScene and actualScene._curRecruitInfo and actualScene._curRecruitInfo._param and actualScene._curRecruitInfo._param[2] then
-				costVal = tonumber(actualScene._curRecruitInfo._param[2]) or 0
-			end
-			if costVal <= 0 then
+			if costType == "gem" then
+				if actualScene and actualScene._curRecruitInfo and actualScene._curRecruitInfo._param and actualScene._curRecruitInfo._param[2] then
+					costVal = tonumber(actualScene._curRecruitInfo._param[2]) or 0
+				end
+			else
 				if isLiya then
 					costVal = (numPacks >= 50 and 28500) or (numPacks >= 10 and 6000) or (600 * numPacks)
 				else
 					costVal = (numPacks >= 50 and 22500) or (numPacks >= 10 and 4500) or (500 * numPacks)
 				end
 			end
-			local costType = (resType == Data.ResType.ingot and "gem") or "gold"
 
 			local recruit = (Data._recruitInfo and Data._recruitInfo[boxId]) or (Data._dropInfo and Data._dropInfo[boxId])
 			local pool = {}
@@ -5282,6 +5296,24 @@ function M.patchLateClientData()
 					troop = {},
 					pre_rank = 1, best_rank = 1, legend_trophy = 800, pre_legend_rank = 1, best_legend_rank = 1
 				})
+		end
+
+		-- ==========================================================
+		-- CARD DECOMPOSE & BATCH DECOMPOSE (Late hooks)
+		-- ==========================================================
+		ClientData.sendCardDecompose = function(infoId, count)
+			local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+			local api = jsbridge and jsbridge.object("jdzcApi")
+			if api and api.post then
+				api:post("decompose_card", { account_id = accId, card_id = tonumber(infoId), count = tonumber(count) or 1 })
+			end
+		end
+
+		ClientData.sendCardDecomposeBatch = function()
+			local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+			local api = jsbridge and jsbridge.object("jdzcApi")
+			if api and api.post then
+				api:post("decompose_all", { account_id = accId })
 			end
 		end
 	end

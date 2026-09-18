@@ -20539,12 +20539,12 @@
       512
     ],
     "res/jpg/lottery_131001.jpg": [
-      244,
-      529
+      252,
+      512
     ],
     "res/jpg/lottery_131001_mask.png": [
-      244,
-      529
+      252,
+      512
     ],
     "res/jpg/lottery_132001.jpg": [
       252,
@@ -23817,6 +23817,38 @@
     "res/jpg/lottery_bg1_mask.png": [
       1366,
       768
+    ],
+    "res/jpg/lottery_11401.jpg": [
+      252,
+      512
+    ],
+    "res/jpg/lottery_11401_mask.png": [
+      252,
+      512
+    ],
+    "res/jpg/lottery_11701.jpg": [
+      252,
+      512
+    ],
+    "res/jpg/lottery_11701_mask.png": [
+      252,
+      512
+    ],
+    "res/jpg/lottery_11801.jpg": [
+      252,
+      512
+    ],
+    "res/jpg/lottery_11801_mask.png": [
+      252,
+      512
+    ],
+    "res/jpg/lottery_11901.jpg": [
+      252,
+      530
+    ],
+    "res/jpg/lottery_11901_mask.png": [
+      252,
+      530
     ]
   },
   "thumbs": {

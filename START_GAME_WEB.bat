@@ -15,11 +15,14 @@ if %errorlevel% neq 0 (
     echo.
 )
 
-echo [2/3] Dang khoi dong Web Server (Port 8080)...
+echo [2/4] Dang khoi dong Dedicated Shop Server (Port 8082)...
 cd /d "D:\yugitauapk"
-start "Yu-Gi-Oh Web Server" cmd /k "python yugioh_web_server.py"
+start "Yu-Gi-Oh Dedicated Shop Server [Port 8082]" cmd /k "title SHOP SERVER [Port 8082] && color 0B && python yugioh_shop_server.py"
 
-echo [3/3] Dang mo game tren trinh duyet...
+echo [3/4] Dang khoi dong Game Web & Battle Server (Port 8080/9192)...
+start "Yu-Gi-Oh Web Server" cmd /k "title GAME SERVER [Port 8080/9192] && color 0A && python yugioh_web_server.py"
+
+echo [4/4] Dang mo game tren trinh duyet...
 timeout /t 2 /nobreak >nul
 start http://localhost:8080
 

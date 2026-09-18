@@ -254,7 +254,9 @@ cc.EditBox = cc.ControlButton.extend({
         var tmpEdTxt = this._edTxt = document.createElement("input");
         tmpEdTxt.type = "text";
         tmpEdTxt.style.fontSize = this._edFontSize + "px";
-        tmpEdTxt.style.color = "#000000";
+        tmpEdTxt.style.color = "#ffffff";
+        tmpEdTxt.style.webkitTextFillColor = "#ffffff";
+        tmpEdTxt.style.caretColor = "#ffffff";
         tmpEdTxt.style.border = "0";
         tmpEdTxt.style.background = "transparent";
         tmpEdTxt.style.width = "100%";

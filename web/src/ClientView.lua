@@ -2180,7 +2180,7 @@ function var_0_0.createEditBox(arg_86_0, arg_86_1, arg_86_2, arg_86_3, arg_86_4,
 
 	var_86_0:setInputFlag(cc.EDITBOX_INPUT_FLAG_INITIAL_CAPS_SENTENCE)
 	var_86_0:setFont(var_0_0.TTF_FONT, var_0_0.FontSize.S1)
-	var_86_0:setFontColor(lc.Color4B.black)
+	var_86_0:setFontColor(lc.Color4B.white)
 
 	if arg_86_5 then
 		var_86_0:setMaxLength(arg_86_5)

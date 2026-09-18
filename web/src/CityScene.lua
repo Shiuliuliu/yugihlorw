@@ -213,28 +213,8 @@ function var_0_0.onEnter(arg_12_0)
 					var_15_0 = require("CheckinForm").create()
 				end
 
-				local var_15_1 = P._playerActivity:getActivitiesToShow()
-
-				local function var_15_2()
-					require("FundTasksPanel").create(P._playerBonus._changedFundTasks, Str(STR.FUND_TASKS)):show()
-
-					P._playerBonus._changedFundTasks = {}
-				end
-
 				if var_15_0 then
 					var_15_0:show()
-
-					if #var_15_1 > 0 then
-						function var_15_0.onHideActionFinished()
-							require("ActivityForm").create(var_15_1):show()
-						end
-					elseif table.maxn(P._playerBonus._changedFundTasks) > 0 then
-						var_15_0.onHideActionFinished = var_15_2
-					end
-				elseif #var_15_1 > 0 then
-					require("ActivityForm").create(var_15_1):show()
-				elseif table.maxn(P._playerBonus._changedFundTasks) > 0 then
-					var_15_2()
 				end
 
 				arg_12_0._bg._touchEnabled = true

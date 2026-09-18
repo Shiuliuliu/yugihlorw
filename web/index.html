@@ -4,57 +4,57 @@
 	<meta charset="utf-8">
 	<title>Yugihlor - trading "Nạp" game</title>
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20260918v15">
-	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260918v15">
-	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260918v15">
-	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20260918v15">
-	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20260918v15">
+	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20260919v12">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260919v12">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260919v12">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20260919v12">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20260919v12">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-	<link rel="preload" href="res/updater/HYB2GJM.TTF?v=20260919v5" as="font" type="font/ttf" crossorigin>
+	<link rel="preload" href="res/updater/HYB2GJM.TTF?v=20260919v12" as="font" type="font/ttf" crossorigin>
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
 	<style>
 		@font-face {
 			font-family: 'YuGiOhFont';
-			src: url('res/fonts/cafeta.woff?v=20260919v5') format('woff'),
-			     url('res/fonts/cafeta.ttf?v=20260919v5') format('truetype'),
-			     url('res/updater/HYB2GJM.TTF?v=20260919v5') format('truetype');
+			src: url('res/fonts/cafeta.woff?v=20260919v6') format('woff'),
+			     url('res/fonts/cafeta.ttf?v=20260919v6') format('truetype'),
+			     url('res/updater/HYB2GJM.TTF?v=20260919v6') format('truetype');
 			font-weight: normal;
 			font-style: normal;
 			font-display: swap;
 		}
 		@font-face {
 			font-family: 'YuGiOhFont';
-			src: url('res/fonts/cafeta.woff?v=20260919v5') format('woff'),
-			     url('res/fonts/cafeta.ttf?v=20260919v5') format('truetype'),
-			     url('res/updater/HYB2GJM.TTF?v=20260919v5') format('truetype');
+			src: url('res/fonts/cafeta.woff?v=20260919v6') format('woff'),
+			     url('res/fonts/cafeta.ttf?v=20260919v6') format('truetype'),
+			     url('res/updater/HYB2GJM.TTF?v=20260919v6') format('truetype');
 			font-weight: bold;
 			font-style: normal;
 			font-display: swap;
 		}
 		@font-face {
 			font-family: 'UTM Cafeta';
-			src: url('res/fonts/cafeta.woff?v=20260919v5') format('woff'),
-			     url('res/fonts/cafeta.ttf?v=20260919v5') format('truetype'),
-			     url('res/updater/HYB2GJM.TTF?v=20260919v5') format('truetype');
+			src: url('res/fonts/cafeta.woff?v=20260919v6') format('woff'),
+			     url('res/fonts/cafeta.ttf?v=20260919v6') format('truetype'),
+			     url('res/updater/HYB2GJM.TTF?v=20260919v6') format('truetype');
 			font-weight: normal;
 			font-style: normal;
 			font-display: swap;
 		}
 		@font-face {
 			font-family: 'UTM Cafeta';
-			src: url('res/fonts/cafeta.woff?v=20260919v5') format('woff'),
-			     url('res/fonts/cafeta.ttf?v=20260919v5') format('truetype'),
-			     url('res/updater/HYB2GJM.TTF?v=20260919v5') format('truetype');
+			src: url('res/fonts/cafeta.woff?v=20260919v6') format('woff'),
+			     url('res/fonts/cafeta.ttf?v=20260919v6') format('truetype'),
+			     url('res/updater/HYB2GJM.TTF?v=20260919v6') format('truetype');
 			font-weight: bold;
 			font-style: normal;
 			font-display: swap;
 		}
 		@font-face {
 			font-family: 'res/updater/HYB2GJM.TTF';
-			src: url('res/updater/HYB2GJM.TTF?v=20260919v5') format('truetype');
+			src: url('res/updater/HYB2GJM.TTF?v=20260919v6') format('truetype');
 			font-weight: normal;
 			font-style: normal;
 			font-display: swap;
@@ -210,9 +210,9 @@
 		input, textarea {
 			background: transparent !important;
 			background-color: transparent !important;
-			color: #000000 !important;
-			-webkit-text-fill-color: #000000 !important;
-			caret-color: #000000 !important;
+			color: #ffffff !important;
+			-webkit-text-fill-color: #ffffff !important;
+			caret-color: #ffffff !important;
 			font-weight: bold !important;
 			border: none !important;
 			outline: none !important;
@@ -221,14 +221,19 @@
 			padding: 0 10px !important;
 		}
 
+		input::placeholder, textarea::placeholder {
+			color: rgba(255, 255, 255, 0.6) !important;
+			-webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
+		}
+
 		input:-webkit-autofill,
 		input:-webkit-autofill:hover,
 		input:-webkit-autofill:focus,
 		input:-webkit-autofill:active {
-			-webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-			-webkit-text-fill-color: #000000 !important;
-			box-shadow: 0 0 0 1000px #ffffff inset !important;
-			color: #000000 !important;
+			-webkit-box-shadow: 0 0 0 1000px #1a1a2e inset !important;
+			-webkit-text-fill-color: #ffffff !important;
+			box-shadow: 0 0 0 1000px #1a1a2e inset !important;
+			color: #ffffff !important;
 			transition: background-color 5000s ease-in-out 0s !important;
 		}
 		
@@ -309,9 +314,9 @@
 			    "shape-nodes", "text-input", "actions", "labels",
 			    "transitions", "motion-streak", "editbox"],
 		"jsList": [
-			"js/res.js?v=20260918v15",
-			"js/engine.js?v=20260918v15",
-			"js/net.js?v=20260918v15"
+			"js/res.js?v=20260919v12",
+			"js/engine.js?v=20260919v12",
+			"js/net.js?v=20260919v12"
 		]
 	};
 
@@ -327,7 +332,7 @@
 		options: {
 			sdk: "offline"
 		},
-		version: '20260918v15',
+		version: '20260919v12',
 		wsHost: window.location.hostname || '127.0.0.1',
 		trace: false,
 		preload: [
@@ -353,7 +358,7 @@
 			'res/cards_img_10.lcres'
 		],
 		region: { id: 1, ip: window.location.hostname || '127.0.0.1', port: 9191, name: 'S1 - Yugihlor - trading "Nạp" game' },
-		version: '20260918v15',
+		version: '20260919v12',
 	}, window.JDZC_CONFIG || {});
 
 	if (!window.JDZC_CONFIG.wsUrl) {
@@ -486,7 +491,16 @@
 				if (earr.length > 0) payload.extra_cards = earr;
 			}
 			console.log('[jdzcApi] post:', endpoint, payload);
-			fetch('/api/' + endpoint, {
+
+			// Tách server xử lý Shop / Mua gói bài / Giftcode / Phân tách bài sang Server 2 chuyên trách (cổng 8082)
+			var shopApis = ['buy_package', 'buy_gold', 'buy_depot', 'redeem_gift_code', 'gift_code', 'claim_gift', 'checkin', 'sync_currency', 'decompose_card', 'decompose_all'];
+			var targetUrl = '/api/' + endpoint;
+			if (shopApis.indexOf(endpoint) !== -1) {
+				var shopHost = window.SHOP_SERVER_URL || (window.location.protocol + '//' + (window.location.hostname || '127.0.0.1') + ':8082');
+				targetUrl = shopHost + '/api/' + endpoint;
+			}
+
+			fetch(targetUrl, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload || {})
@@ -853,9 +867,9 @@
 	window.jdzcApi.pvpSendEnd = function () { return window.jdzcPvp.sendEnd.apply(window.jdzcPvp, arguments); };
 	window.jdzcApi.pvpLeave = function () { return window.jdzcPvp.leave.apply(window.jdzcPvp, arguments); };
 	</script>
-	<script src="dist/lua51.js?v=20260919v5"></script>
-	<script src="js/lua.js?v=20260919v5"></script>
-	<script src="vendor/CCBoot.js?v=20260919v5"></script>
-	<script src="js/boot.js?v=20260919v5"></script>
+	<script src="dist/lua51.js?v=20260919v12"></script>
+	<script src="js/lua.js?v=20260919v12"></script>
+	<script src="vendor/CCBoot.js?v=20260919v12"></script>
+	<script src="js/boot.js?v=20260919v12"></script>
 </body>
 </html>

@@ -16,6 +16,7 @@ import websockets
 import random
 import struct
 import gzip
+import urllib.request
 
 try:
     sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
@@ -29,6 +30,8 @@ mimetypes.add_type('font/woff2', '.woff2')
 
 HTTP_PORT = 8080
 WS_PORT = 9192
+SHOP_PORT = int(os.environ.get("SHOP_PORT", 8082))
+SHOP_SERVER_URL = os.environ.get("SHOP_SERVER_URL", f"http://127.0.0.1:{SHOP_PORT}")
 WEB_DIR = r"D:\yugitauapk\web"
 
 DB_CONFIG = {
@@ -42,6 +45,25 @@ DB_CONFIG = {
 
 def get_db():
     return pymysql.connect(**DB_CONFIG, cursorclass=pymysql.cursors.DictCursor)
+
+def forward_to_shop_server(path, body_bytes):
+    """Chuyển tiếp request liên quan đến Shop/Mua Gói/Giftcode sang Server 2 chuyên trách (cổng 8082)."""
+    try:
+        url = f"{SHOP_SERVER_URL}{path}"
+        req = urllib.request.Request(url, data=body_bytes, headers={'Content-Type': 'application/json'})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            resp_bytes = response.read()
+            return json.loads(resp_bytes.decode('utf-8'))
+    except urllib.error.HTTPError as e:
+        try:
+            resp_bytes = e.read()
+            return json.loads(resp_bytes.decode('utf-8'))
+        except Exception:
+            return {"code": e.code, "msg": str(e)}
+    except Exception as e:
+        # Nếu Shop server chưa bật hoặc lỗi kết nối, log cảnh báo để rơi vào fallback
+        print(f"[SHOP PROXY ERR] {path}: {e}")
+        return None
 
 WS_CONNECTED_CLIENTS = set()
 
@@ -103,6 +125,8 @@ def get_next_level(level_id):
             return CANONICAL_LEVELS[idx + 1]
     return level_id + 1
 
+
+BANNED_DECK_CARDS = {40657, 40693, 40694}  # ES-Ca Tụng, TrickStar-Delfiendium, TrickStar-Bella Madonna
 
 def sanitize_replay_data(raw_data):
     if not isinstance(raw_data, dict):
@@ -505,8 +529,8 @@ def get_player_full_data(account_id):
                 decks.append({
                     "deck_slot": d['deck_slot'],
                     "deck_name": d['deck_name'],
-                    "cards": c_list,
-                    "extra_cards": extra_c,
+                    "cards": [int(c) for c in c_list if int(c) not in BANNED_DECK_CARDS],
+                    "extra_cards": [int(c) for c in extra_c if int(c) not in BANNED_DECK_CARDS],
                     "is_active": d['is_active']
                 })
             
@@ -591,6 +615,9 @@ def ensure_deck_cards(acc_id, raw_cards=None, raw_extra=None):
                             extra = [int(c) for c in json.loads(drow['extra_cards'])]
         except Exception as e:
             print(f"[ENSURE DECK DB ERR] {e}")
+
+    cards = [cid for cid in cards if cid not in BANNED_DECK_CARDS]
+    extra = [cid for cid in extra if cid not in BANNED_DECK_CARDS]
 
     starter_pool = [
         10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010,
@@ -987,10 +1014,10 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 ext_lower = ext.lower()
 
                 # Determine caching policy
-                is_immutable = ext_lower in IMMUTABLE_STATIC_EXTS
+                is_versioned = ('?v=' in self.path or '&v=' in self.path)
+                is_immutable = is_versioned and (ext_lower in IMMUTABLE_STATIC_EXTS)
                 is_dynamic_code = ext_lower in ('.js', '.json', '.html', '.css')
-                is_versioned = ('?v=' in self.path or '&v=' in self.path) and not is_dynamic_code
-                is_nocache = is_dynamic_code or (clean_path == '/index.html' or clean_path.endswith('.html'))
+                is_nocache = (not is_versioned) or is_dynamic_code or (clean_path == '/index.html' or clean_path.endswith('.html'))
 
                 # ETag / 304 conditional request check
                 if_none_match = self.headers.get('If-None-Match')
@@ -1000,8 +1027,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
                     elif is_versioned:
                         self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
-                    elif is_nocache:
-                        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                    else:
+                        self.send_header('Cache-Control', 'no-cache, must-revalidate')
                     self.send_header('ETag', etag)
                     self.end_headers()
                     return
@@ -1025,10 +1052,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
                         elif is_versioned:
                             self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
-                        elif is_nocache:
-                            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                        else:
+                            self.send_header('Cache-Control', 'no-cache, must-revalidate')
                             self.send_header('Pragma', 'no-cache')
-                            self.send_header('Expires', '0')
                         self.end_headers()
                         self.wfile.write(gz_data)
                         return
@@ -1042,10 +1068,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
                 elif is_versioned:
                     self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
-                elif is_nocache:
-                    self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                else:
+                    self.send_header('Cache-Control', 'no-cache, must-revalidate')
                     self.send_header('Pragma', 'no-cache')
-                    self.send_header('Expires', '0')
                 self.end_headers()
 
                 with open(full_path, 'rb') as f:
@@ -1079,8 +1104,42 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             except:
                 req = {}
             
+            # -------------------------------------------------------------
+            # DEDICATED SHOP PROXY: Chuyển tiếp các request Shop sang Server 2 (cổng 8082)
+            # -------------------------------------------------------------
+            if self.path in ('/api/buy_package', '/api/buy_gold', '/api/buy_depot',
+                             '/api/redeem_gift_code', '/api/gift_code', '/api/claim_gift',
+                             '/api/checkin', '/api/sync_currency',
+                             '/api/decompose_card', '/api/decompose_all'):
+                proxied = forward_to_shop_server(self.path, body.encode('utf-8'))
+                if proxied is not None:
+                    out = json.dumps(proxied, ensure_ascii=False).encode('utf-8')
+                    status_code = proxied.get('code', 200)
+                    if not (100 <= status_code <= 599):
+                        status_code = 200
+                    self.send_response(status_code)
+                    self.send_header('Content-Type', 'application/json; charset=utf-8')
+                    self.send_header('Content-Length', str(len(out)))
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(out)
+                    return
+
             resp = {}
-            if self.path == '/api/auth/login':
+            if self.path == '/api/internal_broadcast':
+                msg_payload = req.get('msg')
+                if msg_payload:
+                    CHAT_MESSAGES.append(msg_payload)
+                    if len(CHAT_MESSAGES) > 100:
+                        CHAT_MESSAGES.pop(0)
+                    save_chat_history()
+                    broadcast_ws_sync({"t": "chat_broadcast", "msg": msg_payload})
+                    print(f"[INTERNAL BROADCAST] Relayed: {msg_payload.get('content', '')}")
+                    resp = {"code": 200, "msg": "Broadcasted"}
+                else:
+                    resp = {"code": 400, "msg": "Missing msg payload"}
+
+            elif self.path == '/api/auth/login':
                 u = req.get('username', '')
                 p = req.get('password', '')
                 acc, msg = authenticate_account(u, p)
@@ -1170,6 +1229,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         for c in (raw_cards or []):
                             try: cid = int(c)
                             except: continue
+                            if cid in BANNED_DECK_CARDS:
+                                continue
                             if cid in remaining_counts and remaining_counts[cid] > 0:
                                 clean_cards.append(cid)
                                 remaining_counts[cid] -= 1
@@ -1177,6 +1238,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         for c in (raw_extra or []):
                             try: cid = int(c)
                             except: continue
+                            if cid in BANNED_DECK_CARDS:
+                                continue
                             if cid in remaining_counts and remaining_counts[cid] > 0:
                                 clean_extra.append(cid)
                                 remaining_counts[cid] -= 1
@@ -2046,6 +2109,92 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             my_sc = int(t_row.get('silver_cup', 0) or 0)
                             my_bc = int(t_row.get('bronze_cup', 0) or 0)
 
+                # =================================================================
+                # RULE 1: Rank < 600 -> ONLY match against BOT immediately!
+                # =================================================================
+                if my_trophy < 600:
+                    with get_db() as conn:
+                        with conn.cursor() as cur:
+                            cur.execute("""
+                                SELECT a.id, a.character_name, a.level, a.trophy, a.gold_cup, a.silver_cup, a.bronze_cup, ud.cards, ud.extra_cards
+                                FROM accounts a
+                                JOIN user_decks ud ON a.id = ud.account_id
+                                WHERE a.id != %s AND ud.is_active = 1 AND a.trophy < 650
+                                ORDER BY RAND() LIMIT 1
+                            """, (acc_id,))
+                            bot_row = cur.fetchone()
+                            if not bot_row:
+                                cur.execute("""
+                                    SELECT a.id, a.character_name, a.level, a.trophy, a.gold_cup, a.silver_cup, a.bronze_cup, ud.cards, ud.extra_cards
+                                    FROM accounts a
+                                    JOIN user_decks ud ON a.id = ud.account_id
+                                    WHERE a.id != %s AND ud.is_active = 1
+                                    ORDER BY ABS(a.trophy - %s) ASC, RAND() LIMIT 1
+                                """, (acc_id, my_trophy))
+                                bot_row = cur.fetchone()
+
+                    if bot_row:
+                        c_list = bot_row['cards']
+                        if isinstance(c_list, str):
+                            try: c_list = json.loads(c_list)
+                            except: c_list = []
+                        ec_list = bot_row['extra_cards']
+                        if isinstance(ec_list, str):
+                            try: ec_list = json.loads(ec_list)
+                            except: ec_list = []
+                        bot_oppo = {
+                            "name": bot_row['character_name'],
+                            "level": bot_row['level'],
+                            "cards": c_list,
+                            "extra_cards": ec_list,
+                            "avatar": random.choice([101, 102, 103, 104, 105, 201, 202, 301, 302]),
+                            "gold_cup": int(bot_row.get('gold_cup', 0) or 0),
+                            "silver_cup": int(bot_row.get('silver_cup', 0) or 0),
+                            "bronze_cup": int(bot_row.get('bronze_cup', 0) or 0),
+                            "is_real_player": False
+                        }
+                    else:
+                        bot_oppo = {
+                            "name": "Duelist_Kaiba",
+                            "level": 30,
+                            "cards": [10001]*3 + [10002]*3,
+                            "extra_cards": [40001],
+                            "avatar": 102,
+                            "gold_cup": 0,
+                            "silver_cup": 0,
+                            "bronze_cup": 0,
+                            "is_real_player": False
+                        }
+
+                    resp = {
+                        "code": 200,
+                        "status": "matched",
+                        "match_id": f"bot_{int(time.time()*1000)}",
+                        "seed": random.randint(1, 65535),
+                        "is_attacker": True,
+                        "first": True,
+                        "is_real_player": False,
+                        "oppo_online": False,
+                        "oppo": bot_oppo
+                    }
+                    print(f"[PVP MATCH] Player {my_name} (Rank {my_trophy} < 600): Matched directly with BOT {bot_oppo['name']} (Lv.{bot_oppo['level']})")
+                    self._send_json(resp)
+                    return
+
+                # =================================================================
+                # Fetch Current Top 10 Accounts from DB
+                # =================================================================
+                top10_ids = set()
+                try:
+                    with get_db() as conn:
+                        with conn.cursor() as cur:
+                            cur.execute("SELECT id FROM accounts ORDER BY trophy DESC, level DESC, id ASC LIMIT 10")
+                            top10_ids = {int(r['id']) for r in cur.fetchall()}
+                except Exception as ex:
+                    print(f"[PVP MATCH ERR] Query top 10 failed: {ex}")
+
+                is_in_top10 = (acc_id in top10_ids)
+
                 now = time.time()
                 # Clean expired (> 45s)
                 for k, v in list(PVP_HTTP_WAITING.items()):
@@ -2056,15 +2205,37 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     resp = PVP_HTTP_MATCHED.pop(acc_id)
                 else:
                     matched_oppo = None
-                    candidates = []
+                    top10_candidates = []
+                    normal_candidates = []
+
                     for other_id, other_data in list(PVP_HTTP_WAITING.items()):
                         if other_id != acc_id and (now - other_data['time'] < 30):
-                            diff = abs(my_trophy - other_data.get('trophy', 800))
-                            candidates.append((diff, other_id, other_data))
+                            other_trophy = int(other_data.get('trophy', 800) or 800)
+                            if other_trophy < 600:
+                                continue  # Ignore any invalid queue entry < 600
 
-                    if candidates:
-                        candidates.sort(key=lambda x: x[0])
-                        best_diff, other_id, other_data = candidates[0]
+                            diff = abs(my_trophy - other_trophy)
+                            other_is_top10 = (other_id in top10_ids)
+
+                            # RULE 3: Both players in Top 10 -> Prioritize and BYPASS the 400 point limit!
+                            if is_in_top10 and other_is_top10:
+                                top10_candidates.append((diff, other_id, other_data))
+                            # RULE 2: Max allowed disparity is 400 points
+                            elif diff <= 400:
+                                normal_candidates.append((diff, other_id, other_data))
+
+                    selected_candidate = None
+                    is_top10_match = False
+                    if top10_candidates:
+                        top10_candidates.sort(key=lambda x: x[0])
+                        selected_candidate = top10_candidates[0]
+                        is_top10_match = True
+                    elif normal_candidates:
+                        normal_candidates.sort(key=lambda x: x[0])
+                        selected_candidate = normal_candidates[0]
+
+                    if selected_candidate:
+                        best_diff, other_id, other_data = selected_candidate
                         PVP_HTTP_WAITING.pop(other_id, None)
                         seed = random.randint(1, 65535)
                         match_id = f"m_{int(time.time()*1000)}_{random.randint(100, 999)}"
@@ -2111,7 +2282,10 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             "oppo_online": True,
                             "oppo": matched_oppo
                         }
-                        print(f"[PVP MATCH] Paired {my_name} ({my_trophy} pts) with {matched_oppo['name']} ({other_data.get('trophy', 800)} pts, rank diff: {best_diff})!")
+                        if is_top10_match:
+                            print(f"[PVP MATCH] Paired TOP 10 {my_name} ({my_trophy} pts) with TOP 10 {matched_oppo['name']} ({other_data.get('trophy', 800)} pts, diff: {best_diff}) [BYPASS 400]!")
+                        else:
+                            print(f"[PVP MATCH] Paired {my_name} ({my_trophy} pts) with {matched_oppo['name']} ({other_data.get('trophy', 800)} pts, rank diff: {best_diff} <= 400)!")
 
                     if not matched_oppo:
                         # Add self to queue with trophy and cups
@@ -2127,9 +2301,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             "silver_cup": my_sc,
                             "bronze_cup": my_bc
                         }
-                        # Wait up to 45s for human
+                        # Wait up to 30s for matching human
                         matched_during_wait = False
-                        for _ in range(90):
+                        for _ in range(60):
                             time.sleep(0.5)
                             if acc_id in PVP_HTTP_CANCELLED:
                                 PVP_HTTP_CANCELLED.discard(acc_id)
@@ -2147,14 +2321,26 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             PVP_HTTP_WAITING.pop(acc_id, None)
                             with get_db() as conn:
                                 with conn.cursor() as cur:
+                                    # Balance fallback: Try finding an active deck within 400 trophy
                                     cur.execute("""
                                         SELECT a.id, a.character_name, a.level, a.trophy, a.gold_cup, a.silver_cup, a.bronze_cup, ud.cards, ud.extra_cards
                                         FROM accounts a
                                         JOIN user_decks ud ON a.id = ud.account_id
                                         WHERE a.id != %s AND ud.is_active = 1
+                                          AND ABS(a.trophy - %s) <= 400
                                         ORDER BY ABS(a.trophy - %s) ASC, RAND() LIMIT 1
-                                    """, (acc_id, my_trophy))
+                                    """, (acc_id, my_trophy, my_trophy))
                                     real_row = cur.fetchone()
+                                    if not real_row:
+                                        cur.execute("""
+                                            SELECT a.id, a.character_name, a.level, a.trophy, a.gold_cup, a.silver_cup, a.bronze_cup, ud.cards, ud.extra_cards
+                                            FROM accounts a
+                                            JOIN user_decks ud ON a.id = ud.account_id
+                                            WHERE a.id != %s AND ud.is_active = 1
+                                            ORDER BY ABS(a.trophy - %s) ASC, RAND() LIMIT 1
+                                        """, (acc_id, my_trophy))
+                                        real_row = cur.fetchone()
+
                             if real_row:
                                 c_list = real_row['cards']
                                 if isinstance(c_list, str):
@@ -2173,7 +2359,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     "gold_cup": int(real_row.get('gold_cup', 0) or 0),
                                     "silver_cup": int(real_row.get('silver_cup', 0) or 0),
                                     "bronze_cup": int(real_row.get('bronze_cup', 0) or 0),
-                                    "is_real_player": True
+                                    "is_real_player": False
                                 }
                             else:
                                 oppo_data = {
@@ -2182,6 +2368,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     "cards": [10001]*3 + [10002]*3,
                                     "extra_cards": [40001],
                                     "avatar": 102,
+                                    "gold_cup": 0,
+                                    "silver_cup": 0,
+                                    "bronze_cup": 0,
                                     "is_real_player": False
                                 }
                             resp = {
@@ -2195,7 +2384,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 "oppo_online": False,
                                 "oppo": oppo_data
                             }
-                            print(f"[PVP MATCH] Matched {my_name} ({my_trophy} pts) with closest deck from DB: {oppo_data['name']} (Lv.{oppo_data['level']})")
+                            print(f"[PVP MATCH] Timeout for {my_name} ({my_trophy} pts): Matched with DB deck {oppo_data['name']} (Lv.{oppo_data['level']})")
 
 
 

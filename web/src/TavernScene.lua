@@ -767,7 +767,20 @@ function var_0_1.createCostArea(arg_32_0, arg_32_1, arg_32_2, arg_32_3, arg_32_4
 	local var_32_2 = arg_32_1._param[2]
 	local var_32_3 = arg_32_1._param[6]
 	local var_32_4 = arg_32_1._param[7]
-	local var_32_5 = arg_32_3._param[2] * (arg_32_3._param[1] == 3 and 10 or 1) / (arg_32_3._value % 100)
+
+	local isLiyaPkg = Data.getIsRareRecruite(arg_32_1) or (arg_32_1._value and arg_32_1._value >= 101001 and arg_32_1._value <= 136050)
+	local isCharPkg = Data.getIsCharacterRecruite(arg_32_1) or (arg_32_1._value and arg_32_1._value >= 10001 and arg_32_1._value < 100000)
+
+	local baseUnitPrice = 500
+	if isLiyaPkg then
+		baseUnitPrice = 600
+	elseif isCharPkg then
+		baseUnitPrice = 500
+	elseif arg_32_3 and arg_32_3._param and arg_32_3._param[2] then
+		baseUnitPrice = arg_32_3._param[2] * (arg_32_3._param[1] == 3 and 10 or 1) / math.max(1, arg_32_3._value % 100)
+	end
+	local var_32_5 = baseUnitPrice
+
 	local var_32_6 = arg_32_2 == 1 and "img_btn_2" or arg_32_2 == 10 and "img_btn_1" or "img_btn_3"
 
 	var_32_6 = arg_32_4 and var_32_6 .. "_s" or var_32_6
@@ -792,32 +805,35 @@ function var_0_1.createCostArea(arg_32_0, arg_32_1, arg_32_2, arg_32_3, arg_32_4
 	end
 
 	function var_32_7.update(arg_33_0)
-		local var_33_0
-		local var_33_1 = arg_32_1._param[2]
-		local var_33_2 = arg_32_1._param[6]
-		local var_33_3 = arg_32_1._param[7]
-		local var_33_4 = arg_32_1._param[1]
-		local var_33_5 = P:getItemCount(var_33_4)
+		local var_33_4 = arg_32_1._param[1] or Data.ResType.gold
+		local var_33_1 = 500
 
-		if var_33_2 and var_33_2 ~= 0 and var_33_3 and var_33_3 ~= 0 and P._propBag:hasProps(var_33_2, var_33_3) then
-			var_33_4 = var_33_2
-			var_33_1 = var_33_3
-		elseif Data.getIsRareRecruite(arg_32_1) and arg_32_1._param[1] == Data.ResType.gold and P._propBag:hasProps(Data.PropsId.rare_package_ticket, arg_32_2) then
-			var_33_4 = Data.PropsId.rare_package_ticket
-			var_33_1 = arg_32_2
-		elseif Data.getIsCharacterRecruite(arg_32_1) and P._propBag:hasProps(Data.PropsId.character_package_ticket, arg_32_2) then
-			var_33_4 = Data.PropsId.character_package_ticket
-			var_33_1 = arg_32_2
-		elseif Data.getIsTimeLimitCriticalRecruite(arg_32_1) and arg_32_1._param[1] == Data.ResType.ingot and P._propBag:hasProps(Data.PropsId.critical_package_ticket, arg_32_2) then
-			var_33_4 = Data.PropsId.critical_package_ticket
-			var_33_1 = arg_32_2
-		elseif Data.getIsTimeLimitFestivalRecruite(arg_32_1) and arg_32_1._param[1] == Data.ResType.gold and P._propBag:hasProps(Data.PropsId.festival_package_ticket, arg_32_2) then
-			var_33_4 = Data.PropsId.festival_package_ticket
-			var_33_1 = arg_32_2
-		elseif arg_32_1._param[1] == Data.ResType.ingot and arg_32_1._param[2] == 1800 and P._propBag:hasProps(Data.PropsId.time_role_package_ticket, 1) then
-			var_33_4 = Data.PropsId.time_role_package_ticket
-			var_33_1 = 1
+		if var_33_4 == Data.ResType.ingot then
+			var_33_1 = arg_32_1._param[2] or 500
+		elseif isLiyaPkg then
+			var_33_4 = Data.ResType.gold
+			if arg_32_2 == 50 or (arg_32_1._value and arg_32_1._value % 100 == 50) then
+				var_33_1 = 28500
+			elseif arg_32_2 == 10 or (arg_32_1._value and arg_32_1._value % 100 == 10) then
+				var_33_1 = 6000
+			else
+				var_33_1 = 600
+			end
+		elseif isCharPkg then
+			var_33_4 = Data.ResType.gold
+			if arg_32_2 == 50 or (arg_32_1._value and arg_32_1._value % 100 == 50) then
+				var_33_1 = 22500
+			elseif arg_32_2 == 10 or (arg_32_1._value and arg_32_1._value % 100 == 10) then
+				var_33_1 = 4500
+			else
+				var_33_1 = 500
+			end
+		else
+			var_33_1 = arg_32_1._param[2] or (arg_32_2 * 500)
 		end
+
+		arg_32_1._param[1] = var_33_4
+		arg_32_1._param[2] = var_33_1
 
 		local var_33_6 = ClientData.getIconName(var_33_4, false)
 
@@ -854,8 +870,8 @@ function var_0_1.createCostArea(arg_32_0, arg_32_1, arg_32_2, arg_32_3, arg_32_4
 			arg_33_0._discount = nil
 		end
 
-		if arg_33_0._resType == arg_32_1._param[1] and arg_32_1._value ~= arg_32_3._value then
-			local var_33_8 = 10 * arg_32_1._param[2] * (arg_32_1._param[1] == 3 and 10 or 1) / (arg_32_2 * var_32_5)
+		if arg_33_0._resType == var_33_4 and arg_32_1._value ~= arg_32_3._value and baseUnitPrice > 0 then
+			local var_33_8 = 10 * var_33_1 * (var_33_4 == 3 and 10 or 1) / (arg_32_2 * baseUnitPrice)
 			local var_33_9 = cc.Sprite:createWithSpriteFrameName("img_hl_bg")
 
 			var_33_9:setRotation(-10)

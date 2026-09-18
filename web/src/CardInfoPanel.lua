@@ -640,27 +640,38 @@ function var_0_0.updateCurrentOwn(arg_32_0)
 end
 
 function var_0_0.onDecomposeAll(arg_33_0)
-	local var_33_0, var_33_1 = P._playerCard:getCanDecomposeCount()
+	local total, countN, countR, countSR, countUR = P._playerCard:getCanDecomposeCount()
 
-	if var_33_0 + var_33_1 <= 0 then
-		ToastManager.push(Str(STR.DECOMPOSE_ALL_INVALID))
-
+	if total <= 0 then
+		ToastManager.push("Hiện không có lá bài thừa nào (> 3 lá) để phân tách!")
 		return
 	end
 
-	return require("Dialog").showDialog(string.format(Str(STR.DECOMPOSE_ALL_CONFIRM, true), var_33_0, var_33_1), function()
+	local msg = string.format("Bạn có chắc chắn muốn phân tách tất cả các lá bài thừa (chỉ giữ lại 3 lá mỗi loại)?\n\nCó thể phân tách: %d lá bài thừa\n(UR: %d | SR: %d | R: %d | N: %d)", total, countUR, countSR, countR, countN)
+
+	return require("Dialog").showDialog(msg, function()
 		arg_33_0:doDecomposeAll()
 	end)
 end
 
 function var_0_0.doDecomposeAll(arg_35_0)
-	local var_35_0 = P._playerCard:decomposeAll()
+	local var_35_0, decomposedList = P._playerCard:decomposeAll()
 
 	if var_35_0 > 0 then
 		ClientData.sendCardDecomposeBatch()
 	end
 
-	ToastManager.push(string.format(Str(STR.DECOMPOSE_SUCCESS), var_35_0, Str(Data._resInfo[Data.ResType.gold]._nameSid)))
+	ToastManager.push(string.format("Phân tách thành công! Nhận được %d Vàng", var_35_0))
+
+	if arg_35_0.updateCurrentOwn then
+		arg_35_0:updateCurrentOwn()
+	end
+	if arg_35_0.updateView then
+		arg_35_0:updateView()
+	end
+	if arg_35_0._cardList and arg_35_0._cardList.refresh then
+		arg_35_0._cardList:refresh(true)
+	end
 end
 
 function var_0_0.onGuide(arg_36_0, arg_36_1)

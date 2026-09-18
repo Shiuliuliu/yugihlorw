@@ -394,33 +394,45 @@ function var_0_0.decomposeCard(arg_11_0, arg_11_1, arg_11_2, arg_11_3)
 end
 
 function var_0_0.getCanDecomposeCount(arg_12_0)
-	local var_12_0 = 0
-	local var_12_1 = 0
-	local var_12_2 = 0
+	local total = 0
+	local countN = 0
+	local countR = 0
+	local countSR = 0
+	local countUR = 0
 
 	for iter_12_0 = Data.CardType.monster, Data.CardType.rare do
 		local var_12_3 = arg_12_0._cards[iter_12_0]
 
 		for iter_12_1, iter_12_2 in pairs(var_12_3) do
 			if iter_12_2 > 3 then
-				iter_12_2 = iter_12_2 - 3
-
+				local excess = iter_12_2 - 3
 				local var_12_4 = Data.getInfo(iter_12_1)
 
-				if var_12_4._quality == Data.CardQuality.N then
-					var_12_1 = var_12_1 + iter_12_2
-				elseif var_12_4._quality == Data.CardQuality.R then
-					var_12_0 = var_12_0 + iter_12_2
+				if var_12_4 then
+					if var_12_4._quality == Data.CardQuality.N then
+						countN = countN + excess
+						total = total + excess
+					elseif var_12_4._quality == Data.CardQuality.R then
+						countR = countR + excess
+						total = total + excess
+					elseif var_12_4._quality == Data.CardQuality.SR then
+						countSR = countSR + excess
+						total = total + excess
+					elseif var_12_4._quality == Data.CardQuality.UR then
+						countUR = countUR + excess
+						total = total + excess
+					end
 				end
 			end
 		end
 	end
 
-	return var_12_0, var_12_1
+	return total, countN, countR, countSR, countUR
 end
 
 function var_0_0.decomposeAll(arg_13_0)
 	local var_13_0 = 0
+	local decomposedList = {}
 
 	for iter_13_0 = Data.CardType.monster, Data.CardType.rare do
 		local var_13_1 = arg_13_0._cards[iter_13_0]
@@ -428,17 +440,21 @@ function var_0_0.decomposeAll(arg_13_0)
 		for iter_13_1, iter_13_2 in pairs(var_13_1) do
 			local var_13_2 = Data.getInfo(iter_13_1)
 
-			if iter_13_2 > 3 and var_13_2._quality < Data.CardQuality.SR then
-				iter_13_2 = iter_13_2 - 3
+			-- Decompose all excess cards > 3 of quality N, R, SR, UR (<= UR)
+			if iter_13_2 > 3 and var_13_2 and var_13_2._quality <= Data.CardQuality.UR then
+				local excess = iter_13_2 - 3
 
-				local var_13_3, var_13_4 = arg_13_0:decomposeCard(iter_13_1, iter_13_2)
+				local var_13_3, var_13_4 = arg_13_0:decomposeCard(iter_13_1, excess)
 
-				var_13_0 = var_13_0 + var_13_4
+				if var_13_3 == Data.ErrorType.ok then
+					var_13_0 = var_13_0 + (var_13_4 or 0)
+					table.insert(decomposedList, { card_id = iter_13_1, count = excess })
+				end
 			end
 		end
 	end
 
-	return var_13_0
+	return var_13_0, decomposedList
 end
 
 function var_0_0.recoveryCard(arg_14_0, arg_14_1, arg_14_2, arg_14_3, arg_14_4)
@@ -587,7 +603,7 @@ end
 function var_0_0.getDecomposeDust(arg_22_0, arg_22_1)
 	local var_22_0, var_22_1 = Data.getInfo(arg_22_1)
 	local var_22_2 = 1
-	local var_22_3 = (var_22_0._quality - 1) * Data.CARD_MAX_LEVEL + var_22_2
+	local var_22_3 = math.min(20, math.max(1, ((var_22_0 and var_22_0._quality or 1) - 1) * Data.CARD_MAX_LEVEL + var_22_2))
 
 	if var_22_1 == Data.CardType.monster then
 		return Data.ResType.gold, Data._globalInfo._monsterDecomposeDust[var_22_3]
@@ -596,7 +612,7 @@ function var_0_0.getDecomposeDust(arg_22_0, arg_22_1)
 	elseif var_22_1 == Data.CardType.trap then
 		return Data.ResType.gold, Data._globalInfo._trapDecomposeDust[var_22_3]
 	elseif var_22_1 == Data.CardType.rare then
-		return Data.ResType.gold, Data._globalInfo._trapDecomposeDust[var_22_3]
+		return Data.ResType.gold, (Data._globalInfo._rareDecomposeDust and Data._globalInfo._rareDecomposeDust[var_22_3]) or Data._globalInfo._trapDecomposeDust[var_22_3]
 	end
 end
 
@@ -625,7 +641,7 @@ end
 function var_0_0.getDecomposeGold(arg_26_0, arg_26_1)
 	local var_26_0, var_26_1 = Data.getInfo(arg_26_1)
 	local var_26_2 = 1
-	local var_26_3 = (var_26_0._quality - 1) * Data.CARD_MAX_LEVEL + var_26_2
+	local var_26_3 = math.min(20, math.max(1, ((var_26_0 and var_26_0._quality or 1) - 1) * Data.CARD_MAX_LEVEL + var_26_2))
 
 	if var_26_1 == Data.CardType.monster then
 		return Data._globalInfo._monsterDecomposeGold[var_26_3]

@@ -259,13 +259,13 @@ function var_0_0.getActivitiesToShow(arg_15_0)
 			end
 		end
 
-		if not ClientData.isActivityShowed(Data.PurchaseType.ad_recharge) and not ClientData.isGemRecharged() then
-			table.insert(var_15_0, Data.PurchaseType.ad_recharge)
-		end
-
-		if not ClientData.isActivityShowed(Data.PurchaseType.ad_package) and not ClientData.isRecharged(Data.PurchaseType.package_1) then
-			table.insert(var_15_0, Data.PurchaseType.ad_package)
-		end
+		-- Disable ad popups on login
+		-- if not ClientData.isActivityShowed(Data.PurchaseType.ad_recharge) and not ClientData.isGemRecharged() then
+		-- 	table.insert(var_15_0, Data.PurchaseType.ad_recharge)
+		-- end
+		-- if not ClientData.isActivityShowed(Data.PurchaseType.ad_package) and not ClientData.isRecharged(Data.PurchaseType.package_1) then
+		-- 	table.insert(var_15_0, Data.PurchaseType.ad_package)
+		-- end
 
 		if not ClientData.isActivityShowed(Data.ActivityType.yyb) then
 			table.insert(var_15_0, ClientData.getValidActivityByType(Data.ActivityType.yyb))

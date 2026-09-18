@@ -137,7 +137,7 @@ function var_0_1.init(arg_2_0)
 	lc.addChildToPos(loginLayer, lblUser, cc.p(labelX, row1Y), 2)
 
 	local editUser = ClientView.createEditBox("img_com_bg_3", ClientView.CRECT_COM_BG3, cc.size(editW, editH), "Nhập tên tài khoản", true, 20)
-	editUser:setFontColor(lc.Color4B.black)
+	editUser:setFontColor(lc.Color4B.white)
 	lc.addChildToPos(loginLayer, editUser, cc.p(editX, row1Y), 2)
 	arg_2_0._editUser = editUser
 
@@ -150,7 +150,7 @@ function var_0_1.init(arg_2_0)
 
 	local editPass = ClientView.createEditBox("img_com_bg_3", ClientView.CRECT_COM_BG3, cc.size(editW, editH), "Nhập mật khẩu", true, 32)
 	editPass:setInputFlag(cc.EDITBOX_INPUT_FLAG_PASSWORD)
-	editPass:setFontColor(lc.Color4B.black)
+	editPass:setFontColor(lc.Color4B.white)
 	lc.addChildToPos(loginLayer, editPass, cc.p(editX, row2Y), 2)
 	arg_2_0._editPass = editPass
 
@@ -164,7 +164,7 @@ function var_0_1.init(arg_2_0)
 
 	local editConfirm = ClientView.createEditBox("img_com_bg_3", ClientView.CRECT_COM_BG3, cc.size(editW, editH), "Nhập lại mật khẩu", true, 32)
 	editConfirm:setInputFlag(cc.EDITBOX_INPUT_FLAG_PASSWORD)
-	editConfirm:setFontColor(lc.Color4B.black)
+	editConfirm:setFontColor(lc.Color4B.white)
 	lc.addChildToPos(loginLayer, editConfirm, cc.p(editX, row3Y), 2)
 	arg_2_0._editConfirm = editConfirm
 
@@ -180,7 +180,7 @@ function var_0_1.init(arg_2_0)
 	arg_2_0._lblCharName = lblCharName
 
 	local editCharName = ClientView.createEditBox("img_com_bg_3", ClientView.CRECT_COM_BG3, cc.size(editW, editH), "Nhập tên nhân vật", true, 20)
-	editCharName:setFontColor(lc.Color4B.black)
+	editCharName:setFontColor(lc.Color4B.white)
 	lc.addChildToPos(loginLayer, editCharName, cc.p(editX, row4Y), 2)
 	arg_2_0._editCharName = editCharName
 
@@ -830,11 +830,12 @@ function var_0_1.switchScene(arg_21_0)
 				performWithDelay(arg_21_0, function()
 					setProgress(85, "Đang khôi phục bộ bài...")
 
+					local BANNED_DECK_CARDS = { [40657] = true, [40693] = true, [40694] = true }
 					for _, d in ipairs(decks or {}) do
 						local counts, order = {}, {}
 						for _, cid in ipairs(d.cards or {}) do
 							cid = tonumber(cid)
-							if cid and cid > 0 then
+							if cid and cid > 0 and not BANNED_DECK_CARDS[cid] then
 								if not counts[cid] then
 									counts[cid] = 0
 									table.insert(order, cid)
@@ -844,7 +845,7 @@ function var_0_1.switchScene(arg_21_0)
 						end
 						for _, cid in ipairs(d.extra_cards or {}) do
 							cid = tonumber(cid)
-							if cid and cid > 0 then
+							if cid and cid > 0 and not BANNED_DECK_CARDS[cid] then
 								if not counts[cid] then
 									counts[cid] = 0
 									table.insert(order, cid)
