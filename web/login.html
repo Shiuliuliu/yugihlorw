@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Yugihlor - Đăng nhập</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  .login-card {
+    position: relative;
+    width: 90%;
+    max-width: 420px;
+    background: linear-gradient(180deg, #1f1730 0%, #120c1f 100%);
+    border: 2px solid #e5b338;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(229, 179, 56, 0.35);
+    padding: 24px 26px 20px;
+    color: #fff;
+  }
+  .header-decor {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .swords-icon {
+    font-size: 28px;
+    filter: drop-shadow(0 0 8px #ffd700);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .game-title {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(180deg, #ffe57f 0%, #f5b324 50%, #d48806 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+  }
+  .game-sub {
+    font-size: 11px;
+    color: #ffd875;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-top: 2px;
+  }
+  .tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(229, 179, 56, 0.3);
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 18px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 9px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #bbb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    background: transparent;
+  }
+  .tab-btn.active {
+    background: linear-gradient(180deg, #f5c842 0%, #d48806 100%);
+    color: #1a0f00;
+    box-shadow: 0 2px 8px rgba(245, 200, 66, 0.4);
+  }
+  .form-group {
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #e6cb85;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(10, 6, 18, 0.7);
+    border: 1.5px solid rgba(229, 179, 56, 0.4);
+    border-radius: 8px;
+  }
+  .input-wrapper:focus-within {
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+  .input-icon {
+    padding: 0 12px;
+    font-size: 14px;
+    color: #d4a736;
+  }
+  .form-input {
+    flex: 1;
+    height: 42px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    padding-right: 12px;
+  }
+  .form-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+  .submit-btn {
+    width: 100%;
+    height: 46px;
+    margin-top: 8px;
+    background: linear-gradient(180deg, #ffc83b 0%, #e68a00 100%);
+    border: 1.5px solid #ffe885;
+    border-radius: 10px;
+    color: #210d00;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(230, 138, 0, 0.45);
+    transition: all 0.2s ease;
+  }
+  .submit-btn:active {
+    transform: scale(0.98);
+    filter: brightness(0.9);
+  }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .message-box {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    text-align: center;
+    font-weight: 600;
+    display: none;
+  }
+  .message-box.err {
+    display: block;
+    background: rgba(220, 38, 38, 0.25);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+  }
+  .message-box.ok {
+    display: block;
+    background: rgba(34, 197, 94, 0.25);
+    border: 1px solid rgba(74, 222, 128, 0.5);
+    color: #86efac;
+  }
+  .message-box.inf {
+    display: block;
+    background: rgba(59, 130, 246, 0.25);
+    border: 1px solid rgba(96, 165, 250, 0.5);
+    color: #93c5fd;
+  }
+</style>
+</head>
+<body>
+
+<div class="modal-overlay">
+  <div class="login-card">
+    <div class="header-decor">
+      <span class="swords-icon">⚔️</span>
+      <h1 class="game-title">YUGIHLOR</h1>
+      <div class="game-sub">MÁY CHỦ VIỆT NAM</div>
+    </div>
+
+    <div class="tabs">
+      <button type="button" class="tab-btn active" id="tabLogin" onclick="setMode(false)">ĐĂNG NHẬP</button>
+      <button type="button" class="tab-btn" id="tabReg" onclick="setMode(true)">ĐĂNG KÝ</button>
+    </div>
+
+    <form id="authForm" onsubmit="event.preventDefault(); submitAuth();">
+      <div class="form-group">
+        <label class="field-label">Tên tài khoản</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
+          <input type="text" id="username" class="form-input" placeholder="Nhập tài khoản" autocomplete="username" autocapitalize="none" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">Mật khẩu</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="password" class="form-input" placeholder="Nhập mật khẩu" autocomplete="current-password" required>
+        </div>
+      </div>
+
+      <div class="form-group" id="confirmGroup" style="display: none;">
+        <label class="field-label">Xác nhận mật khẩu</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🛡️</span>
+          <input type="password" id="confirmPass" class="form-input" placeholder="Nhập lại mật khẩu" autocomplete="new-password">
+        </div>
+      </div>
+
+      <div id="msgBox" class="message-box"></div>
+
+      <button type="submit" id="submitBtn" class="submit-btn">VÀO TRÒ CHƠI</button>
+    </form>
+  </div>
+</div>
+
+<script>
+var isRegister = false;
+var BASE = (window.location.origin && window.location.origin !== 'null' && window.location.origin !== 'file://') ? window.location.origin : 'https://yugihlor.online';
+
+try {
+  var savedU = localStorage.getItem('yh_u');
+  var savedP = localStorage.getItem('yh_p');
+  if (savedU) document.getElementById('username').value = savedU;
+  if (savedP) {
+    document.getElementById('password').value = savedP;
+    document.getElementById('confirmPass').value = savedP;
+  }
+} catch(e) {}
+
+function setMode(reg) {
+  isRegister = reg;
+  document.getElementById('tabLogin').className = 'tab-btn' + (reg ? '' : ' active');
+  document.getElementById('tabReg').className = 'tab-btn' + (reg ? ' active' : '');
+  document.getElementById('confirmGroup').style.display = reg ? 'block' : 'none';
+  document.getElementById('submitBtn').textContent = reg ? 'TẠO TÀI KHOẢN' : 'VÀO TRÒ CHƠI';
+  showMsg('', '');
+}
+
+function showMsg(text, type) {
+  var box = document.getElementById('msgBox');
+  if (!text) {
+    box.style.display = 'none';
+    box.textContent = '';
+    return;
+  }
+  box.className = 'message-box ' + type;
+  box.textContent = text;
+  box.style.display = 'block';
+}
+
+function submitAuth() {
+  if (window._loginDone) return;
+  var u = document.getElementById('username').value.trim();
+  var p = document.getElementById('password').value;
+  var c = document.getElementById('confirmPass').value;
+
+  if (!u) { showMsg('Vui lòng nhập tên tài khoản!', 'err'); return; }
+  if (u.length < 3 || u.length > 32) { showMsg('Tài khoản phải từ 3-32 ký tự!', 'err'); return; }
+  if (!p) { showMsg('Vui lòng nhập mật khẩu!', 'err'); return; }
+  if (p.length < 4) { showMsg('Mật khẩu phải từ 4 ký tự trở lên!', 'err'); return; }
+  if (isRegister && p !== c) { showMsg('Mật khẩu xác nhận không khớp!', 'err'); return; }
+
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  showMsg(isRegister ? 'Đang tạo tài khoản...' : 'Đang xác thực tài khoản...', 'inf');
+
+  var url = BASE + (isRegister ? '/api/auth/register' : '/api/auth/login');
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', url, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.timeout = 10000;
+
+  xhr.onload = function() {
+    try {
+      var res = JSON.parse(xhr.responseText);
+      if (res.code === 0) {
+        window._loginDone = true;
+        try {
+          localStorage.setItem('yh_u', u);
+          localStorage.setItem('yh_p', p);
+        } catch(e) {}
+        showMsg('Đăng nhập thành công! Đang vào game...', 'ok');
+        setTimeout(function() {
+          try {
+            if (window.Android && window.Android.onLoginSuccess) {
+              window.Android.onLoginSuccess("", "");
+            }
+          } catch(e) { console.error(e); }
+        }, 300);
+      } else {
+        btn.disabled = false;
+        showMsg(res.msg || 'Có lỗi xảy ra, vui lòng thử lại!', 'err');
+      }
+    } catch(e) {
+      btn.disabled = false;
+      showMsg('Lỗi xử lý phản hồi từ máy chủ.', 'err');
+    }
+  };
+
+  xhr.ontimeout = function() {
+    btn.disabled = false;
+    showMsg('Kết nối đến máy chủ quá thời gian!', 'err');
+  };
+
+  xhr.onerror = function() {
+    btn.disabled = false;
+    showMsg('Không thể kết nối đến máy chủ!', 'err');
+  };
+
+  xhr.send(JSON.stringify({ username: u, password: p }));
+}
+</script>
+
+</body>
+</html>

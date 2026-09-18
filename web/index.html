@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Yugihlor - trading "Nạp" game</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20260918v15">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260918v15">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260918v15">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20260918v15">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20260918v15">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<style>
+		*, *::before, *::after { box-sizing: border-box; }
+		html, body { margin: 0; padding: 0; background: #000; width: 100%; height: 100%; overflow: hidden;
+			position: fixed; inset: 0;
+			touch-action: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+		body, canvas, div { -webkit-user-select: none; user-select: none;
+			-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+			touch-action: none; -webkit-touch-callout: none; }
+		#gameCanvas { display: block; touch-action: none; }
+
+		/* ===== ROTATE HINT ===== */
+		#rotateHint { display: none; position: fixed; inset: 0; z-index: 200;
+			align-items: center; justify-content: center; text-align: center;
+			color: #fff; background: rgba(0,0,0,.9);
+			font: 18px/1.5 system-ui, sans-serif; padding: 24px; }
+		@media (orientation: portrait) and (max-width: 959px) {
+			#rotateHint { display: flex; }
+		}
+
+		/* ===== LOADING OVERLAY — uses game's loading.jpg ===== */
+		#bootOverlay {
+			position: fixed; inset: 0; z-index: 100;
+			display: flex; align-items: flex-end; justify-content: center;
+			background:
+				url('res/updater/loading.jpg') center center / cover no-repeat,
+				#0d1a2e;
+			padding-bottom: clamp(28px, 6vh, 60px);
+		}
+
+		/* Gradient vignette at bottom so progress bar stands out */
+		#bootOverlay::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(
+				to bottom,
+				transparent 0%,
+				transparent 40%,
+				rgba(0,0,0,0.45) 70%,
+				rgba(0,0,0,0.72) 100%
+			);
+			pointer-events: none;
+		}
+
+		/* Progress box sits at the bottom of the screen */
+		.boot-box {
+			position: relative; z-index: 1;
+			width: min(580px, 92vw);
+			text-align: center;
+		}
+
+		.boot-game-title {
+			font-family: 'Arial Black', 'Impact', sans-serif;
+			font-size: clamp(16px, 3.5vw, 28px);
+			font-weight: 900;
+			letter-spacing: 3px;
+			text-transform: uppercase;
+			color: transparent;
+			background: linear-gradient(180deg, #fffbe0 0%, #f5c542 40%, #c8860a 80%, #7c4800 100%);
+			-webkit-background-clip: text; background-clip: text;
+			filter: drop-shadow(0 2px 8px rgba(0,0,0,0.9)) drop-shadow(0 0 16px rgba(245,197,66,0.6));
+			margin-bottom: 8px;
+			display: block;
+		}
+
+		/* Fan-made copyright disclaimer notice */
+		.boot-disclaimer {
+			background: rgba(10, 16, 26, 0.88);
+			border: 1px solid rgba(245, 197, 66, 0.6);
+			border-radius: 8px;
+			padding: 9px 13px;
+			margin-bottom: 10px;
+			box-shadow: 0 4px 18px rgba(0, 0, 0, 0.75), inset 0 0 10px rgba(245, 197, 66, 0.12);
+			text-align: left;
+			backdrop-filter: blur(4px);
+			-webkit-backdrop-filter: blur(4px);
+		}
+		.boot-disclaimer-header {
+			font-family: 'Roboto', system-ui, sans-serif;
+			font-size: clamp(11px, 2.2vw, 13px);
+			font-weight: 700;
+			color: #ffd700;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			text-align: center;
+			margin-bottom: 5px;
+			text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+		}
+		.boot-disclaimer-content {
+			font-family: 'Roboto', system-ui, sans-serif;
+			font-size: clamp(9.5px, 1.8vw, 11px);
+			line-height: 1.45;
+			color: #d6e2ee;
+			text-shadow: 0 1px 2px rgba(0,0,0,0.95);
+		}
+		.boot-disclaimer-content p {
+			margin: 3px 0;
+		}
+		.boot-disclaimer-content strong {
+			color: #fff2a8;
+		}
+
+		#bootStatus {
+			color: #d0e8ff;
+			font-size: 12px;
+			font-family: system-ui;
+			text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+			margin-bottom: 8px;
+			min-height: 16px;
+			letter-spacing: 0.5px;
+		}
+
+		/* Progress bar styled like game UI — dark background with gold fill */
+		.boot-bar-outer {
+			width: 100%;
+			height: 14px;
+			background: rgba(0,0,0,0.65);
+			border-radius: 999px;
+			border: 1px solid rgba(200,160,40,0.5);
+			overflow: hidden;
+			box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.5);
+		}
+		.boot-bar-fill {
+			height: 100%;
+			width: 0%;
+			border-radius: 999px;
+			background: linear-gradient(90deg, #7c4800, #e8a800, #fff8c0, #f5c542, #c8860a);
+			background-size: 200% 100%;
+			transition: width 0.35s ease;
+			animation: barShimmer 2s linear infinite;
+			box-shadow: 0 0 10px rgba(245,197,66,0.6);
+		}
+		@keyframes barShimmer {
+			0%   { background-position: 100% 0; }
+			100% { background-position: -100% 0; }
+		}
+		.boot-bar-pct {
+			font-size: 11px;
+			color: rgba(255,220,100,0.85);
+			text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+			margin-top: 5px;
+			letter-spacing: 1px;
+		}
+
+		/* Global styling for Cocos2d-html5 EditBox input fields */
+		input, textarea {
+			background: transparent !important;
+			background-color: transparent !important;
+			color: #000000 !important;
+			-webkit-text-fill-color: #000000 !important;
+			caret-color: #000000 !important;
+			font-weight: bold !important;
+			border: none !important;
+			outline: none !important;
+			font-family: Arial, sans-serif !important;
+			box-sizing: border-box !important;
+			padding: 0 10px !important;
+		}
+
+		input:-webkit-autofill,
+		input:-webkit-autofill:hover,
+		input:-webkit-autofill:focus,
+		input:-webkit-autofill:active {
+			-webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+			-webkit-text-fill-color: #000000 !important;
+			box-shadow: 0 0 0 1000px #ffffff inset !important;
+			color: #000000 !important;
+			transition: background-color 5000s ease-in-out 0s !important;
+		}
+		
+	</style>
+</head>
+<body>
+	<canvas id="gameCanvas" width="1024" height="768"></canvas>
+
+	
+
+	<!-- LOADING OVERLAY — background is the game's own loading.jpg -->
+	<div id="bootOverlay">
+		<div class="boot-box">
+			<span class="boot-game-title">Yugihlor - trading "Nạp" game</span>
+			<div class="boot-disclaimer">
+				<div class="boot-disclaimer-header">THÔNG BÁO BẢN QUYỀN &amp; TÍNH CHẤT DỰ ÁN</div>
+				<div class="boot-disclaimer-content">
+					<p>Đây là một trò chơi <strong>Fan-made (Do cộng đồng người hâm mộ sáng tạo)</strong> dựa trên thương hiệu <strong>Yu-Gi-Oh! (Vua Trò Chơi)</strong>.</p>
+					<p><strong>Phi thương mại:</strong> Trò chơi hoàn toàn miễn phí và KHÔNG được sử dụng cho bất kỳ mục đích thương mại, kinh doanh hay thu lợi nhuận dưới mọi hình thức.</p>
+					<p><strong>Tôn trọng sở hữu trí tuệ:</strong> Tất cả bản quyền, thương hiệu, hình ảnh và tài sản gốc thuộc về <strong>Konami Digital Entertainment &amp; Kazuki Takahashi</strong>.</p>
+					<p>Dự án này là sản phẩm phi lợi nhuận thể hiện niềm đam mê của fan, không liên kết, không được tài trợ hoặc ủy quyền bởi Konami.</p>
+				</div>
+			</div>
+			<div id="bootStatus">Đang khởi tạo tài nguyên...</div>
+			<div class="boot-bar-outer">
+				<div class="boot-bar-fill" id="bootBarFill"></div>
+			</div>
+			<div class="boot-bar-pct" id="bootBarPct">0%</div>
+		</div>
+	</div>
+
+	<div id="rotateHint">Vui lòng xoay thiết bị sang màn hình ngang để trải nghiệm tốt nhất</div>
+
+	<script>
+		/* Prevent mobile browser gesture interception on game canvas */
+	(function () {
+		var canvas = document.getElementById('gameCanvas');
+		if (canvas) {
+			function preventGesture(e) {
+				if (e.target === canvas) {
+					e.preventDefault();
+				}
+			}
+			canvas.addEventListener('touchstart', preventGesture, { passive: false });
+			canvas.addEventListener('touchmove', preventGesture, { passive: false });
+		}
+	})();
+
+	/* Progress bridge (called by boot.js) */
+	var _bootPct = 0;
+	function setBootProgress(val, msg) {
+		if (val !== undefined && isFinite(val)) {
+			_bootPct = Math.min(1, Math.max(0, val));
+			var fill = document.getElementById('bootBarFill');
+			var pct  = document.getElementById('bootBarPct');
+			if (fill) fill.style.width = (_bootPct * 100).toFixed(1) + '%';
+			if (pct)  pct.textContent = Math.round(_bootPct * 100) + '%';
+		}
+		var stat = document.getElementById('bootStatus');
+		if (msg && stat) stat.textContent = msg;
+	}
+	window.__setBootProgress = setBootProgress;
+
+	
+	</script>
+
+	<script>
+	document.ccConfig = {
+		"debugMode": 1,
+		"showFPS": false,
+		"frameRate": 60,
+		"id": "gameCanvas",
+		"renderMode": 0,
+		"noCache": false,
+		"engineDir": "vendor/",
+		"modules": ["cocos2d", "ccui", "gui", "audio", "particle",
+			    "progress-timer", "clipping-nodes", "render-texture",
+			    "shape-nodes", "text-input", "actions", "labels",
+			    "transitions", "motion-streak", "editbox"],
+		"jsList": [
+			"js/res.js?v=20260918v15",
+			"js/engine.js?v=20260918v15",
+			"js/net.js?v=20260918v15"
+		]
+	};
+
+	window.JDZC_TRACE_MEMBERS = false;
+	window.JDZC_CONFIG = Object.assign({
+		resBase: 'res/',
+		wsPort: 9192,
+		platform: "browser",
+		renderer: "webgl",
+		theme: "default",
+		channel: 'h5',
+		packageId: "com.tuoyin.jdzc.h5",
+		options: {
+			sdk: "offline"
+		},
+		version: '20260918v15',
+		wsHost: window.location.hostname || '127.0.0.1',
+		trace: false,
+		preload: [
+			'res/general.lcres',
+			'res/avatar.lcres',
+			'res/find.lcres',
+			'res/effects/sd.lcres',
+			'res/cards_back.lcres',
+			'res/cards_back2.lcres',
+			'res/cards_back3.lcres',
+			'res/cards_back4.lcres',
+			'res/props.lcres',
+			'res/city.lcres',
+			'res/cards_img_1.lcres',
+			'res/cards_img_2.lcres',
+			'res/cards_img_3.lcres',
+			'res/cards_img_4.lcres',
+			'res/cards_img_5.lcres',
+			'res/cards_img_6.lcres',
+			'res/cards_img_7.lcres',
+			'res/cards_img_8.lcres',
+			'res/cards_img_9.lcres',
+			'res/cards_img_10.lcres'
+		],
+		region: { id: 1, ip: window.location.hostname || '127.0.0.1', port: 9191, name: 'S1 - Yugihlor - trading "Nạp" game' },
+		version: '20260918v15',
+	}, window.JDZC_CONFIG || {});
+
+	if (!window.JDZC_CONFIG.wsUrl) {
+		if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+			window.JDZC_CONFIG.wsUrl = 'ws://127.0.0.1:9192/ws';
+		} else {
+			window.JDZC_CONFIG.wsUrl = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws';
+		}
+	}
+
+	window.jdzcApi = {
+		login: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 3) args.shift();
+			var username = args[0], password = args[1], callback = args[2];
+			console.log('[jdzcApi] login:', username);
+			fetch('/api/login', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ username: username, password: password })
+			})
+			.then(function (r) { return r.json(); })
+			.then(function (data) {
+				console.log('[jdzcApi] login response:', data.code, data.msg);
+				if (callback) callback(JSON.stringify(data));
+			})
+			.catch(function (err) {
+				console.error('[jdzcApi] login error:', err);
+				if (callback) callback(JSON.stringify({ code: 500, msg: "Lỗi kết nối máy chủ: " + (err.message || err) }));
+			});
+		},
+		register: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 4) args.shift();
+			var username = args[0], password = args[1], character_name = args[2], callback = args[3];
+			console.log('[jdzcApi] register:', username);
+			fetch('/api/register', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ username: username, password: password, character_name: character_name })
+			})
+			.then(function (r) { return r.json(); })
+			.then(function (data) {
+				console.log('[jdzcApi] register response:', data.code, data.msg);
+				if (callback) callback(JSON.stringify(data));
+			})
+			.catch(function (err) {
+				console.error('[jdzcApi] register error:', err);
+				if (callback) callback(JSON.stringify({ code: 500, msg: "Lỗi kết nối máy chủ: " + (err.message || err) }));
+			});
+		},
+		getServers: function (callback) {
+			fetch('/api/get_servers', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			})
+			.then(function (r) { return r.json(); })
+			.then(function (data) { if (callback) callback(JSON.stringify(data)); })
+			.catch(function (err) {
+				if (callback) callback(JSON.stringify({ code: 500, msg: "Lỗi kết nối: " + (err.message || err) }));
+			});
+		},
+		enterGame: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 3) args.shift();
+			var accountId = args[0], serverId = args[1], callback = args[2];
+			console.log('[jdzcApi] enterGame: acc=' + accountId + ', srv=' + serverId);
+			fetch('/api/enter_game', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ account_id: accountId, server_id: serverId })
+			})
+			.then(function (r) { return r.json(); })
+			.then(function (data) {
+				console.log('[jdzcApi] enterGame response:', data.code, data.msg);
+				if (window.initChatWs) window.initChatWs();
+				[1000, 3000, 6000].forEach(function(delay) {
+					setTimeout(function () {
+						if (window.loadChatHistory) window.loadChatHistory();
+					}, delay);
+				});
+				if (callback) callback(JSON.stringify(data));
+			})
+			.catch(function (err) {
+				console.error('[jdzcApi] enterGame error:', err);
+				if (callback) callback(JSON.stringify({ code: 500, msg: "Lỗi kết nối máy chủ: " + (err.message || err) }));
+			});
+		},
+		saveDeck: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 5) args.shift();
+			var accountId = args[0], deckSlot = args[1], deckName = args[2], cards = args[3], extraCards = args[4], callback = args[5];
+			if (typeof cards === 'string') { try { cards = JSON.parse(cards); } catch(e){} }
+			if (typeof extraCards === 'string') { try { extraCards = JSON.parse(extraCards); } catch(e){} }
+			console.log('[jdzcApi] saveDeck: acc=' + accountId + ', slot=' + deckSlot + ', name=' + deckName + ', cards=' + (cards ? cards.length : 0));
+			fetch('/api/save_deck', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ account_id: accountId, deck_slot: deckSlot, deck_name: deckName, cards: cards, extra_cards: extraCards })
+			})
+			.then(function (r) { return r.json(); })
+			.then(function (data) {
+				console.log('[jdzcApi] saveDeck response:', data.code, data.msg);
+				if (callback) callback(JSON.stringify(data));
+			})
+			.catch(function (err) {
+				console.error('[jdzcApi] saveDeck error:', err);
+				if (callback) callback(JSON.stringify({ code: 500, msg: "Lỗi kết nối máy chủ: " + (err.message || err) }));
+			});
+		},
+		post: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 3) args.shift();
+			var endpoint = args[0], payload = args[1], callback = args[2];
+			if (typeof payload === 'string') { try { payload = JSON.parse(payload); } catch(e){} }
+			if (payload && payload.cards && typeof payload.cards === 'object' && !Array.isArray(payload.cards)) {
+				var arr = [];
+				var keys = Object.keys(payload.cards).map(Number).filter(function(n){ return !isNaN(n); }).sort(function(a,b){ return a - b; });
+				for (var i = 0; i < keys.length; i++) {
+					arr.push(payload.cards[keys[i]]);
+				}
+				if (arr.length > 0) payload.cards = arr;
+			}
+			if (payload && payload.extra_cards && typeof payload.extra_cards === 'object' && !Array.isArray(payload.extra_cards)) {
+				var earr = [];
+				var ekeys = Object.keys(payload.extra_cards).map(Number).filter(function(n){ return !isNaN(n); }).sort(function(a,b){ return a - b; });
+				for (var j = 0; j < ekeys.length; j++) {
+					earr.push(payload.extra_cards[ekeys[j]]);
+				}
+				if (earr.length > 0) payload.extra_cards = earr;
+			}
+			console.log('[jdzcApi] post:', endpoint, payload);
+			fetch('/api/' + endpoint, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload || {})
+			})
+			.then(function (r) { return r.json(); })
+			.then(function (data) {
+				console.log('[jdzcApi] post response:', endpoint, data);
+				if (callback) callback(JSON.stringify(data));
+			})
+			.catch(function (err) {
+				console.error('[jdzcApi] post error:', endpoint, err);
+				if (callback) callback(JSON.stringify({ code: 500, msg: "Lỗi kết nối máy chủ: " + (err.message || err) }));
+			});
+		},
+		request: function () {
+			return this.post.apply(this, arguments);
+		},
+		loadChatHistory: function () { if (window.loadChatHistory) window.loadChatHistory(); },
+		flushPendingChat: function () {
+			if (window.onReceiveWsChatMessage && window._pendingWsChatMessages && window._pendingWsChatMessages.length > 0) {
+				var pending = window._pendingWsChatMessages.slice();
+				window._pendingWsChatMessages = [];
+				for (var i = 0; i < pending.length; i++) {
+					window.onReceiveWsChatMessage(pending[i]);
+				}
+			}
+		}
+	};
+
+	window._pendingWsChatMessages = [];
+
+	window.injectOneChatMessage = function (m) {
+		if (!m) return;
+		if (window.jdzcLua && window.jdzcLua.run) {
+			try {
+				var id = Number(m.id || 0);
+				var ts = Number(m.timestamp || 0);
+				var accId = Number(m.account_id !== undefined ? m.account_id : 1);
+				var name = String(m.name || '');
+				var level = Number(m.level || 1);
+				var avatar = Number(m.avatar || 201);
+				var content = (typeof m.content === 'object' && m.content !== null) ? JSON.stringify(m.content) : String(m.content || m.msg || (m.battle_data ? JSON.stringify(m.battle_data) : ''));
+				var type = Number(m.type || 1);
+				var cardId = Number(m.card_id || (m.items && m.items[0] && (m.items[0].info_id || m.items[0]._infoId)) || 0);
+				var clientMsgId = String(m.client_msg_id || '');
+				var gc = Number(m.gold_cup || 0);
+				var sc = Number(m.silver_cup || 0);
+				var bc = Number(m.bronze_cup || 0);
+				var crownId = Number(m.crown_id || (gc > 0 ? 7204 : (sc > 0 ? 7205 : (bc > 0 ? 7206 : (m.crown && (m.crown.info_id || m.crown._infoId) || 0)))));
+				var crownNum = Number(m.crown_num || (gc > 0 ? gc : (sc > 0 ? sc : (bc > 0 ? bc : (m.crown && (m.crown.num || m.crown._num) || 0)))));
+
+				var lua = 'if _G.addRawChatMessage then _G.addRawChatMessage(' +
+					id + ',' + ts + ',' + accId + ',' +
+					JSON.stringify(name) + ',' + level + ',' + avatar + ',' +
+					JSON.stringify(content) + ',' + type + ',' + cardId + ',' +
+					JSON.stringify(clientMsgId) + ',' + crownId + ',' + crownNum + ') end';
+				window.jdzcLua.run(lua);
+			} catch (e) {
+				console.error('[CHAT] inject error:', e);
+			}
+		} else {
+			window._pendingWsChatMessages = (window._pendingWsChatMessages || []).concat([m]);
+		}
+	};
+
+	window.injectChatMessages = function (msgs) {
+		if (!msgs || !msgs.length) return;
+		for (var i = 0; i < msgs.length; i++) {
+			window.injectOneChatMessage(msgs[i]);
+		}
+		if (window.jdzcLua && window.jdzcLua.run) {
+			try {
+				window.jdzcLua.run('pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end; local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel; if cp and cp._isPop then cp:resetList() end end)');
+			} catch(e) {}
+		}
+	};
+
+	window.onReceiveWsChatMessage = function (rawMsg) {
+		var m = rawMsg;
+		if (typeof m === 'string') {
+			try { m = JSON.parse(m); } catch(e) {}
+		}
+		window.injectOneChatMessage(m);
+	};
+
+	// JS-side chat history loader — injects messages directly into Lua VM
+	window.loadChatHistory = function () {
+		console.log('[CHAT] loadChatHistory called');
+		fetch('/api/chat_history', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({})
+		})
+		.then(function (r) { return r.json(); })
+		.then(function (data) {
+			console.log('[CHAT] loadChatHistory response:', data.code, data.messages ? data.messages.length : 0, 'msgs');
+			if (!data.messages || !Array.isArray(data.messages)) return;
+			window.injectChatMessages(data.messages);
+			if (window.jdzcLua && window.jdzcLua.run) {
+				try {
+					window.jdzcLua.run('pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end; local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel; if cp and cp._isPop then cp:resetList() end end)');
+					console.log('[CHAT] flushPendingChatQueue and resetList triggered');
+				} catch(e) { console.error('[CHAT] resetList error:', e); }
+			}
+		})
+		.catch(function (err) {
+			console.error('[CHAT] loadChatHistory error:', err);
+		});
+	};
+
+	// Also attach to window.jdzcApi for clean Lua bridge dispatch
+	if (window.jdzcApi) {
+		window.jdzcApi.loadChatHistory = function () { window.loadChatHistory(); };
+	}
+
+	// JS helper: routes chat requests through Lua VM's ClientData.sendChat for full player context
+	window.sendChatMessage = function (content, type) {
+		if (!content || !content.trim()) return;
+		if (window.jdzcLua && window.jdzcLua.run) {
+			var chatType = (type === 2 ? 2 : 1);
+			var lua = 'pcall(function() if ClientData and ClientData.sendChat then ClientData.sendChat(' + chatType + ', 0, ' + JSON.stringify(content) + ') end end)';
+			window.jdzcLua.run(lua);
+		}
+	};
+
+	window.initChatWs = function () {
+		if (window._chatWs && (window._chatWs.readyState === WebSocket.OPEN || window._chatWs.readyState === WebSocket.CONNECTING)) return;
+		var wsUrl = (window.JDZC_CONFIG && window.JDZC_CONFIG.wsUrl) ? window.JDZC_CONFIG.wsUrl : ((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + (window.location.hostname || '127.0.0.1') + ':9192/ws');
+		var ws = new WebSocket(wsUrl);
+		ws.binaryType = 'arraybuffer';
+		window._chatWs = ws;
+		ws.onopen = function () {
+			console.log('[CHAT WS] Connected to ' + wsUrl);
+		};
+		ws.onmessage = function (e) {
+			try {
+				var raw = e.data, text = "";
+				if (typeof raw === 'string') text = raw;
+				else if (raw instanceof ArrayBuffer) {
+					var u8 = new Uint8Array(raw);
+					if (u8.length >= 4) {
+						var len = ((u8[0] << 24) | (u8[1] << 16) | (u8[2] << 8) | u8[3]) >>> 0;
+						text = (u8.length >= 4 + len && len > 0) ? new TextDecoder('utf-8').decode(u8.subarray(4, 4 + len)) : new TextDecoder('utf-8').decode(u8);
+					} else {
+						text = new TextDecoder('utf-8').decode(u8);
+					}
+				}
+				if (!text) return;
+				var pkt = JSON.parse(text);
+				if (pkt.t === "chat_broadcast" && pkt.msg) {
+					if (window.onReceiveWsChatMessage) {
+						window.onReceiveWsChatMessage(pkt.msg);
+					}
+				}
+			} catch (err) {}
+		};
+		ws.onclose = function () {
+			setTimeout(window.initChatWs, 5000);
+		};
+	};
+	window._onPvpChatReceived = function (msg) {
+		if (window.jdzcLua && window.jdzcLua.run) {
+			try {
+				var safeMsg = JSON.stringify(String(msg || ''));
+				window.jdzcLua.run('pcall(function() if _G._onPvpChatReceived then _G._onPvpChatReceived(' + safeMsg + ') end end)');
+			} catch (e) {
+				console.warn('[PVP JS] _onPvpChatReceived lua error:', e);
+			}
+		}
+	};
+
+	window.jdzcPvp = {
+		ws: null,
+		matchId: null,
+		userId: null,
+		seq: 0,
+		onActionCallback: null,
+		onPeerLeftCallback: null,
+		onEndCallback: null,
+		onChatCallback: null,
+
+		connect: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 3) args.shift();
+			var matchId = args[0], userId = args[1], onAction = args[2], onPeerLeft = args[3], onEnd = args[4], onChat = args[5];
+			var self = this;
+			self.matchId = String(matchId || '');
+			self.userId = String(userId || '');
+			self.seq = 0;
+			self.onActionCallback = onAction;
+			self.onPeerLeftCallback = onPeerLeft;
+			self.onEndCallback = onEnd;
+			self.onChatCallback = onChat;
+
+			console.log('[PVP JS] Connecting match=' + self.matchId + ' user=' + self.userId);
+
+			if (self.ws && self.ws.readyState === WebSocket.OPEN) {
+				self._sendPacket({ t: "bind_match", match_id: self.matchId, user_id: self.userId });
+				return;
+			}
+			if (self.ws) {
+				try { self.ws.close(); } catch(e) {}
+			}
+
+			var wsUrl = (window.JDZC_CONFIG && window.JDZC_CONFIG.wsUrl) ? window.JDZC_CONFIG.wsUrl : ((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + (window.location.hostname || '127.0.0.1') + ':9192/ws');
+			var ws = new WebSocket(wsUrl);
+			ws.binaryType = 'arraybuffer';
+			self.ws = ws;
+
+			ws.onopen = function () {
+				console.log('[PVP JS] WS opened: ' + wsUrl);
+				self._sendPacket({ t: "bind_match", match_id: self.matchId, user_id: self.userId });
+			};
+
+			ws.onmessage = function (e) {
+				try {
+					var raw = e.data;
+					var text = "";
+					if (typeof raw === 'string') {
+						text = raw;
+					} else if (raw instanceof ArrayBuffer) {
+						var u8 = new Uint8Array(raw);
+						if (u8.length >= 4) {
+							var len = ((u8[0] << 24) | (u8[1] << 16) | (u8[2] << 8) | u8[3]) >>> 0;
+							if (u8.length >= 4 + len && len > 0) {
+								text = new TextDecoder('utf-8').decode(u8.subarray(4, 4 + len));
+							} else {
+								text = new TextDecoder('utf-8').decode(u8);
+							}
+						} else {
+							text = new TextDecoder('utf-8').decode(u8);
+						}
+					}
+					if (!text) return;
+					var pkt = JSON.parse(text);
+					if (pkt.t === "action" && pkt.ints) {
+						console.log('[PVP JS] Received action seq=' + pkt.seq + ' ints=' + pkt.ints.length);
+						if (self.onActionCallback) {
+							self.onActionCallback(JSON.stringify(pkt.ints));
+						}
+					} else if (pkt.t === "peer_left" || pkt.t === "surrender") {
+						console.log('[PVP JS] Peer left / surrendered');
+						if (self.onPeerLeftCallback) {
+							self.onPeerLeftCallback();
+						}
+					} else if (pkt.t === "end") {
+						console.log('[PVP JS] Received match end:', pkt.result);
+						if (self.onEndCallback) {
+							self.onEndCallback(String(pkt.result || '1'));
+						} else if (self.onPeerLeftCallback) {
+							self.onPeerLeftCallback();
+						}
+					} else if (pkt.t === "chat" && pkt.msg) {
+						console.log('[PVP JS] Received quick chat: ' + pkt.msg);
+						try {
+							if (self.onChatCallback) {
+								self.onChatCallback(String(pkt.msg));
+							} else if (window._onPvpChatReceived) {
+								window._onPvpChatReceived(String(pkt.msg));
+							} else if (window.jdzcLua && window.jdzcLua.run) {
+								var safeMsg = JSON.stringify(String(pkt.msg));
+								window.jdzcLua.run('pcall(function() if _G._onPvpChatReceived then _G._onPvpChatReceived(' + safeMsg + ') end end)');
+							}
+						} catch (chatErr) {
+							console.warn('[PVP JS] Chat dispatch err:', chatErr);
+						}
+					} else if (pkt.t === "chat_broadcast" && pkt.msg) {
+						if (window.onReceiveWsChatMessage) {
+							window.onReceiveWsChatMessage(pkt.msg);
+						}
+					}
+				} catch (err) {
+				}
+			};
+
+			ws.onerror = function (err) {
+				console.error('[PVP JS] WS error:', err);
+			};
+
+			ws.onclose = function () {
+				console.log('[PVP JS] WS closed');
+			};
+		},
+
+		_sendPacket: function (pkt) {
+			if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+				console.warn('[PVP JS] WS not open, cannot send packet');
+				return false;
+			}
+			var body = JSON.stringify(pkt);
+			var enc = new TextEncoder().encode(body);
+			var buf = new Uint8Array(4 + enc.length);
+			buf[0] = (enc.length >> 24) & 0xff;
+			buf[1] = (enc.length >> 16) & 0xff;
+			buf[2] = (enc.length >> 8) & 0xff;
+			buf[3] = enc.length & 0xff;
+			buf.set(enc, 4);
+			this.ws.send(buf.buffer);
+			return true;
+		},
+
+		sendAction: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 3) args.shift();
+			var matchId = args[0], intsRaw = args[1];
+			var ints = intsRaw;
+			if (typeof intsRaw === 'string') {
+				try { ints = JSON.parse(intsRaw); } catch(e) {}
+			}
+			if (!Array.isArray(ints) || ints.length === 0) return;
+			this.seq++;
+			console.log('[PVP JS] sendAction seq=' + this.seq + ' ints=' + ints.length + ' ' + ints.slice(0, 4));
+			this._sendPacket({
+				t: "action",
+				match_id: String(matchId || this.matchId),
+				ints: ints,
+				seq: this.seq
+			});
+		},
+
+		sendEnd: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 2) args.shift();
+			var matchId = args[0] || this.matchId;
+			var result = args[1] || '1';
+			this._sendPacket({
+				t: "end",
+				match_id: String(matchId || this.matchId),
+				result: String(result)
+			});
+		},
+
+		sendChat: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 2) args.shift();
+			var matchId = args[0] || this.matchId;
+			var msg = args[1] || '';
+			if (!msg) return;
+			console.log('[PVP JS] sendChat match=' + matchId + ' msg=' + msg);
+			this._sendPacket({
+				t: "chat",
+				match_id: String(matchId || this.matchId),
+				msg: String(msg)
+			});
+		},
+
+		leave: function () {
+			var args = Array.prototype.slice.call(arguments);
+			if (typeof args[0] === 'object' && args.length >= 2) args.shift();
+			var matchId = args[0];
+			this._sendPacket({
+				t: "leave",
+				match_id: String(matchId || this.matchId)
+			});
+			if (this.ws) {
+				try { this.ws.close(); } catch(e) {}
+				this.ws = null;
+			}
+		}
+	};
+	window.jdzcApi.pvpConnect = function () { return window.jdzcPvp.connect.apply(window.jdzcPvp, arguments); };
+	window.jdzcApi.pvpSendAction = function () { return window.jdzcPvp.sendAction.apply(window.jdzcPvp, arguments); };
+	window.jdzcApi.pvpSendChat = function () { return window.jdzcPvp.sendChat.apply(window.jdzcPvp, arguments); };
+	window.jdzcApi.pvpSendEnd = function () { return window.jdzcPvp.sendEnd.apply(window.jdzcPvp, arguments); };
+	window.jdzcApi.pvpLeave = function () { return window.jdzcPvp.leave.apply(window.jdzcPvp, arguments); };
+	</script>
+	<script src="dist/lua51.js?v=20260918v16"></script>
+	<script src="js/lua.js?v=20260918v16"></script>
+	<script src="vendor/CCBoot.js?v=20260918v16"></script>
+	<script src="js/boot.js?v=20260918v16"></script>
+</body>
+</html>

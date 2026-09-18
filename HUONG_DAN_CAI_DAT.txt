@@ -1,0 +1,33 @@
+====================================================================
+  HUONG DAN CAI DAT GAME QUYET CHIEN CHI THANH (VIET HOA)
+  Tac gia: Shiuliuliu
+====================================================================
+
+TRONG GOI NAY CO 2 FILE:
+1. QuyetChienChiThanh_base.apk  (~370MB) : File cai dat game goc
+2. Goi_Viet_Hoa_1.0.7.zip        (~133MB) : Goi tai nguyen Viet hoa day du
+
+--------------------------------------------------------------------
+CAC BUOC CAI DAT CHO NGUOI MOI:
+--------------------------------------------------------------------
+
+BUOC 1: CAI DAT GAME
+- Cai dat file 'QuyetChienChiThanh_base.apk' vao Dien thoai Android hoac Gia lap (MuMu, LDPlayer, Nox...).
+- Mo game 1 lan de game tu dong tao thu muc du lieu, sau do dong game (hoac thoat han).
+
+BUOC 2: CHEP GOI VIET HOA
+- Mo ung dung quan ly file (vi du: ZArchiver / MT Manager / Root Explorer).
+- Giai nen file 'Goi_Viet_Hoa_1.0.7.zip', ban se thay thu muc '1.0.7'.
+- Chep (Copy/Move) nguyen thu muc '1.0.7' nay vao duong dan sau:
+
+    /data/data/com.tuoyin.jdzc.android.guopan/files/
+
+(Luu y: Neu may hoi 'Co ghi de (Overwrite) khong?', chon 'Co' / 'Ghi de tat ca').
+
+BUOC 3: PHAN QUYEN (Neu dung dien thoai Root / Gia lap)
+- Set quyen (Permissions) cho thu muc 'files' va '1.0.7' la 777 (Read/Write/Execute cho tat ca).
+
+BUOC 4: VAO GAME VA TRAI NGHIEM
+- Mo game len, man hinh se hien thong bao 'Viet hoa by Shiuliuliu'.
+- Nhan nut 'Xac nhan' de vao game va thuong thuc ban Viet hoa day du!
+====================================================================

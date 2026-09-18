@@ -1,0 +1,69 @@
+﻿# Binaries & Executables
+*.exe
+*.dll
+*.so
+*.apk
+*.tar
+*.zip
+*.7z
+*.7z.exe
+
+# Temporary, Backup & Log Files
+*.bak
+*.bak*
+*.tmp
+*.tmp.*
+*.log
+*.swp
+*.swo
+*~
+live_screen_b64.txt
+screen.png
+test_token_*.jpg
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Node & Dependencies
+node_modules/
+npm-debug.log*
+
+# Decompiled & Extracted Work Dirs (Multi-GB APK/ROM Dumps)
+clientapk/
+mumu_apk/
+mumu_extracted_files/
+extracted/
+extracted_base_src/
+extracted_bins/
+luajit_decompiler/
+python_ljd/
+temp_extract/
+
+# Large Database Dump Backups (Keep clean yugioh_game.sql)
+*_backup_*.sql
+phpmyadmin_backup_*.sql
+yugioh_game_backup_*.sql
+yugihlor_backup_*.sql
+*.db
+
+# Temporary Lua/Jit files
+*.luajit
+*.dec
+*.tmp.lua
+temp_*
+Cocos2dxPrefsFile.xml
+jdzc_asm.txt
+region_scene_asm.txt
+clientdata_strings.txt
+lcsrc_map.txt
+regionscene_strings.txt
+test
+
+# IDE / OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

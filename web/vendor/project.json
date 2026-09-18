@@ -1,0 +1,20 @@
+{
+	"debugMode": 1,
+	"showFPS": false,
+	"frameRate": 60,
+	"id": "gameCanvas",
+	"renderMode": 0,
+	"noCache": true,
+	"engineDir": "vendor/",
+
+	"modules": ["cocos2d", "ccui", "gui", "audio", "particle",
+		    "progress-timer", "clipping-nodes", "render-texture",
+		    "shape-nodes", "text-input", "actions", "labels",
+		    "transitions", "motion-streak", "editbox"],
+
+	"jsList": [
+		"js/res.js",
+		"js/engine.js",
+		"js/net.js"
+	]
+}

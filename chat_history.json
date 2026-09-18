@@ -1,0 +1,306 @@
+[
+  {
+    "id": 1789277567602,
+    "timestamp": 1789277567602,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chào mừng các bài thủ đến với thế giới Yu-Gi-Oh! Chúc các bạn rút được nhiều lá bài thần thánh!",
+    "msg": "[THÔNG BÁO] Chào mừng các bài thủ đến với thế giới Yu-Gi-Oh! Chúc các bạn rút được nhiều lá bài thần thánh!",
+    "type": 2,
+    "card_id": 10001,
+    "items": [
+      {
+        "info_id": 10001,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789277667602,
+    "timestamp": 1789277667602,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [Yugi Muto] vừa rút được lá bài cấp GR thần thánh [Thần Ra]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [Yugi Muto] vừa rút được lá bài cấp GR thần thánh [Thần Ra]!",
+    "type": 2,
+    "card_id": 10003,
+    "items": [
+      {
+        "info_id": 10003,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789277767602,
+    "timestamp": 1789277767602,
+    "account_id": 2,
+    "name": "Seto Kaiba",
+    "level": 50,
+    "avatar": 202,
+    "content": "Có ai muốn giao lưu một trận đấu bài đỉnh cao không?",
+    "msg": "Có ai muốn giao lưu một trận đấu bài đỉnh cao không?",
+    "type": 1
+  },
+  {
+    "id": 1789277817602,
+    "timestamp": 1789277817602,
+    "account_id": 3,
+    "name": "Joey Wheeler",
+    "level": 45,
+    "avatar": 203,
+    "content": "Tôi sẵn sàng thách đấu bất cứ lúc nào!",
+    "msg": "Tôi sẵn sàng thách đấu bất cứ lúc nào!",
+    "type": 1
+  },
+  {
+    "id": 1789278181562,
+    "timestamp": 1789278181562,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Phù Thủy kế thừa Natalia]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Phù Thủy kế thừa Natalia]!",
+    "type": 2,
+    "card_id": 10919,
+    "items": [
+      {
+        "info_id": 10919,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789278238815,
+    "timestamp": 1789278238814,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [sự cố tràn điện tử]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [sự cố tràn điện tử]!",
+    "type": 2,
+    "card_id": 30447,
+    "items": [
+      {
+        "info_id": 30447,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789278608904,
+    "client_msg_id": "c_6_1789278608_2528",
+    "timestamp": 1789278608904,
+    "account_id": 6,
+    "name": "shiuliuliu",
+    "level": 5,
+    "avatar": 301,
+    "content": "alo",
+    "msg": "alo",
+    "type": 1
+  },
+  {
+    "id": 1789278617337,
+    "client_msg_id": "c_6_1789278617_4409",
+    "timestamp": 1789278617337,
+    "account_id": 6,
+    "name": "shiuliuliu",
+    "level": 5,
+    "avatar": 301,
+    "content": "jj",
+    "msg": "jj",
+    "type": 1
+  },
+  {
+    "id": 1789278698059,
+    "timestamp": 1789278698020,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [XYZ Susheng]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [XYZ Susheng]!",
+    "type": 2,
+    "card_id": 30564,
+    "items": [
+      {
+        "info_id": 30564,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789279102325,
+    "timestamp": 1789279102318,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Lính dự bị hủy diệt Mecha]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Lính dự bị hủy diệt Mecha]!",
+    "type": 2,
+    "card_id": 11785,
+    "items": [
+      {
+        "info_id": 11785,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789279172794,
+    "timestamp": 1789279172781,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Trickstar Devil Delfinium]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Trickstar Devil Delfinium]!",
+    "type": 2,
+    "card_id": 40693,
+    "items": [
+      {
+        "info_id": 40693,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789279172817,
+    "timestamp": 1789279172799,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [phi công liên minh]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [phi công liên minh]!",
+    "type": 2,
+    "card_id": 11880,
+    "items": [
+      {
+        "info_id": 11880,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789279172852,
+    "timestamp": 1789279172826,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [y học tiến hóa cuối cùng]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [y học tiến hóa cuối cùng]!",
+    "type": 2,
+    "card_id": 20140,
+    "items": [
+      {
+        "info_id": 20140,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789279809737,
+    "timestamp": 1789279809691,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Rồng hủy diệt Gandora Fiery Flash]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Rồng hủy diệt Gandora Fiery Flash]!",
+    "type": 2,
+    "card_id": 11793,
+    "items": [
+      {
+        "info_id": 11793,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789282764976,
+    "timestamp": 1789282764932,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Công nghệ · Tê giác xung đột]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Công nghệ · Tê giác xung đột]!",
+    "type": 2,
+    "card_id": 11090,
+    "items": [
+      {
+        "info_id": 11090,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789282770461,
+    "timestamp": 1789282770428,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Rồng tiến hóa·Epansaurus]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [Rồng tiến hóa·Epansaurus]!",
+    "type": 2,
+    "card_id": 10388,
+    "items": [
+      {
+        "info_id": 10388,
+        "num": 1
+      }
+    ]
+  },
+  {
+    "id": 1789283565979,
+    "client_msg_id": "c_6_1789283565_7443",
+    "timestamp": 1789283565979,
+    "account_id": 6,
+    "name": "shiuliuliu",
+    "level": 5,
+    "avatar": 301,
+    "content": "alo",
+    "msg": "alo",
+    "type": 1
+  },
+  {
+    "id": 1789284379939,
+    "client_msg_id": "c_6_1789284379_7613",
+    "timestamp": 1789284379939,
+    "account_id": 6,
+    "name": "shiuliuliu",
+    "level": 5,
+    "avatar": 301,
+    "content": "alo",
+    "msg": "alo",
+    "type": 1
+  },
+  {
+    "id": 1789284541621,
+    "timestamp": 1789284541574,
+    "account_id": 0,
+    "name": "Hệ Thống",
+    "level": 99,
+    "avatar": 101,
+    "content": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [rồng virus chết chóc]!",
+    "msg": "[THÔNG BÁO] Chúc mừng bài thủ [shiuliuliu] vừa rút được lá bài cực hiếm cấp UR [rồng virus chết chóc]!",
+    "type": 2,
+    "card_id": 40298,
+    "items": [
+      {
+        "info_id": 40298,
+        "num": 1
+      }
+    ]
+  }
+]

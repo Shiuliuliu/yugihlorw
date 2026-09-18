@@ -1,0 +1,9 @@
+tunnel: 269d8aca-d5f7-4252-b053-81b06d3a58b6
+credentials-file: C:\Users\Nitro 5\.cloudflared\269d8aca-d5f7-4252-b053-81b06d3a58b6.json
+
+ingress:
+  - hostname: yugihlor.online
+    service: http://127.0.0.1:8080
+  - hostname: www.yugihlor.online
+    service: http://127.0.0.1:8080
+  - service: http_status:404
