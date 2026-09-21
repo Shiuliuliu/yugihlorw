@@ -432,7 +432,7 @@
 	 * ------------------------------------------------------------------ */
 
 	function versionedUrl(url) {
-		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v8';
+		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v9';
 		if (!url || typeof url !== 'string') return url;
 		return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
 	}
@@ -535,7 +535,7 @@
 				}
 				if (/\.(jpg|png)$/.test(name)) {
 					return new Promise(function (resolve) {
-						var t = cc.textureCache.addImage(dir + name, function (tex) {
+						var t = cc.textureCache.addImage(versionedUrl(dir + name), function (tex) {
 							/* the game addresses a container's images by
 							 * entry name, not by URL */
 							if (tex && !(tex instanceof Error)) cacheUnder(name, tex);

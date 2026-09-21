@@ -17519,6 +17519,9 @@
     ],
     "res/thumb_trap/30138.lcres": [
       "30138.jpg"
+    ],
+    "res/thumb_magic/20566_3.lcres": [
+      "20566_3.jpg"
     ]
   },
   "files": [
@@ -19113,7 +19116,9 @@
     "res/updater/loading_skin.jpg",
     "res/updater/loadingr.jpg",
     "res/updater/logo_10037.jpg",
-    "res/updater/logo_ASDK.jpg"
+    "res/updater/logo_ASDK.jpg",
+    "res/new/thumb/20566.png",
+    "res/new/thumb/20566_3.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [
@@ -25843,6 +25848,22 @@
     "res/updater/loading_1.jpg": [
       1664,
       768
+    ],
+    "res/new/thumb/20566.png": [
+      1024,
+      1024
+    ],
+    "new/thumb/20566.png": [
+      1024,
+      1024
+    ],
+    "res/new/thumb/20566_3.png": [
+      1024,
+      1024
+    ],
+    "new/thumb/20566_3.png": [
+      1024,
+      1024
     ]
   },
   "thumbs": {
@@ -27005,7 +27026,8 @@
       "21130",
       "21131",
       "21132",
-      "21133"
+      "21133",
+      "20566_3"
     ],
     "thumb_trap": [
       "30001",
