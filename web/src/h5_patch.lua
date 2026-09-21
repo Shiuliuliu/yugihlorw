@@ -2264,7 +2264,7 @@ function patchClientData()
 				end)())
 				cardId = prod and (prod._cardId or prod._infoId) or 0
 				cost = prod and (prod._price or prod._cost) or 0
-				costType = prod and prod._resType or 7352
+				costType = prod and prod._resType or 3
 			end
 
 			local totalCost = cost * count

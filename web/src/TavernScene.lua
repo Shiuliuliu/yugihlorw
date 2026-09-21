@@ -611,7 +611,7 @@ function var_0_1.setResourcePanel(arg_19_0)
 	elseif var_19_4._index == var_0_1.TAB.skill_shop or var_19_4._index == var_0_1.TAB.badge_shop then
 		var_19_0:setMode(Data.PropsId.skill_item_token, 1)
 	elseif var_19_4._index == var_0_1.TAB.month_card5_shop then
-		var_19_0:setMode(Data.PropsId.month_card5_token)
+		var_19_0:setMode(Data.ResType.gold)
 	elseif var_19_4._index == var_0_1.TAB.critical_card then
 		if P:getItemCount(Data.PropsId.critical_package_ticket) > 0 then
 			var_19_0:setMode(Data.PropsId.critical_package_ticket, 1)
