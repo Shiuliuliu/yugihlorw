@@ -86,7 +86,7 @@
 			position: fixed; inset: 0; z-index: 100;
 			display: flex; align-items: flex-end; justify-content: center;
 			background:
-				url('res/updater/loading.jpg?v=20260922v9') center center / cover no-repeat,
+				url('res/updater/loading.jpg?v=20260922v10') center center / cover no-repeat,
 				#0d1a2e;
 			padding-bottom: clamp(28px, 6vh, 60px);
 		}
@@ -338,9 +338,9 @@
 			    "shape-nodes", "text-input", "actions", "labels",
 			    "transitions", "motion-streak", "editbox"],
 		"jsList": [
-			"js/res.js?v=20260922v9",
-			"js/engine.js?v=20260922v9",
-			"js/net.js?v=20260922v9"
+			"js/res.js?v=20260922v10",
+			"js/engine.js?v=20260922v10",
+			"js/net.js?v=20260922v10"
 		]
 	};
 
@@ -357,10 +357,12 @@
 		options: {
 			sdk: "offline"
 		},
-		version: '20260922v9',
+		version: '20260922v10',
 		wsHost: window.location.hostname || '127.0.0.1',
 		trace: false,
 		preload: [
+			'res/jpg/city_bg_01.jpg',
+			'res/updater/loading.jpg',
 			'res/general.lcres',
 			'res/avatar.lcres',
 			'res/find.lcres',
@@ -386,7 +388,7 @@
 			'res/cards_img_10.lcres'
 		],
 		region: { id: 1, ip: window.location.hostname || '127.0.0.1', port: 9191, name: 'S1 - Yugihlor - trading "Nạp" game' },
-		version: '20260922v9',
+		version: '20260922v10',
 	}, window.JDZC_CONFIG || {});
 
 	if (!window.JDZC_CONFIG.wsUrl) {
@@ -915,9 +917,9 @@
 	window.jdzcApi.pvpSendEnd = function () { return window.jdzcPvp.sendEnd.apply(window.jdzcPvp, arguments); };
 	window.jdzcApi.pvpLeave = function () { return window.jdzcPvp.leave.apply(window.jdzcPvp, arguments); };
 	</script>
-	<script src="dist/lua51.js?v=20260922v9"></script>
-	<script src="js/lua.js?v=20260922v9"></script>
-	<script src="vendor/CCBoot.js?v=20260922v9"></script>
-	<script src="js/boot.js?v=20260922v9"></script>
+	<script src="dist/lua51.js?v=20260922v10"></script>
+	<script src="js/lua.js?v=20260922v10"></script>
+	<script src="vendor/CCBoot.js?v=20260922v10"></script>
+	<script src="js/boot.js?v=20260922v10"></script>
 </body>
 </html>

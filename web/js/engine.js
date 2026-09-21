@@ -3120,8 +3120,12 @@
 				return base.call(Cls, a, b, c);
 			}
 
-			var cached = cc.textureCache.getTextureForKey(a);
-			if (cached && cached.isLoaded()) return new Cls(cached);
+			var vUrl = (res.versionedUrl ? res.versionedUrl(a) : a);
+			var cached = cc.textureCache.getTextureForKey(a) || (vUrl !== a ? cc.textureCache.getTextureForKey(vUrl) : null);
+			if (cached && cached.isLoaded()) {
+				if (!cc.textureCache.getTextureForKey(a)) cc.textureCache._textures[a] = cached;
+				return new Cls(cached);
+			}
 
 			var sprite = new Cls();
 			var size = res.sizeOf(a) || (cached && cached._contentSize && cached._contentSize.width > 0 ? [cached._contentSize.width, cached._contentSize.height] : null);
@@ -3137,8 +3141,11 @@
 			 * callback runs with the wrong receiver in this build and the
 			 * image never reaches the sprite. */
 			if (res.exists(a)) {
-				cc.textureCache.addImage(a, function (texture) {
+				cc.textureCache.addImage(vUrl, function (texture) {
 					if (!texture) return;
+					if (vUrl !== a) {
+						cc.textureCache._textures[a] = texture;
+					}
 					attachTexture(sprite, texture);
 					/* A second sprite can see the cache entry while this
 					 * request is still in flight and register through

@@ -95,7 +95,7 @@
 		Boot.total = 9 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v9';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v10';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
 			done(fetchJson('lua_src.json?v=' + ver)),

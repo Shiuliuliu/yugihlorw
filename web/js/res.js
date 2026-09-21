@@ -432,10 +432,11 @@
 	 * ------------------------------------------------------------------ */
 
 	function versionedUrl(url) {
-		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v9';
+		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v10';
 		if (!url || typeof url !== 'string') return url;
 		return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
 	}
+	R.versionedUrl = versionedUrl;
 
 	function fetchBuffer(url) {
 		return fetch(versionedUrl(url)).then(function (r) {
@@ -761,6 +762,8 @@
 	/* Preload custom icons (Linh Thach, Linh Thach Cao Cap) and custom buttons */
 	R.preloadCustomAssets = function () {
 		var assets = [
+			'res/jpg/city_bg_01.jpg',
+			'res/updater/loading.jpg',
 			'res/new/linh_thach_34.png',
 			'res/new/linh_thach_76.png',
 			'res/new/linh_thach_vip_36.png',

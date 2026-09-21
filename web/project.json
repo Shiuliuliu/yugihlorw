@@ -13,8 +13,8 @@
 		    "transitions", "motion-streak", "editbox"],
 
 	"jsList": [
-		"js/res.js?v=20260922v9",
-		"js/engine.js?v=20260922v9",
-		"js/net.js?v=20260922v9"
+		"js/res.js?v=20260922v10",
+		"js/engine.js?v=20260922v10",
+		"js/net.js?v=20260922v10"
 	]
 }
