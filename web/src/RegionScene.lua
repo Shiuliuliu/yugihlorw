@@ -45,7 +45,7 @@ function var_0_1.init(arg_2_0)
 		var_2_5:setPosition(ClientView.SCR_CW, ClientView.SCR_CH)
 		arg_2_0:addChild(var_2_5, 3)
 	elseif ClientData.isDJLX() then
-		local var_2_6 = cc.Sprite:create("res/updater/loading_djlx.jpg")
+		local var_2_6 = cc.Sprite:create("res/updater/loading.jpg")
 		var_2_6:setPosition(ClientView.SCR_CW, ClientView.SCR_CH)
 		arg_2_0:addChild(var_2_6)
 

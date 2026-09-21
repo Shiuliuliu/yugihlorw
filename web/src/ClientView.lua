@@ -5686,17 +5686,13 @@ function var_0_0.openUserProtocol()
 end
 
 function var_0_0.createLoadingBg()
-	local var_286_0 = "res/updater/loading_" .. ClientData.getAppId() .. ".jpg"
-
-	if lc.PLATFORM == cc.PLATFORM_OS_IPHONE or lc.PLATFORM == cc.PLATFORM_OS_IPAD then
-		var_286_0 = "res/updater/loadingr.jpg"
-	end
-
-	if ClientData.isAnotherSkin() then
-		var_286_0 = "res/updater/loading_skin.jpg"
-	end
-
+	local var_286_0 = "res/updater/loading.jpg"
 	local var_286_1 = cc.Sprite:create(var_286_0)
+
+	if var_286_1 == nil then
+		var_286_0 = "res/updater/loading_1.jpg"
+		var_286_1 = cc.Sprite:create(var_286_0)
+	end
 
 	if var_286_1 == nil then
 		var_286_0 = "res/updater/loading1.jpg"

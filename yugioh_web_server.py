@@ -1268,12 +1268,11 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         self.send_header('Expires', '0')
                     elif is_immutable:
                         self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
-                    elif is_static_res:
-                        self.send_header('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400')
                     elif is_versioned:
                         self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
                     else:
                         self.send_header('Cache-Control', 'no-cache, must-revalidate')
+                        self.send_header('Pragma', 'no-cache')
 
                 # ETag / 304 conditional request check
                 if_none_match = self.headers.get('If-None-Match')

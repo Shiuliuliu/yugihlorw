@@ -169,15 +169,28 @@ function lc.createNode(arg_9_0, arg_9_1, arg_9_2)
 	return var_9_0
 end
 
+local CUSTOM_ICON_SPRITES = {
+	["img_icon_res1_s"] = "res/new/linh_thach_34.png",
+	["res_ico_1"] = "res/new/linh_thach_76.png",
+	["img_icon_res3_s"] = "res/new/linh_thach_vip_36.png",
+	["res_ico_3"] = "res/new/linh_thach_vip_76.png"
+}
+
 function lc.createSprite(arg_10_0, arg_10_1, arg_10_2)
 	local var_10_0
 
-	if type(arg_10_0) == "table" then
+	if type(arg_10_0) == "string" and CUSTOM_ICON_SPRITES[arg_10_0] then
+		var_10_0 = cc.Sprite:create(CUSTOM_ICON_SPRITES[arg_10_0])
+	elseif type(arg_10_0) == "table" then
 		local var_10_1 = arg_10_0._crect
 		local var_10_2 = arg_10_0._size
 
 		arg_10_0 = arg_10_0._name
-		var_10_0 = string.find(arg_10_0, "%.") and ccui.Scale9Sprite:create(var_10_1, arg_10_0) or ccui.Scale9Sprite:createWithSpriteFrameName(arg_10_0, var_10_1)
+		if CUSTOM_ICON_SPRITES[arg_10_0] then
+			var_10_0 = cc.Sprite:create(CUSTOM_ICON_SPRITES[arg_10_0])
+		else
+			var_10_0 = string.find(arg_10_0, "%.") and ccui.Scale9Sprite:create(var_10_1, arg_10_0) or ccui.Scale9Sprite:createWithSpriteFrameName(arg_10_0, var_10_1)
+		end
 
 		if var_10_2 then
 			var_10_0:setContentSize(var_10_2)

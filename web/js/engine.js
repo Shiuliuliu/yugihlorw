@@ -1768,6 +1768,45 @@
 		return button;
 	};
 
+	var baseButtonLoadTextureNormal = ccui.Button.prototype.loadTextureNormal;
+	ccui.Button.prototype.loadTextureNormal = function (normal, texType) {
+		baseButtonLoadTextureNormal.apply(this, arguments);
+		texType = (texType === undefined) ? ccui.Widget.LOCAL_TEXTURE : texType;
+		if (texType === ccui.Widget.LOCAL_TEXTURE && normal && typeof normal === 'string') {
+			var button = this;
+			var clean = normal.split('?')[0];
+			var tex = cc.textureCache.getTextureForKey(clean) || cc.textureCache.getTextureForKey(normal);
+			if (tex && tex.isLoaded && tex.isLoaded()) {
+				button._normalTextureSize = cc.size(tex.width, tex.height);
+				var nr = button._buttonNormalRenderer;
+				if (nr) {
+					if (nr.setTexture) nr.setTexture(tex);
+					if (nr.setTextureRect) nr.setTextureRect(cc.rect(0, 0, tex.width, tex.height));
+				}
+				button._normalTextureAdaptDirty = true;
+				if (button._scale9Enabled) {
+					if (nr && nr.setPreferredSize) nr.setPreferredSize(button._contentSize);
+				} else if (button._onSizeChanged) {
+					button._onSizeChanged();
+				}
+			} else {
+				cc.textureCache.addImage(normal, function (loadedTex) {
+					if (!loadedTex || !button._buttonNormalRenderer) return;
+					button._normalTextureSize = cc.size(loadedTex.width, loadedTex.height);
+					var nr = button._buttonNormalRenderer;
+					if (nr.setTexture) nr.setTexture(loadedTex);
+					if (nr.setTextureRect) nr.setTextureRect(cc.rect(0, 0, loadedTex.width, loadedTex.height));
+					button._normalTextureAdaptDirty = true;
+					if (button._scale9Enabled) {
+						if (nr.setPreferredSize) nr.setPreferredSize(button._contentSize);
+					} else if (button._onSizeChanged) {
+						button._onSizeChanged();
+					}
+				});
+			}
+		}
+	};
+
 	/* ------------------------------------------------------------------ *
 	 * cc.DragonBonesNode -- the fork's skeletal animations
 	 *
@@ -2858,10 +2897,22 @@
 		if (!pos.x && !pos.y) sprite.setPosition(cc.p(size.width / 2, size.height / 2));
 	}
 
+	var CUSTOM_FRAME_IMAGE_MAP = {
+		'img_icon_res1_s': 'res/new/linh_thach_34.png',
+		'res_ico_1': 'res/new/linh_thach_76.png',
+		'img_icon_res3_s': 'res/new/linh_thach_vip_36.png',
+		'res_ico_3': 'res/new/linh_thach_vip_76.png'
+	};
+
 	/* Cocos keeps a reference to the SpriteFrame rather than looking it up
 	 * again. Register an empty node with res.js and replace its frame when the
 	 * .sfb index arrives. */
 	function createFromFrameName(Cls, name) {
+		if (CUSTOM_FRAME_IMAGE_MAP[name]) {
+			var customTex = cc.textureCache.getTextureForKey(CUSTOM_FRAME_IMAGE_MAP[name]) || cc.textureCache.addImage(CUSTOM_FRAME_IMAGE_MAP[name]);
+			if (customTex) return new Cls(customTex);
+			return new Cls(CUSTOM_FRAME_IMAGE_MAP[name]);
+		}
 		var frame = lookupFrame(name);
 		if (!isBlankFrame(frame)) return new Cls('#' + name);
 
@@ -2895,6 +2946,12 @@
 	var baseInitWithSpriteFrameName = cc.Sprite.prototype.initWithSpriteFrameName;
 	cc.Sprite.prototype.initWithSpriteFrameName = function (name) {
 		if (!name) return false;
+		if (CUSTOM_FRAME_IMAGE_MAP[name]) {
+			var customTex = cc.textureCache.getTextureForKey(CUSTOM_FRAME_IMAGE_MAP[name]) || cc.textureCache.addImage(CUSTOM_FRAME_IMAGE_MAP[name]);
+			if (customTex && this.initWithTexture) {
+				return this.initWithTexture(customTex, cc.rect(0, 0, customTex.width, customTex.height));
+			}
+		}
 		if (!isBlankFrame(lookupFrame(name)))
 			return baseInitWithSpriteFrameName.apply(this, arguments);
 
@@ -2916,6 +2973,14 @@
 	 * null-on-miss behavior while making late atlas assignment safe. */
 	var baseSpriteSetSpriteFrame = cc.Sprite.prototype.setSpriteFrame;
 	cc.Sprite.prototype.setSpriteFrame = function (frame) {
+		if (typeof frame === 'string' && CUSTOM_FRAME_IMAGE_MAP[frame]) {
+			var customTex = cc.textureCache.getTextureForKey(CUSTOM_FRAME_IMAGE_MAP[frame]) || cc.textureCache.addImage(CUSTOM_FRAME_IMAGE_MAP[frame]);
+			if (customTex && this.setTexture) {
+				this.setTexture(customTex);
+				if (this.setTextureRect) this.setTextureRect(cc.rect(0, 0, customTex.width, customTex.height));
+				return;
+			}
+		}
 		if (typeof frame !== 'string') {
 			return baseSpriteSetSpriteFrame.apply(this, arguments);
 		}

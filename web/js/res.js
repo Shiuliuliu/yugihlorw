@@ -182,17 +182,34 @@
 		return frames;
 	}
 
+	var CUSTOM_ICON_REPLACEMENTS = {
+		'img_icon_res1_s': { path: 'res/new/linh_thach_34.png', w: 34, h: 34 },
+		'res_ico_1': { path: 'res/new/linh_thach_76.png', w: 76, h: 76 },
+		'img_icon_res3_s': { path: 'res/new/linh_thach_vip_36.png', w: 32, h: 36 },
+		'res_ico_3': { path: 'res/new/linh_thach_vip_76.png', w: 76, h: 76 }
+	};
+
 	function addFrames(frames, texture, owner) {
 		for (var i = 0; i < frames.length; i++) {
 			var f = frames[i];
-			/* Keep the packed atlas footprint as recorded in the SFB. Cocos'
-			 * WebGL sprite path uses the rotated flag to swap the UV axes; doing
-			 * that here as well samples the adjacent atlas entry. Canvas' own
-			 * rotated-frame path performs the same conversion when needed. */
-			var rect = cc.rect(f.x, f.y, f.w, f.h);
-			var frame = new cc.SpriteFrame(texture, rect, f.rotated,
-						       cc.p(f.ox, f.oy),
-						       cc.size(f.ow, f.oh));
+			var customIcon = CUSTOM_ICON_REPLACEMENTS[f.name];
+			var frame = null;
+			if (customIcon) {
+				var iconTex = cc.textureCache.getTextureForKey(customIcon.path) || cc.textureCache.addImage(customIcon.path);
+				if (iconTex) {
+					frame = new cc.SpriteFrame(iconTex, cc.rect(0, 0, customIcon.w, customIcon.h), false, cc.p(0, 0), cc.size(customIcon.w, customIcon.h));
+				}
+			}
+			if (!frame) {
+				/* Keep the packed atlas footprint as recorded in the SFB. Cocos'
+				 * WebGL sprite path uses the rotated flag to swap the UV axes; doing
+				 * that here as well samples the adjacent atlas entry. Canvas' own
+				 * rotated-frame path performs the same conversion when needed. */
+				var rect = cc.rect(f.x, f.y, f.w, f.h);
+				frame = new cc.SpriteFrame(texture, rect, f.rotated,
+							       cc.p(f.ox, f.oy),
+							       cc.size(f.ow, f.oh));
+			}
 			cc.spriteFrameCache.addSpriteFrame(frame, f.name);
 			if (owner) {
 				(R.framesOf[owner] || (R.framesOf[owner] = [])).push(f.name);
@@ -414,8 +431,14 @@
 	 * fetching
 	 * ------------------------------------------------------------------ */
 
+	function versionedUrl(url) {
+		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v8';
+		if (!url || typeof url !== 'string') return url;
+		return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
+	}
+
 	function fetchBuffer(url) {
-		return fetch(url).then(function (r) {
+		return fetch(versionedUrl(url)).then(function (r) {
 			if (!r.ok) throw new Error(r.status + ' ' + url);
 			return r.arrayBuffer();
 		});
@@ -427,7 +450,7 @@
 		var tex = cc.textureCache.getTextureForKey(cleanPath) || cc.textureCache.getTextureForKey(path);
 		if (tex) return Promise.resolve(tex);
 		return new Promise(function (resolve) {
-			var t = cc.textureCache.addImage(R.base + cleanPath.replace(/^res\//, ''),
+			var t = cc.textureCache.addImage(versionedUrl(R.base + cleanPath.replace(/^res\//, '')),
 						 function (t) { resolve(t); });
 			if (!t) resolve(null);
 		});
@@ -496,7 +519,7 @@
 					}).catch(function (e) { cc.log('[res] ' + name + ': ' + e); });
 				}
 				if (/\.lan$/.test(name)) {
-					return fetch(dir + name).then(function (r) { return r.text(); })
+					return fetch(versionedUrl(dir + name)).then(function (r) { return r.text(); })
 						.then(function (text) {
 							/* ClientData.addLanguage splits the file on LF
 							 * and then walks a quoted field until it finds
@@ -693,7 +716,7 @@
 
 		R.texts = {};
 		return Promise.all(wanted.map(function (path) {
-			return fetch(R.base + path.replace(/^res\//, ''))
+			return fetch(versionedUrl(R.base + path.replace(/^res\//, '')))
 				.then(function (r) { return r.ok ? r.text() : null; })
 				.then(function (text) {
 					/* the plists ship with a BOM, which the XML parser
@@ -722,7 +745,7 @@
 
 		R.languageTexts = [];
 		return Promise.all(entries.map(function (name) {
-			return fetch(R.base + 'lan.lcres/' + name)
+			return fetch(versionedUrl(R.base + 'lan.lcres/' + name))
 				.then(function (r) { return r.ok ? r.text() : null; })
 				.then(function (text) {
 					if (!text) return;
@@ -733,6 +756,58 @@
 				})
 				.catch(function () { /* optional */ });
 		})).then(function () { return entries.length; });
+	};
+
+	/* Preload custom icons (Linh Thach, Linh Thach Cao Cap) and custom buttons */
+	R.preloadCustomAssets = function () {
+		var assets = [
+			'res/new/linh_thach_34.png',
+			'res/new/linh_thach_76.png',
+			'res/new/linh_thach_vip_36.png',
+			'res/new/linh_thach_vip_76.png',
+			'res/new/buttons/confirm_120x60.png',
+			'res/new/buttons/confirm_140x78.png',
+			'res/new/buttons/confirm_160x78.png',
+			'res/new/buttons/confirm_180x78.png',
+			'res/new/buttons/confirm_200x78.png',
+			'res/new/buttons/confirm_220x78.png',
+			'res/new/buttons/confirm_240x78.png',
+			'res/new/buttons/cancel_120x60.png',
+			'res/new/buttons/cancel_140x78.png',
+			'res/new/buttons/cancel_160x78.png',
+			'res/new/buttons/cancel_180x78.png',
+			'res/new/buttons/cancel_200x78.png',
+			'res/new/buttons/cancel_220x78.png',
+			'res/new/buttons/cancel_240x78.png',
+			'res/new/buttons/red_120x60.png',
+			'res/new/buttons/red_140x78.png',
+			'res/new/buttons/red_160x78.png',
+			'res/new/buttons/red_180x78.png',
+			'res/new/buttons/red_200x78.png',
+			'res/new/buttons/red_220x78.png',
+			'res/new/buttons/red_240x78.png'
+		];
+		var promises = assets.map(function (path) {
+			return new Promise(function (resolve) {
+				cc.textureCache.addImage(versionedUrl(path), function (tex) {
+					if (tex && !(tex instanceof Error)) {
+						cc.textureCache._textures[path] = tex;
+					}
+					resolve(tex);
+				});
+			});
+		});
+		return Promise.all(promises).then(function () {
+			Object.keys(CUSTOM_ICON_REPLACEMENTS).forEach(function (name) {
+				var info = CUSTOM_ICON_REPLACEMENTS[name];
+				var tex = cc.textureCache.getTextureForKey(info.path) || cc.textureCache.getTextureForKey(versionedUrl(info.path));
+				if (tex) {
+					var frame = new cc.SpriteFrame(tex, cc.rect(0, 0, info.w, info.h), false, cc.p(0, 0), cc.size(info.w, info.h));
+					cc.spriteFrameCache.addSpriteFrame(frame, name);
+					R.resolveFrame(name, frame);
+				}
+			});
+		}).catch(function(e) { console.warn('[res] preloadCustomAssets notice:', e); });
 	};
 
 	R.announce = function (name) {
