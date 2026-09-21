@@ -232,6 +232,7 @@ function var_0_1.updateMail(arg_20_0, arg_20_1)
 	arg_20_0:updateView()
 end
 
+local BaseForm = _G.BaseForm or require("BaseForm")
 local var_0_2 = class("MailForm", BaseForm)
 local var_0_3 = cc.size(1010, 640)
 
@@ -253,7 +254,10 @@ function var_0_2.create()
 end
 
 function var_0_2.init(arg_22_0)
-	var_0_2.super.init(arg_22_0, var_0_3, Str(STR.MAIL), bor(BaseForm.FLAG.ADVANCE_TITLE_BG))
+	local superInit = (var_0_2.super and var_0_2.super.init) or (BaseForm and BaseForm.init)
+	if superInit then
+		superInit(arg_22_0, var_0_3, Str(STR.MAIL), bor(BaseForm.FLAG.ADVANCE_TITLE_BG))
+	end
 	arg_22_0._form:setTouchEnabled(false)
 	arg_22_0:createSystemMailArea()
 end
@@ -334,7 +338,14 @@ function var_0_2.showSystemTabFlag(arg_26_0)
 end
 
 function var_0_2.onEnter(arg_27_0)
-	var_0_2.super.onEnter(arg_27_0)
+	local superEnter = (var_0_2.super and var_0_2.super.onEnter) or (BaseForm and BaseForm.onEnter)
+	if superEnter then
+		superEnter(arg_27_0)
+	end
+
+	if _G.loadPlayerMailsFromServer then
+		pcall(_G.loadPlayerMailsFromServer)
+	end
 
 	arg_27_0._listeners = {}
 
@@ -352,17 +363,28 @@ function var_0_2.onEnter(arg_27_0)
 end
 
 function var_0_2.onExit(arg_30_0)
-	var_0_2.super.onExit(arg_30_0)
+	local superExit = (var_0_2.super and var_0_2.super.onExit) or (BaseForm and BaseForm.onExit)
+	if superExit then
+		superExit(arg_30_0)
+	end
 
 	for iter_30_0 = 1, #arg_30_0._listeners do
 		lc.Dispatcher:removeEventListener(arg_30_0._listeners[iter_30_0])
 	end
 
-	ClientView.getMenuUI():updateMailFlag()
+	pcall(function()
+		local menu = ClientView and ClientView.getMenuUI and ClientView.getMenuUI()
+		if menu and menu.updateMailFlag then
+			menu:updateMailFlag()
+		end
+	end)
 end
 
 function var_0_2.onCleanup(arg_31_0)
-	var_0_2.super.onCleanup(arg_31_0)
+	local superCleanup = (var_0_2.super and var_0_2.super.onCleanup) or (BaseForm and BaseForm.onCleanup)
+	if superCleanup then
+		superCleanup(arg_31_0)
+	end
 end
 
 function var_0_2.refreshSystemMails(arg_32_0)

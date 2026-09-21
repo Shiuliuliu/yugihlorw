@@ -17,6 +17,7 @@ import random
 import struct
 import gzip
 import urllib.request
+import urllib.parse
 
 try:
     sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
@@ -24,15 +25,78 @@ try:
 except Exception:
     pass
 
-mimetypes.add_type('font/ttf', '.ttf')
-mimetypes.add_type('font/woff', '.woff')
-mimetypes.add_type('font/woff2', '.woff2')
-
 HTTP_PORT = 8080
 WS_PORT = 9192
-SHOP_PORT = int(os.environ.get("SHOP_PORT", 8082))
-SHOP_SERVER_URL = os.environ.get("SHOP_SERVER_URL", f"http://127.0.0.1:{SHOP_PORT}")
+CHAT_HTTP_PORT = 8084
+CHAT_WS_PORT = 9193
+SHOP_HTTP_PORT = 8082
+SURVIVAL_HTTP_PORT = 8085
 WEB_DIR = r"D:\yugitauapk\web"
+
+FIXED_DEPOT_PRICES = {
+    40209: 200000,
+    20005: 5000,
+    20051: 100000,
+    20030: 100000,
+    40713: 500000,
+    12248: 500000
+}
+
+ALL_SHOP_PRODUCTS = {
+    'depot': {},
+    'rare': {},
+    'diamond': {},
+    'union': {},
+    'collect': {},
+    'ancient': {},
+    'vote': {},
+    'goods': {},
+    'privilege': {}
+}
+
+ALL_CARDS_MAP = {}
+
+def parse_lua_products(fp):
+    items = {}
+    if not os.path.exists(fp):
+        return items
+    try:
+        with open(fp, 'r', encoding='utf-8', errors='ignore') as f:
+            txt = f.read()
+        import re
+        for m in re.finditer(r'\[(\d+)\]\s*=\s*\{([^}]+)\}', txt):
+            pid = int(m.group(1))
+            d = {}
+            for p in re.finditer(r'\[\"_(\w+)\"\]\s*=\s*([^,]+)', m.group(2)):
+                val = p.group(2).strip().strip('"')
+                try:
+                    if '.' in val: val = float(val)
+                    else: val = int(val)
+                except: pass
+                d[p.group(1)] = val
+            items[pid] = d
+    except Exception as e:
+        print(f"[SHOP LOAD ERROR] {fp}: {e}")
+    return items
+
+def load_all_shop_data():
+    global ALL_SHOP_PRODUCTS
+    data_dir = os.path.join(WEB_DIR, "data")
+    file_map = {
+        'depot': 'products_ex.lua',
+        'rare': 'rare_products.lua',
+        'diamond': 'diamond_products.lua',
+        'union': 'union_products_ex.lua',
+        'collect': 'collection_products.lua',
+        'ancient': 'ancient_products.lua',
+        'vote': 'vote_products.lua',
+        'goods': 'products.lua',
+        'privilege': 'privilege_products.lua'
+    }
+    for stype, fname in file_map.items():
+        fp = os.path.join(data_dir, fname)
+        ALL_SHOP_PRODUCTS[stype] = parse_lua_products(fp)
+    print(f"[SHOP DATA] Loaded products: {', '.join(f'{k}:{len(v)}' for k, v in ALL_SHOP_PRODUCTS.items())}")
 
 DB_CONFIG = {
     'host': '127.0.0.1',
@@ -46,41 +110,80 @@ DB_CONFIG = {
 def get_db():
     return pymysql.connect(**DB_CONFIG, cursorclass=pymysql.cursors.DictCursor)
 
-def forward_to_shop_server(path, body_bytes):
-    """Chuyển tiếp request liên quan đến Shop/Mua Gói/Giftcode sang Server 2 chuyên trách (cổng 8082)."""
+ALL_CARDS_BY_QUALITY = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
+ALL_SR_AND_BELOW_CARDS = []
+SERVER_LIYA_CARDS_MAP = {}
+SERVER_CHAR_CARDS_MAP = {}
+
+def load_pack_mappings():
+    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    liya_path = os.path.join(base_dir, 'liya_cards_map.json')
+    char_path = os.path.join(base_dir, 'char_cards_map.json')
+
     try:
-        url = f"{SHOP_SERVER_URL}{path}"
-        req = urllib.request.Request(url, data=body_bytes, headers={'Content-Type': 'application/json'})
-        with urllib.request.urlopen(req, timeout=5) as response:
-            resp_bytes = response.read()
-            return json.loads(resp_bytes.decode('utf-8'))
-    except urllib.error.HTTPError as e:
-        try:
-            resp_bytes = e.read()
-            return json.loads(resp_bytes.decode('utf-8'))
-        except Exception:
-            return {"code": e.code, "msg": str(e)}
+        if os.path.isfile(liya_path):
+            with open(liya_path, 'r', encoding='utf-8') as f:
+                _lm = json.load(f)
+                SERVER_LIYA_CARDS_MAP = {int(k): [int(x) for x in v] for k, v in _lm.items()}
+            print(f"[WEB SERVER] Loaded {len(SERVER_LIYA_CARDS_MAP)} Liya pack mappings.")
     except Exception as e:
-        # Nếu Shop server chưa bật hoặc lỗi kết nối, log cảnh báo để rơi vào fallback
-        print(f"[SHOP PROXY ERR] {path}: {e}")
-        return None
+        print(f"[WEB SERVER] Error loading liya_cards_map.json: {e}")
 
-WS_CONNECTED_CLIENTS = set()
-
-def get_online_player_count():
-    ws_count = len(WS_CONNECTED_CLIENTS)
-    db_active = 0
     try:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                cur.execute("SELECT COUNT(*) FROM accounts WHERE last_login >= NOW() - INTERVAL 15 MINUTE")
-                row = cur.fetchone()
-                if row:
-                    db_active = row[0] if isinstance(row, (list, tuple)) else row.get('COUNT(*)', 0)
-    except Exception:
-        pass
-    return max(ws_count, db_active, 1)
+        if os.path.isfile(char_path):
+            with open(char_path, 'r', encoding='utf-8') as f:
+                _cm = json.load(f)
+                SERVER_CHAR_CARDS_MAP = {int(k): [int(x) for x in v] for k, v in _cm.items()}
+            print(f"[WEB SERVER] Loaded {len(SERVER_CHAR_CARDS_MAP)} Character pack mappings.")
+    except Exception as e:
+        print(f"[WEB SERVER] Error loading char_cards_map.json: {e}")
 
+def init_global_cards_cache(cur=None):
+    global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS
+    def _do(cursor):
+        cursor.execute("""
+            SELECT id, name, quality FROM (
+                SELECT id, name, quality FROM card_monsters
+                UNION ALL SELECT id, name, quality FROM card_spells
+                UNION ALL SELECT id, name, quality FROM card_traps
+                UNION ALL SELECT id, name, quality FROM card_extra
+            ) AS all_cards
+        """)
+        rows = cursor.fetchall()
+        ALL_CARDS_MAP.clear()
+        for q in ALL_CARDS_BY_QUALITY:
+            ALL_CARDS_BY_QUALITY[q].clear()
+        ALL_SR_AND_BELOW_CARDS.clear()
+        for r in rows:
+            cid = int(r['id'])
+            cname = r['name']
+            cq = (r['quality'] or 'N').upper()
+            cobj = {'id': cid, 'name': cname, 'quality': cq}
+            ALL_CARDS_MAP[cid] = cobj
+            if cq in ALL_CARDS_BY_QUALITY:
+                ALL_CARDS_BY_QUALITY[cq].append(cobj)
+            else:
+                ALL_CARDS_BY_QUALITY['N'].append(cobj)
+            if cq in ('SR', 'R', 'N'):
+                ALL_SR_AND_BELOW_CARDS.append(cobj)
+        print(f"[WEB SERVER] Loaded {len(ALL_CARDS_MAP)} cards cache (GR: {len(ALL_CARDS_BY_QUALITY['GR'])}, UR: {len(ALL_CARDS_BY_QUALITY['UR'])}, SR: {len(ALL_CARDS_BY_QUALITY['SR'])}, R: {len(ALL_CARDS_BY_QUALITY['R'])}, N: {len(ALL_CARDS_BY_QUALITY['N'])}).")
+    try:
+        if cur:
+            _do(cur)
+        else:
+            with get_db() as conn:
+                with conn.cursor() as c:
+                    _do(c)
+    except Exception as ex:
+        print(f"[CARDS CACHE ERROR] {ex}")
+
+try:
+    load_all_shop_data()
+    init_global_cards_cache()
+    load_pack_mappings()
+except Exception as ex:
+    print(f"[STARTUP SHOP INIT WARN] {ex}")
 
 CANONICAL_LEVELS = [
     # Difficulty 1 (40 levels, 10 chapters x 4)
@@ -126,40 +229,6 @@ def get_next_level(level_id):
     return level_id + 1
 
 
-BANNED_DECK_CARDS = {40657, 40693, 40694}  # ES-Ca Tụng, TrickStar-Delfiendium, TrickStar-Bella Madonna
-
-def sanitize_replay_data(raw_data):
-    if not isinstance(raw_data, dict):
-        return raw_data
-
-    def _clean_seq(item):
-        if not item:
-            return []
-        if isinstance(item, list):
-            return [_clean_seq(x) if isinstance(x, (dict, list)) else x for x in item]
-        if isinstance(item, dict):
-            items = []
-            for k, v in item.items():
-                try:
-                    idx = int(k)
-                    items.append((idx, _clean_seq(v) if isinstance(v, (dict, list)) else v))
-                except (ValueError, TypeError):
-                    pass
-            if items:
-                items.sort(key=lambda x: x[0])
-                return [v for _, v in items]
-            return item
-        return item
-
-    for side in ['player', 'opponent']:
-        side_obj = raw_data.get(side)
-        if isinstance(side_obj, dict):
-            for field in ['_usedCards', '_cards', '_initCards']:
-                if field in side_obj:
-                    side_obj[field] = _clean_seq(side_obj[field])
-    return raw_data
-
-
 CHAR_PACKAGE_KEYWORDS = {
     # Mutoh Yugi (ID 3)
     3: ['Phù Thủy Áo Đen', 'Kuriboh', 'Hiệp Sĩ'],
@@ -182,13 +251,10 @@ CHAR_PACKAGE_KEYWORDS = {
     10402: ['Amazoness', 'Gió Lốc Windwitch'],
     10403: ['Amazoness', 'Gió Lốc Windwitch'],
     # Jaden Yuki (ID 15)
-    15: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
-    11201: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
-    11210: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
-    11250: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
-    11501: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
-    11502: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
-    11503: ['Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Anh Hùng Định Mệnh', 'Anh Hùng Số Mệnh', 'EHERO'],
+    15: ['Anh Hùng Nguyên Tố'],
+    11501: ['Anh Hùng Nguyên Tố'],
+    11502: ['Anh Hùng Nguyên Tố'],
+    11503: ['Anh Hùng Nguyên Tố'],
     # Yusei Fudo (ID 16)
     16: ['Phế Liệu Sắt', 'Công Nghệ TG'],
     11601: ['Phế Liệu Sắt', 'Công Nghệ TG'],
@@ -243,22 +309,10 @@ LIYA_PACKAGE_KEYWORDS = {
     17: ['Áo Giáp Bóng Đêm Nekroz', 'Kết Giới Băng', 'Ác Quỷ Nghi Thức'],
     18: ['hầu gái nửa rồng', 'Nòng Súng Borrel', 'Rồng Sấm Sét', 'Rồng Lửa Đỏ'],
     19: ['Ngôi sao lừa đảo', 'Công Chúa Cổ Tích', 'Cô Gái Vận Mệnh'],
-    20: ['Bụi Sao', 'Rồng Bụi Sao', 'Cực Tinh Nordic', 'Cực Thần Aesir', 'Cộng Hưởng Resonator'],
-    21: ['Jura', 'Jurrac', 'Chiến Binh Road', 'Kiếm sĩ X'],
-    22: ['Kỵ Sĩ Bóng Đêm', 'Ngục Tối', 'Quốc Vương Hủy Diệt', 'Kiếm sĩ XX'],
-    23: ['Synchron', 'Garuda', 'Hoa Hồng', 'Titania'],
-    24: ['Psychic', 'Niệm Lực', 'Thông Linh'],
-    25: ['Ảo Ảnh', 'Thalia', 'Jura-Giganoto', 'Master Gig'],
-    26: ['Junk', 'Sắt Vụn', 'Biến Hình', 'Dịch Chuyển'],
-    27: ['Gishki', 'Lắc Thăm', 'Vô Hiệu'],
-    28: ['Gagaga', 'Cao Bồi', 'Cơ Hội Nhân Đôi'],
-    29: ['Harpie', 'Mắt Đỏ', 'Kết Giới Băng'],
-    30: ['Ma Cà Rồng', 'Vampire', 'Gishki', 'Mắt Đỏ'],
-    31: ['Nhập Ma', 'Ophion', 'Coppelia'],
-    32: ['HERO', 'Neos', 'Anh hùng', 'Anh Hùng Nguyên Tố', 'Anh Hùng Vận Mệnh', 'Cú Đấm Thần Thánh']
+    20: ['Bụi Sao', 'Rồng Bụi Sao', 'Cực Tinh Nordic', 'Cực Thần Aesir', 'Cộng Hưởng Resonator']
 }
 
-# 2 distinct GR/UR cards per Liya pack, distributed across all 32 packs
+# 2 distinct GR cards per Liya pack, distributed across all 20 packs
 LIYA_PACKAGE_GR = {
     1: [10270, 10293], # Osiris, Người lính Titan
     2: [10304, 10305], # ảo tưởng sai lầm, Mã thông báo ảo ảnh
@@ -279,19 +333,7 @@ LIYA_PACKAGE_GR = {
     17: [20233, 20352], # Cú đấm thần thánh, Ngôi mộ vị thần ràng buộc
     18: [20549, 20551], # Nghi thức kết hợp mắt đỏ, Sự kết hợp mắt đỏ thực sự
     19: [20552, 20566], # Nghi lễ mắt đỏ thực sự, Excalibur Thánh Kiếm
-    20: [20641, 20711], # Cánh đồng Xunfeng, quạt lông vũ Harpy
-    21: [20324, 11011], # Lãnh Địa Gây Rối, Jura-Herra
-    22: [11042, 11040], # Kỵ Sĩ Bóng Đêm, Hoàng Hậu Ngục Tối
-    23: [11069, 20398], # Thần Gió·Garuda, Sóng Synchron Tinh Thần
-    24: [11102, 40121], # Thú Niệm Động Lực, Y Sĩ Thông Linh Niệm Lực
-    25: [30242, 30243], # Hình Bóng Quá Khứ, Ảo Ảnh Đại Dương
-    26: [11166, 20442], # Dịch Chuyển Cực Đại, Sao Biến Hình
-    27: [20142, 30259], # Lắc Thăm, Vô Hiệu
-    28: [20512, 11280], # Gagaga Điện Kích, Gagaga Em Gái
-    29: [20551, 11354], # Dung Hợp Mắt Đỏ, Harpie Điều Chế
-    30: [20552, 11387], # Nghi Thức Mắt Đỏ, Gishki Tà Ác Bốn Tay Ăn Thịt
-    31: [40265, 11424], # Nhập Ma Long Tổ·Ophion, Người Cầm Trượng Song Xà Nhập Ma
-    32: [20233, 11463]  # Cú Đấm Thần Thánh, Anh hùng nguyên tố · Gangjiaxia
+    20: [20641, 20711]  # Cánh đồng Xunfeng, quạt lông vũ Harpy
 }
 
 # Thematic GR cards for character packs
@@ -300,80 +342,164 @@ CHAR_PACKAGE_GR = {
     2: [40250, 20779], # Kaiba: Rồng bạc mắt xanh, khổng lồ
     5: [20551, 11365], # Joey: Sự kết hợp mắt đỏ, Vua Mắt Đỏ
     15: [40336, 21046], # Jaden: Tinh Vân Xinyuxia, kết hợp anh hùng
+    11201: [40336, 21046],
+    11210: [40336, 21046],
+    11250: [40336, 21046],
+    12: [40336, 21046],
     18: [11513, 21100], # Marik: Đọa Thiên Sứ Ixchel, Sự bố thí thiên thần
     16: [20778],        # Yusei: Người thu giữ linh hồn
     8: [10407],         # Bonz: Tà Thần Thần Hóa Thân
     11: [10763]         # Pegasus: Dực Thần Long Ra
 }
 
-SERVER_LIYA_CARDS_MAP = {}
-SERVER_CHAR_CARDS_MAP = {}
-try:
-    with open('liya_cards_map.json', 'r', encoding='utf-8') as f:
-        _lm = json.load(f)
-        SERVER_LIYA_CARDS_MAP = {int(k): [int(x) for x in v] for k, v in _lm.items()}
-    print(f"[SERVER] Loaded {len(SERVER_LIYA_CARDS_MAP)} Liya pack mappings.")
-except Exception as e:
-    print(f"[SERVER] Error loading liya_cards_map.json: {e}")
+def resolve_pack_cards(pkg_num, req_pool=None):
+    cards = []
+    # 1. Overwritten character / Liya pack mappings always take precedence
+    if pkg_num in SERVER_CHAR_CARDS_MAP:
+        cards = SERVER_CHAR_CARDS_MAP[pkg_num]
+    elif pkg_num in SERVER_LIYA_CARDS_MAP:
+        cards = SERVER_LIYA_CARDS_MAP[pkg_num]
+    elif pkg_num in (11201, 11210, 11250, 15, 12):
+        cards = SERVER_CHAR_CARDS_MAP.get(11201) or SERVER_CHAR_CARDS_MAP.get(15) or SERVER_CHAR_CARDS_MAP.get(12) or []
+    elif 101001 <= pkg_num <= 135050:
+        liya_idx = (pkg_num - 100000) // 1000
+        cards = SERVER_LIYA_CARDS_MAP.get(pkg_num) or SERVER_LIYA_CARDS_MAP.get(liya_idx) or []
+    elif 1 <= pkg_num <= 50 and pkg_num in SERVER_LIYA_CARDS_MAP:
+        cards = SERVER_LIYA_CARDS_MAP[pkg_num]
+    elif 10000 <= pkg_num < 20000:
+        cid = (pkg_num - 10000) // 100
+        cards = SERVER_CHAR_CARDS_MAP.get(pkg_num) or SERVER_CHAR_CARDS_MAP.get(cid) or []
 
-try:
-    with open('char_cards_map.json', 'r', encoding='utf-8') as f:
-        _cm = json.load(f)
-        SERVER_CHAR_CARDS_MAP = {int(k): [int(x) for x in v] for k, v in _cm.items()}
-    print(f"[SERVER] Loaded {len(SERVER_CHAR_CARDS_MAP)} Character pack mappings.")
-except Exception as e:
-    print(f"[SERVER] Error loading char_cards_map.json: {e}")
+    # 2. Fallback to client req_pool if no server mapping found
+    if not cards and req_pool and len(req_pool) > 0:
+        cards = req_pool
 
-ALL_CARDS_MAP = {}
-ALL_CARDS_BY_QUALITY = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
-ALL_SR_AND_BELOW_CARDS = []
+    return [int(x) for x in cards if int(x) in ALL_CARDS_MAP]
 
-def init_global_cards(cur=None):
-    global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS
-    def _do(cursor):
-        global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS
-        cursor.execute("""
-            SELECT id, name, quality FROM (
-                SELECT id, name, quality FROM card_monsters
-                UNION ALL SELECT id, name, quality FROM card_spells
-                UNION ALL SELECT id, name, quality FROM card_traps
-                UNION ALL SELECT id, name, quality FROM card_extra
-            ) AS all_cards
-        """)
-        rows = cursor.fetchall()
-        ALL_CARDS_MAP.clear()
-        for q in ALL_CARDS_BY_QUALITY:
-            ALL_CARDS_BY_QUALITY[q].clear()
-        ALL_SR_AND_BELOW_CARDS.clear()
-        for r in rows:
-            cid = int(r['id'])
-            cname = r['name']
-            cq = (r['quality'] or 'N').upper()
-            cobj = {'id': cid, 'name': cname, 'quality': cq}
-            ALL_CARDS_MAP[cid] = cobj
-            if cq in ALL_CARDS_BY_QUALITY:
-                ALL_CARDS_BY_QUALITY[cq].append(cobj)
+def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, broadcast_fn=None):
+    pack_cids = resolve_pack_cards(pkg_num, req_pool)
+    pack_by_quality = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
+    for cid in pack_cids:
+        c = ALL_CARDS_MAP.get(cid)
+        if c:
+            q = c.get('quality', 'N')
+            if q in pack_by_quality:
+                pack_by_quality[q].append(c)
             else:
-                ALL_CARDS_BY_QUALITY['N'].append(cobj)
-            if cq in ('SR', 'R', 'N'):
-                ALL_SR_AND_BELOW_CARDS.append(cobj)
-        print(f"[SERVER] Loaded {len(ALL_CARDS_MAP)} total cards into memory cache (GR: {len(ALL_CARDS_BY_QUALITY['GR'])}, UR: {len(ALL_CARDS_BY_QUALITY['UR'])}, SR: {len(ALL_CARDS_BY_QUALITY['SR'])}, R: {len(ALL_CARDS_BY_QUALITY['R'])}, N: {len(ALL_CARDS_BY_QUALITY['N'])}).")
+                pack_by_quality['N'].append(c)
 
-    try:
-        if cur:
-            _do(cur)
+    pack_gr_cards = pack_by_quality['GR'][:]
+    if not pack_gr_cards:
+        gr_cids = []
+        if 101001 <= pkg_num <= 135050:
+            liya_idx = (pkg_num - 100000) // 1000
+            gr_cids = LIYA_PACKAGE_GR.get(liya_idx, [])
+        elif 1 <= pkg_num <= 50 and pkg_num in LIYA_PACKAGE_GR:
+            gr_cids = LIYA_PACKAGE_GR.get(pkg_num, [])
         else:
-            with get_db() as conn:
-                with conn.cursor() as c:
-                    _do(c)
-    except Exception as e:
-        print(f"[SERVER] Error loading global cards into memory: {e}")
+            cid = pkg_num
+            if cid in (11201, 11210, 11250, 15, 12):
+                cid = 15
+            elif 10000 <= cid < 20000:
+                cid = (cid - 10000) // 100
+            elif cid > 100:
+                cid = cid % 100
+            gr_cids = CHAR_PACKAGE_GR.get(cid, [])
+        for gid in gr_cids:
+            if gid in ALL_CARDS_MAP:
+                pack_gr_cards.append(ALL_CARDS_MAP[gid])
+    if not pack_gr_cards:
+        pack_gr_cards = pack_by_quality['UR'][:] or ALL_CARDS_BY_QUALITY.get('GR', [])
 
-try:
-    init_global_cards()
-except Exception as e:
-    print(f"[SERVER] init_global_cards at startup failed: {e}")
+    cards_won = []
+    has_ur = False
+    for card_idx in range(total_cards):
+        user_pity += (1.0 / 3.0)
+        force_ur = (user_pity >= 50.0) and (not has_ur)
+        
+        roll = random.random()
+        is_pack_card = True
+        if force_ur:
+            target_quality = 'UR'
+        elif roll < 0.000001:  # GR: 0.0001%
+            target_quality = 'GR'
+        elif roll < 0.020001:  # UR: 2%
+            target_quality = 'UR'
+        elif roll < 0.120001:  # SR: 10%
+            target_quality = 'SR'
+        elif roll < 0.320001:  # R: 20%
+            target_quality = 'R'
+        elif roll < 0.620001:  # N: 30%
+            target_quality = 'N'
+        else:                  # Remainder: ~38% random filler cards
+            is_pack_card = False
 
+        picked = None
+        if not is_pack_card:
+            # Remainder (~38%): random card from database as in previous commit
+            picked = random.choice(ALL_SR_AND_BELOW_CARDS) if ALL_SR_AND_BELOW_CARDS else random.choice(list(ALL_CARDS_MAP.values()))
+        elif target_quality == 'GR':
+            if pack_gr_cards:
+                picked = random.choice(pack_gr_cards)
+            elif pack_by_quality['UR']:
+                picked = random.choice(pack_by_quality['UR'])
+            else:
+                picked = random.choice(ALL_CARDS_BY_QUALITY.get('GR') or ALL_CARDS_BY_QUALITY.get('UR'))
+        else:
+            # Pick from pack overwritten list
+            if pack_by_quality[target_quality]:
+                picked = random.choice(pack_by_quality[target_quality])
+            else:
+                fallback_order = {
+                    'N': ['R', 'SR', 'UR'],
+                    'R': ['SR', 'N', 'UR'],
+                    'SR': ['R', 'UR', 'N'],
+                    'UR': ['SR', 'R', 'N']
+                }.get(target_quality, ['R', 'SR', 'UR', 'N'])
+                for fq in fallback_order:
+                    if pack_by_quality[fq]:
+                        picked = random.choice(pack_by_quality[fq])
+                        break
+                if not picked and pack_cids:
+                    picked_cid = random.choice(pack_cids)
+                    picked = ALL_CARDS_MAP.get(picked_cid)
+                if not picked:
+                    pool = ALL_CARDS_BY_QUALITY.get(target_quality) or ALL_SR_AND_BELOW_CARDS
+                    picked = random.choice(pool)
+
+        cid = picked['id']
+        cname = picked['name']
+        cquality = picked['quality']
+
+        if cquality in ['UR', 'GR']:
+            user_pity = 0.0
+            if cquality == 'UR':
+                has_ur = True
+            else:
+                char_name = user_acc.get('character_name', '') if user_acc else ''
+                announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa rút được lá bài cấp GR thần thánh [{cname}]!"
+                broadcast_msg = {
+                    "id": int(time.time()*1000) + card_idx,
+                    "timestamp": int(time.time()*1000),
+                    "account_id": 0,
+                    "name": "Hệ Thống",
+                    "level": 99,
+                    "avatar": 101,
+                    "content": announcement,
+                    "msg": announcement,
+                    "type": 2,
+                    "card_id": cid,
+                    "items": [{"info_id": cid, "num": 1}]
+                }
+                if broadcast_fn:
+                    try:
+                        broadcast_fn(broadcast_msg)
+                    except Exception as b_ex:
+                        print(f"[BROADCAST ERROR] {b_ex}")
+
+        cards_won.append({"info_id": cid, "num": 1, "name": cname, "quality": cquality})
+
+    return cards_won, user_pity, has_ur
 
 
 SERVERS = [
@@ -532,8 +658,8 @@ def get_player_full_data(account_id):
                 decks.append({
                     "deck_slot": d['deck_slot'],
                     "deck_name": d['deck_name'],
-                    "cards": [int(c) for c in c_list if int(c) not in BANNED_DECK_CARDS],
-                    "extra_cards": [int(c) for c in extra_c if int(c) not in BANNED_DECK_CARDS],
+                    "cards": c_list,
+                    "extra_cards": extra_c,
                     "is_active": d['is_active']
                 })
             
@@ -560,6 +686,7 @@ def get_player_full_data(account_id):
                 for idx, r in enumerate(top_rows)
             ]
             sign_in_days = max(1, len(checkins))
+            user_mails_list = get_player_mails(account_id)
             return {
                 "account": acc_clean,
                 "cards": cards,
@@ -568,8 +695,200 @@ def get_player_full_data(account_id):
                 "checkins": checkins,
                 "achievements": achievements,
                 "sign_in_days": sign_in_days,
-                "leaderboard": leaderboard
+                "leaderboard": leaderboard,
+                "mails": user_mails_list
             }
+
+LOGIN_GIFT_2209_TITLE = "⚔️ [Tri Ân 22/09] Thần Kiếm Định Mệnh Excalibur (GR)"
+
+def ensure_login_gift_mail(account_id):
+    try:
+        now = datetime.datetime.now()
+        # Today 2026-09-22
+        if now.strftime('%Y-%m-%d') == '2026-09-22':
+            with get_db() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        SELECT id FROM user_mails
+                        WHERE account_id = %s AND title LIKE %s
+                        LIMIT 1
+                    """, (account_id, "%Excalibur (GR)%"))
+                    already = cur.fetchone()
+                    if not already:
+                        mail_title = LOGIN_GIFT_2209_TITLE
+                        mail_content = (
+                            "Chúc mừng bài thủ đã đăng nhập vào ngày 22/09!\n"
+                            "Ban Quản Trị xin gửi tặng bạn lá bài Thần Kiếm Excalibur (GR) "
+                            "(Thanh kiếm trong hòn đá định mệnh - ID: 20566). "
+                            "Chúc bạn có những trận quyết đấu đỉnh cao rực rỡ!"
+                        )
+                        rewards = json.dumps({
+                            "card_id": 20566,
+                            "card_count": 1,
+                            "gold": 20000,
+                            "gem": 100
+                        }, ensure_ascii=False)
+                        cur.execute("""
+                            INSERT INTO user_mails (account_id, title, content, rewards, claimed, created_at)
+                            VALUES (%s, %s, %s, %s, 0, NOW())
+                        """, (account_id, mail_title, mail_content, rewards))
+                        conn.commit()
+                        print(f"[LOGIN GIFT 22/09] Đã trao tặng Thần Kiếm Excalibur (GR) vào hòm thư tài khoản {account_id}")
+    except Exception as e:
+        print(f"[LOGIN GIFT ERR] {e}")
+
+def get_player_mails(account_id):
+    try:
+        ensure_login_gift_mail(account_id)
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT id, account_id, title, content, rewards, claimed, UNIX_TIMESTAMP(created_at) as timestamp
+                    FROM user_mails
+                    WHERE account_id = %s
+                    ORDER BY id DESC LIMIT 50
+                """, (account_id,))
+                rows = cur.fetchall()
+                mails = []
+                for r in rows:
+                    rewards_data = {}
+                    if r.get('rewards'):
+                        if isinstance(r['rewards'], str):
+                            try: rewards_data = json.loads(r['rewards'])
+                            except: rewards_data = {}
+                        elif isinstance(r['rewards'], dict):
+                            rewards_data = r['rewards']
+                    mails.append({
+                        "id": r['id'],
+                        "title": r['title'],
+                        "content": r['content'] or "",
+                        "rewards": rewards_data,
+                        "claimed": int(r['claimed'] or 0),
+                        "timestamp": int(r['timestamp'] or time.time())
+                    })
+                return mails
+    except Exception as e:
+        print(f"[GET MAILS ERR] {e}")
+        return []
+
+def claim_player_mail(account_id, mail_id):
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                if str(mail_id) in ('-1', 'all'):
+                    cur.execute("""
+                        SELECT id, rewards FROM user_mails
+                        WHERE account_id = %s AND (claimed = 0 OR claimed IS NULL)
+                        FOR UPDATE
+                    """, (account_id,))
+                    target_mails = cur.fetchall()
+                else:
+                    cur.execute("""
+                        SELECT id, rewards FROM user_mails
+                        WHERE id = %s AND account_id = %s AND (claimed = 0 OR claimed IS NULL)
+                        FOR UPDATE
+                    """, (mail_id, account_id))
+                    target_mails = cur.fetchall()
+
+                if not target_mails:
+                    return False, "Không có thư nào cần nhận hoặc quà đã nhận trước đó.", {}
+
+                total_rewards = {}
+                cards_to_add = {}  # card_id -> count
+                claimed_ids = []
+                for m in target_mails:
+                    claimed_ids.append(m['id'])
+                    r_json = m.get('rewards')
+                    if isinstance(r_json, str):
+                        try: r_dict = json.loads(r_json)
+                        except: r_dict = {}
+                    elif isinstance(r_json, dict):
+                        r_dict = r_json
+                    else:
+                        r_dict = {}
+
+                    for k, v in r_dict.items():
+                        if k == 'card_id':
+                            try:
+                                cid = int(v)
+                                cnt = int(r_dict.get('card_count', r_dict.get('count', 1)))
+                                if cid > 0 and cnt > 0:
+                                    cards_to_add[cid] = cards_to_add.get(cid, 0) + cnt
+                            except: pass
+                        elif k == 'cards':
+                            if isinstance(v, dict):
+                                for ck, cv in v.items():
+                                    try:
+                                        cid = int(ck)
+                                        cnt = int(cv)
+                                        if cid > 0 and cnt > 0:
+                                            cards_to_add[cid] = cards_to_add.get(cid, 0) + cnt
+                                    except: pass
+                            elif isinstance(v, list):
+                                for item in v:
+                                    if isinstance(item, dict):
+                                        try:
+                                            cid = int(item.get('id', item.get('card_id', 0)))
+                                            cnt = int(item.get('count', item.get('num', 1)))
+                                            if cid > 0 and cnt > 0:
+                                                cards_to_add[cid] = cards_to_add.get(cid, 0) + cnt
+                                        except: pass
+                        elif str(k).startswith('card_') and k != 'card_count':
+                            try:
+                                cid = int(str(k).split('_')[1])
+                                cnt = int(v)
+                                if cid > 0 and cnt > 0:
+                                    cards_to_add[cid] = cards_to_add.get(cid, 0) + cnt
+                            except: pass
+                        else:
+                            try:
+                                total_rewards[k] = total_rewards.get(k, 0) + int(v or 0)
+                            except:
+                                total_rewards[k] = v
+
+                placeholders = ','.join(['%s'] * len(claimed_ids))
+                cur.execute(f"UPDATE user_mails SET claimed = 1, claimed_at = NOW() WHERE id IN ({placeholders})", tuple(claimed_ids))
+
+                # Add cards to user_cards in DB
+                for cid, cnt in cards_to_add.items():
+                    cur.execute("""
+                        INSERT INTO user_cards (account_id, card_id, count)
+                        VALUES (%s, %s, %s)
+                        ON DUPLICATE KEY UPDATE count = count + %s
+                    """, (account_id, cid, cnt, cnt))
+                    print(f"[MAIL CLAIM] Trao tặng {cnt}x thẻ bài ID {cid} cho tài khoản {account_id}")
+
+                if cards_to_add:
+                    total_rewards['cards'] = cards_to_add
+
+                gold_add = total_rewards.get('gold', 0)
+                gem_add = total_rewards.get('gem', 0)
+                gold_cup_add = total_rewards.get('gold_cup', 0)
+                silver_cup_add = total_rewards.get('silver_cup', 0)
+                bronze_cup_add = total_rewards.get('bronze_cup', 0)
+                leya_ticket_add = total_rewards.get('leya_ticket', 0)
+
+                cur.execute("""
+                    UPDATE accounts
+                    SET gold = gold + %s,
+                        gem = gem + %s,
+                        gold_cup = gold_cup + %s,
+                        silver_cup = silver_cup + %s,
+                        bronze_cup = bronze_cup + %s,
+                        leya_ticket = leya_ticket + %s
+                    WHERE id = %s
+                """, (gold_add, gem_add, gold_cup_add, silver_cup_add, bronze_cup_add, leya_ticket_add, account_id))
+
+                conn.commit()
+
+                cur.execute("SELECT id, gold, gem, gold_cup, silver_cup, bronze_cup, leya_ticket FROM accounts WHERE id = %s", (account_id,))
+                updated_acc = cur.fetchone()
+                return True, "Nhận quà thành công!", {"rewards": total_rewards, "account": updated_acc}
+    except Exception as e:
+        print(f"[CLAIM MAIL ERR] {e}")
+        return False, str(e), {}
+
+
 
 def ensure_deck_cards(acc_id, raw_cards=None, raw_extra=None):
     cards = []
@@ -618,9 +937,6 @@ def ensure_deck_cards(acc_id, raw_cards=None, raw_extra=None):
                             extra = [int(c) for c in json.loads(drow['extra_cards'])]
         except Exception as e:
             print(f"[ENSURE DECK DB ERR] {e}")
-
-    cards = [cid for cid in cards if cid not in BANNED_DECK_CARDS]
-    extra = [cid for cid in extra if cid not in BANNED_DECK_CARDS]
 
     starter_pool = [
         10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010,
@@ -674,137 +990,8 @@ def get_gzipped_file(full_path):
     except Exception as e:
         return None
 
-LUA_SRC_CACHE = {
-    'mtimes': {},
-    'data': {},
-    'json_bytes': None,
-    'gz_bytes': None,
-    'etag': None
-}
-
-DATA_DUMPS_CACHE = {
-    'mtimes': {},
-    'data': {},
-    'json_bytes': None,
-    'gz_bytes': None,
-    'etag': None
-}
-
-def get_live_lua_src():
-    src_dir = os.path.join(WEB_DIR, 'src')
-    if not os.path.isdir(src_dir):
-        p = os.path.join(WEB_DIR, 'lua_src.json')
-        if os.path.isfile(p):
-            with open(p, 'rb') as f:
-                b = f.read()
-            return b, gzip.compress(b, 6), f'"{int(os.path.getmtime(p))}"'
-        return b'{}', None, '"empty"'
-
-    current_files = {}
-    changed = False
-    for entry in os.scandir(src_dir):
-        if entry.is_file() and entry.name.endswith('.lua'):
-            mod_name = entry.name[:-4]
-            mtime = entry.stat().st_mtime
-            current_files[mod_name] = (entry.path, mtime)
-            if LUA_SRC_CACHE['mtimes'].get(mod_name) != mtime:
-                changed = True
-
-    if not changed and len(current_files) == len(LUA_SRC_CACHE['mtimes']) and LUA_SRC_CACHE['json_bytes']:
-        return LUA_SRC_CACHE['json_bytes'], LUA_SRC_CACHE['gz_bytes'], LUA_SRC_CACHE['etag']
-
-    for mod_name, (path, mtime) in current_files.items():
-        if LUA_SRC_CACHE['mtimes'].get(mod_name) != mtime or mod_name not in LUA_SRC_CACHE['data']:
-            try:
-                with open(path, 'r', encoding='utf-8') as f:
-                    LUA_SRC_CACHE['data'][mod_name] = f.read()
-                LUA_SRC_CACHE['mtimes'][mod_name] = mtime
-            except Exception as e:
-                print(f"[LUA READ ERR] {mod_name}: {e}")
-
-    deleted = set(LUA_SRC_CACHE['mtimes'].keys()) - set(current_files.keys())
-    for mod_name in deleted:
-        LUA_SRC_CACHE['data'].pop(mod_name, None)
-        LUA_SRC_CACHE['mtimes'].pop(mod_name, None)
-
-    raw = json.dumps(LUA_SRC_CACHE['data'], ensure_ascii=False).encode('utf-8')
-    LUA_SRC_CACHE['json_bytes'] = raw
-    LUA_SRC_CACHE['gz_bytes'] = gzip.compress(raw, compresslevel=6)
-    h = hashlib.md5(raw[:2048] + str(len(raw)).encode()).hexdigest()
-    LUA_SRC_CACHE['etag'] = f'"{h}"'
-    print(f"[LIVE RELOAD] Loaded {len(LUA_SRC_CACHE['data'])} Lua modules ({len(raw)//1024}KB raw, {len(LUA_SRC_CACHE['gz_bytes'])//1024}KB gzip)")
-    return LUA_SRC_CACHE['json_bytes'], LUA_SRC_CACHE['gz_bytes'], LUA_SRC_CACHE['etag']
-
-def get_live_data_dumps():
-    data_dir = os.path.join(WEB_DIR, 'data')
-    if not os.path.isdir(data_dir):
-        p = os.path.join(WEB_DIR, 'data_dumps.json')
-        if os.path.isfile(p):
-            with open(p, 'rb') as f:
-                b = f.read()
-            return b, gzip.compress(b, 6), f'"{int(os.path.getmtime(p))}"'
-        return b'{}', None, '"empty"'
-
-    current_files = {}
-    changed = False
-    for entry in os.scandir(data_dir):
-        if entry.is_file():
-            name = entry.name
-            if name.endswith('.lua') or name.endswith('.json'):
-                mtime = entry.stat().st_mtime
-                current_files[name] = (entry.path, mtime)
-                if DATA_DUMPS_CACHE['mtimes'].get(name) != mtime:
-                    changed = True
-
-    if not changed and len(current_files) == len(DATA_DUMPS_CACHE['mtimes']) and DATA_DUMPS_CACHE['json_bytes']:
-        return DATA_DUMPS_CACHE['json_bytes'], DATA_DUMPS_CACHE['gz_bytes'], DATA_DUMPS_CACHE['etag']
-
-    for name, (path, mtime) in current_files.items():
-        if DATA_DUMPS_CACHE['mtimes'].get(name) != mtime or name not in DATA_DUMPS_CACHE['data']:
-            try:
-                with open(path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                if name == 'teach_dumps.json':
-                    dump_key = 'teach_dumps.json'
-                elif name.endswith('.bin.lua'):
-                    dump_key = name[:-4]
-                elif name.endswith('.lua'):
-                    base = name[:-4]
-                    dump_key = base if base in ('unknown_72', 'unknown_73', 'unknown_74', 'unknown_75') else base + '.bin'
-                elif name.endswith('.bin.json'):
-                    dump_key = name[:-5]
-                elif name.endswith('.json'):
-                    dump_key = name
-                else:
-                    dump_key = name
-
-                DATA_DUMPS_CACHE['data'][dump_key] = content
-                DATA_DUMPS_CACHE['mtimes'][name] = mtime
-            except Exception as e:
-                print(f"[DATA READ ERR] {name}: {e}")
-
-    deleted = set(DATA_DUMPS_CACHE['mtimes'].keys()) - set(current_files.keys())
-    for name in deleted:
-        DATA_DUMPS_CACHE['mtimes'].pop(name, None)
-
-    raw = json.dumps(DATA_DUMPS_CACHE['data'], ensure_ascii=False).encode('utf-8')
-    DATA_DUMPS_CACHE['json_bytes'] = raw
-    DATA_DUMPS_CACHE['gz_bytes'] = gzip.compress(raw, compresslevel=6)
-    h = hashlib.md5(raw[:2048] + str(len(raw)).encode()).hexdigest()
-    DATA_DUMPS_CACHE['etag'] = f'"{h}"'
-    print(f"[LIVE RELOAD] Loaded {len(DATA_DUMPS_CACHE['data'])} Data tables ({len(raw)//1024}KB raw, {len(DATA_DUMPS_CACHE['gz_bytes'])//1024}KB gzip)")
-    return DATA_DUMPS_CACHE['json_bytes'], DATA_DUMPS_CACHE['gz_bytes'], DATA_DUMPS_CACHE['etag']
-
 def preload_static_cache():
-    try:
-        get_live_lua_src()
-    except Exception as e:
-        print(f"[PRELOAD ERR] live lua_src: {e}")
-    try:
-        get_live_data_dumps()
-    except Exception as e:
-        print(f"[PRELOAD ERR] live data_dumps: {e}")
-    preload_list = ['res_manifest.json']
+    preload_list = ['lua_src.json', 'res_manifest.json', 'data_dumps.json']
     for rel in preload_list:
         p = os.path.join(WEB_DIR, rel)
         if os.path.isfile(p):
@@ -814,6 +1001,86 @@ def preload_static_cache():
             raw_sz = os.path.getsize(p)
             gz_sz = len(gz) if gz else 0
             print(f"[CACHE PRELOAD] {rel}: {raw_sz//1024}KB -> {gz_sz//1024}KB (gzip) in {dt:.2f}s")
+
+
+def proxy_to_chat_server(handler, path, post_data=None):
+    try:
+        import urllib.request
+        url = f"http://127.0.0.1:{CHAT_HTTP_PORT}{path}"
+        headers = {'Content-Type': 'application/json'}
+        if post_data is not None:
+            if isinstance(post_data, str):
+                post_data = post_data.encode('utf-8')
+            req = urllib.request.Request(url, data=post_data, headers=headers, method='POST')
+        else:
+            req = urllib.request.Request(url, headers=headers, method='GET')
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            res_body = resp.read()
+            handler.send_response(resp.status)
+            handler.send_header('Content-Type', 'application/json; charset=utf-8')
+            handler.send_header('Content-Length', str(len(res_body)))
+            handler.end_headers()
+            handler.wfile.write(res_body)
+    except Exception as e:
+        print(f"[CHAT PROXY ERR] {path}: {e}")
+        handler._send_json({"code": 500, "msg": f"Chat server error: {e}"}, 500)
+
+def proxy_to_shop_server(handler, path, post_data=None):
+    try:
+        import urllib.request
+        url = f"http://127.0.0.1:{SHOP_HTTP_PORT}{path}"
+        headers = {'Content-Type': 'application/json'}
+        if post_data is not None:
+            if isinstance(post_data, str):
+                post_data = post_data.encode('utf-8')
+            req = urllib.request.Request(url, data=post_data, headers=headers, method='POST')
+        else:
+            req = urllib.request.Request(url, headers=headers, method='GET')
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            res_body = resp.read()
+            handler.send_response(resp.status)
+            handler.send_header('Content-Type', 'application/json; charset=utf-8')
+            handler.send_header('Content-Length', str(len(res_body)))
+            handler.end_headers()
+            handler.wfile.write(res_body)
+            return True
+    except Exception as e:
+        return False
+
+def proxy_to_survival_server(handler, path, post_data=None):
+    try:
+        import urllib.request
+        url = f"http://127.0.0.1:{SURVIVAL_HTTP_PORT}{path}"
+        headers = {'Content-Type': 'application/json', 'Connection': 'close'}
+        if post_data is not None:
+            if isinstance(post_data, str):
+                post_data = post_data.encode('utf-8')
+            req = urllib.request.Request(url, data=post_data, headers=headers, method='POST')
+        else:
+            req = urllib.request.Request(url, headers=headers, method='GET')
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            res_body = resp.read()
+            handler.send_response(resp.status)
+            handler.send_header('Content-Type', 'application/json; charset=utf-8')
+            handler.send_header('Content-Length', str(len(res_body)))
+            handler.send_header('Connection', 'close')
+            handler.end_headers()
+            handler.wfile.write(res_body)
+            return True
+    except Exception as e:
+        print(f"[SURVIVAL PROXY ERR] {path}: {e}")
+        handler._send_json({"code": 502, "msg": f"Survival Server Error: {e}"}, 502)
+        return True
+
+def send_chat_broadcast_to_server(msg_obj):
+    try:
+        import urllib.request
+        data = json.dumps(msg_obj, ensure_ascii=False).encode('utf-8')
+        req = urllib.request.Request(f"http://127.0.0.1:{CHAT_HTTP_PORT}/api/chat_send", data=data, headers={'Content-Type': 'application/json'}, method='POST')
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            pass
+    except Exception as e:
+        print(f"[CHAT FORWARD ERR] {e}")
 
 
 class WebAppHandler(http.server.SimpleHTTPRequestHandler):
@@ -843,16 +1110,17 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(out)
 
-    def _proxy_websocket(self):
+    def _proxy_websocket(self, target_port=WS_PORT, rewrite_path=None):
         try:
-            backend = socket.create_connection(('127.0.0.1', WS_PORT), timeout=5)
+            backend = socket.create_connection(('127.0.0.1', target_port), timeout=5)
         except Exception as e:
-            print(f"[WS PROXY ERR] Failed to connect to backend WS port {WS_PORT}: {e}")
+            print(f"[WS PROXY ERR] Failed to connect to backend WS port {target_port}: {e}")
             self.send_error(502, f"WebSocket backend unavailable: {e}")
             return
 
         try:
-            req_line = f"{self.command} {self.path} {self.request_version}\r\n"
+            path_to_send = rewrite_path if rewrite_path else self.path
+            req_line = f"{self.command} {path_to_send} {self.request_version}\r\n"
             backend.sendall(req_line.encode('latin1'))
             for k, v in self.headers.items():
                 backend.sendall(f"{k}: {v}\r\n".encode('latin1'))
@@ -900,19 +1168,30 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             self.close_connection = True
 
     def do_GET(self):
-        clean_path = self.path.split('?')[0].split('#')[0]
-        if clean_path == '/' or clean_path == '':
-            clean_path = '/index.html'
-
         if not (self.path.startswith('/res/') or self.path.startswith('/src/') or self.path.endswith('.png') or self.path.endswith('.jpg') or self.path.endswith('.js')):
             print(f"[HTTP GET REQUEST] {self.path}")
 
+        if self.path.startswith('/chat_ws'):
+            self._proxy_websocket(target_port=CHAT_WS_PORT, rewrite_path='/ws')
+            return
+
         if self.path.startswith('/ws') or self.headers.get('Upgrade', '').lower() == 'websocket':
-            self._proxy_websocket()
+            self._proxy_websocket(target_port=WS_PORT)
             return
         if self.path.startswith('/api/chat_history'):
-            today_msgs = db_get_today_chat_history()
-            self._send_json({"code": 200, "messages": today_msgs})
+            proxy_to_chat_server(self, self.path)
+            return
+
+        if self.path.startswith('/api/survival/'):
+            proxy_to_survival_server(self, self.path)
+            return
+
+        if self.path.startswith('/api/get_mails'):
+            query = urllib.parse.urlparse(self.path).query
+            params = urllib.parse.parse_qs(query)
+            acc_id = params.get('account_id', [None])[0]
+            mails = get_player_mails(acc_id)
+            self._send_json({"code": 200, "msg": "OK", "mails": mails})
             return
 
         if self.path.startswith('/init.php'):
@@ -935,12 +1214,15 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
 
         if self.path.startswith('/upd'):
             if self.path.endswith('assets/md5') or 'md5' in self.path:
-                md5_path = os.path.join(WEB_DIR, 'updater_assets_md5')
-                if os.path.exists(md5_path):
+                md5_path = r"D:\yugitauapk\extracted\1.0.7\md5" if os.path.exists(r"D:\yugitauapk\extracted\1.0.7\md5") else None
+                # or read from QuyetChienChiThanh_base_sign_1.apk
+                if not md5_path or not os.path.exists(md5_path):
+                    import zipfile
+                    with zipfile.ZipFile(r"D:\yugitauapk\QuyetChienChiThanh_base_sign_1.apk") as z:
+                        md5_bytes = z.read("assets/md5")
+                else:
                     with open(md5_path, 'rb') as f:
                         md5_bytes = f.read()
-                else:
-                    md5_bytes = b""
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/octet-stream')
                 self.send_header('Content-Length', str(len(md5_bytes)))
@@ -958,52 +1240,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             print(f"[UPD SERVER] Responded to {self.path} with {upd_payload.decode()}")
             return
 
-        # Live dynamic loading for Lua source modules
-        if clean_path == '/lua_src.json':
-            raw_bytes, gz_bytes, etag = get_live_lua_src()
-            if self.headers.get('If-None-Match') == etag:
-                self.send_response(304)
-                self.send_header('Cache-Control', 'no-cache, must-revalidate')
-                self.send_header('ETag', etag)
-                self.end_headers()
-                return
-            accept_enc = self.headers.get('Accept-Encoding', '')
-            can_gzip = ('gzip' in accept_enc.lower()) and (gz_bytes is not None)
-            out_bytes = gz_bytes if can_gzip else raw_bytes
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
-            if can_gzip:
-                self.send_header('Content-Encoding', 'gzip')
-            self.send_header('Content-Length', str(len(out_bytes)))
-            self.send_header('Cache-Control', 'no-cache, must-revalidate')
-            self.send_header('ETag', etag)
-            self.end_headers()
-            self.wfile.write(out_bytes)
-            return
-
-        # Live dynamic loading for Data dumps
-        if clean_path == '/data_dumps.json':
-            raw_bytes, gz_bytes, etag = get_live_data_dumps()
-            if self.headers.get('If-None-Match') == etag:
-                self.send_response(304)
-                self.send_header('Cache-Control', 'no-cache, must-revalidate')
-                self.send_header('ETag', etag)
-                self.end_headers()
-                return
-            accept_enc = self.headers.get('Accept-Encoding', '')
-            can_gzip = ('gzip' in accept_enc.lower()) and (gz_bytes is not None)
-            out_bytes = gz_bytes if can_gzip else raw_bytes
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
-            if can_gzip:
-                self.send_header('Content-Encoding', 'gzip')
-            self.send_header('Content-Length', str(len(out_bytes)))
-            self.send_header('Cache-Control', 'no-cache, must-revalidate')
-            self.send_header('ETag', etag)
-            self.end_headers()
-            self.wfile.write(out_bytes)
-            return
-
+        clean_path = self.path.split('?')[0].split('#')[0]
+        if clean_path == '/' or clean_path == '':
+            clean_path = '/index.html'
         rel_path = clean_path.lstrip('/')
         full_path = os.path.normpath(os.path.join(WEB_DIR, rel_path))
 
@@ -1018,20 +1257,29 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
 
                 # Determine caching policy
                 is_versioned = ('?v=' in self.path or '&v=' in self.path)
-                is_immutable = is_versioned and (ext_lower in IMMUTABLE_STATIC_EXTS)
-                is_dynamic_code = ext_lower in ('.js', '.json', '.html', '.css')
-                is_nocache = (not is_versioned) or is_dynamic_code or (clean_path == '/index.html' or clean_path.endswith('.html'))
+                is_nocache = (clean_path == '/index.html' or clean_path.endswith('.html'))
+                is_static_res = clean_path.startswith('/res/') or (ext_lower in IMMUTABLE_STATIC_EXTS)
+                is_immutable = is_static_res and is_versioned
+
+                def apply_cache_headers():
+                    if is_nocache:
+                        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                        self.send_header('Pragma', 'no-cache')
+                        self.send_header('Expires', '0')
+                    elif is_immutable:
+                        self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
+                    elif is_static_res:
+                        self.send_header('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400')
+                    elif is_versioned:
+                        self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
+                    else:
+                        self.send_header('Cache-Control', 'no-cache, must-revalidate')
 
                 # ETag / 304 conditional request check
                 if_none_match = self.headers.get('If-None-Match')
                 if if_none_match and if_none_match == etag:
                     self.send_response(304)
-                    if is_immutable:
-                        self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
-                    elif is_versioned:
-                        self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
-                    else:
-                        self.send_header('Cache-Control', 'no-cache, must-revalidate')
+                    apply_cache_headers()
                     self.send_header('ETag', etag)
                     self.end_headers()
                     return
@@ -1051,13 +1299,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         self.send_header('Content-Encoding', 'gzip')
                         self.send_header('Content-Length', str(len(gz_data)))
                         self.send_header('ETag', etag)
-                        if is_immutable:
-                            self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
-                        elif is_versioned:
-                            self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
-                        else:
-                            self.send_header('Cache-Control', 'no-cache, must-revalidate')
-                            self.send_header('Pragma', 'no-cache')
+                        apply_cache_headers()
                         self.end_headers()
                         self.wfile.write(gz_data)
                         return
@@ -1067,13 +1309,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-Type', ctype)
                 self.send_header('Content-Length', str(size))
                 self.send_header('ETag', etag)
-                if is_immutable:
-                    self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
-                elif is_versioned:
-                    self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
-                else:
-                    self.send_header('Cache-Control', 'no-cache, must-revalidate')
-                    self.send_header('Pragma', 'no-cache')
+                apply_cache_headers()
                 self.end_headers()
 
                 with open(full_path, 'rb') as f:
@@ -1084,17 +1320,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         self.wfile.write(buf)
                 return
             except Exception as e:
-                pass
-
-        if self.path in ('/api/online_count', '/api/online_count/'):
-            resp = json.dumps({"code": 200, "count": get_online_player_count()}).encode('utf-8')
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.send_header('Content-Length', str(len(resp)))
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(resp)
-            return
+                return
 
         super().do_GET()
 
@@ -1107,42 +1333,12 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             except:
                 req = {}
             
-            # -------------------------------------------------------------
-            # DEDICATED SHOP PROXY: Chuyển tiếp các request Shop sang Server 2 (cổng 8082)
-            # -------------------------------------------------------------
-            if self.path in ('/api/buy_package', '/api/buy_gold', '/api/buy_depot',
-                             '/api/redeem_gift_code', '/api/gift_code', '/api/claim_gift',
-                             '/api/checkin', '/api/sync_currency',
-                             '/api/decompose_card', '/api/decompose_all'):
-                proxied = forward_to_shop_server(self.path, body.encode('utf-8'))
-                if proxied is not None:
-                    out = json.dumps(proxied, ensure_ascii=False).encode('utf-8')
-                    status_code = proxied.get('code', 200)
-                    if not (100 <= status_code <= 599):
-                        status_code = 200
-                    self.send_response(status_code)
-                    self.send_header('Content-Type', 'application/json; charset=utf-8')
-                    self.send_header('Content-Length', str(len(out)))
-                    self.send_header('Access-Control-Allow-Origin', '*')
-                    self.end_headers()
-                    self.wfile.write(out)
-                    return
+            if self.path.startswith('/api/survival/'):
+                proxy_to_survival_server(self, self.path, body)
+                return
 
             resp = {}
-            if self.path == '/api/internal_broadcast':
-                msg_payload = req.get('msg')
-                if msg_payload:
-                    CHAT_MESSAGES.append(msg_payload)
-                    if len(CHAT_MESSAGES) > 100:
-                        CHAT_MESSAGES.pop(0)
-                    save_chat_history()
-                    broadcast_ws_sync({"t": "chat_broadcast", "msg": msg_payload})
-                    print(f"[INTERNAL BROADCAST] Relayed: {msg_payload.get('content', '')}")
-                    resp = {"code": 200, "msg": "Broadcasted"}
-                else:
-                    resp = {"code": 400, "msg": "Missing msg payload"}
-
-            elif self.path == '/api/auth/login':
+            if self.path == '/api/auth/login':
                 u = req.get('username', '')
                 p = req.get('password', '')
                 acc, msg = authenticate_account(u, p)
@@ -1187,9 +1383,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     resp = {"code": 400, "msg": msg}
                     print(f"[REGISTER FAIL] User '{u}': {msg}")
 
-            elif self.path in ('/api/online_count', '/api/online_count/'):
-                resp = {"code": 200, "count": get_online_player_count()}
-
             elif self.path == '/api/get_servers':
                 resp = {"code": 200, "servers": SERVERS}
 
@@ -1197,11 +1390,43 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 try:
                     now = datetime.datetime.now()
                     today_str = now.strftime('%Y-%m-%d')
+                    force_reset = bool(req.get('force_reset_rank', False))
                     set_last_awarded_date(today_str)
-                    distribute_daily_leaderboard_rewards()
-                    resp = {"code": 200, "msg": "Đã phát thưởng Cup Top 1,2,3, tặng vàng Rank x 100 và reset rank về 800 thành công!"}
+                    distribute_daily_leaderboard_rewards(force_reset_rank=force_reset)
+                    is_sunday = force_reset or (now.weekday() == 6)
+                    resp = {"code": 200, "msg": f"Đã gửi thưởng Cúp và Vàng vào hòm thư thành công! (Reset rank: {'Có' if is_sunday else 'Không (Chỉ Chủ Nhật)'})"}
                 except Exception as ex:
                     resp = {"code": 500, "msg": str(ex)}
+
+            elif self.path == '/api/get_mails':
+                acc_id = req.get('account_id')
+                mails = get_player_mails(acc_id)
+                resp = {"code": 200, "msg": "OK", "mails": mails}
+
+            elif self.path == '/api/claim_mail_reward':
+                acc_id = req.get('account_id')
+                mail_id = req.get('mail_id')
+                ok, msg, res_data = claim_player_mail(acc_id, mail_id)
+                if ok:
+                    resp = {"code": 200, "msg": msg, **res_data}
+                else:
+                    resp = {"code": 400, "msg": msg}
+
+            elif self.path.startswith('/api/survival/'):
+                try:
+                    target_url = f"http://127.0.0.1:8085{self.path}"
+                    body_bytes = json.dumps(req).encode('utf-8')
+                    proxy_req = urllib.request.Request(target_url, data=body_bytes, headers={'Content-Type': 'application/json'}, method='POST')
+                    with urllib.request.urlopen(proxy_req, timeout=5) as proxy_res:
+                        res_data = proxy_res.read().decode('utf-8')
+                        self.send_response(proxy_res.status)
+                        self.send_header('Content-Type', 'application/json; charset=utf-8')
+                        self.end_headers()
+                        self.wfile.write(res_data.encode('utf-8'))
+                        return
+                except Exception as ex:
+                    resp = {"code": 502, "msg": f"Survival Server Error: {str(ex)}"}
+
 
             elif self.path == '/api/enter_game':
                 acc_id = req.get('account_id')
@@ -1232,8 +1457,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         for c in (raw_cards or []):
                             try: cid = int(c)
                             except: continue
-                            if cid in BANNED_DECK_CARDS:
-                                continue
                             if cid in remaining_counts and remaining_counts[cid] > 0:
                                 clean_cards.append(cid)
                                 remaining_counts[cid] -= 1
@@ -1241,8 +1464,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         for c in (raw_extra or []):
                             try: cid = int(c)
                             except: continue
-                            if cid in BANNED_DECK_CARDS:
-                                continue
                             if cid in remaining_counts and remaining_counts[cid] > 0:
                                 clean_extra.append(cid)
                                 remaining_counts[cid] -= 1
@@ -1254,6 +1475,35 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         """, (acc_id, d_slot, d_name, json.dumps(clean_cards), json.dumps(clean_extra)))
                 resp = {"code": 200, "msg": "Lưu deck thành công!"}
                 print(f"[SAVE DECK] Saved deck '{d_name}' for account {acc_id} ({len(clean_cards)} cards, {len(clean_extra)} extra).")
+
+            elif self.path == '/api/save_deck_name':
+                acc_id = req.get('account_id')
+                d_slot = int(req.get('deck_slot', 1))
+                d_name = str(req.get('deck_name', '')).strip()
+                if acc_id and d_name:
+                    with get_db() as conn:
+                        with conn.cursor() as cur:
+                            cur.execute("""
+                                INSERT INTO user_decks (account_id, deck_slot, deck_name, cards, extra_cards, is_active)
+                                VALUES (%s, %s, %s, '[]', '[]', 1)
+                                ON DUPLICATE KEY UPDATE deck_name = VALUES(deck_name)
+                            """, (acc_id, d_slot, d_name))
+                    print(f"[SAVE DECK NAME] Renamed slot {d_slot} to '{d_name}' for account {acc_id}")
+                resp = {"code": 200, "msg": "Đổi tên bộ bài thành công!"}
+
+            elif self.path == '/api/online_count':
+                ws_users = set()
+                for meta in list(WS_CLIENT_META.values()):
+                    uid = meta.get("user_id")
+                    if uid:
+                        ws_users.add(str(uid))
+                now = time.time()
+                for uid, wdata in list(PVP_HTTP_WAITING.items()):
+                    if now - wdata.get('time', 0) < 60:
+                        ws_users.add(str(uid))
+                final_count = max(len(WS_CONNECTED_CLIENTS), len(ws_users), len(PVP_HTTP_WAITING), 1)
+                self._send_json({"code": 200, "count": final_count})
+                return
 
             elif self.path == '/api/sync_currency':
                 acc_id = req.get('account_id')
@@ -1281,17 +1531,18 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     packs = raw_count % 100
                     total_cards = packs * 3
                 elif raw_count in (1, 10, 50):
-                    packs = raw_count
                     total_cards = raw_count * 3
                 else:
                     total_cards = raw_count
-                    packs = max(1, total_cards // 3)
                 if total_cards <= 0: total_cards = 3
                 
-                is_liya_pkg = (101001 <= pkg_num <= 135050) or (1 <= pkg_num <= 32 and pkg_num in SERVER_LIYA_CARDS_MAP)
+                raw_card_pool = req.get('card_pool') or []
+                req_pool = [int(x) for x in raw_card_pool if str(x).isdigit()]
+
                 cost_val = int(req.get('cost_val', 0))
                 if cost_val <= 0:
-                    if is_liya_pkg:
+                    packs = total_cards // 3 or 1
+                    if 101001 <= pkg_num <= 135050:
                         cost_val = (28500 if packs >= 50 else (6000 if packs >= 10 else 600 * packs))
                     else:
                         cost_val = (22500 if packs >= 50 else (4500 if packs >= 10 else 500 * packs))
@@ -1312,116 +1563,15 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (cost_val, acc_id))
                                 
                                 user_pity = user_acc.get('pity_count', 0) or 0
-                                cards_won = []
-                                has_ur = False
-                                raw_card_pool = req.get('card_pool') or []
-                                req_pool = [int(x) for x in raw_card_pool if str(x).isdigit()]
-                                
-                                if not ALL_CARDS_MAP:
-                                    init_global_cards(cur)
-                                
-                                # Resolve pack pool from server maps if not provided
-                                if not req_pool:
-                                    if 101001 <= pkg_num <= 135050:
-                                        liya_idx = (pkg_num - 100000) // 1000
-                                        req_pool = SERVER_LIYA_CARDS_MAP.get(liya_idx, [])
-                                    elif 1 <= pkg_num <= 32 and pkg_num in SERVER_LIYA_CARDS_MAP:
-                                        req_pool = SERVER_LIYA_CARDS_MAP.get(pkg_num, [])
-                                    elif 10000 <= pkg_num < 20000:
-                                        cid = (pkg_num - 10000) // 100
-                                        req_pool = SERVER_CHAR_CARDS_MAP.get(cid, [])
-                                    elif pkg_num in SERVER_CHAR_CARDS_MAP:
-                                        req_pool = SERVER_CHAR_CARDS_MAP.get(pkg_num, [])
-                                
-                                # Featured URs and GRs of this specific pack
-                                pack_ur_cards = []
-                                pack_gr_cards = []
-                                for cid in req_pool:
-                                    c_info = ALL_CARDS_MAP.get(cid)
-                                    if c_info:
-                                        if c_info['quality'] == 'UR':
-                                            pack_ur_cards.append(c_info)
-                                        elif c_info['quality'] == 'GR':
-                                            pack_gr_cards.append(c_info)
-                                
-                                # Fallback if pack has no URs
-                                if not pack_ur_cards:
-                                    pack_ur_cards = ALL_CARDS_BY_QUALITY.get('UR', [])
-                                
-                                # Resolve pack GR cards if not directly in req_pool
-                                if not pack_gr_cards:
-                                    gr_cids = []
-                                    if 101001 <= pkg_num <= 135050:
-                                        liya_idx = (pkg_num - 100000) // 1000
-                                        gr_cids = LIYA_PACKAGE_GR.get(liya_idx, [])
-                                    elif 1 <= pkg_num <= 32 and pkg_num in LIYA_PACKAGE_GR:
-                                        gr_cids = LIYA_PACKAGE_GR.get(pkg_num, [])
-                                    else:
-                                        cid = pkg_num
-                                        if 10000 <= cid < 20000:
-                                            cid = (cid - 10000) // 100
-                                        elif cid > 100:
-                                            cid = cid % 100
-                                        gr_cids = CHAR_PACKAGE_GR.get(cid, [])
-                                    for gid in gr_cids:
-                                        if gid in ALL_CARDS_MAP:
-                                            pack_gr_cards.append(ALL_CARDS_MAP[gid])
-                                    if not pack_gr_cards:
-                                        pack_gr_cards = ALL_CARDS_BY_QUALITY.get('GR', [])
-                                
-                                for card_idx in range(total_cards):
-                                    user_pity += (1.0 / 3.0)
-                                    force_ur = (user_pity >= 50.0) and (not has_ur)
-                                    
-                                    roll = random.random()
-                                    if force_ur:
-                                        picked = random.choice(pack_ur_cards) if pack_ur_cards else random.choice(ALL_CARDS_BY_QUALITY['UR'])
-                                    elif roll < 0.000001:  # GR: 0.0001%
-                                        picked = random.choice(pack_gr_cards) if pack_gr_cards else random.choice(ALL_CARDS_BY_QUALITY['GR'])
-                                    elif roll < 0.020001:  # UR: 2% from pack featured URs
-                                        picked = random.choice(pack_ur_cards) if pack_ur_cards else random.choice(ALL_CARDS_BY_QUALITY['UR'])
-                                    elif roll < 0.120001:  # SR: 10% from all cards in database
-                                        pool_sr = ALL_CARDS_BY_QUALITY.get('SR') or ALL_SR_AND_BELOW_CARDS
-                                        picked = random.choice(pool_sr)
-                                    elif roll < 0.520001:  # R: 40% from all cards in database
-                                        pool_r = ALL_CARDS_BY_QUALITY.get('R') or ALL_SR_AND_BELOW_CARDS
-                                        picked = random.choice(pool_r)
-                                    else:                  # N: remainder (~48%) from all cards in database
-                                        pool_n = ALL_CARDS_BY_QUALITY.get('N') or ALL_SR_AND_BELOW_CARDS
-                                        picked = random.choice(pool_n)
-                                    
-                                    cid = picked['id']
-                                    cname = picked['name']
-                                    cquality = picked['quality']
-                                    
-                                    if cquality in ['UR', 'GR']:
-                                        user_pity = 0.0
-                                        if cquality == 'UR':
-                                            has_ur = True
-                                        else:
-                                            announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{user_acc['character_name']}] vừa rút được lá bài cấp GR thần thánh [{cname}]!"
-                                            broadcast_msg = {
-                                                "id": int(time.time()*1000) + card_idx,
-                                                "timestamp": int(time.time()*1000),
-                                                "account_id": 0,
-                                                "name": "Hệ Thống",
-                                                "level": 99,
-                                                "avatar": 101,
-                                                "content": announcement,
-                                                "msg": announcement,
-                                                "type": 2,
-                                                "card_id": cid,
-                                                "items": [{"info_id": cid, "num": 1}]
-                                            }
-                                            CHAT_MESSAGES.append(broadcast_msg)
-                                            if len(CHAT_MESSAGES) > 100: CHAT_MESSAGES.pop(0)
-                                            save_chat_history()
-                                            broadcast_ws_sync({"t": "chat_broadcast", "msg": broadcast_msg})
-                                            print(f"[GR DROP!] {announcement}")
-                                    
-                                    cards_won.append({"info_id": cid, "num": 1, "name": cname, "quality": cquality})
-                                
-                                # Batch save cards won
+                                cards_won, user_pity, has_ur = execute_pack_lottery(
+                                    pkg_num=pkg_num,
+                                    total_cards=total_cards,
+                                    user_pity=user_pity,
+                                    req_pool=req_pool,
+                                    user_acc=user_acc,
+                                    broadcast_fn=send_chat_broadcast_to_server
+                                )
+
                                 card_counts = {}
                                 for c in cards_won:
                                     ci = c['info_id']
@@ -1429,7 +1579,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 for ci, cnt in card_counts.items():
                                     cur.execute("INSERT INTO user_cards (account_id, card_id, count) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE count = count + %s", (acc_id, ci, cnt, cnt))
 
-                                
                                 cur.execute("UPDATE accounts SET pity_count = %s WHERE id = %s", (int(user_pity), acc_id))
                                 cur.execute("SELECT gold, gem, pity_count FROM accounts WHERE id = %s", (acc_id,))
                                 updated_acc = cur.fetchone()
@@ -1444,76 +1593,12 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 print(f"[BUY PACKAGE] Account {acc_id} ({user_acc['character_name']}) drew {total_cards} cards. Pity: {int(user_pity)}/50. Won: {[c['name'] + '(' + c['quality'] + ')' for c in cards_won]}")
 
             elif self.path == '/api/chat_send':
-                acc_id = req.get('account_id') or req.get('sender_id') or 1
-                try: acc_id = int(acc_id)
-                except Exception: acc_id = 1
-                name = req.get('name') or req.get('sender_name') or 'Duelist'
-                try:
-                    level = int(req.get('level', 1))
-                except Exception:
-                    level = 1
-                try:
-                    avatar = int(req.get('avatar', 201))
-                except Exception:
-                    avatar = 201
-                content = str(req.get('content') or req.get('msg') or '').strip()
-                try:
-                    msg_type = int(req.get('type', 1)) # 1: world, 2: bulletin
-                except Exception:
-                    msg_type = 1
-                card_id = int(req.get('card_id', 0))
-                client_msg_id = req.get('client_msg_id')
-                if content:
-                    gc = int(req.get('gold_cup') or 0)
-                    sc = int(req.get('silver_cup') or 0)
-                    bc = int(req.get('bronze_cup') or 0)
-                    if acc_id > 0 and (gc == 0 and sc == 0 and bc == 0):
-                        try:
-                            with get_db() as conn:
-                                with conn.cursor() as cur:
-                                    cur.execute("SELECT gold_cup, silver_cup, bronze_cup FROM accounts WHERE id = %s", (acc_id,))
-                                    arow = cur.fetchone()
-                                    if arow:
-                                        gc = int(arow.get('gold_cup') or 0)
-                                        sc = int(arow.get('silver_cup') or 0)
-                                        bc = int(arow.get('bronze_cup') or 0)
-                        except Exception:
-                            pass
-                    cid = int(req.get('crown_id') or (7204 if gc > 0 else (7205 if sc > 0 else (7206 if bc > 0 else 0))))
-                    cnum = int(req.get('crown_num') or (gc if gc > 0 else (sc if sc > 0 else (bc if bc > 0 else 0))))
-                    now_ts = int(time.time() * 1000)
-                    msg_obj = {
-                        "client_msg_id": client_msg_id,
-                        "timestamp": now_ts,
-                        "account_id": acc_id,
-                        "name": name,
-                        "level": level,
-                        "avatar": avatar,
-                        "gold_cup": gc,
-                        "silver_cup": sc,
-                        "bronze_cup": bc,
-                        "crown_id": cid,
-                        "crown_num": cnum,
-                        "content": content,
-                        "msg": content,
-                        "type": msg_type,
-                        "card_id": card_id
-                    }
-                    if cid > 0:
-                        msg_obj['crown'] = {'info_id': cid, 'num': cnum}
-                    if card_id > 0:
-                        msg_obj['items'] = [{'info_id': card_id, '_infoId': card_id, 'num': 1, '_num': 1}]
-                    db_id = db_save_chat_message(msg_obj)
-                    msg_obj['id'] = db_id
-                    broadcast_ws_sync({"t": "chat_broadcast", "msg": msg_obj})
-                    resp = {"code": 200, "msg": "Sent", "data": msg_obj}
-                    print(f"[CHAT DB] {name} (Lv.{level}): {content} [DB ID: {db_id}]")
-                else:
-                    resp = {"code": 400, "msg": "Nội dung trống!"}
+                proxy_to_chat_server(self, self.path, body)
+                return
 
             elif self.path == '/api/chat_history':
-                today_msgs = db_get_today_chat_history()
-                resp = {"code": 200, "messages": today_msgs}
+                proxy_to_chat_server(self, self.path, body)
+                return
 
             elif self.path == '/api/complete_level':
                 acc_id = req.get('account_id')
@@ -1579,14 +1664,14 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             if not acc:
                                 resp = {"code": 404, "msg": "Account not found"}
                             elif acc['gem'] < gem_cost:
-                                resp = {"code": 400, "msg": "Không đủ Gem để đổi vàng!"}
+                                resp = {"code": 400, "msg": "Không đủ Linh Thạch Cao Cấp để đổi Linh Thạch!"}
                             else:
                                 new_gem = acc['gem'] - gem_cost
                                 new_gold = acc['gold'] + gold_gain
                                 cur.execute("UPDATE accounts SET gem = %s, gold = %s WHERE id = %s", (new_gem, new_gold, acc_id))
                                 resp = {
                                     "code": 200,
-                                    "msg": f"Đổi thành công {gold_gain:,} Vàng!",
+                                    "msg": f"Đổi thành công {gold_gain:,} Linh Thạch!",
                                     "gold": new_gold,
                                     "gem": new_gem
                                 }
@@ -1594,40 +1679,203 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     resp = {"code": 400, "msg": "Missing account_id"}
 
-            elif self.path == '/api/buy_depot':
+            elif self.path in ('/api/buy_card', '/api/buy_depot'):
                 acc_id = req.get('account_id')
                 card_id = int(req.get('card_id', 0))
+                prod_id = int(req.get('product_id') or req.get('depot_id') or 0)
                 cost = int(req.get('cost', 0))
-                depot_id = req.get('depot_id')
-                if (card_id == 0 or cost == 0) and depot_id == 59:
+                cost_type = req.get('cost_type', 1)
+                count = max(1, int(req.get('count', 1)))
+                shop_type = str(req.get('shop_type', 'depot')).lower()
+
+                # 1. Resolve card_id and cost from shop data or fixed prices if needed
+                if card_id in FIXED_DEPOT_PRICES and cost <= 0:
+                    cost = FIXED_DEPOT_PRICES[card_id]
+                    cost_type = 1
+                elif prod_id == 59 or card_id == 40209:
                     card_id = 40209
+                    cost = 200000
+                    cost_type = 1
+                elif prod_id == 60 or card_id == 20005:
+                    card_id = 20005
+                    cost = 5000
+                    cost_type = 1
+                elif prod_id == 61 or card_id == 20051:
+                    card_id = 20051
                     cost = 100000
-                elif card_id == 40209:
+                    cost_type = 1
+                elif prod_id == 62 or card_id == 20030:
+                    card_id = 20030
                     cost = 100000
+                    cost_type = 1
+                elif prod_id == 63 or card_id == 40713:
+                    card_id = 40713
+                    cost = 500000
+                    cost_type = 1
+                elif card_id == 12248:
+                    cost = 500000
+                    cost_type = 1
+
+                # If card_id is still 0, look up in ALL_SHOP_PRODUCTS
+                if card_id <= 0 and prod_id > 0:
+                    pool = ALL_SHOP_PRODUCTS.get(shop_type, {})
+                    pinfo = pool.get(prod_id)
+                    if not pinfo:
+                        for st, sp in ALL_SHOP_PRODUCTS.items():
+                            if prod_id in sp:
+                                pinfo = sp[prod_id]
+                                break
+                    if pinfo:
+                        card_id = int(pinfo.get('cardId', 0))
+                        if cost <= 0:
+                            cost = int(pinfo.get('cost', 0))
+                        if cost_type == 1 and pinfo.get('resType'):
+                            cost_type = pinfo.get('resType')
 
                 if not acc_id or card_id <= 0:
-                    resp = {"code": 400, "msg": "Thông tin không hợp lệ!"}
+                    resp = {"code": 400, "msg": "Thông tin thẻ bài hoặc tài khoản không hợp lệ!"}
                 else:
+                    total_cost = cost * count
+                    is_gold = (cost_type in (1, '1', 'gold'))
+                    is_gem = (cost_type in (3, '3', 'gem', 'diamond', 'ingot'))
+
                     with get_db() as conn:
                         with conn.cursor() as cur:
-                            cur.execute("SELECT gold, character_name FROM accounts WHERE id = %s", (acc_id,))
+                            cur.execute("SELECT gold, gem, character_name FROM accounts WHERE id = %s", (acc_id,))
                             acc = cur.fetchone()
                             if not acc:
-                                resp = {"code": 404, "msg": "Account not found"}
-                            elif acc['gold'] < cost:
-                                resp = {"code": 400, "msg": "Không đủ vàng!"}
+                                resp = {"code": 404, "msg": "Tài khoản không tồn tại!"}
+                            elif is_gold and acc['gold'] < total_cost:
+                                resp = {"code": 400, "msg": f"Không đủ Vàng / Linh Thạch! (Cần {total_cost:,}, có {acc['gold']:,})"}
+                            elif is_gem and acc['gem'] < total_cost:
+                                resp = {"code": 400, "msg": f"Không đủ Gem / Kim Cương! (Cần {total_cost:,}, có {acc['gem']:,})"}
                             else:
-                                cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (cost, acc_id))
-                                cur.execute("INSERT INTO user_cards (account_id, card_id, count) VALUES (%s, %s, 1) ON DUPLICATE KEY UPDATE count = count + 1", (acc_id, card_id))
-                                cur.execute("SELECT gold FROM accounts WHERE id = %s", (acc_id,))
-                                updated_gold = cur.fetchone()['gold']
+                                if is_gold and total_cost > 0:
+                                    cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (total_cost, acc_id))
+                                elif is_gem and total_cost > 0:
+                                    cur.execute("UPDATE accounts SET gem = gem - %s WHERE id = %s", (total_cost, acc_id))
+
+                                cur.execute("""
+                                    INSERT INTO user_cards (account_id, card_id, count)
+                                    VALUES (%s, %s, %s)
+                                    ON DUPLICATE KEY UPDATE count = count + %s
+                                """, (acc_id, card_id, count, count))
+                                conn.commit()
+
+                                cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
+                                updated_acc = cur.fetchone() or {}
+                                cur.execute("SELECT count FROM user_cards WHERE account_id = %s AND card_id = %s", (acc_id, card_id))
+                                card_row = cur.fetchone() or {}
+                                final_count = card_row.get('count', count)
+
                                 resp = {
                                     "code": 200,
                                     "msg": "Mua thẻ bài thành công!",
-                                    "gold": updated_gold,
-                                    "card_id": card_id
+                                    "card_id": card_id,
+                                    "count": final_count,
+                                    "bought_count": count,
+                                    "gold": updated_acc.get('gold', 0),
+                                    "gem": updated_acc.get('gem', 0)
                                 }
-                                print(f"[BUY DEPOT] Account {acc_id} ({acc['character_name']}) bought card {card_id} for {cost} gold. Remaining gold: {updated_gold}")
+                                print(f"[BUY CARD SUCCESS] Account {acc_id} ({acc['character_name']}) bought {count}x card {card_id} (Shop: {shop_type}, Cost: {total_cost} type {cost_type}). Owned: {final_count}.")
+
+            elif self.path == '/api/decompose_card':
+                acc_id = req.get('account_id')
+                card_id = int(req.get('card_id', 0))
+                count = int(req.get('count', 1))
+                if not acc_id or card_id <= 0 or count <= 0:
+                    resp = {"code": 400, "msg": "Tham số không hợp lệ!"}
+                else:
+                    with get_db() as conn:
+                        with conn.cursor() as cur:
+                            cur.execute("SELECT gold FROM accounts WHERE id = %s", (acc_id,))
+                            acc_row = cur.fetchone()
+                            if not acc_row:
+                                resp = {"code": 404, "msg": "Tài khoản không tồn tại!"}
+                            else:
+                                cur.execute("SELECT count FROM user_cards WHERE account_id = %s AND card_id = %s", (acc_id, card_id))
+                                row = cur.fetchone()
+                                owned = row['count'] if row else 0
+                                if owned < count:
+                                    resp = {"code": 400, "msg": f"Không đủ số lượng bài để phân tách (Hiện có: {owned}, cần: {count})!"}
+                                else:
+                                    if not ALL_CARDS_MAP:
+                                        init_global_cards_cache(cur)
+                                    card_info = ALL_CARDS_MAP.get(card_id, {})
+                                    q = card_info.get('quality', 'R')
+                                    gold_per_card = 100 if q == 'UR' else (50 if q == 'SR' else (10 if q == 'R' else 5))
+                                    total_gold = gold_per_card * count
+
+                                    cur.execute("UPDATE user_cards SET count = count - %s WHERE account_id = %s AND card_id = %s", (count, acc_id, card_id))
+                                    cur.execute("DELETE FROM user_cards WHERE account_id = %s AND card_id = %s AND count <= 0", (acc_id, card_id))
+                                    cur.execute("UPDATE accounts SET gold = gold + %s WHERE id = %s", (total_gold, acc_id))
+                                    conn.commit()
+
+                                    cur.execute("SELECT gold FROM accounts WHERE id = %s", (acc_id,))
+                                    gold_row = cur.fetchone()
+                                    new_gold = gold_row['gold'] if gold_row else (acc_row['gold'] + total_gold)
+
+                                    resp = {
+                                        "code": 200,
+                                        "msg": f"Phân tách thành công {count} lá bài, nhận {total_gold} Vàng!",
+                                        "gold_reward": total_gold,
+                                        "gold": new_gold,
+                                        "remaining_count": owned - count
+                                    }
+                                    print(f"[DECOMPOSE] Acc {acc_id} decomposed {count}x card {card_id} -> +{total_gold} gold (New: {new_gold})")
+
+            elif self.path == '/api/decompose_all':
+                acc_id = req.get('account_id')
+                if not acc_id:
+                    resp = {"code": 400, "msg": "Thiếu account_id!"}
+                else:
+                    with get_db() as conn:
+                        with conn.cursor() as cur:
+                            cur.execute("SELECT gold FROM accounts WHERE id = %s", (acc_id,))
+                            acc_row = cur.fetchone()
+                            if not acc_row:
+                                resp = {"code": 404, "msg": "Tài khoản không tồn tại!"}
+                            else:
+                                cur.execute("SELECT card_id, count FROM user_cards WHERE account_id = %s AND count > 3", (acc_id,))
+                                excess_rows = cur.fetchall()
+                                total_cards = 0
+                                total_gold = 0
+                                breakdown = {'N': 0, 'R': 0, 'SR': 0, 'UR': 0}
+
+                                if not ALL_CARDS_MAP:
+                                    init_global_cards_cache(cur)
+
+                                for r in excess_rows:
+                                    cid = r['card_id']
+                                    cnt = r['count']
+                                    card_info = ALL_CARDS_MAP.get(cid, {})
+                                    q = card_info.get('quality', 'R')
+
+                                    if q in ('N', 'R', 'SR', 'UR'):
+                                        excess = cnt - 3
+                                        gold_val = 100 if q == 'UR' else (50 if q == 'SR' else (10 if q == 'R' else 5))
+                                        total_gold += excess * gold_val
+                                        total_cards += excess
+                                        breakdown[q] += excess
+                                        cur.execute("UPDATE user_cards SET count = 3 WHERE account_id = %s AND card_id = %s", (acc_id, cid))
+
+                                if total_gold > 0:
+                                    cur.execute("UPDATE accounts SET gold = gold + %s WHERE id = %s", (total_gold, acc_id))
+                                conn.commit()
+
+                                cur.execute("SELECT gold FROM accounts WHERE id = %s", (acc_id,))
+                                gold_row = cur.fetchone()
+                                new_gold = gold_row['gold'] if gold_row else (acc_row['gold'] + total_gold)
+
+                                resp = {
+                                    "code": 200,
+                                    "msg": f"Phân tách tất cả thành công {total_cards} lá bài thừa, nhận {total_gold} Vàng!",
+                                    "decomposed_count": total_cards,
+                                    "gold_reward": total_gold,
+                                    "gold": new_gold,
+                                    "breakdown": breakdown
+                                }
+                                print(f"[DECOMPOSE ALL] Acc {acc_id} decomposed {total_cards} excess cards -> +{total_gold} gold (New: {new_gold})")
 
             elif self.path == '/api/pvp_reward':
                 acc_id = req.get('account_id')
@@ -1636,6 +1884,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 is_bot_raw = req.get('is_bot', False)
                 is_bot = (is_bot_raw in [True, 1, '1', 'true', 'True'])
                 oppo_trophy = int(req.get('oppo_trophy', 800))
+                rounds = int(req.get('rounds', 1))
                 if acc_id:
                     with get_db() as conn:
                         with conn.cursor() as cur:
@@ -1643,19 +1892,51 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             acc = cur.fetchone()
                             if acc:
                                 player_trophy = acc['trophy'] if acc.get('trophy') is not None else 800
-                                diff = oppo_trophy - player_trophy
-                                diff_step = diff // 10
                                 
-                                if result == 1: # Win
-                                    # Real player win: 10,000 gold; Bot win: 5,000 gold
-                                    delta_gold = 5000 if is_bot else 10000
-                                    delta_exp = 300
-                                    # Points swing between 5 and 45
-                                    delta_trophy = max(5, min(45, 25 + diff_step))
-                                else: # Loss
-                                    delta_gold = 500
-                                    delta_exp = 100
-                                    delta_trophy = -max(5, min(45, 25 - diff_step))
+                                if is_bot:
+                                    if result == 1: # Win against bot
+                                        delta_gold = 5000
+                                        delta_exp = 300
+                                        # Win against bot: + random 5-15 based on rounds needed
+                                        if rounds <= 3:
+                                            delta_trophy = random.randint(13, 15)
+                                        elif rounds <= 6:
+                                            delta_trophy = random.randint(9, 12)
+                                        else:
+                                            delta_trophy = random.randint(5, 8)
+                                    else: # Loss against bot
+                                        delta_gold = 500
+                                        delta_exp = 100
+                                        # Loss against bot: - random 20-35
+                                        delta_trophy = -random.randint(20, 35)
+                                else:
+                                    # Real PvP match:
+                                    # Points between 5 and 60, capped at 800 gap
+                                    if result == 1:
+                                        delta_gold = 10000
+                                        delta_exp = 300
+                                    else:
+                                        delta_gold = 500
+                                        delta_exp = 100
+
+                                    diff = abs(player_trophy - oppo_trophy)
+                                    clamped_diff = min(800, diff)
+                                    ratio = clamped_diff / 800.0
+
+                                    if result == 1: # Win
+                                        if player_trophy <= oppo_trophy:
+                                            # Upset win: lower rank player beats higher rank player -> +30 to +60
+                                            delta_trophy = int(round(30 + ratio * 30))
+                                        else:
+                                            # Expected win: higher rank player beats lower rank player -> +30 down to +5
+                                            delta_trophy = int(round(30 - ratio * 25))
+                                    else: # Loss
+                                        if player_trophy >= oppo_trophy:
+                                            # Upset loss: higher rank player loses to lower rank player (e.g. 2000 vs 800) -> -30 to -60
+                                            delta_trophy = -int(round(30 + ratio * 30))
+                                        else:
+                                            # Expected loss: lower rank player loses to higher rank player -> -30 down to -5
+                                            delta_trophy = -int(round(30 - ratio * 25))
                                 
                                 new_gold = acc['gold'] + delta_gold
                                 new_exp = acc['exp'] + delta_exp
@@ -1679,7 +1960,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     "delta_trophy": delta_trophy,
                                     "is_bot": is_bot
                                 }
-                                print(f"[PVP REWARD] Account {acc_id} ({'BOT' if is_bot else 'PVP'}) {'WIN' if result==1 else 'LOSS'}: +{delta_gold} gold, {delta_trophy:+d} trophy (diff {diff:+d}) -> total: {new_trophy} trophy, {new_gold} gold.")
+                                print(f"[PVP REWARD] Account {acc_id} ({'BOT' if is_bot else 'PVP'}) {'WIN' if result==1 else 'LOSS'}: +{delta_gold} gold, {delta_trophy:+d} trophy (rounds={rounds}, player={player_trophy}, oppo={oppo_trophy}) -> total: {new_trophy} trophy, {new_gold} gold.")
                             else:
                                 resp = {"code": 404, "msg": "Account not found"}
                 else:
@@ -1968,9 +2249,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                                 })
 
                                             if reward_gold > 0 and reward_gem > 0:
-                                                reward_msg = f"Đổi quà thành công! Nhận {reward_gold:,} Vàng và {reward_gem:,} Gem!"
+                                                reward_msg = f"Đổi quà thành công! Nhận {reward_gold:,} Linh Thạch và {reward_gem:,} Gem!"
                                             elif reward_gold > 0:
-                                                reward_msg = f"Đổi quà thành công! Nhận {reward_gold:,} Vàng!"
+                                                reward_msg = f"Đổi quà thành công! Nhận {reward_gold:,} Linh Thạch!"
                                             elif reward_gem > 0:
                                                 reward_msg = f"Đổi quà thành công! Nhận {reward_gem:,} Gem!"
                                             else:
@@ -2083,17 +2364,24 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 resp = {"code": 200, "msg": "Đồng bộ thành tựu thành công!"}
                 print(f"[ACHIEVE] Synced {len(achieves)} achievements for account {acc_id}.")
             elif self.path == '/api/cancel_pvp_match':
-                acc_id = req.get('account_id')
+                acc_id = int(req.get('account_id', 0))
                 if acc_id:
+                    was_waiting = (acc_id in PVP_HTTP_WAITING)
                     PVP_HTTP_WAITING.pop(acc_id, None)
-                    PVP_HTTP_CANCELLED.add(acc_id)
+                    if was_waiting:
+                        PVP_HTTP_CANCELLED.add(acc_id)
+                    else:
+                        PVP_HTTP_CANCELLED.discard(acc_id)
                     PVP_HTTP_MATCHED.pop(acc_id, None)
                     print(f"[PVP MATCH] Matchmaking cancelled for account {acc_id}")
                 self._send_json({"code": 200, "msg": "Matchmaking cancelled"})
                 return
 
             elif self.path == '/api/pvp_match':
-                acc_id = req.get('account_id')
+                acc_id = int(req.get('account_id', 1))
+                PVP_HTTP_CANCELLED.discard(acc_id)
+                PVP_HTTP_MATCHED.pop(acc_id, None)
+                my_mode = str(req.get('mode', 'clash')).lower()
                 my_name = req.get('name', 'Duelist')
                 my_level = int(req.get('level', 50))
                 my_cards, my_extra = ensure_deck_cards(acc_id, req.get('cards', []), req.get('extra_cards', []))
@@ -2112,92 +2400,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             my_sc = int(t_row.get('silver_cup', 0) or 0)
                             my_bc = int(t_row.get('bronze_cup', 0) or 0)
 
-                # =================================================================
-                # RULE 1: Rank < 600 -> ONLY match against BOT immediately!
-                # =================================================================
-                if my_trophy < 600:
-                    with get_db() as conn:
-                        with conn.cursor() as cur:
-                            cur.execute("""
-                                SELECT a.id, a.character_name, a.level, a.trophy, a.gold_cup, a.silver_cup, a.bronze_cup, ud.cards, ud.extra_cards
-                                FROM accounts a
-                                JOIN user_decks ud ON a.id = ud.account_id
-                                WHERE a.id != %s AND ud.is_active = 1 AND a.trophy < 650
-                                ORDER BY RAND() LIMIT 1
-                            """, (acc_id,))
-                            bot_row = cur.fetchone()
-                            if not bot_row:
-                                cur.execute("""
-                                    SELECT a.id, a.character_name, a.level, a.trophy, a.gold_cup, a.silver_cup, a.bronze_cup, ud.cards, ud.extra_cards
-                                    FROM accounts a
-                                    JOIN user_decks ud ON a.id = ud.account_id
-                                    WHERE a.id != %s AND ud.is_active = 1
-                                    ORDER BY ABS(a.trophy - %s) ASC, RAND() LIMIT 1
-                                """, (acc_id, my_trophy))
-                                bot_row = cur.fetchone()
-
-                    if bot_row:
-                        c_list = bot_row['cards']
-                        if isinstance(c_list, str):
-                            try: c_list = json.loads(c_list)
-                            except: c_list = []
-                        ec_list = bot_row['extra_cards']
-                        if isinstance(ec_list, str):
-                            try: ec_list = json.loads(ec_list)
-                            except: ec_list = []
-                        bot_oppo = {
-                            "name": bot_row['character_name'],
-                            "level": bot_row['level'],
-                            "cards": c_list,
-                            "extra_cards": ec_list,
-                            "avatar": random.choice([101, 102, 103, 104, 105, 201, 202, 301, 302]),
-                            "gold_cup": int(bot_row.get('gold_cup', 0) or 0),
-                            "silver_cup": int(bot_row.get('silver_cup', 0) or 0),
-                            "bronze_cup": int(bot_row.get('bronze_cup', 0) or 0),
-                            "is_real_player": False
-                        }
-                    else:
-                        bot_oppo = {
-                            "name": "Duelist_Kaiba",
-                            "level": 30,
-                            "cards": [10001]*3 + [10002]*3,
-                            "extra_cards": [40001],
-                            "avatar": 102,
-                            "gold_cup": 0,
-                            "silver_cup": 0,
-                            "bronze_cup": 0,
-                            "is_real_player": False
-                        }
-
-                    resp = {
-                        "code": 200,
-                        "status": "matched",
-                        "match_id": f"bot_{int(time.time()*1000)}",
-                        "seed": random.randint(1, 65535),
-                        "is_attacker": True,
-                        "first": True,
-                        "is_real_player": False,
-                        "oppo_online": False,
-                        "oppo": bot_oppo
-                    }
-                    print(f"[PVP MATCH] Player {my_name} (Rank {my_trophy} < 600): Matched directly with BOT {bot_oppo['name']} (Lv.{bot_oppo['level']})")
-                    self._send_json(resp)
-                    return
-
-                # =================================================================
-                # Fetch Current Top 10 Accounts from DB
-                # =================================================================
-                top10_ids = set()
-                try:
-                    with get_db() as conn:
-                        with conn.cursor() as cur:
-                            cur.execute("SELECT id FROM accounts ORDER BY trophy DESC, level DESC, id ASC LIMIT 10")
-                            top10_ids = {int(r['id']) for r in cur.fetchall()}
-                except Exception as ex:
-                    print(f"[PVP MATCH ERR] Query top 10 failed: {ex}")
-
-                is_in_top10 = (acc_id in top10_ids)
-
                 now = time.time()
                 # Clean expired (> 45s)
                 for k, v in list(PVP_HTTP_WAITING.items()):
@@ -2208,37 +2410,21 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     resp = PVP_HTTP_MATCHED.pop(acc_id)
                 else:
                     matched_oppo = None
-                    top10_candidates = []
-                    normal_candidates = []
-
+                    candidates = []
                     for other_id, other_data in list(PVP_HTTP_WAITING.items()):
-                        if other_id != acc_id and (now - other_data['time'] < 30):
-                            other_trophy = int(other_data.get('trophy', 800) or 800)
-                            if other_trophy < 600:
-                                continue  # Ignore any invalid queue entry < 600
+                        other_mode = str(other_data.get('mode', 'clash')).lower()
+                        is_rank_clash = (my_mode in ('clash', 'clash_ex', 'ladder') and other_mode in ('clash', 'clash_ex', 'ladder'))
+                        is_compatible = (other_mode == my_mode) or is_rank_clash
+                        if other_id != acc_id and (now - other_data['time'] < 50) and is_compatible:
+                            if my_mode in ('survival_ex', 'survival'):
+                                diff = 0
+                            else:
+                                diff = abs(my_trophy - other_data.get('trophy', 800))
+                            candidates.append((diff, other_id, other_data))
 
-                            diff = abs(my_trophy - other_trophy)
-                            other_is_top10 = (other_id in top10_ids)
-
-                            # RULE 3: Both players in Top 10 -> Prioritize and BYPASS the 400 point limit!
-                            if is_in_top10 and other_is_top10:
-                                top10_candidates.append((diff, other_id, other_data))
-                            # RULE 2: Max allowed disparity is 400 points
-                            elif diff <= 400:
-                                normal_candidates.append((diff, other_id, other_data))
-
-                    selected_candidate = None
-                    is_top10_match = False
-                    if top10_candidates:
-                        top10_candidates.sort(key=lambda x: x[0])
-                        selected_candidate = top10_candidates[0]
-                        is_top10_match = True
-                    elif normal_candidates:
-                        normal_candidates.sort(key=lambda x: x[0])
-                        selected_candidate = normal_candidates[0]
-
-                    if selected_candidate:
-                        best_diff, other_id, other_data = selected_candidate
+                    if candidates:
+                        candidates.sort(key=lambda x: x[0])
+                        best_diff, other_id, other_data = candidates[0]
                         PVP_HTTP_WAITING.pop(other_id, None)
                         seed = random.randint(1, 65535)
                         match_id = f"m_{int(time.time()*1000)}_{random.randint(100, 999)}"
@@ -2285,15 +2471,13 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             "oppo_online": True,
                             "oppo": matched_oppo
                         }
-                        if is_top10_match:
-                            print(f"[PVP MATCH] Paired TOP 10 {my_name} ({my_trophy} pts) with TOP 10 {matched_oppo['name']} ({other_data.get('trophy', 800)} pts, diff: {best_diff}) [BYPASS 400]!")
-                        else:
-                            print(f"[PVP MATCH] Paired {my_name} ({my_trophy} pts) with {matched_oppo['name']} ({other_data.get('trophy', 800)} pts, rank diff: {best_diff} <= 400)!")
+                        print(f"[PVP MATCH ({my_mode})] Paired {my_name} with {matched_oppo['name']}! Match ID: {match_id}")
 
                     if not matched_oppo:
                         # Add self to queue with trophy and cups
                         PVP_HTTP_WAITING[acc_id] = {
                             "time": now,
+                            "mode": my_mode,
                             "name": my_name,
                             "level": my_level,
                             "cards": my_cards,
@@ -2304,10 +2488,14 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             "silver_cup": my_sc,
                             "bronze_cup": my_bc
                         }
-                        # Wait up to 30s for matching human
+                        # Wait up to 45s for human
                         matched_during_wait = False
-                        for _ in range(60):
+                        for _ in range(90):
                             time.sleep(0.5)
+                            if acc_id in PVP_HTTP_MATCHED:
+                                resp = PVP_HTTP_MATCHED.pop(acc_id)
+                                matched_during_wait = True
+                                break
                             if acc_id in PVP_HTTP_CANCELLED:
                                 PVP_HTTP_CANCELLED.discard(acc_id)
                                 PVP_HTTP_WAITING.pop(acc_id, None)
@@ -2315,35 +2503,19 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 self._send_json(resp)
                                 print(f"[PVP MATCH] Aborted wait loop for cancelled account {acc_id}")
                                 return
-                            if acc_id in PVP_HTTP_MATCHED:
-                                resp = PVP_HTTP_MATCHED.pop(acc_id)
-                                matched_during_wait = True
-                                break
                         
                         if not matched_during_wait:
                             PVP_HTTP_WAITING.pop(acc_id, None)
                             with get_db() as conn:
                                 with conn.cursor() as cur:
-                                    # Balance fallback: Try finding an active deck within 400 trophy
                                     cur.execute("""
                                         SELECT a.id, a.character_name, a.level, a.trophy, a.gold_cup, a.silver_cup, a.bronze_cup, ud.cards, ud.extra_cards
                                         FROM accounts a
                                         JOIN user_decks ud ON a.id = ud.account_id
                                         WHERE a.id != %s AND ud.is_active = 1
-                                          AND ABS(a.trophy - %s) <= 400
                                         ORDER BY ABS(a.trophy - %s) ASC, RAND() LIMIT 1
-                                    """, (acc_id, my_trophy, my_trophy))
+                                    """, (acc_id, my_trophy))
                                     real_row = cur.fetchone()
-                                    if not real_row:
-                                        cur.execute("""
-                                            SELECT a.id, a.character_name, a.level, a.trophy, a.gold_cup, a.silver_cup, a.bronze_cup, ud.cards, ud.extra_cards
-                                            FROM accounts a
-                                            JOIN user_decks ud ON a.id = ud.account_id
-                                            WHERE a.id != %s AND ud.is_active = 1
-                                            ORDER BY ABS(a.trophy - %s) ASC, RAND() LIMIT 1
-                                        """, (acc_id, my_trophy))
-                                        real_row = cur.fetchone()
-
                             if real_row:
                                 c_list = real_row['cards']
                                 if isinstance(c_list, str):
@@ -2362,7 +2534,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     "gold_cup": int(real_row.get('gold_cup', 0) or 0),
                                     "silver_cup": int(real_row.get('silver_cup', 0) or 0),
                                     "bronze_cup": int(real_row.get('bronze_cup', 0) or 0),
-                                    "is_real_player": False
+                                    "is_real_player": True
                                 }
                             else:
                                 oppo_data = {
@@ -2371,9 +2543,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     "cards": [10001]*3 + [10002]*3,
                                     "extra_cards": [40001],
                                     "avatar": 102,
-                                    "gold_cup": 0,
-                                    "silver_cup": 0,
-                                    "bronze_cup": 0,
                                     "is_real_player": False
                                 }
                             resp = {
@@ -2387,7 +2556,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 "oppo_online": False,
                                 "oppo": oppo_data
                             }
-                            print(f"[PVP MATCH] Timeout for {my_name} ({my_trophy} pts): Matched with DB deck {oppo_data['name']} (Lv.{oppo_data['level']})")
+                            print(f"[PVP MATCH] Matched {my_name} ({my_trophy} pts) with closest deck from DB: {oppo_data['name']} (Lv.{oppo_data['level']})")
 
 
 
@@ -2600,15 +2769,14 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 result = int(req.get('result', 1))
                 btype = int(req.get('battle_type', 17))
                 trophy_chg = int(req.get('trophy_change', 0))
-                clean_rep = sanitize_replay_data(req.get('replay_data', {}))
-                rep_data = json.dumps(clean_rep, ensure_ascii=False)
+                rep_data = json.dumps(req.get('replay_data', {}), ensure_ascii=False)
                 with get_db() as conn:
                     with conn.cursor() as cur:
                         cur.execute("""
                             INSERT INTO match_replays 
                             (replay_id, account_id, opponent_name, opponent_level, opponent_avatar, result, battle_type, trophy_change, replay_data)
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                            ON DUPLICATE KEY UPDATE trophy_change = VALUES(trophy_change), replay_data = VALUES(replay_data)
+                            ON DUPLICATE KEY UPDATE replay_data = VALUES(replay_data)
                         """, (rep_id, acc_id, oppo_name, oppo_level, oppo_avatar, result, btype, trophy_chg, rep_data))
                 resp = {"code": 200, "msg": "Lưu trận đấu thành công!", "replay_id": rep_id}
                 print(f"[REPLAY] Saved match replay {rep_id} for account {acc_id}")
@@ -2618,22 +2786,20 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 btype = req.get('battle_type')
                 with get_db() as conn:
                     with conn.cursor() as cur:
-                        query = """
-                            SELECT r.replay_id, r.opponent_name, r.opponent_level, r.opponent_avatar,
-                                   r.result, r.battle_type, r.trophy_change, UNIX_TIMESTAMP(r.created_at) as ts,
-                                   COALESCE(a.gold_cup, 0) as opponent_gold_cup,
-                                   COALESCE(a.silver_cup, 0) as opponent_silver_cup,
-                                   COALESCE(a.bronze_cup, 0) as opponent_bronze_cup
-                            FROM match_replays r
-                            LEFT JOIN accounts a ON (r.opponent_name COLLATE utf8mb4_unicode_ci = a.character_name OR r.opponent_name COLLATE utf8mb4_unicode_ci = a.username)
-                            WHERE r.account_id = %s
-                        """
-                        params = [acc_id]
                         if btype and int(btype) not in [0, 17, 211, 241]:
-                            query += " AND r.battle_type = %s"
-                            params.append(btype)
-                        query += " ORDER BY r.id DESC LIMIT 20"
-                        cur.execute(query, tuple(params))
+                            cur.execute("""
+                                SELECT replay_id, opponent_name, opponent_level, opponent_avatar, result, battle_type, trophy_change, UNIX_TIMESTAMP(created_at) as ts
+                                FROM match_replays
+                                WHERE account_id = %s AND battle_type = %s
+                                ORDER BY id DESC LIMIT 20
+                            """, (acc_id, btype))
+                        else:
+                            cur.execute("""
+                                SELECT replay_id, opponent_name, opponent_level, opponent_avatar, result, battle_type, trophy_change, UNIX_TIMESTAMP(created_at) as ts
+                                FROM match_replays
+                                WHERE account_id = %s
+                                ORDER BY id DESC LIMIT 20
+                            """, (acc_id,))
                         rows = cur.fetchall()
                 replays = []
                 for r in rows:
@@ -2642,9 +2808,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         "opponent_name": r['opponent_name'],
                         "opponent_level": r['opponent_level'],
                         "opponent_avatar": r['opponent_avatar'],
-                        "opponent_gold_cup": int(r.get('opponent_gold_cup') or 0),
-                        "opponent_silver_cup": int(r.get('opponent_silver_cup') or 0),
-                        "opponent_bronze_cup": int(r.get('opponent_bronze_cup') or 0),
                         "result": r['result'],
                         "battle_type": r['battle_type'],
                         "trophy_change": r['trophy_change'],
@@ -2661,7 +2824,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 if row:
                     rep_data = json.loads(row['replay_data']) if isinstance(row['replay_data'], str) else row['replay_data']
                     if isinstance(rep_data, dict):
-                        rep_data = sanitize_replay_data(rep_data)
                         if not rep_data.get('timestamp') and row.get('ts'):
                             rep_data['timestamp'] = int(row['ts'] * 1000)
                         if not rep_data.get('ts') and row.get('ts'):
@@ -2672,37 +2834,28 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
 
             elif self.path == '/api/share_replay':
                 acc_id = int(req.get('account_id', 1))
-                rep_id = str(req.get('replay_id', '')).strip()
+                rep_id = str(req.get('replay_id', ''))
                 share_text = str(req.get('text', '')).strip()
 
                 with get_db() as conn:
                     with conn.cursor() as cur:
                         cur.execute("""
-                            SELECT r.replay_id, r.account_id, r.opponent_name, r.opponent_level, r.opponent_avatar,
-                                   r.result, r.battle_type, r.trophy_change, r.replay_data, UNIX_TIMESTAMP(r.created_at) as ts,
-                                   COALESCE(a.gold_cup, 0) as opp_gold_cup,
-                                   COALESCE(a.silver_cup, 0) as opp_silver_cup,
-                                   COALESCE(a.bronze_cup, 0) as opp_bronze_cup
-                            FROM match_replays r
-                            LEFT JOIN accounts a ON (r.opponent_name COLLATE utf8mb4_unicode_ci = a.character_name OR r.opponent_name COLLATE utf8mb4_unicode_ci = a.username)
-                            WHERE r.replay_id = %s
+                            SELECT replay_id, account_id, opponent_name, opponent_level, opponent_avatar,
+                                   result, battle_type, trophy_change, replay_data, UNIX_TIMESTAMP(created_at) as ts
+                            FROM match_replays
+                            WHERE replay_id = %s
                         """, (rep_id,))
                         rep_row = cur.fetchone()
 
-                        cur.execute("SELECT id, username, character_name, avatar, trophy, gold_cup, silver_cup, bronze_cup, level FROM accounts WHERE id = %s", (acc_id,))
+                        cur.execute("SELECT id, username, character_id, avatar, trophy FROM accounts WHERE id = %s", (acc_id,))
                         acc_row = cur.fetchone()
 
                 if not rep_row:
                     resp = {"code": 404, "msg": "Không tìm thấy dữ liệu trận đấu để chia sẻ!"}
                 else:
-                    sender_name = (acc_row.get('character_name') or acc_row['username']) if acc_row else "Duelist"
-                    sender_level = acc_row.get('level', 50) if acc_row else 50
-                    sender_avatar = acc_row.get('avatar', 201) if (acc_row and acc_row.get('avatar')) else 201
-                    gc = int(acc_row.get('gold_cup') or 0) if acc_row else 0
-                    sc = int(acc_row.get('silver_cup') or 0) if acc_row else 0
-                    bc = int(acc_row.get('bronze_cup') or 0) if acc_row else 0
-                    cid = 7204 if gc > 0 else (7205 if sc > 0 else (7206 if bc > 0 else 0))
-                    cnum = gc if gc > 0 else (sc if sc > 0 else (bc if bc > 0 else 0))
+                    sender_name = acc_row['username'] if acc_row else "Duelist"
+                    sender_level = 50
+                    sender_avatar = acc_row['avatar'] if (acc_row and acc_row.get('avatar')) else 201
 
                     rd = {}
                     try:
@@ -2714,13 +2867,10 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     now_ms = int(time.time() * 1000)
                     battle_payload = {
                         "replay_id": rep_id,
-                        "text": share_text if share_text else "Đã chia sẻ một trận chiến kịch tính!",
+                        "text": share_text,
                         "opponent_name": rep_row['opponent_name'],
                         "opponent_level": rep_row['opponent_level'],
                         "opponent_avatar": rep_row['opponent_avatar'],
-                        "opponent_gold_cup": int(rep_row.get('opp_gold_cup') or 0),
-                        "opponent_silver_cup": int(rep_row.get('opp_silver_cup') or 0),
-                        "opponent_bronze_cup": int(rep_row.get('opp_bronze_cup') or 0),
                         "result": rep_row['result'],
                         "battle_type": rep_row['battle_type'],
                         "trophy_change": rep_row['trophy_change'],
@@ -2735,11 +2885,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         "name": sender_name,
                         "level": sender_level,
                         "avatar": sender_avatar,
-                        "gold_cup": gc,
-                        "silver_cup": sc,
-                        "bronze_cup": bc,
-                        "crown_id": cid,
-                        "crown_num": cnum,
                         "type": 3,
                         "card_id": 0,
                         "content": content_str,
@@ -2747,18 +2892,12 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         "timestamp": now_ms,
                         "battle_data": battle_payload
                     }
-                    if cid > 0:
-                        msg_obj['crown'] = {'info_id': cid, 'num': cnum}
-                    db_id = db_save_chat_message(msg_obj)
-                    msg_obj['id'] = db_id
-
-                    # Keep in-memory cache synchronized
-                    CHAT_MESSAGES.append(msg_obj)
-
-                    broadcast_ws_sync({"t": "chat_broadcast", "msg": msg_obj})
-                    print(f"[REPLAY SHARE] {sender_name} shared replay {rep_id} to combat chat [DB ID: {db_id}]")
-                    resp = {"code": 200, "msg": "Chia sẻ chiến tích thành công!", "replay_id": rep_id, "chat_id": db_id}
+                    send_chat_broadcast_to_server(msg_obj)
+                    print(f"[REPLAY SHARE] {sender_name} shared replay {rep_id} to combat chat")
+                    resp = {"code": 200, "msg": "Chia sẻ chiến tích thành công!", "replay_id": rep_id}
             else:
+                if proxy_to_shop_server(self, self.path, body):
+                    return
                 resp = {"code": 404, "msg": "Endpoint not found"}
 
             out = json.dumps(resp, ensure_ascii=False).encode('utf-8')
@@ -2797,7 +2936,6 @@ def ensure_chat_db():
                         sender_name VARCHAR(64) NOT NULL,
                         level INT DEFAULT 1,
                         avatar INT DEFAULT 201,
-                        trophy INT DEFAULT 800,
                         msg_type INT DEFAULT 1,
                         card_id INT DEFAULT 0,
                         content TEXT NOT NULL,
@@ -2808,37 +2946,7 @@ def ensure_chat_db():
                         INDEX idx_account (account_id)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
                 """)
-                # Migration: add trophy and cup columns if missing
-                cur.execute("""
-                    SELECT count(*) as cnt FROM information_schema.columns
-                    WHERE table_schema = DATABASE() AND table_name = 'chat_messages' AND column_name = 'trophy'
-                """)
-                if cur.fetchone()['cnt'] == 0:
-                    cur.execute("ALTER TABLE `chat_messages` ADD COLUMN `trophy` INT NOT NULL DEFAULT 800")
-                cur.execute("""
-                    SELECT count(*) as cnt FROM information_schema.columns
-                    WHERE table_schema = DATABASE() AND table_name = 'chat_messages' AND column_name = 'gold_cup'
-                """)
-                if cur.fetchone()['cnt'] == 0:
-                    cur.execute("ALTER TABLE `chat_messages` ADD COLUMN `gold_cup` INT NOT NULL DEFAULT 0, ADD COLUMN `silver_cup` INT NOT NULL DEFAULT 0, ADD COLUMN `bronze_cup` INT NOT NULL DEFAULT 0")
-                cur.execute("SELECT COUNT(*) AS cnt FROM chat_messages WHERE created_at >= CURDATE()")
-                cnt = cur.fetchone()['cnt']
-                if cnt == 0:
-                    now_ms = int(time.time() * 1000)
-                    cur.execute("""
-                        INSERT INTO chat_messages (client_msg_id, account_id, sender_name, level, avatar, msg_type, card_id, content, created_at, timestamp_ms)
-                        VALUES
-                        (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s),
-                        (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
-                    """, (
-                        'sys_welcome_1', 0, 'Hệ Thống', 99, 101, 1, 0,
-                        '[THÔNG BÁO] Chào mừng các bài thủ đến với thế giới Yu-Gi-Oh! Chúc các bài thủ thi đấu vui vẻ và đạt thứ hạng cao!',
-                        now_ms - 60000,
-                        'sys_bulletin_1', 0, 'Hệ Thống', 99, 101, 2, 10001,
-                        '[THÔNG BÁO] Chúc mừng bài thủ [Yugi Muto] vừa rút được lá bài cấp GR thần thánh [Rồng Trắng Mắt Xanh]!',
-                        now_ms - 30000
-                    ))
-                    print("[CHAT DB] Initialized today's system messages.")
+
     except Exception as e:
         print("[CHAT DB] ensure_chat_db error:", e)
 
@@ -2847,42 +2955,16 @@ def db_save_chat_message(msg_obj):
     try:
         with get_db() as conn:
             with conn.cursor() as cur:
-                acc_id = msg_obj.get('account_id', 1)
-                gc = int(msg_obj.get('gold_cup') or 0)
-                sc = int(msg_obj.get('silver_cup') or 0)
-                bc = int(msg_obj.get('bronze_cup') or 0)
-                if acc_id and acc_id > 0 and (gc == 0 and sc == 0 and bc == 0):
-                    try:
-                        cur.execute("SELECT gold_cup, silver_cup, bronze_cup FROM accounts WHERE id = %s", (acc_id,))
-                        arow = cur.fetchone()
-                        if arow:
-                            gc = int(arow.get('gold_cup') or 0)
-                            sc = int(arow.get('silver_cup') or 0)
-                            bc = int(arow.get('bronze_cup') or 0)
-                    except Exception:
-                        pass
-                cid = int(msg_obj.get('crown_id') or (7204 if gc > 0 else (7205 if sc > 0 else (7206 if bc > 0 else 0))))
-                cnum = int(msg_obj.get('crown_num') or (gc if gc > 0 else (sc if sc > 0 else (bc if bc > 0 else 0))))
-                msg_obj['gold_cup'] = gc
-                msg_obj['silver_cup'] = sc
-                msg_obj['bronze_cup'] = bc
-                msg_obj['crown_id'] = cid
-                msg_obj['crown_num'] = cnum
-                if cid > 0:
-                    msg_obj['crown'] = {'info_id': cid, 'num': cnum}
-
                 cur.execute("""
                     INSERT INTO chat_messages 
-                    (client_msg_id, account_id, sender_name, level, avatar, trophy, gold_cup, silver_cup, bronze_cup, msg_type, card_id, content, created_at, timestamp_ms)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
+                    (client_msg_id, account_id, sender_name, level, avatar, msg_type, card_id, content, created_at, timestamp_ms)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
                 """, (
                     msg_obj.get('client_msg_id'),
-                    acc_id,
+                    msg_obj.get('account_id', 1),
                     msg_obj.get('name', 'Duelist'),
                     msg_obj.get('level', 1),
                     msg_obj.get('avatar', 201),
-                    msg_obj.get('trophy', 800),
-                    gc, sc, bc,
                     msg_obj.get('type', 1),
                     msg_obj.get('card_id', 0),
                     msg_obj.get('content', ''),
@@ -2901,24 +2983,19 @@ def db_get_today_chat_history():
         with get_db() as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    SELECT c.id, c.client_msg_id, c.account_id, c.sender_name AS name, c.level, c.avatar, c.trophy,
-                           COALESCE(NULLIF(c.gold_cup, 0), a.gold_cup, 0) AS gold_cup,
-                           COALESCE(NULLIF(c.silver_cup, 0), a.silver_cup, 0) AS silver_cup,
-                           COALESCE(NULLIF(c.bronze_cup, 0), a.bronze_cup, 0) AS bronze_cup,
-                           c.msg_type AS type, c.card_id, c.content, c.content AS msg, c.timestamp_ms AS timestamp, c.created_at
-                    FROM chat_messages c
-                    LEFT JOIN accounts a ON c.account_id = a.id
-                    WHERE c.created_at >= CURDATE()
-                    ORDER BY c.id ASC
+                    SELECT id, client_msg_id, account_id, sender_name AS name, level, avatar,
+                           msg_type AS type, card_id, content, content AS msg, timestamp_ms AS timestamp, created_at
+                    FROM (
+                        SELECT * FROM chat_messages
+                        WHERE DATE(created_at) = CURDATE()
+                        ORDER BY id DESC
+                        LIMIT 50
+                    ) t
+                    ORDER BY id ASC
                 """)
                 rows = cur.fetchall()
                 messages = []
                 for r in rows:
-                    gc = int(r.get('gold_cup') or 0)
-                    sc = int(r.get('silver_cup') or 0)
-                    bc = int(r.get('bronze_cup') or 0)
-                    cid = 7204 if gc > 0 else (7205 if sc > 0 else (7206 if bc > 0 else 0))
-                    cnum = gc if gc > 0 else (sc if sc > 0 else (bc if bc > 0 else 0))
                     m = {
                         "id": r['id'],
                         "client_msg_id": r['client_msg_id'] or '',
@@ -2927,18 +3004,11 @@ def db_get_today_chat_history():
                         "name": r['name'],
                         "level": r['level'],
                         "avatar": r['avatar'],
-                        "gold_cup": gc,
-                        "silver_cup": sc,
-                        "bronze_cup": bc,
-                        "crown_id": cid,
-                        "crown_num": cnum,
                         "content": r['content'],
                         "msg": r['msg'],
                         "type": r['type'],
                         "card_id": r['card_id']
                     }
-                    if cid > 0:
-                        m['crown'] = {'info_id': cid, 'num': cnum}
                     if r['card_id'] > 0:
                         m['items'] = [{'info_id': r['card_id'], '_infoId': r['card_id'], 'num': 1, '_num': 1}]
                     if r['type'] == 3 and r['content'] and (r['content'].startswith('{') or '"replay_id"' in r['content']):
@@ -3038,32 +3108,8 @@ async def ws_handler(websocket):
                     msg_data = pkt.get("msg")
                     if isinstance(msg_data, dict):
                         try:
-                            acc_id = msg_data.get('account_id')
-                            if acc_id and ('gold_cup' not in msg_data or 'crown_id' not in msg_data):
-                                try:
-                                    with get_db() as conn:
-                                        with conn.cursor() as cur:
-                                            cur.execute("SELECT gold_cup, silver_cup, bronze_cup FROM accounts WHERE id = %s", (acc_id,))
-                                            arow = cur.fetchone()
-                                            if arow:
-                                                gc = int(arow.get('gold_cup') or 0)
-                                                sc = int(arow.get('silver_cup') or 0)
-                                                bc = int(arow.get('bronze_cup') or 0)
-                                                msg_data['gold_cup'] = gc
-                                                msg_data['silver_cup'] = sc
-                                                msg_data['bronze_cup'] = bc
-                                                cid = 7204 if gc > 0 else (7205 if sc > 0 else (7206 if bc > 0 else 0))
-                                                cnum = gc if gc > 0 else (sc if sc > 0 else (bc if bc > 0 else 0))
-                                                msg_data['crown_id'] = cid
-                                                msg_data['crown_num'] = cnum
-                                                if cid > 0:
-                                                    msg_data['crown'] = {'info_id': cid, 'num': cnum}
-                                except Exception:
-                                    pass
-                            CHAT_MESSAGES.append(msg_data)
-                            if len(CHAT_MESSAGES) > 50: CHAT_MESSAGES.pop(0)
-                            broadcast_ws_sync({"t": "chat_broadcast", "msg": msg_data})
-                            print(f"[WS LOBBY CHAT] {msg_data.get('name')}: {msg_data.get('content')}")
+                            send_chat_broadcast_to_server(msg_data)
+                            print(f"[WS LOBBY CHAT -> CHAT SERVER] {msg_data.get('name')}: {msg_data.get('content')}")
                         except Exception as e:
                             print(f"[WS LOBBY CHAT ERR] {e}")
             elif t == "bind_match":
@@ -3238,8 +3284,21 @@ async def ws_handler(websocket):
                         peer_ws = None
                     if peer_ws:
                         try:
-                            await peer_ws.send(make_pvp_frame(pkt))
+                            # Cơ chế tối ưu thời gian phía server:
+                            # Khi đánh một lá bài hành động (không phải kết thúc lượt 1 hay đầu hàng 2):
+                            # Tăng 5s thời gian vòng đấu cho trận đấu (tối đa 120s)
                             ints = pkt.get("ints", [])
+                            card_id = ints[0] if len(ints) > 0 else 0
+                            if card_id not in (1, 2) and card_id != 0:
+                                pkt["add_time"] = 5
+                                pkt["max_time"] = 120
+                                if "time_left" in pkt:
+                                    try:
+                                        pkt["time_left"] = min(120.0, float(pkt["time_left"]) + 5.0)
+                                    except:
+                                        pass
+                                print(f"[PVP TIME] Match {match_id}: +5s round time added on server for action card {card_id} (time_left={pkt.get('time_left')})")
+                            await peer_ws.send(make_pvp_frame(pkt))
                             print(f"[PVP ACTION] Match {match_id}: relayed ints len={len(ints)} {ints[:4] if len(ints)>=4 else ints} seq={pkt.get('seq')}")
                         except Exception as e:
                             print(f"[PVP ACTION ERR] {e}")
@@ -3305,19 +3364,31 @@ async def ws_handler(websocket):
         match_id = WS_CLIENT_META.get(websocket, {}).get("match_id")
         if match_id and match_id in ACTIVE_MATCHES:
             match = ACTIVE_MATCHES[match_id]
-            peer_ws = None
-            if match.get("p1") == websocket:
-                peer_ws = match.get("p2")
+            is_p1 = (match.get("p1") == websocket)
+            is_p2 = (match.get("p2") == websocket)
+            if is_p1:
                 match["p1"] = None
-            elif match.get("p2") == websocket:
-                peer_ws = match.get("p1")
+            elif is_p2:
                 match["p2"] = None
-            if peer_ws:
-                try:
-                    asyncio.create_task(peer_ws.send(make_pvp_frame({"t": "peer_left"})))
-                except:
-                    pass
-            if match.get("p1") is None and match.get("p2") is None:
+
+            async def delayed_peer_left(m_id, slot_key):
+                await asyncio.sleep(15.0)
+                m = ACTIVE_MATCHES.get(m_id)
+                if m and m.get(slot_key) is None:
+                    try:
+                        p_ws = m.get("p2" if slot_key == "p1" else "p1")
+                        if p_ws:
+                            await p_ws.send(make_pvp_frame({"t": "peer_left"}))
+                    except:
+                        pass
+                    if m.get("p1") is None or m.get("p2") is None:
+                        ACTIVE_MATCHES.pop(m_id, None)
+
+            if is_p1 and match.get("p2"):
+                asyncio.create_task(delayed_peer_left(match_id, "p1"))
+            elif is_p2 and match.get("p1"):
+                asyncio.create_task(delayed_peer_left(match_id, "p2"))
+            elif match.get("p1") is None and match.get("p2") is None:
                 ACTIVE_MATCHES.pop(match_id, None)
         WS_CLIENT_META.pop(websocket, None)
         WS_CONNECTED_CLIENTS.discard(websocket)
@@ -3344,15 +3415,16 @@ def set_last_awarded_date(date_str):
         print(f"[DAILY REWARDS STATE ERR] {e}")
 
 
-def distribute_daily_leaderboard_rewards():
+def distribute_daily_leaderboard_rewards(force_reset_rank=False):
     try:
         now = datetime.datetime.now()
         today_str = now.strftime('%Y-%m-%d')
-        print(f"[DAILY LEADERBOARD] Running daily rewards distribution for {today_str}...")
+        is_sunday = (now.weekday() == 6) or force_reset_rank
+        print(f"[DAILY LEADERBOARD] Running daily rewards distribution for {today_str} (is_sunday={is_sunday}, force_reset_rank={force_reset_rank})...")
         with get_db() as conn:
             with conn.cursor() as cur:
                 # ---------------------------------------------------------
-                # BƯỚC 1: PHÁT THƯỞNG CUP CHO TOP 1, 2, 3 (VÀ TOP 10)
+                # BƯỚC 1: PHÁT THƯỞNG CUP CHO TOP 1, 2, 3 (VÀ TOP 10) VÀO HÒM THƯ (user_mails)
                 # ---------------------------------------------------------
                 cur.execute("""
                     SELECT id, character_name, trophy, level 
@@ -3370,30 +3442,46 @@ def distribute_daily_leaderboard_rewards():
                     pid = p['id']
                     pname = p['character_name'] or f"Duelist_{pid}"
                     if rank == 1:
-                        cur.execute("UPDATE accounts SET gold_cup = gold_cup + 1, gold = gold + 4800, leya_ticket = leya_ticket + 1, daily_rank = 1 WHERE id = %s", (pid,))
+                        mail_title = "🏆 Thưởng Quán Quân Top 1 Đấu Hạng"
+                        mail_content = f"Chúc mừng bài thủ đã xuất sắc đạt ngôi Quán Quân Top 1 Đấu Hạng ngày {today_str}!"
+                        rewards_dict = {"gold_cup": 1, "gold": 4800, "leya_ticket": 1}
                         cup_icon = "🥇 Cúp Vàng (Bonus 10749)"
                     elif rank == 2:
-                        cur.execute("UPDATE accounts SET silver_cup = silver_cup + 1, gold = gold + 3600, gem = gem + 40, daily_rank = 2 WHERE id = %s", (pid,))
+                        mail_title = "🥈 Thưởng Á Quân Top 2 Đấu Hạng"
+                        mail_content = f"Chúc mừng bài thủ đã xuất sắc đạt ngôi Á Quân Top 2 Đấu Hạng ngày {today_str}!"
+                        rewards_dict = {"silver_cup": 1, "gold": 3600, "gem": 40}
                         cup_icon = "🥈 Cúp Bạc (Bonus 10750)"
                     elif rank == 3:
-                        cur.execute("UPDATE accounts SET bronze_cup = bronze_cup + 1, gold = gold + 3000, gem = gem + 40, daily_rank = 3 WHERE id = %s", (pid,))
+                        mail_title = "🥉 Thưởng Quý Quân Top 3 Đấu Hạng"
+                        mail_content = f"Chúc mừng bài thủ đã xuất sắc đạt ngôi Quý Quân Top 3 Đấu Hạng ngày {today_str}!"
+                        rewards_dict = {"bronze_cup": 1, "gold": 3000, "gem": 40}
                         cup_icon = "🥉 Cúp Đồng (Bonus 10751)"
                     elif rank <= 5:
-                        cur.execute("UPDATE accounts SET gold = gold + 2400, gem = gem + 500, daily_rank = %s WHERE id = %s", (rank, pid))
+                        mail_title = f"🎖️ Thưởng Top {rank} Đấu Hạng"
+                        mail_content = f"Chúc mừng bài thủ đã đạt Top {rank} Đấu Hạng ngày {today_str}!"
+                        rewards_dict = {"gold": 2400, "gem": 500}
                         cup_icon = f"Hạng {rank} (Bonus 10752)"
                     else:
-                        cur.execute("UPDATE accounts SET gold = gold + 1800, gem = gem + 400, daily_rank = %s WHERE id = %s", (rank, pid))
+                        mail_title = f"🎖️ Thưởng Top {rank} Đấu Hạng"
+                        mail_content = f"Chúc mừng bài thủ đã đạt Top {rank} Đấu Hạng ngày {today_str}!"
+                        rewards_dict = {"gold": 1800, "gem": 400}
                         cup_icon = f"Hạng {rank} (Bonus 10753)"
-                    print(f"[DAILY REWARD] Rank {rank}: {pname} awarded {cup_icon}")
+
+                    cur.execute("""
+                        INSERT INTO user_mails (account_id, title, content, rewards, claimed, created_at)
+                        VALUES (%s, %s, %s, %s, 0, NOW())
+                    """, (pid, mail_title, mail_content, json.dumps(rewards_dict, ensure_ascii=False)))
+                    cur.execute("UPDATE accounts SET daily_rank = %s WHERE id = %s", (rank, pid))
+                    print(f"[DAILY REWARD MAIL] Rank {rank}: {pname} -> Thư {cup_icon}")
 
                 # ---------------------------------------------------------
-                # BƯỚC 2: TẶNG VÀNG CHO TẤT CẢ NGƯỜI CHƠI RANK != 800 (VÀNG = RANKPOINT x 100)
-                # SAU ĐÓ RESET TẤT CẢ MỨC RANK CỦA NGƯỜI CHƠI CÓ RANK != 800 VỀ = 800
+                # BƯỚC 2: TẶNG VÀNG CHO TẤT CẢ NGƯỜI CHƠI (VÀNG = RANKPOINT x 100) VÀO HÒM THƯ
+                # KHÔNG PHÁT THẲNG VÀ KHÔNG RESET RANK VÀO CÁC NGÀY TRONG TUẦN!
                 # ---------------------------------------------------------
                 cur.execute("""
                     SELECT id, character_name, trophy, gold 
                     FROM accounts 
-                    WHERE trophy IS NOT NULL AND trophy != 800
+                    WHERE trophy IS NOT NULL AND trophy > 0
                 """)
                 rank_players = cur.fetchall()
                 rewarded_count = 0
@@ -3403,33 +3491,50 @@ def distribute_daily_leaderboard_rewards():
                     pid = rp['id']
                     pname = rp['character_name'] or f"Duelist_{pid}"
                     p_trophy = int(rp['trophy']) if rp.get('trophy') is not None else 800
-                    if p_trophy != 800:
-                        gold_bonus = max(0, p_trophy) * 100
+                    gold_bonus = max(0, p_trophy) * 100
+                    if gold_bonus > 0:
+                        rank_mail_title = f"💰 Thưởng Đấu Hạng ngày {today_str}"
+                        rank_mail_content = f"Phần thưởng kết toán điểm Đấu Hạng ngày {today_str}: {p_trophy} điểm rank x 100 = {gold_bonus:,} Vàng."
                         cur.execute("""
-                            UPDATE accounts 
-                            SET gold = gold + %s, trophy = 800 
-                            WHERE id = %s
-                        """, (gold_bonus, pid))
+                            INSERT INTO user_mails (account_id, title, content, rewards, claimed, created_at)
+                            VALUES (%s, %s, %s, %s, 0, NOW())
+                        """, (pid, rank_mail_title, rank_mail_content, json.dumps({"gold": gold_bonus}, ensure_ascii=False)))
                         rewarded_count += 1
                         total_gold_distributed += gold_bonus
-                        print(f"[RANK REWARD & RESET] Player {pid} ({pname}): Rank {p_trophy} -> +{gold_bonus:,} Vàng | Trophy reset về 800")
+                        print(f"[RANK REWARD MAIL] Player {pid} ({pname}): Rank {p_trophy} -> Thư +{gold_bonus:,} Vàng")
 
-                # Đồng thời phòng ngừa trường hợp trophy bị NULL, đưa về 800
-                cur.execute("UPDATE accounts SET trophy = 800 WHERE trophy IS NULL")
+                # ---------------------------------------------------------
+                # BƯỚC 3: RESET RANK NẾU LÀ CHỦ NHẬT (Sunday 00:00)
+                # ---------------------------------------------------------
+                if is_sunday:
+                    cur.execute("UPDATE accounts SET trophy = 800 WHERE trophy IS NULL OR trophy != 800")
+                    print(f"[WEEKLY RANK RESET (SUNDAY)] Đã reset toàn bộ mức Rank về 800 cho mùa giải mới!")
+                else:
+                    cur.execute("UPDATE accounts SET trophy = 800 WHERE trophy IS NULL")
+                    print(f"[DAILY RANK MAINTAINED] Hôm nay không phải Chủ Nhật -> Giữ nguyên điểm Rank của tất cả người chơi!")
+
                 conn.commit()
 
-                print(f"[DAILY LEADERBOARD COMPLETE] Đã trao Cúp Top 1,2,3; tặng tổng cộng {total_gold_distributed:,} Vàng cho {rewarded_count} người chơi có rank != 800 và reset toàn bộ rank về 800.")
+                print(f"[DAILY LEADERBOARD COMPLETE] Đã gửi Cúp Top 1,2,3 và tặng tổng cộng {total_gold_distributed:,} Vàng vào hòm thư cho {rewarded_count} người chơi (Reset rank: {is_sunday}).")
 
                 # ---------------------------------------------------------
-                # BƯỚC 3: THÔNG BÁO HỆ THỐNG TRÊN KÊNH CHAT TOÀN SERVER
+                # BƯỚC 4: THÔNG BÁO HỆ THỐNG TRÊN KÊNH CHAT TOÀN SERVER
                 # ---------------------------------------------------------
                 top1 = top_players[0]
-                broadcast_text = (
-                    f"🏆 [KẾT TOÁN MÙA ĐẤU 12H ĐÊM - {today_str}]\n"
-                    f"🥇 Chúc mừng Tân Vương [{top1['character_name']}] đã xuất sắc đoạt Cúp Vàng!\n"
-                    f"💰 Đã phát thưởng vàng (Rank x 100) cho {rewarded_count} bài thủ (tổng: {total_gold_distributed:,} Vàng) "
-                    f"và reset toàn bộ mức Rank về 800 chuẩn bị cho mùa giải mới!"
-                )
+                if is_sunday:
+                    broadcast_text = (
+                        f"🏆 [KẾT TOÁN MÙA GIẢI TUẦN (CHỦ NHẬT) - {today_str}]\n"
+                        f"🥇 Chúc mừng Tân Vương [{top1['character_name']}] đã xuất sắc đoạt Cúp Vàng tuần này!\n"
+                        f"📬 Đã gửi Cúp Top và Vàng (Rank x 100) vào HÒM THƯ cho {rewarded_count} bài thủ (tổng: {total_gold_distributed:,} Vàng).\n"
+                        f"🔄 Toàn bộ điểm Rank đã được reset về 800 chuẩn bị cho mùa giải tuần mới!"
+                    )
+                else:
+                    broadcast_text = (
+                        f"🏆 [KẾT TOÁN ĐẤU HẠNG 12H ĐÊM - {today_str}]\n"
+                        f"🥇 Chúc mừng Tân Vương [{top1['character_name']}] đang dẫn đầu bảng xếp hạng!\n"
+                        f"📬 Đã gửi Cúp Top và Vàng (Rank x 100) vào HÒM THƯ cho {rewarded_count} bài thủ (tổng: {total_gold_distributed:,} Vàng).\n"
+                        f"⭐ Điểm Rank tiếp tục được giữ nguyên trong tuần (chỉ reset vào Chủ Nhật lúc 0h)!"
+                    )
                 broadcast_msg = {
                     "id": int(time.time()*1000),
                     "timestamp": int(time.time()*1000),
@@ -3441,10 +3546,7 @@ def distribute_daily_leaderboard_rewards():
                     "msg": broadcast_text,
                     "type": 2
                 }
-                CHAT_MESSAGES.append(broadcast_msg)
-                if len(CHAT_MESSAGES) > 100: CHAT_MESSAGES.pop(0)
-                save_chat_history()
-                broadcast_ws_sync({"t": "chat_broadcast", "msg": broadcast_msg})
+                send_chat_broadcast_to_server(broadcast_msg)
 
     except Exception as e:
         print(f"[DAILY LEADERBOARD ERROR] {e}")

@@ -95,7 +95,7 @@
 		Boot.total = 9 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260919v14';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v4';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
 			done(fetchJson('lua_src.json?v=' + ver)),
@@ -122,6 +122,7 @@
 			status('Đang tải tài nguyên hình ảnh...');
 			var preloadList = config.preload || [];
 			function safe(tag, p) {
+				if (!p || typeof p.then !== 'function') return Promise.resolve(p);
 				return p.then(function(res) {
 					return res;
 				}).catch(function(err) {
@@ -137,9 +138,9 @@
 				done(safe('jindutiao', jdzcRes.loadTexture('res/particle/jindutiao.png'))),
 				done(safe('Shaders', global.jdzcPreloadShaders ? global.jdzcPreloadShaders() : Promise.resolve())),
 			]).then(function () {
-				/* Load containers with controlled concurrency (max 2 parallel) to prevent iOS WebKit memory spikes */
+				/* Load containers with controlled concurrency (max 4 parallel) */
 				var index = 0;
-				var concurrency = 2;
+				var concurrency = 4;
 				function loadNext() {
 					if (index >= preloadList.length) return Promise.resolve();
 					var path = preloadList[index++];
@@ -247,14 +248,32 @@
 		/* Entering fullscreen and rotating both change the frame, and mobile
 		 * browsers report the old one for a beat -- so re-run the resize once
 		 * it has settled. cocos binds its own handler to the same events. */
+		function triggerLuaResize() {
+			if (window.jdzcLua && window.jdzcLua.run) {
+				try {
+					window.jdzcLua.run('pcall(function() if ClientView and ClientView.updateScreenSize then ClientView.updateScreenSize() end end)');
+				} catch (e) {}
+			}
+		}
+		window.triggerLuaResize = triggerLuaResize;
+
 		['fullscreenchange', 'webkitfullscreenchange', 'orientationchange'].forEach(function (name) {
 			document.addEventListener(name, function () {
-				setTimeout(function () { cc.view._resizeEvent(); }, 300);
+				setTimeout(function () {
+					cc.view._resizeEvent();
+					triggerLuaResize();
+				}, 300);
 			});
+		});
+		window.addEventListener('resize', function () {
+			setTimeout(function () {
+				triggerLuaResize();
+			}, 300);
 		});
 		document.addEventListener('touchend', function onFirstTap() {
 			document.removeEventListener('touchend', onFirstTap);
 			enterFullscreen();
+			setTimeout(triggerLuaResize, 400);
 		}, { passive: true });
 
 		/* the game's boot chain schedules its first step on the running

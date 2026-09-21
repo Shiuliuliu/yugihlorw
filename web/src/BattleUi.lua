@@ -473,18 +473,7 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 	elseif arg_22_0._baseBattleType == Data.BattleType.base_guidance then
 		arg_22_0._battleSpeed = 1
 	elseif arg_22_0._baseBattleType == Data.BattleType.base_PVP then
-		if arg_22_0._battleType == Data.BattleType.PVP_room or arg_22_0._battleType == Data.BattleType.PVP_dark or arg_22_0._battleType == Data.BattleType.PVP_group then
-			arg_22_0._battleSpeed = lc.readConfig and lc.readConfig(ClientData.ConfigKey.battle_speed, 3) or 3
-		elseif arg_22_0._battleType == Data.BattleType.PVP_clash then
-			local var_22_4 = var_22_1(arg_22_1._player._trophy)
-			local var_22_5 = var_22_1(arg_22_1._opponent._trophy)
-
-			arg_22_0._battleSpeed = math.max(3, var_22_2, var_22_4, var_22_3, var_22_5)
-		elseif arg_22_0._battleType == Data.BattleType.PVP_survival or arg_22_0._battleType == Data.BattleType.PVP_survival_ex or arg_22_0._battleType == Data.BattleType.PVP_ladder then
-			arg_22_0._battleSpeed = 3
-		else
-			arg_22_0._battleSpeed = math.max(3, var_22_2)
-		end
+		arg_22_0._battleSpeed = 3
 	elseif arg_22_0._baseBattleType == Data.BattleType.base_replay then
 		arg_22_0._battleSpeed = math.max(3, var_22_0(P._level, P._vip))
 	elseif lc._configs ~= nil then
@@ -638,6 +627,10 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 
 	arg_22_0._isOnlinePvp = arg_22_0._battleType == Data.BattleType.PVP_clash or arg_22_0._battleType == Data.BattleType.PVP_clash_ex or arg_22_0._battleType == Data.BattleType.PVP_ladder or arg_22_0._battleType == Data.BattleType.PVP_room or arg_22_0._battleType == Data.BattleType.PVP_group or arg_22_0._battleType == Data.BattleType.PVP_dark or arg_22_0._battleType == Data.BattleType.PVP_survival or arg_22_0._battleType == Data.BattleType.PVP_survival_ex or arg_22_0._battleType == Data.BattleType.PVP_friend or (arg_22_1 and (arg_22_1._isOppoOnline or arg_22_1._pvpMatch))
 	arg_22_0._needSendRound = arg_22_0._isOnlinePvp or arg_22_0._battleType == Data.BattleType.PVP_friend
+
+	if arg_22_0._isOnlinePvp or arg_22_0._baseBattleType == Data.BattleType.base_PVP then
+		arg_22_0._battleSpeed = 3
+	end
 
 	if arg_22_0._baseBattleType == Data.BattleType.base_replay then
 		arg_22_0._player._playerType = BattleData.PlayerType.replay
@@ -935,6 +928,10 @@ function var_0_0.initUiControl(arg_29_0)
 	end
 
 	arg_29_0._btnSpeed = var_29_7
+	if arg_29_0._isOnlinePvp or arg_29_0._baseBattleType == Data.BattleType.base_PVP then
+		arg_29_0._btnSpeed:setVisible(false)
+		arg_29_0._btnSpeed:setTouchEnabled(false)
+	end
 
 	local var_29_8 = var_29_2("bat_btn_2", "bat_btn_icon_switch")
 
@@ -1084,6 +1081,11 @@ function var_0_0.initUiControl(arg_29_0)
 
 	for iter_29_2, iter_29_3 in ipairs(var_29_14) do
 		iter_29_3:setVisible(true)
+	end
+
+	if arg_29_0._isOnlinePvp or arg_29_0._baseBattleType == Data.BattleType.base_PVP then
+		arg_29_0._btnSpeed:setVisible(false)
+		arg_29_0._btnSpeed:setTouchEnabled(false)
 	end
 
 	local var_29_15 = lc.createMaskLayer(200, lc.Color3B.black, cc.size(ClientView.SCR_W + 50, ClientView.SCR_H + 50))
@@ -1778,6 +1780,7 @@ function var_0_0.tryUseCard(arg_63_0, arg_63_1)
 		if arg_63_0._isOperating then
 			arg_63_0:addBoardCardEnded(arg_63_1)
 		else
+			arg_63_0._isAddingBoardCard = false
 			arg_63_0:operateBegin()
 		end
 
@@ -1817,6 +1820,7 @@ function var_0_0.operateBegin(arg_66_0)
 	local var_66_1 = arg_66_0._playerUi
 
 	arg_66_0._isOperating = true
+	arg_66_0._isAddingBoardCard = false
 
 	var_66_1:updateCardsActive()
 	arg_66_0:updateRoundButton()
@@ -1869,11 +1873,11 @@ function var_0_0.useRoundEnd(arg_68_0)
 	if arg_68_0._isAuto then
 		return arg_68_0:tryUseCard(arg_68_0._player)
 	elseif arg_68_0._isPvpTimeout then
-		if arg_68_0._needSendRound and arg_68_0._needSendEvent then
+		if arg_68_0._isOnlinePvp or (arg_68_0._needSendRound and arg_68_0._needSendEvent) then
 			ClientData.sendBattleUseCard(arg_68_0._player, BattleData.UseCardId.round, arg_68_0._player._round, -1)
 		end
 		return arg_68_0._player:doUseCard()
-	elseif arg_68_0._needSendRound and arg_68_0._needSendEvent then
+	elseif arg_68_0._isOnlinePvp or (arg_68_0._needSendRound and arg_68_0._needSendEvent) then
 		ClientData.sendBattleUseCard(arg_68_0._player, BattleData.UseCardId.round, arg_68_0._player._round, BattleData.UseCardId.none)
 		return arg_68_0._player:doUseCard()
 	else
@@ -1882,14 +1886,13 @@ function var_0_0.useRoundEnd(arg_68_0)
 end
 
 function var_0_0.operateEnd(arg_69_0, arg_69_1)
-	if not arg_69_0._isOperating then
+	if not arg_69_0._isOperating and arg_69_0._player ~= arg_69_0._player:getActionPlayer() then
 		return
 	end
 
-	if not arg_69_0._isAddingBoardCard then
-		arg_69_0._btnEndRound:setTouchEnabled(false)
-		arg_69_0:useRoundEnd()
-	end
+	arg_69_0._isAddingBoardCard = false
+	arg_69_0._btnEndRound:setTouchEnabled(false)
+	arg_69_0:useRoundEnd()
 end
 
 function var_0_0.autoOperate(arg_70_0, arg_70_1)
@@ -1982,14 +1985,6 @@ function var_0_0.onButtonEvent(arg_75_0, arg_75_1)
 	if arg_75_1 == arg_75_0._btnReturn then
 		arg_75_0:tryExitScene()
 	elseif arg_75_1 == arg_75_0._btnEndRound then
-		local var_75_0 = ClientData.getCurrentTime()
-		local var_75_1 = ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._endTime or 0
-		local var_75_2 = var_75_1 ~= nil and var_75_0 < var_75_1 and var_75_1 - var_75_0 or 0
-
-		if arg_75_0._isOnlinePvp and var_75_2 <= 2 then
-			return
-		end
-
 		if arg_75_0._player:getActionPlayer():getIsNeedDrop() then
 			arg_75_0:showDropHand()
 		else
@@ -2000,6 +1995,9 @@ function var_0_0.onButtonEvent(arg_75_0, arg_75_1)
 			arg_75_0:setGuideHelpButtonVisible(false)
 		end
 	elseif arg_75_1 == arg_75_0._btnSpeed then
+		if arg_75_0._isOnlinePvp or arg_75_0._baseBattleType == Data.BattleType.base_PVP then
+			return
+		end
 		local var_75_5 = arg_75_0._battleSpeed
 		var_75_5 = (var_75_5 >= 4) and 1 or (var_75_5 + 1)
 		arg_75_0:setBattleSpeed(var_75_5)
@@ -3167,6 +3165,7 @@ function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
 	arg_107_0._isPvpTimeout = false
 	arg_107_0._pvpPlayer = arg_107_1
 	arg_107_0._roundRealStartTime = os.time()
+	arg_107_0._roundDuration = 90
 
 	local var_107_0 = ClientData.getCurrentTime()
 
@@ -3196,15 +3195,48 @@ function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
 	arg_107_0:startPvpTiming()
 end
 
+function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
+	local delta = tonumber(arg_108_1) or 5
+	local maxTime = tonumber(arg_108_2) or 120
+	if arg_108_0._roundRealStartTime then
+		local curNow = os.time()
+		local totalDur = arg_108_0._roundDuration or 90
+		local curRemaining = totalDur - (curNow - arg_108_0._roundRealStartTime)
+		local newRemaining = math.min(maxTime, curRemaining + delta)
+		arg_108_0._roundRealStartTime = curNow - (totalDur - newRemaining)
+		if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._beginTime then
+			ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + newRemaining
+		end
+		arg_108_0:updateRoundTimer(newRemaining)
+	end
+end
+
+function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
+	local newRemaining = math.min(120, math.max(0, tonumber(arg_108_1) or 0))
+	if arg_108_0._roundRealStartTime and newRemaining > 0 then
+		local curNow = os.time()
+		local totalDur = arg_108_0._roundDuration or 90
+		arg_108_0._roundRealStartTime = curNow - (totalDur - newRemaining)
+		if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._beginTime then
+			ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + newRemaining
+		end
+		arg_108_0:updateRoundTimer(newRemaining)
+	end
+end
+
 function var_0_0.startPvpTiming(arg_108_0)
 	if arg_108_0._roundRealStartTime == nil then
 		arg_108_0._roundRealStartTime = os.time()
 	end
+	if arg_108_0._roundDuration == nil then
+		arg_108_0._roundDuration = 90
+	end
 	arg_108_0._pvpTimingScheduler = lc.Scheduler:scheduleScriptFunc(function(arg_109_0)
-		-- Strictly unscaled real wall-clock countdown (90s independent of battle speed)
+		-- Strictly unscaled real wall-clock countdown (90s base, plus delta per action)
 		local curNow = os.time()
+		local totalDur = arg_108_0._roundDuration or 90
 		local elapsed = curNow - (arg_108_0._roundRealStartTime or curNow)
-		local var_109_0 = math.max(0, 90 - elapsed)
+		local var_109_0 = math.max(0, totalDur - elapsed)
 
 		arg_108_0:updateRoundTimer(var_109_0)
 

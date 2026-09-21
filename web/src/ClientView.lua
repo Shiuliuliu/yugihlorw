@@ -1750,8 +1750,57 @@ function var_0_0.createTouchSpriteWithShader(arg_57_0, arg_57_1)
 	return var_57_1
 end
 
+local AVAILABLE_BTN_SIZES = {
+	{60, 50}, {60, 60}, {80, 40}, {80, 60}, {82, 60},
+	{100, 40}, {100, 60}, {100, 78}, {110, 44}, {110, 60}, {110, 78},
+	{120, 40}, {120, 60}, {120, 70}, {120, 78},
+	{140, 44}, {140, 60}, {140, 70}, {140, 78}, {146, 70},
+	{150, 60}, {150, 78}, {152, 78}, {160, 60}, {160, 78}, {170, 78},
+	{180, 50}, {180, 56}, {180, 60}, {180, 70}, {180, 78},
+	{200, 60}, {200, 78}, {210, 60}, {210, 78},
+	{220, 60}, {220, 70}, {220, 78}, {240, 78},
+	{250, 56}, {250, 60}, {250, 78}, {260, 60}, {260, 64}, {260, 78}, {300, 78}
+}
+
+local function getCustomButtonFile(btnName, targetW, targetH)
+	if not btnName or type(btnName) ~= "string" then return nil end
+	local isConfirm = (btnName == "img_btn_1" or btnName == "img_btn_1_s")
+	local isCancel = (btnName == "img_btn_2" or btnName == "img_btn_2_s")
+	local isRed = (btnName == "img_btn_3" or btnName == "img_btn_3_s")
+	if not isConfirm and not isCancel and not isRed then return nil end
+
+	local isSmall = string.find(btnName, "_s") ~= nil
+	targetW = math.floor(tonumber(targetW) or (isSmall and 120 or 180))
+	targetH = math.floor(tonumber(targetH) or (isSmall and 60 or 78))
+	if targetW < 30 then targetW = isSmall and 120 or 180 end
+	if targetH < 20 then targetH = isSmall and 60 or 78 end
+
+	local kind = isRed and "red" or (isCancel and "cancel" or "confirm")
+
+	local bestW, bestH = isSmall and 120 or 180, isSmall and 60 or 78
+	local minDiff = 999999
+	for i = 1, #AVAILABLE_BTN_SIZES do
+		local sz = AVAILABLE_BTN_SIZES[i]
+		local dw = math.abs(sz[1] - targetW)
+		local dh = math.abs(sz[2] - targetH)
+		local diff = dw * 2 + dh * 3
+		if diff < minDiff then
+			minDiff = diff
+			bestW = sz[1]
+			bestH = sz[2]
+		end
+	end
+
+	return string.format("res/new/buttons/%s_%dx%d.png", kind, bestW, bestH), bestW, bestH
+end
+
 function var_0_0.createShaderButton(arg_59_0, arg_59_1, arg_59_2, arg_59_3)
 	arg_59_0 = arg_59_0 or "img_blank"
+
+	local customFile = getCustomButtonFile(arg_59_0)
+	if customFile then
+		arg_59_0 = customFile
+	end
 
 	local var_59_0 = arg_59_0 == "img_blank"
 	local var_59_1 = string.find(arg_59_0, "%.")
@@ -1780,6 +1829,13 @@ function var_0_0.createShaderButton(arg_59_0, arg_59_1, arg_59_2, arg_59_3)
 
 	function var_59_2.setDisplayFrame(arg_60_0, arg_60_1)
 		local var_60_0 = arg_60_0:getContentSize()
+		local customF = getCustomButtonFile(arg_60_1, var_60_0.width, var_60_0.height)
+		if customF then
+			arg_60_0:setScale9Enabled(false)
+			arg_60_0:loadTextureNormal(customF, ccui.TextureResType.localType)
+			arg_60_0:setContentSize(var_60_0)
+			return
+		end
 
 		arg_60_0:loadTextureNormal(arg_60_1, ccui.TextureResType.plistType)
 		arg_60_0:setContentSize(var_60_0)
@@ -1886,11 +1942,35 @@ function var_0_0.createShaderButton(arg_59_0, arg_59_1, arg_59_2, arg_59_3)
 end
 
 function var_0_0.createScale9ShaderButton(arg_69_0, arg_69_1, arg_69_2, arg_69_3, arg_69_4)
+	local isSmall = string.find(arg_69_0 or "", "_s") ~= nil
+	local w = arg_69_3 or (arg_69_2 and arg_69_2.width) or (isSmall and 120 or 180)
+	local h = arg_69_4 or (arg_69_2 and arg_69_2.height) or (isSmall and 60 or 78)
+
+	local customFile, bw, bh = getCustomButtonFile(arg_69_0, w, h)
+	if customFile then
+		local var_69_0 = var_0_0.createShaderButton(customFile, arg_69_1)
+		var_69_0:setScale9Enabled(false)
+		var_69_0:setContentSize(w, h)
+
+		local origLoad = var_69_0.loadTextureNormal
+		function var_69_0.loadTextureNormal(self, texName, texType)
+			local newFile = getCustomButtonFile(texName, w, h)
+			if newFile then
+				self:setScale9Enabled(false)
+				origLoad(self, newFile, ccui.TextureResType.localType)
+				return
+			end
+			origLoad(self, texName, texType)
+		end
+
+		return var_69_0
+	end
+
 	local var_69_0 = var_0_0.createShaderButton(arg_69_0, arg_69_1)
 
 	var_69_0:setScale9Enabled(true)
 	var_69_0:setCapInsets(arg_69_2)
-	var_69_0:setContentSize(arg_69_3 or 0, arg_69_4 or arg_69_2.height)
+	var_69_0:setContentSize(arg_69_3 or 0, arg_69_4 or (arg_69_2 and arg_69_2.height or 0))
 
 	return var_69_0
 end
@@ -6988,3 +7068,4 @@ function var_0_0.createCrown(arg_351_0, arg_351_1)
 end
 
 ClientView = var_0_0
+return var_0_0

@@ -11,9 +11,13 @@ echo ==================================================
 echo.
 
 :: Check if server port is already in use and kill it
-echo [1/3] Checking port 8080...
+echo [1/3] Checking ports 8080 and 8082...
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8080 " ^| findstr "LISTENING"') do (
     echo     Killing old process on port 8080 (PID: %%a)
+    taskkill /PID %%a /F >nul 2>&1
+)
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8082 " ^| findstr "LISTENING"') do (
+    echo     Killing old process on port 8082 (PID: %%a)
     taskkill /PID %%a /F >nul 2>&1
 )
 
@@ -25,9 +29,13 @@ echo.
 echo [3/3] Starting services...
 echo.
 
+:: Start shop server in new window
+echo     Starting Dedicated Shop Server on port 8082...
+start "Yugihlor Shop Server" cmd /k "cd /d D:\yugitauapk && color 0B && python yugioh_shop_server.py"
+
 :: Start web server in new window
 echo     Starting Web Server on port 8080...
-start "Yugihlor Web Server" cmd /k "cd /d D:\yugitauapk && python yugioh_web_server.py"
+start "Yugihlor Web Server" cmd /k "cd /d D:\yugitauapk && color 0A && python yugioh_web_server.py"
 
 :: Wait a moment for server to init
 timeout /t 2 /nobreak >nul

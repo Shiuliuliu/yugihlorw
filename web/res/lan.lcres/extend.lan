@@ -63,9 +63,9 @@ Mỗi người giới hạn mua 1 lần
 Thưởng Điểm Danh 7 Ngày Liên Tục
 Đăng nhập liên tục mỗi ngày và bạn có thể tiếp tục nhận phần thưởng cao nhất sau 7 ngày
 Thưởng Điểm Danh Tân Thủ
-Điểm danh 7 ngày, nhận nhiều Bài và Gem!
-Điểm danh 7 ngày, nhận nhiều Bài và Gem! (Dành cho CB)
-Liên tục online một khoảng thời gian sẽ nhận thưởng Gold.
+Điểm danh 7 ngày, nhận nhiều Bài và Linh Thạch Cao Cấp!
+Điểm danh 7 ngày, nhận nhiều Bài và Linh Thạch Cao Cấp! (Dành cho CB)
+Liên tục online một khoảng thời gian sẽ nhận thưởng Linh Thạch.
 Thưởng Điểm Danh VIP Hằng Ngày
 Sau khi tăng cấp VIP, ngày hôm sau sẽ nhận nhiều thưởng
 Thưởng điểm danh tháng %d
@@ -98,8 +98,8 @@ Gói Quà Độc Quyền
 Đặc Quyền Riêng
 Đã mua |Thẻ Tháng|
 Xin chúc mừng, đấu sĩ, bạn đã mua thành công |Đặc quyền vĩnh viễn|
-Đã mua |%d Gem|
-Đã mua |%d Gold|
+Đã mua |%d Linh Thạch Cao Cấp|
+Đã mua |%d Linh Thạch|
 Đã mua |Quỹ trưởng thành|
 Xin chúc mừng Quyết Đấu Giả, bạn đã mua thành công |Fund|
 Xin chúc mừng, đấu sĩ, bạn đã mua thành công |Gói quà tặng Leya|
@@ -316,9 +316,9 @@ Chuyển thành phòng thủ
 Đã hết
 Giới Hạn Bộ Bài
 Thông tin của %s
-Mua Gold
+Mua Linh Thạch
 Mua sức chịu đựng
-(|Tặng| %d Gem)
+(|Tặng| %d Linh Thạch Cao Cấp)
 Mua Miễn Chiến Bài
 Phe ta
 Đối phương
@@ -339,7 +339,7 @@ Quỹ 88
 Quỹ 98
 Phúc Lợi Chung
 X%d hoàn trả
-Mua nhận |%d| Gem và |EXP VIP|, tích lũy thêm nhận được |%d| Gem và giúp tăng |Phúc Lợi Chung|!
+Mua nhận |%d| Linh Thạch Cao Cấp và |EXP VIP|, tích lũy thêm nhận được |%d| Linh Thạch Cao Cấp và giúp tăng |Phúc Lợi Chung|!
 Người chơi này đã nhận được hoặc được tặng |Quỹ trưởng thành|
 Số người đã mua
 Đấu Thủ, bạn đã mua |Quỹ trưởng thành|
@@ -370,9 +370,9 @@ Thưởng hoạt động
 Hoạt động đã xong
 Thời gian hoạt động có hiệu
 |Chợ| sẽ bày bán các vật phẩm hoạt động sau:
-Trong thời gian hoạt động đã tích lũy nạp |%d| Gem.
+Trong thời gian hoạt động đã tích lũy nạp |%d| Linh Thạch Cao Cấp.
 |Nạp| bất kì mỗi ngày đều nhận được vật phẩm |ngẫu nhiên| sau: (Hôm nay nạp |%d| lần)
-Trong thời gian hoạt động đã tích lũy tiêu phí |%d| Gem.
+Trong thời gian hoạt động đã tích lũy tiêu phí |%d| Linh Thạch Cao Cấp.
 Thưởng sẽ được gửi qua |Thư|, hãy chú ý nhận.
 Trong hoạt động đã nạp liên tục |%d| ngày.
 Chưa mở
@@ -804,28 +804,28 @@ Số lượng Bài này đã đạt tối đa
 Bài này đã đạt giới hạn ra trận, đồng ý mua?
 Đồng ý mua?
 Đồng ý đổi Mảnh Vạn Năng?
-Đồng ý tốn |%d| Gem, tăng |%d| dung lượng?
+Đồng ý tốn |%d| Linh Thạch Cao Cấp, tăng |%d| dung lượng?
 Vẫn chưa vượt ải, đồng ý bắt đầu lại 【Thành Thám Hiểm】?
 Đồng ý cường hóa?
 Đồng ý bán?
 Sau khi tách sẽ mất bài, đồng ý tách?
-Mua thêm Gem?
+Mua thêm Linh Thạch Cao Cấp?
 Đồng ý hủy đặt bài?
 Đặt bài lại, sẽ tạo mới thời gian đặt. Đồng ý đặt lại bài?
-Đồng ý tốn %d Gem để điểm danh bù?
+Đồng ý tốn %d Linh Thạch Cao Cấp để điểm danh bù?
 Đồng ý thoát Guild hiện tại?
 Hiện là |Chủ Guild|, |nhường chức| cho thành viên khác mới có thể thoát Guild.
 Sau khi thoát Guild, Guild này sẽ biến mất, |không thể khôi phục|. Đồng ý thoát?
-Bài đã tử vong, đồng ý tốn %d Gem để hồi sinh?
+Bài đã tử vong, đồng ý tốn %d Linh Thạch Cao Cấp để hồi sinh?
 Bài đã tử vong, đồng ý hồi sinh? (Lần đầu miễn phí)
 Sau khi tướng chuyển sinh |sẽ tăng danh vọng|. Nếu danh vọng của bộ bài vượt mức, cần điều chỉnh bộ bài. Đồng ý chuyển sinh?
-Đã mua |Quỹ trưởng thành|, thưởng quỹ |không được cộng dồn|. Mua lần này, ngoài |Gem| và |EXP VIP| tương ứng, còn nhận được đạo cụ |%s|. Đồng ý mua?
+Đã mua |Quỹ trưởng thành|, thưởng quỹ |không được cộng dồn|. Mua lần này, ngoài |Linh Thạch Cao Cấp| và |EXP VIP| tương ứng, còn nhận được đạo cụ |%s|. Đồng ý mua?
 Bạn có chắc chắn muốn xóa bộ bài hiện tại không?
 Số lần khiêu chiến
 Hôm nay không thể %s
-Gold không đủ
+Linh Thạch không đủ
 Thể lực không đủ
-Gem không đủ
+Linh Thạch Cao Cấp không đủ
 Lệnh đột kích không đủ
 Rương kho báu mảnh tướng màu cam không đủ
 Rương kho báu mảnh tướng tím không đủ
@@ -844,7 +844,7 @@ Không đủ đá tái sinh màu cam
 Không đủ hoa Higan tím
 Không đủ hoa Higanbana màu cam
 Thiếu tài liệu huấn luyện ngựa chiến
-Gold Guild không đủ
+Linh Thạch Guild không đủ
 Gỗ Guild không đủ
 Năng động Guild không đủ
 Tài nguyên tăng cấp không đủ
@@ -856,12 +856,12 @@ Kho thóc đã đầy
 Chưa đến lúc thu hoạch, không thể nhận
 Số lần còn lại hôm nay
 Số lần khiêu chiến miễn phí còn lại
-Số lần không đủ, tốn |%d Gem |mua| %d lần|?
-Bạn có chắc chắn chi |%d gem| chiêu mộ tướng?
+Số lần không đủ, tốn |%d Linh Thạch Cao Cấp |mua| %d lần|?
+Bạn có chắc chắn chi |%d Linh Thạch Cao Cấp| chiêu mộ tướng?
 Đồng ý tốn |%d %s| tạo mới vật phẩm?
 Xác nhận chi phí|%d%s|Làm mới sản phẩm?  (Số lần làm mới còn lại|%d/%d| lần)
-Đồng ý tốn thêm |%d Gem| tiếp tục quét?
-Đồng ý tốn |%d Gem| để đấu lại?
+Đồng ý tốn thêm |%d Linh Thạch Cao Cấp| tiếp tục quét?
+Đồng ý tốn |%d Linh Thạch Cao Cấp| để đấu lại?
 Đồng ý tốn |%d năng động Guild| mở khóa khiêu chiến |【%s】|?
 |%s| Sẽ bị cấm phát biểu và chia sẻ báo cáo trận đánh trên kênh thế giới. Bạn có chắc chắn muốn tiếp tục không?
 Vật phẩm cần ghép không đủ, không thể ghép
@@ -869,12 +869,12 @@ Vật phẩm cần ghép không đủ, không thể ghép
 Chọn bài cần bán
 Hãy chọn bài UR cần ghép
 Chọn bài cần tách
-Khi lệnh tạo mới không đủ, có thể dùng Gem tạo mới
+Khi lệnh tạo mới không đủ, có thể dùng Linh Thạch Cao Cấp tạo mới
 [Cuộc thi] Đánh bại Phong ấn để nhận Cờ Hoàng gia
 【Chiến Đấu】 trong Quyết Đấu mở rương có thể nhận được Điểm Quyết Đấu
 Chủ Thuê Vạn Năng rời khỏi sau
 Chủ Thuê Vạn Năng đã rời khỏi
-Số lần còn lại không đủ, tốn %d Gem để mua %d lần?
+Số lần còn lại không đủ, tốn %d Linh Thạch Cao Cấp để mua %d lần?
 Mở khiêu chiến
 Thứ 2
 Thứ 3
@@ -1228,14 +1228,14 @@ Quà Mời
 Đã mời
 Mời thành công
 Được |%s| mời
-Cấp Đấu Thủ đạt Lv10 có thể mời bạn bè cùng tham gia! Mời càng nhiều phần thưởng càng nhiều! Người được mời nạp thẻ sẽ được nhận Gem.
+Cấp Đấu Thủ đạt Lv10 có thể mời bạn bè cùng tham gia! Mời càng nhiều phần thưởng càng nhiều! Người được mời nạp thẻ sẽ được nhận Linh Thạch Cao Cấp.
 Đấu Thủ dưới cấp 10, có thể nhập code để tạo quan hệ mời. (Chỉ thiết lập quan hệ mời với 1 người, có thể khác server)
 Thiết lập quan hệ thành công nhận ngay Quà Được Mời:
 Đã chấp nhận lời mời của người chơi này
 Thiết lập quan hệ mời với người chơi này? (|Thao tác không thể hủy|)
 Code
 Code vô hiệu
-Mời sẽ được nhận Gem
+Mời sẽ được nhận Linh Thạch Cao Cấp
 Quy Tắc Mã Mời
 Đấu Thủ đã đạt Lv30, không thể chập nhận lời mời.
 Đối phương không online
@@ -1359,7 +1359,7 @@ Không hạn chế
 Cờ Guild
 %s Đã đạt điểm tối đa, cống hiến tiếp không?
 Chọn hình Cờ
-Tạo Guild cần %d Gem, cấp đạt Lv%d
+Tạo Guild cần %d Linh Thạch Cao Cấp, cấp đạt Lv%d
 Gửi anh hùng lính đánh thuê
 Đấu sĩ, tướng bạn muốn thuê không tồn tại
 Thời gian thực hiện công việc là %d phút. Bạn có chắc chắn muốn thuê anh hùng này?
@@ -1388,7 +1388,7 @@ Năng động
 Có thể chọn %d thành viên
 Tổng điểm
 Thành viên
-Gold
+Linh Thạch
 Gỗ
 Cống hiến Guild
 Trục xuất
@@ -1530,7 +1530,7 @@ Thành viên Clan yêu cầu viện trợ báo thù
 Đấu Thủ! Đến thời gian thưởng, mau kiểm tra thư để nhận!
 Đấu sĩ! Cuộc thập tự chinh chống lại bộ bài đang được chờ đợi một cách nghiêm túc, xin hãy ra lệnh!
 Đấu sĩ! Sức chịu đựng của trang trại đã đầy, đã đến lúc tham chiến!
-Đấu Thủ! Gold đã đầy, hãy nhận kịp thời!
+Đấu Thủ! Linh Thạch đã đầy, hãy nhận kịp thời!
 Đấu Thủ! Đặt Bài ở Lễ Phép Thuật có thể nhận rồi!
 Đấu Thủ! Tấu Sớ đã hoàn thành, hãy nhận thưởng!
 Gửi nhóm
@@ -1545,7 +1545,7 @@ Chia sẻ trận chiến hấp dẫn
 Chia sẻ
 |%s| Sau được chia sẻ
 Chiến đấu đã được chia sẻ
-Xác nhận tốn %d Gem chia sẻ trận này
+Xác nhận tốn %d Linh Thạch Cao Cấp chia sẻ trận này
 Chiến đội
 Chi tiết
 Khóa
@@ -1595,26 +1595,26 @@ Phát động 1 trận đấu giao hữu
 So tài kết thúc, bạn giành chiến thắng!
 So tài đã kết thúc, bạn thua rồi
 Đang mời người khác so tài
-Nạp đủ |%d| Gem sẽ nhận được đặc quyền
+Nạp đủ |%d| Linh Thạch Cao Cấp sẽ nhận được đặc quyền
 Có thể nhận quà |VIP%d| riêng
 Gồm tất cả đặc quyền và quà |VIP%d| riêng
-Mỗi ngày dùng Gem đổi thể lực và Gold, mỗi loại |%d| lần
+Mỗi ngày dùng Linh Thạch Cao Cấp đổi thể lực và Linh Thạch, mỗi loại |%d| lần
 [Chợ] Bạn có thể mua đá cường lực và thuốc tiến hóa |%d| lần một ngày từ nông dân nông thôn.
 [Chợ] Có thể mua hộp kho báu |%d| lần mỗi ngày từ nông dân nông thôn.
 [Chợ] Bạn có thể mua rượu hảo hạng, sắt đen và cỏ khô |%d| lần mỗi ngày từ nông dân nông thôn.
 Mỗi ngày miễn phí khiêu chiến 【%s】| %d| lần
-Mở khóa dùng Gem mua lượt khiêu chiến |【%s】|
+Mở khóa dùng Linh Thạch Cao Cấp mua lượt khiêu chiến |【%s】|
 Mỗi ngày mua lượt khiêu chiến 【%s】 |%d| lần
 Mở khóa tăng tốc chiến đấu x|%d|
 Mở khóa khe cắm thẻ |%d|th của [Quà tặng ma thuật]
-Mở khóa dùng Gem tạo mới |Thương Nhân Kho Báu| trong 【Chợ】
-Mỗi ngày có thể dùng Gem tạo mới Thương Nhân Kho Báu trong 【Chợ】 |%d| lần
-Mỗi ngày có thể dùng Gem tạo mới các thương nhân khác trong 【Chợ】 |%d| lần
+Mở khóa dùng Linh Thạch Cao Cấp tạo mới |Thương Nhân Kho Báu| trong 【Chợ】
+Mỗi ngày có thể dùng Linh Thạch Cao Cấp tạo mới Thương Nhân Kho Báu trong 【Chợ】 |%d| lần
+Mỗi ngày có thể dùng Linh Thạch Cao Cấp tạo mới các thương nhân khác trong 【Chợ】 |%d| lần
 Mở khóa các chức năng của [Cung điện của Chúa] | Tuyển dụng chỉ bằng một cú nhấp chuột | Thăm tướng
 |Chủ Thuê Vạn Năng| xuất hiện vĩnh viễn trong 【Chợ】
 Mở khóa Ải Phiêu Lưu |càn quét 5 lần|
 Mỗi ngày tạo lại càn quét Ải Phiêu Lưu 【Tinh Anh】 và 【Ác Mộng】 |%d| lần
-Mở khóa Guild|【Quà Lớn】|Hành lễ Gem
+Mở khóa Guild|【Quà Lớn】|Hành lễ Linh Thạch Cao Cấp
 Mở khóa quán rượu | [Tuyển dụng huyền thoại] |
 Lord's Palace [Chuyến thăm của tướng quân] Tuyển dụng để nhận được giá trị lòng tốt |+%d|
 Số lần tối đa bạn có thể mở [Hộp kho báu tướng huyền thoại] để nhận tướng mới giảm xuống |%d| lần
@@ -1884,7 +1884,7 @@ Thần Tích
 Hư Vô
 Ảo ảnh thời gian và không gian
 Cửa hàng pha lê
-Tàn tích của các Pharaoh
+Shop Linh Thạch Cao Cấp
 Ấn Kỹ Năng
 Cung Điện Pharaoh
 Tiệm Guild
@@ -3326,7 +3326,7 @@ Quy tắc hoạt động
 Lễ hội vẽ thiệp
 Trao đổi hiện vật: Thu thập hiện vật và đổi chúng lấy thẻ cao cấp tùy chỉnh Double 11
 Lễ hội rút thẻ: mở gói thẻ và nhận pha lê rút thẻ khổng lồ
-② 300 Viên kim cương, 1 * Khối xây dựng thiên niên kỷ, 1 * Bánh xe trí tuệ thiên niên kỷ, 2 * Quyền trượng thiếc thiên niên kỷ, 3 * Đôi mắt thiên niên kỷ, Trang sức thiên niên kỷ 500 *, Chìa khóa thiên niên kỷ 500 *, Quy mô thiên niên kỷ 500 *
+② 300 Viên Linh Thạch Cao Cấp, 1 * Khối xây dựng thiên niên kỷ, 1 * Bánh xe trí tuệ thiên niên kỷ, 2 * Quyền trượng thiếc thiên niên kỷ, 3 * Đôi mắt thiên niên kỷ, Trang sức thiên niên kỷ 500 *, Chìa khóa thiên niên kỷ 500 *, Quy mô thiên niên kỷ 500 *
 Phiên bản làm lại của Yu-Gi-Oh cổ điển! Triệu hồi quái vật và thách quyết đấu mạnh nhất!
 Thẻ đam mê, cạnh tranh đỉnh cao! Một game chiến thuật siêu hấp dẫn với những trận chiến thời gian thực!
 Chia sẻ thành công!
@@ -3504,7 +3504,7 @@ Sự kiện ra mắt máy chủ
 Xếp hạng hoạt động
 Gói thẻ giới hạn
 Vui lòng chọn thẻ có tỷ lệ rớt LÊN
-Thẻ có tỷ lệ chiết kim cương UP:
+Thẻ có tỷ lệ chiết Linh Thạch Cao Cấp UP:
 Yêu cầu một |mã thông báo kỳ diệu|
 
 Vui lòng chọn thẻ có tỷ lệ rơi tăng trước.
@@ -3512,19 +3512,19 @@ Bạn chỉ có thể thay đổi nó một lần một ngày
 (Chưa có sản phẩm nào được bán)
 |Đặc quyền vàng Arena|Hiệu quả
 ◆ Kéo dài trong bảy ngày, mỗi lần vào đấu trường, bạn có thể thay thế miễn phí một nhóm đấu sĩ
-◆Mua và nhận 60 viên kim cương
+◆Mua và nhận 60 viên Linh Thạch Cao Cấp
 ◆ Kéo dài trong bảy ngày, hai đợt quyết đấu có thể được thay thế miễn phí mỗi khi bạn vào đấu trường
 ◆Mỗi bản ghi thất bại có thể bị xóa mỗi khi bạn vào đấu trường.
-◆Mua và nhận 300 viên kim cương
+◆Mua và nhận 300 viên Linh Thạch Cao Cấp
 Số lần thay người ở đấu trường này đã cạn.
 Đặc quyền bạc đấu trường còn lại trong %d ngày
 Đặc quyền vàng đấu trường vẫn còn trong %d ngày
 |Đặc quyền vàng Quyết Đấu City|Hiệu quả
 ◆ Kéo dài trong bảy ngày, mỗi lần vào thành phố quyết đấu, bạn có thể thay thế miễn phí một nhóm đấu sĩ
-◆Mua và nhận 60 viên kim cương
+◆Mua và nhận 60 viên Linh Thạch Cao Cấp
 ◆ Kéo dài trong bảy ngày, mỗi lần bạn vào Thành phố Quyết Đấu, bạn có thể thay thế miễn phí hai nhóm đấu sĩ
 ◆Bạn có thể chọn thêm một vòng chiến lợi phẩm cho mỗi chiến thắng
-◆Mua và nhận 300 viên kim cương
+◆Mua và nhận 300 viên Linh Thạch Cao Cấp
 Số lần thay người cho trận đấu này đã hết.
 Đặc quyền hạng Bạc tại Thành Phố Quyết Đấu còn %d ngày
 Đặc quyền vàng của Quyết Đấu City còn lại %d ngày
@@ -3565,8 +3565,8 @@ Vĩnh viễn
 (Thời gian bỏ phiếu hiện tại %d)
 Ngày bình chọn đã qua
 Xếp hạng trước đó
-Tặng quà |%s| yêu cầu %d|kim cương|. Bạn có chắc chắn muốn cho nó đi không?
-Tặng |%s| cần tiêu thụ %d|kim cương|, không có đủ kim cương
+Tặng quà |%s| yêu cầu %d|Linh Thạch Cao Cấp|. Bạn có chắc chắn muốn cho nó đi không?
+Tặng |%s| cần tiêu thụ %d|Linh Thạch Cao Cấp|, không có đủ Linh Thạch Cao Cấp
 Sản phẩm này được giới hạn ở %d đơn vị và còn lại %d đơn vị. Bạn có xác nhận việc mua hàng của mình không?
 Số lượng có hạn %d
 |%s| Được định cấu hình trong |tất cả các bộ bài| sẽ bị loại bỏ. Bạn có thể cần phải cấu hình lại bộ bài của mình để cạnh tranh trong cuộc quyết đấu. Bạn có muốn tiếp tục không?
@@ -3574,7 +3574,7 @@ Khoảng thời gian tái chế: %d tháng %d đến %d tháng %d
 %s Hãy vào bộ bài để phân bổ thẻ
 Không thể tái chế |%s|
 Có thể tặng quà
-Bạn có chắc chắn muốn sử dụng |1000 viên kim cương| để mở khóa một bộ bài mới? Có nhiều nhân vật hơn cũng có thể mở khóa các bộ bài mới.
+Bạn có chắc chắn muốn sử dụng |1000 viên Linh Thạch Cao Cấp| để mở khóa một bộ bài mới? Có nhiều nhân vật hơn cũng có thể mở khóa các bộ bài mới.
 Ngày quốc tang
 Cần làm thủ tục hải quan|Du lịch%s%d-%d|
 Đổi phiếu giảm giá đặc biệt
@@ -3622,7 +3622,7 @@ Năm
 Sáu
 Ngày
 Số lần bạn tham gia Trận đấu Thời gian và Không gian của tuần này đã đạt đến giới hạn trên và không thể thực hiện thêm trận đấu nào nữa.
-Bạn có chắc chắn thu thập được 3 thẻ và đổi lấy kim cương không?
+Bạn có chắc chắn thu thập được 3 thẻ và đổi lấy Linh Thạch Cao Cấp không?
 Trạng Thái Chuyển Sinh
 Siêu Chuyển Sinh
 |%s|Số lượng không đủ và bạn cần tiêu thụ thẻ KC tương ứng để bù vào. Bạn có chắc không?
@@ -3630,7 +3630,7 @@ Bạn có chắc chắn muốn từ bỏ cuộc chiến không-thời gian và t
 Tinh thể dấu ấn
 Tháo dỡ
 Bóc ra
-Bạn có chắc chắn nó sẽ có giá | 500 viên kim cương | để xóa dấu? Sau khi tháo dỡ, bạn sẽ nhận được thẻ gốc và huy hiệu dấu ấn.
+Bạn có chắc chắn nó sẽ có giá | 500 viên Linh Thạch Cao Cấp | để xóa dấu? Sau khi tháo dỡ, bạn sẽ nhận được thẻ gốc và huy hiệu dấu ấn.
 Bạn có chắc chắn muốn bóc nhãn hiệu này không? Sau khi tước bỏ, bạn sẽ nhận được thẻ gốc và pha lê |%s mark|
 Đánh dấu kỹ năng
 Dấu ấn
@@ -3943,8 +3943,8 @@ Ngày thành viên Bafu
 Quảng cáo
 Hoạt động lễ hội mùa xuân
 Quảng cáo
-Vé Cổng Kim Cương Đấu Tự Chọn giảm giá
-Giảm vé cổng Đấu Tự Chọn| Trong thời gian hoạt động lễ, giá dùng Gem tham gia Đấu Tự Chọn giảm <b>5%</b>.
+Vé Cổng Linh Thạch Cao Cấp Đấu Tự Chọn giảm giá
+Giảm vé cổng Đấu Tự Chọn| Trong thời gian hoạt động lễ, giá dùng Linh Thạch Cao Cấp tham gia Đấu Tự Chọn giảm <b>5%</b>.
 Mở Đấu Tự Chọn
 Một thời gian để kiểm tra kỹ năng chơi bài của bạn | Trong thời gian diễn ra sự kiện, <b>Cổng Quyết Đấu</b> sẽ mở! <b>Cạnh tranh công bằng</b> thực sự, tại đây, tất cả các quyết đấu giả đều được cấp thẻ ngẫu nhiên và họ có thể chọn xây dựng toàn bộ bộ bài của riêng mình. Càng giành được nhiều chiến thắng, phần thưởng họ nhận được càng cao!  Thể lệ: Trong thời gian diễn ra sự kiện, cổng thi sẽ mở từ <b>12:00-14:00, 18:00-22:00</b>. Trong khoảng thời gian này, bạn có thể <b>đấu</b> đối thủ của mình để quyết đấu.
 Mở Đấu Tự Chọn
@@ -3971,8 +3971,8 @@ Cúp vô địch thế giới
 Trở lại thẻ bí ẩn|Trong thời gian diễn ra sự kiện, nếu điểm cổng quyết đấu đạt đến số điểm quy định, bạn sẽ nhận được <b>Cúp World Cup</b>
 Mặt Sau Riêng
 Lá bài bí ẩn trở lại | Trong thời gian diễn ra sự kiện, nếu điểm Dark Quyết Đấu đạt đến số điểm quy định, bạn sẽ nhận được <b>lại lá bài độc quyền</b>
-Rương Mục Tiêu Quyết Đấu x2 Gold
-Trong hoạt động Rương Mục Tiêu Quyết Đấu x2 Gold|, khi tham gia Quyết Đấu đạt số Điểm Quyết Đấu mức nhất định được nhận rương với lợi ích x2 <b>Gold</b>. Hãy mang theo bộ bài mạnh nhất nào! Quyết Đấu
+Rương Mục Tiêu Quyết Đấu x2 Linh Thạch
+Trong hoạt động Rương Mục Tiêu Quyết Đấu x2 Linh Thạch|, khi tham gia Quyết Đấu đạt số Điểm Quyết Đấu mức nhất định được nhận rương với lợi ích x2 <b>Linh Thạch</b>. Hãy mang theo bộ bài mạnh nhất nào! Quyết Đấu
 Hoạt động mùa tốt nghiệp
 Mùa Tốt Nghiệp | Trong thời gian diễn ra sự kiện, thu thập các mô hình đột phá để đổi lấy phần thưởng đặc biệt
 Những phần thưởng đặc biệt từ Peak Showdown
@@ -5416,17 +5416,17 @@ Trong 1 lần thi đấu Đấu Tự Chọn thắng %d lần
 Đấu Tự Chọn được 12 thắng %d lần
 Đấu Tự Chọn được 12 thắng %d lần
 Đấu Tự Chọn được 12 thắng %d lần
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
-Nhận được %d Gold
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
+Nhận được %d Linh Thạch
 Nhận được %d Bài SR
 Nhận được %d Bài SR
 Nhận được %d Bài SR
@@ -5461,17 +5461,17 @@ Nhận được %d Bài UR
 Đăng nhập %d ngày
 Đăng nhập %d ngày
 Bất kỳ nhân vật nào đạt đến cấp độ %d
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
-Dùng %d Gold
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
+Dùng %d Linh Thạch
 Rút %d Gói Bài
 Rút %d Gói Bài
 Rút %d Gói Bài
@@ -5493,10 +5493,10 @@ Thu thập: %s
 Thu thập: %s
 Thu thập: %s
 Thu thập: %s
-Góp: %s Gold
-Góp: %s Gold
-Góp: %s Gold
-Góp: %s Gold
+Góp: %s Linh Thạch
+Góp: %s Linh Thạch
+Góp: %s Linh Thạch
+Góp: %s Linh Thạch
 Đóng góp: %s gỗ
 Đóng góp: %s gỗ
 Đóng góp: %s gỗ
@@ -9290,181 +9290,181 @@ Thưởng 7 Bảo Vật
 Đổi phúc lợi
 Đổi phúc lợi
 Đổi phúc lợi
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Muto Game
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Kaiba Seto
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng kim cương
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị kim cương %d
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
-Phần thưởng giá trị kim cương %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Muto Game
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Kaiba Seto
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Jonouchi Katsuya đã tích lũy được %d lần nạp giá trị gia tăng Linh Thạch Cao Cấp
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Số lần nạp tích lũy của YouThành thế hệ thứ mười là phần thưởng giá trị Linh Thạch Cao Cấp %d
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
+Phần thưởng giá trị Linh Thạch Cao Cấp %d nạp lại tích lũy của Jack Atlas
 Huy hiệu miễn phí cấp 1
 Huy hiệu miễn phí cấp 2
 Huy hiệu miễn phí cấp 3
@@ -10863,7 +10863,7 @@ Cấp độ tất cả nhân vật (tích lũy) đạt 70
 Cấp độ tất cả nhân vật (tích lũy) đạt 80
 Tất cả cấp độ nhân vật (tích lũy) đạt 90
 Phúc lợi Thẻ Tháng ngày n
-Phúc lợi Thẻ Tháng Gem ngày n
+Phúc lợi Thẻ Tháng Linh Thạch Cao Cấp ngày n
 Thưởng Thẻ Tháng-Bạc T1
 Thưởng Thẻ Tháng-Bạc T2
 Thưởng Thẻ Tháng-Bạc T3
@@ -10969,56 +10969,56 @@ Số 201-300 trong Danh sách Con dấu
 Số 301-400 trong Danh sách Con dấu
 Số 401-500 trong Danh sách Con dấu
 Quà đăng nhập thi đấu
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Quà Đặc Quyền VIP1
 Quà Đặc Quyền VIP2
 Quà Đặc Quyền VIP3
@@ -11035,43 +11035,43 @@ Quà Đặc Quyền VIP13
 Gói quà đặc quyền VIP14
 Gói quà đặc quyền VIP15
 Gói quà đặc quyền VIP16
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Gói quà bảo trì + bồi thường lỗi thẻ hàng tháng
 Gói quà bảo trì + Bồi thường cửa hàng KC
 Quà Bảo Trì 1
 Đền bù bảo trì
-Gói quà bảo trì bị trì hoãn + Bồi thường BUG Void Gem
+Gói quà bảo trì bị trì hoãn + Bồi thường BUG Void Linh Thạch Cao Cấp
 3.000 Điểm thưởng thành tích sẽ được tặng
 Tặng thưởng thành tích 4000 điểm
 Tặng thưởng thành tích 5000 điểm
@@ -11300,274 +11300,274 @@ Xếp hạng 101-200 trong Danh sách Seal Seal
 Số 201-300 trong Danh sách Con dấu
 Số 301-400 trong Danh sách Con dấu
 Số 401-500 trong Danh sách Con dấu
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Khung Avatar Hạng 1 Quyết Đấu
 Khung Avatar Hạng 2 Quyết Đấu
 Khung Avatar Hạng 3 Quyết Đấu
@@ -11581,64 +11581,64 @@ Mặt Sau Riêng
 Mặt Sau Riêng
 Khung avatar độc quyền của World Cup
 Cúp vô địch thế giới
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Hạng 1 Quyết Đấu-Khu
 Hạng 2 Quyết Đấu-Khu
 Hạng 3 Quyết Đấu-Khu
@@ -11650,46 +11650,46 @@ Xếp hạng 6-10 trong máy chủ này trong Peak Showdown
 Xếp hạng 11-20 trong máy chủ này trong Peak Showdown
 Xếp hạng 21-40 trong máy chủ này trong Peak Showdown
 Xếp hạng 41-50 trong máy chủ này trong Peak Showdown
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Gói quà tặng đăng nhập ngày nhà giáo
 Hãy mua Quỹ Ước mơ và nhận nó
 Phần thưởng đăng nhập quỹ mơ ước ngày 2
@@ -11768,81 +11768,81 @@ Phần thưởng đăng nhập quỹ trải nghiệm Ngày 7
 Đăng nhập quỹ Đăng nhập Phần thưởng ngày thứ 12
 Đăng nhập Quỹ Đăng nhập Phần thưởng Ngày 13
 Đăng nhập Quỹ Đăng nhập Phần thưởng Ngày 14
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Quà phản hồi trong trò chơi
 Quà Media
 Quà Guild
@@ -11949,337 +11949,337 @@ Gói quà tặng đăng nhập lễ hội mùa xuân
 Gói quà tặng đăng nhập lễ hội mùa xuân
 Gói quà tặng đăng nhập lễ hội mùa xuân
 Gói quà tặng đăng nhập lễ hội mùa xuân
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Gói quà tặng đăng nhập lễ hội mùa xuân
 Gói quà tặng đăng nhập lễ hội mùa xuân
 Gói quà tặng đăng nhập lễ hội mùa xuân
@@ -12291,15 +12291,15 @@ Gói quà tặng đăng nhập Ngày của Nữ hoàng
 Gói quà đăng nhập 315
 Gói quà tặng đăng nhập ngày Cá tháng Tư
 Gói quà tặng đăng nhập lễ hội Qingming
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Gói quà tặng đăng nhập kỷ niệm
 Quà Đăng Nhập Ngày Của Cha
 Gói quà tặng đăng nhập kỷ niệm
@@ -12313,26 +12313,26 @@ Gói quà tặng đăng nhập kỷ niệm
 Quà Đăng Nhập 1/5
 Quà Đăng Nhập Ngày Của Mẹ
 Gói quà tặng đăng nhập ngày 1 tháng 6
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Gói quà tặng đăng nhập lễ hội thuyền rồng
 Gói quà tặng đăng nhập ngày 1 tháng 7
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Gói quà tặng đăng nhập ngày 1 tháng 8
 Gói quà tặng đăng nhập ngày nhà giáo
 Gói Quà Đăng Nhập Trung Thu
@@ -12365,16 +12365,16 @@ Gói quà tặng đăng nhập kỷ niệm
 Gói quà tặng đăng nhập kỷ niệm
 Gói quà tặng đăng nhập kỷ niệm
 Gói quà tặng đăng nhập kỷ niệm
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Gói quà tặng đăng nhập ngày lao động
 Quà Đăng Nhập Ngày Của Mẹ
 Gói quà đăng nhập 520
@@ -12426,16 +12426,16 @@ Gói quà tặng đăng nhập kỷ niệm
 Gói quà tặng đăng nhập kỷ niệm
 Gói quà tặng đăng nhập kỷ niệm
 Gói quà tặng đăng nhập kỷ niệm
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
-Phần thưởng giá trị kim cương nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
+Phần thưởng giá trị Linh Thạch Cao Cấp nạp lại tích lũy %d
 Quà Đăng Nhập 1/5
 Gói quà tặng đăng nhập ngày 4 tháng 5
 Quà Đăng Nhập Ngày Của Mẹ
@@ -13255,7 +13255,7 @@ Ngày quốc khánh
 Tết Trung Thu
 Gói quà vàng
 Gói quà bạch kim
-Gói quà kim cương
+Gói quà Linh Thạch Cao Cấp
 Gói quà tặng tối cao
 Gói quà vua
 Gói quà tặng hàng tháng của WeChat
@@ -16819,7 +16819,7 @@ Bộ bài: Chia làm bộ bài chính và bộ bài thêm. Bộ bài chính là 
 Số bài: Số lượng bài trên sân. Bộ bài chính ít nhất 30 lá, nhiều nhất 40 lá. Bộ bài thêm ít nhất 1 lá, nhiều nhất 15 lá. Khi tham gia Loạn Đấu, số bài là 60 lá.
 Bài hạn chế: Có một số bài bị hạn chế, cùng một bộ bài chỉ được mang 1 lá
 Bộ bài: Mỗi nhân vật có nhiều bộ bài, khi đổi nhân vật sẽ hiển thị bộ bài đã lưu tương ứng
-Mở khóa nhân vật: Dùng Gem hoặc nhân vật đạt cấp chỉ định sẽ mở khóa nhân vật mới. Mở khóa nhân vật mới đồng thời có thể mở khóa bộ bài mới
+Mở khóa nhân vật: Dùng Linh Thạch Cao Cấp hoặc nhân vật đạt cấp chỉ định sẽ mở khóa nhân vật mới. Mở khóa nhân vật mới đồng thời có thể mở khóa bộ bài mới
 Người lính có thể được huấn luyện trong doanh trại
 Cường hóa binh lính: Cường hóa binh lính cần tốn Binh Phù và Bạc, sau khi binh lính tăng cấp thì thuộc tính cơ bản và cấp kỹ năng đều tăng theo. Cấp kỹ năng bằng với cấp binh lính
 Mối quan hệ chỉ huy: Khi một người lính và một vị tướng có khả năng chỉ huy cánh tay tương ứng tồn tại trong cùng một đội hình, thuộc tính của người lính sẽ được tăng cường thêm.
@@ -16839,7 +16839,7 @@ Ngựa chiến phân hủy: Ngựa chiến sẽ biến mất sau khi bị phân 
 Bấm vào ngựa chiến để xem thông tin chi tiết của nó. Mỗi con ngựa chiến có một kỹ năng độc quyền. Các biểu tượng sau biểu thị các loại kỹ năng khác nhau: |[img_icon_skill_1]|[img_icon_skill_2]|[img_icon_skill_3]|[img_icon_skill_4]|[img_icon_skill_5]|[img_icon_skill_6]
 Trong chợ có thể mua các loại đạo cụ, mảnh và có cơ hội đổi Mảnh Vạn Năng hiếm
 Nông dân nông thôn: Người nông dân bán một số lượng đạo cụ nhất định mỗi ngày. Cấp VIP càng cao, bạn càng có thể mua nhiều vật phẩm mỗi ngày. Trong thời gian diễn ra sự kiện, nhiều đạo cụ sẽ được bán tại đây
-Touch the Gold Captain: Di sản của các hoàng tử của mọi triều đại đều không thể thoát khỏi bàn tay độc ác của Thuyền trưởng vàng. Thuyền trưởng Mojin bí mật bán những vật liệu quý hiếm, không chỉ thiết bị mà thậm chí cả người sống.
+Touch the Linh Thạch Captain: Di sản của các hoàng tử của mọi triều đại đều không thể thoát khỏi bàn tay độc ác của Thuyền trưởng vàng. Thuyền trưởng Mojin bí mật bán những vật liệu quý hiếm, không chỉ thiết bị mà thậm chí cả người sống.
 Thương Nhân Kho Báu: Thương nhân mang theo đạo cụ và Mảnh hiếm. Tạo mới vào 20:00 mỗi ngày, dùng Lệnh Tạo Mới có thể tự tạo mới vật phẩm. Lệnh Tạo Mới không đủ có thể dùng Vàng tạo mới
 Chủ lao động toàn cầu: Với mỗi 600 đơn vị thực phẩm và cỏ được tiêu thụ, Chủ lao động toàn cầu sẽ có cơ hội tuyệt vời để đi chợ, nhiều nhất là một lần một ngày. Anh ta sẽ giúp bạn đổi những mảnh tướng dư thừa thành những vật phẩm khác như xu bạc, mảnh tướng quý hiếm, mảnh phổ thông, v. v.
 Crusade Lords: War Heroes là nơi bạn kiểm tra công trạng của mình và bạn có thể đổi cờ đế quốc lấy đạo cụ và các mảnh anh hùng cố định. Vào lúc 20:00 hàng ngày, Lord Crusade sẽ được làm mới.
@@ -16868,7 +16868,7 @@ Thần Tích: Thần Tích bán bài cấp cao và 1 phần bài Lôi Nhã! Gói
 Mua bài: Dùng tiền tệ khác để đổi, hiện cho đổi bài Kí Hiệu Obelisk, Lôi Nhã Vàng, Lôi Nhã Bạc
 Hạn chế đổi: Mỗi lá bài chỉ được đổi 1 lần, nếu số bài nhận được đạt tối đa sẽ đóng đổi bài
 Hộp Thời Gian: Một số bài hiếm (Thẻ Tháng hoặc Thẻ Điểm danh) sẽ xuất hiện trong Hộp Thời Gian
-Mua bài: Trả đủ số Gold có thể đổi
+Mua bài: Trả đủ số Linh Thạch có thể đổi
 Hạn chế đổi: Mỗi lá bài chỉ được đổi 1 lần, nếu số bài nhận được đạt tối đa sẽ đóng đổi bài
 Ưu đãi Bài: Bài hiếm xuất hiện trong tháng, trả đủ tiền có thể đổi; khi hết tháng này, Bài tháng trước sẽ xuất hiện với giá ưu đãi, sau 1 tháng giảm 10%, sau 2 tháng giảm 30%, sau 3 tháng giảm 50%
 Tiệm Không Gian: Mở hạn giờ trong thời gian hoạt động, bài hiếm sẽ xuất hiện ở đây
@@ -16907,14 +16907,14 @@ Thẻ tái chế: Sử dụng các thẻ được chỉ định để đổi ch�
 Số lượng tái chế: Các thẻ khác nhau có số lượng tái chế khác nhau. Khi đấu sĩ đã tái chế số do hệ thống đặt ra thì nó sẽ không được tái chế.
 Giới hạn thời gian tái chế: Thẻ tái chế có thời hạn riêng. Thời hạn được hiển thị trên giao diện thông tin của thẻ tái chế. Sau khi vượt quá thời hạn, thẻ không thể được tái chế.
 Gói thẻ đỉnh cao: Sử dụng chip tương ứng với cấp bậc Quyết Đấu để mua thẻ từ gói thẻ hạng Đỉnh
-Chip đỉnh cao: Trong Quyết Đấu Đỉnh Cao, 10 người chiến thắng đầu tiên mỗi ngày có thể nhận được Chip đồng đỉnh cao, chip bạc đỉnh cao, chip vàng đỉnh cao, chip bạch kim đỉnh cao, chip kim cương đỉnh cao, chip huyền thoại đỉnh cao và chip đỉnh vua tương ứng với thứ hạng hiện tại. Không thể nhận thêm chip sau chiến thắng thứ 11
+Chip đỉnh cao: Trong Quyết Đấu Đỉnh Cao, 10 người chiến thắng đầu tiên mỗi ngày có thể nhận được Chip đồng đỉnh cao, chip bạc đỉnh cao, chip vàng đỉnh cao, chip bạch kim đỉnh cao, chip Linh Thạch Cao Cấp đỉnh cao, chip huyền thoại đỉnh cao và chip đỉnh vua tương ứng với thứ hạng hiện tại. Không thể nhận thêm chip sau chiến thắng thứ 11
 Quy tắc gói thẻ: Mỗi thẻ trong gói thẻ cao điểm chứa 3 thẻ. Khi rút được 3 lá bài thì lá bài đó sẽ không bị rơi ra nữa. Khi 3 lá bài trong tổng số các lá bài trong bộ bài được rút ra, bộ bài sẽ không được rút nữa.
 Thông báo xác suất: Tỷ lệ rơi ban đầu của thẻ UR trong gói thẻ đỉnh cao bằng một nửa so với thẻ SR. Khi rút hết 3 thẻ SR thì chỉ có thẻ UR bị rớt ra.
 Bộ sưu tập phổ biến: Gói thẻ này mở trong thời gian giới hạn. Với mỗi gói được mua, bạn sẽ nhận được một viên pha lê ma thuật và ba lá bài trong gói thẻ sẽ được tặng ngẫu nhiên làm quà tặng.
 Bộ sưu tập cổ điển: Gói thẻ này được mở vĩnh viễn. Với mỗi gói được mua, bạn sẽ nhận được một Silhouette và ba thẻ trong gói thẻ sẽ được tặng làm quà tặng ngẫu nhiên.
 Con dấu bộ sưu tập: Mỗi khi mua gói thẻ bộ sưu tập, bạn sẽ nhận được 1 con dấu bộ sưu tập. Bạn có thể sử dụng con dấu sưu tập để đổi thẻ trong gói thẻ trong cửa hàng.
 Đá quý Hư Không: Mua 10 gói thẻ sưu tập cùng một lúc để nhận 1 Đá Quý Hư Không, mua 50 gói thẻ sưu tập cùng một lúc và nhận 5 Đá Quý Hư Không.
-Gói Thẻ sưu tập: Mỗi gói 10 gói có giá 400 kim cương và 50 gói có giá chiết khấu là 1.800 kim cương. Mỗi gói thẻ chứa một Phantom Crystal. Nếu bạn mua Phantom Crystal, bạn sẽ nhận được thêm 3 thẻ từ hệ thống.
+Gói Thẻ sưu tập: Mỗi gói 10 gói có giá 400 Linh Thạch Cao Cấp và 50 gói có giá chiết khấu là 1.800 Linh Thạch Cao Cấp. Mỗi gói thẻ chứa một Phantom Crystal. Nếu bạn mua Phantom Crystal, bạn sẽ nhận được thêm 3 thẻ từ hệ thống.
 Công bố xác suất thu thập gói thẻ: mở gói thẻ và nhận quà mỗi gói trong 3 thẻ. Xác suất nhận được thẻ UR là 1,77%, xác suất nhận được thẻ R là 33,33% và xác suất nhận được thẻ N là 64,9%
 Mua gói thẻ: Chọn bộ bài bạn muốn mua và nhấp vào bộ bài đó. Sau khi tiêu thụ các tài nguyên được chỉ định, gói thẻ sẽ được mua và mở. Bạn có thể mua 10 hoặc 50 gói cùng một lúc
 Quy trình mua gói thẻ: Một gói thẻ gồm ba thẻ, nhấp vào chúng để mở chúng và xem các thẻ bạn nhận được. Các lá bài thu được sẽ xuất hiện trong [Bộ bài của tôi]
@@ -16933,7 +16933,7 @@ Cửa hàng Pha lê: Cửa hàng Pha lê bán thẻ cao cấp! Thẻ mới sẽ 
 Mua thẻ: Sử dụng pha lê đánh dấu để đổi thẻ
 Pha lê đánh dấu: Có thể nhận được thông qua hệ thống [Phong bì đỏ]
 Giới hạn quy đổi: Nếu số lượng thẻ nhận được đạt đến giới hạn trên, việc quy đổi thẻ sẽ bị đóng.
-Tàn tích của Pharaoh: Tàn tích của Pharaoh bán một số thẻ không còn in được nữa! Thẻ mới sẽ có sẵn để đổi thưởng tùy từng thời điểm
+Shop Linh Thạch Cao Cấp: Shop Linh Thạch Cao Cấp bán một số thẻ không còn in được nữa! Thẻ mới sẽ có sẵn để đổi thưởng tùy từng thời điểm
 Mua thẻ: Dùng Millennium Dust để đổi thẻ
 Bụi thiên niên kỷ: Có thể thu được thông qua hệ thống [Đăng nhập]
 Đặc quyền thẻ hàng tháng bạc 1: Trong trò chơi Quyết Đấu City (ngoại trừ Quyết Đấu City·Time and Space Quyết Đấu), khi bật chức năng cài đặt thời gian chiến đấu, thời gian hoạt động ban đầu của vòng hành động đầu tiên của người chơi tăng thêm 10 giây, thời gian gia hạn hoạt động hiệu quả tăng thêm 1 giây và giới hạn trên của thời gian hoạt động vòng tăng thêm 10 giây. Đặc quyền này chỉ có hiệu lực một lần cho dù mua bao nhiêu thẻ hàng tháng và có thể được cộng dồn với các đặc quyền khác giúp tăng thời gian hoạt động.
@@ -16995,25 +16995,25 @@ Xét duyệt kỷ niệm: Các tướng thuộc quyền sở hữu của ngườ
 Thăm tướng: Các tướng ngẫu nhiên sẽ đến thăm trong game và ở lại Cung Lãnh Chúa trong một khoảng thời gian. Nếu lãnh chúa thưởng cho hắn những đạo cụ được chỉ định, hắn có thể trực tiếp lấy được vị tướng này và tăng thêm sự ưu ái cho hắn. Khi ân huệ của hắn đạt tới 100, chắc chắn sẽ có một vị tướng da cam đến thăm. Tất cả các tướng trong game đều có thể đến thăm
 Quà tặng của Hoàng gia: Các vật phẩm quà tặng của Hoàng gia có thể nhận được bằng cách hoàn thành các nhiệm vụ tưởng niệm hoặc có thể mua từ những người buôn kho báu trên thị trường. Đánh chiếm hoặc càn quét một thành phố có cơ hội đánh rơi những món quà của hoàng gia.
 Đấu Trường là nơi Đấu Thủ chiến đấu online với nhau
-Quyết Đấu: Đấu Thủ sẽ được ghép đấu online với đối thủ thực lực tương đương, thắng nhận được Gold và tư cách mở rương ngày
+Quyết Đấu: Đấu Thủ sẽ được ghép đấu online với đối thủ thực lực tương đương, thắng nhận được Linh Thạch và tư cách mở rương ngày
 Rương quyết đấu: Nếu người chơi trong ngày chưa mở tất cả rương, số lần thắng và chưa mở rương sẽ không được tạo lại. Khi mở hết rương còn lại trước đó, trong ngày sẽ tự tạo lại rương có thể mở
 Nhóm Quyết Đấu: Cấp bậc nhóm quyết đấu gồm Thanh Đồng, Bạch Ngân, Hoàng Kim, Bạch Kim, Truyền Thuyết
 Đấu online: Hệ thống sẽ tìm đối thủ thực lực tương đương cho người chơi
 Thời gian thi đấu: Mỗi mùa thi đấu kéo dài 1 tuần, khi kết thúc sẽ tổng kết 1 lần thưởng xếp hạng
 Tổng kết mùa giải: Sau khi kết thúc mùa giải, số lượng Điểm Quyết Đấu mùa giải mới sẽ là số lượng tổng kết -400, số lượng bắt đầu tốt đa là 2100
-Thưởng ngày: Liên thắng sẽ được nhận rương thưởng ngày, Gold trong rương sẽ căn cứ theo bậc của Đấu Thủ. Rương 5 liên thắng sẽ được 【Kho Báu Osiris The Sky Dragon】, dùng đổi bài siêu hiếm 【Osiris The Sky Dragon】
+Thưởng ngày: Liên thắng sẽ được nhận rương thưởng ngày, Linh Thạch trong rương sẽ căn cứ theo bậc của Đấu Thủ. Rương 5 liên thắng sẽ được 【Kho Báu Osiris The Sky Dragon】, dùng đổi bài siêu hiếm 【Osiris The Sky Dragon】
 Bậc Truyền Thuyết: Sau khi kết thúc mùa giải, Đấu Thủ bậc Truyền Thuyết sẽ nhận thêm Ảo Tinh bằng số lượng (Điểm Quyết Đấu - 2500) x10
 Tối ưu hóa thời gian chiến đấu: Nó có thể được bật trong cài đặt trò chơi của hình đại diện của nhân vật. Sau khi bật nó lên, thời gian của vòng đầu tiên sẽ là 40 giây và mỗi thao tác hiệu quả sẽ được kéo dài thêm 3 giây. Giới hạn trên của mỗi vòng là 80 giây. Đặc quyền thẻ hàng tháng có thể tăng thông số thời gian trong vòng hành động đầu tiên của người chơi; Đặc quyền VIP có thể tăng thông số thời gian mỗi hiệp của người chơi. Đặc quyền có thể xếp chồng lên nhau. Tắt cài đặt này sẽ vẫn sử dụng quy tắc 60 giây cố định cho mỗi hiệp.
 Tác động của đặc quyền đến thông số thời gian: Đặc quyền sẽ chỉ có hiệu lực nếu bật tối ưu hóa thời gian chiến đấu. Đặc quyền thẻ hàng tháng chỉ ảnh hưởng đến thông số thời gian của riêng bạn. Đặc quyền VIP ảnh hưởng đến thông số thời gian của cả hai người chơi sau khi bật tối ưu hóa thời gian chiến đấu. Mức đặc quyền cao hơn được sử dụng.
 Phạt thời gian trì hoãn: Nếu vòng này không có thao tác nào và vòng chơi bị hệ thống buộc phải kết thúc thì vòng tiếp theo sẽ chỉ có 15 giây thời gian thao tác. Sau khi thực hiện một thao tác hợp lệ trong vòng phạt, thời gian hoạt động bình thường sẽ được khôi phục ở vòng tiếp theo.
 Đấu Tự Chọn: Tạo bộ bài mới trải nghiệm thi đấu công bằng
-Mở thi đấu: Mở Đấu Tự Chọn cần vé vào cổng, không có vé có thể dùng Gold hoặc Gem mua
+Mở thi đấu: Mở Đấu Tự Chọn cần vé vào cổng, không có vé có thể dùng Linh Thạch hoặc Linh Thạch Cao Cấp mua
 Chọn nhân vật: Chọn 1 trong 3 nhân vật xuất hiện để thi đấu, sau đó sẽ dùng bài liên quan đến nhân vật đó
 Ghép bộ bài: Chọn 2 trong 5 bài được cung cấp và thêm vào bộ bài, hoàn thành vượt ải để tạo thành bộ bài 40 lá, bắt đầu thi đấu
 Thi đấu: Ghép với đối thủ thực lực tương đương, khi chiến đấu thua 3 lần, người chơi sẽ bị mời ra khỏi thi đấu và nhận thưởng rương. Nếu duy trì chiến thắng 12 trận sẽ nhận được thưởng cuối cùng
 Rương kho báu cạnh tranh: Rương kho báu lưu trữ phiếu giảm giá mua gói thẻ Leya và một số đồng tiền vàng. Rương kho báu càng hiếm thì phần thưởng khi mở ra sẽ càng phong phú.
 Bỏ thi đấu: Khi rời khỏi thi đấu sẽ lập tức mở rương thưởng theo số trận thắng hiện tại
-Đặc quyền đấu trường: Nhận đặc quyền đấu trường và nhận số kim cương tương ứng trong 7 ngày tự nhiên kể từ ngày mua. Các đặc quyền không thể được xếp chồng lên nhau.
+Đặc quyền đấu trường: Nhận đặc quyền đấu trường và nhận số Linh Thạch Cao Cấp tương ứng trong 7 ngày tự nhiên kể từ ngày mua. Các đặc quyền không thể được xếp chồng lên nhau.
 Đặc quyền Đấu trường Bạc: Mỗi chuyến đi đấu trường có thể ngẫu nhiên lại 3 nhân vật một lần
 Đặc quyền Đấu trường Vàng: Bạn có thể ngẫu nhiên hóa lại 3 nhân vật hai lần trong mỗi chuyến đi đấu trường. Thất bại đầu tiên của mỗi chuyến đi đấu trường sẽ không được tính vào số lần thất bại.
 Tối ưu hóa thời gian chiến đấu: Nó có thể được bật trong cài đặt trò chơi của hình đại diện của nhân vật. Sau khi bật nó lên, thời gian của vòng đầu tiên sẽ là 30 giây và mỗi thao tác hiệu quả sẽ được kéo dài thêm 3 giây. Giới hạn trên của mỗi vòng là 70 giây. Đặc quyền thẻ hàng tháng có thể tăng thông số thời gian trong vòng hành động đầu tiên của người chơi; Đặc quyền VIP có thể tăng thông số thời gian mỗi hiệp của người chơi. Đặc quyền có thể xếp chồng lên nhau. Tắt cài đặt này sẽ vẫn sử dụng quy tắc 60 giây cố định cho mỗi hiệp.
@@ -17026,10 +17026,10 @@ Số lần mua: Cấp VIP càng cao, số lần mua Mã Đạp Liên Doanh mỗi
 Thám Hiểm là nơi cư trú của Đấu Thủ đến từ khắp nơi trên thế giới
 Đấu Thủ đến thăm: Trong Thành Thám Hiểm mỗi 3 giờ sẽ tạo mới ra 1 Đấu Thủ, tối đa có 5 Đấu Thủ ở lại
 Thực lực Đấu Thủ: Dựa vào cấp hiện tại của người chơi, Đấu Thủ đến sẽ có thực lực khác nhau. Trong đó Đấu Thủ dễ, trung và khó sẽ xuất hiện lúc thường. Đăng nhập cuối tuần, sẽ gặp được Đấu Thủ cấp BOSS cực mạnh.
-Đấu Thủ cấp BOSS: Đăng nhập T7 và CN, trong Thành Thám Hiểm sẽ tạo ra 1 Đấu Thủ cấp BOSS. BOSS mỗi ngày có 3 lần khiêu chiến, số lần khiêu chiến trong ngày dùng hết có thể dùng 100 Gold tiếp tục khiêu chiến. Nếu trước 24:00, BOSS chưa bị đánh bại sẽ rời khỏi
+Đấu Thủ cấp BOSS: Đăng nhập T7 và CN, trong Thành Thám Hiểm sẽ tạo ra 1 Đấu Thủ cấp BOSS. BOSS mỗi ngày có 3 lần khiêu chiến, số lần khiêu chiến trong ngày dùng hết có thể dùng 100 Linh Thạch tiếp tục khiêu chiến. Nếu trước 24:00, BOSS chưa bị đánh bại sẽ rời khỏi
 Thưởng Thám Hiểm: Đấu Thủ Dễ rơi 1 Xu Vòng Quay; Đấu Thủ Thường rơi 2 Xu Vòng Quay; Đấu Thủ Khó rơi 3 Xu Vòng Quay; Đấu Thủ BOSS rơi 15 Xu Vòng Quay
-Vòng Quay May Mắn: Tốn 1 Xu Vòng Quay để quay 1 lần, cũng có thể tốn 20 Gem để quay, mỗi lần quay đều có thưởng. Mỗi quay 1 lần sẽ nhận 1 Điểm May Mắn, khi Điểm May Mắn đầy, lần quay sau chắc chắn được UR. Điểm May Mắn về 0 mỗi đầu tháng
-Công bố xác suất của bánh xe may mắn: với mỗi lần quay, xác suất nhận được 5 đồng vàng là 35,07%, xác suất nhận được 10 đồng vàng là 33,03%, xác suất nhận được 50 đồng vàng là 24,1%, xác suất nhận được 100 đồng vàng là 0,96%, xác suất nhận được 200 đồng vàng là 0,1%, xác suất nhận được 300 đồng vàng là 0,002% và Xác suất nhận được 1 viên kim cương là 0,3%, xác suất nhận được 5 viên kim cương là 0,5%, xác suất nhận được 50 viên kim cương là 0,001%, xác suất nhận được 1 thẻ SR là 0,25%, xác suất nhận được 1 đồng xu may mắn là 4,689%, xác suất nhận được 2 đồng xu may mắn là 1,001% và xác suất nhận được 1 thẻ UR là 0,25%
+Vòng Quay May Mắn: Tốn 1 Xu Vòng Quay để quay 1 lần, cũng có thể tốn 20 Linh Thạch Cao Cấp để quay, mỗi lần quay đều có thưởng. Mỗi quay 1 lần sẽ nhận 1 Điểm May Mắn, khi Điểm May Mắn đầy, lần quay sau chắc chắn được UR. Điểm May Mắn về 0 mỗi đầu tháng
+Công bố xác suất của bánh xe may mắn: với mỗi lần quay, xác suất nhận được 5 đồng vàng là 35,07%, xác suất nhận được 10 đồng vàng là 33,03%, xác suất nhận được 50 đồng vàng là 24,1%, xác suất nhận được 100 đồng vàng là 0,96%, xác suất nhận được 200 đồng vàng là 0,1%, xác suất nhận được 300 đồng vàng là 0,002% và Xác suất nhận được 1 viên Linh Thạch Cao Cấp là 0,3%, xác suất nhận được 5 viên Linh Thạch Cao Cấp là 0,5%, xác suất nhận được 50 viên Linh Thạch Cao Cấp là 0,001%, xác suất nhận được 1 thẻ SR là 0,25%, xác suất nhận được 1 đồng xu may mắn là 4,689%, xác suất nhận được 2 đồng xu may mắn là 1,001% và xác suất nhận được 1 thẻ UR là 0,25%
 Bạn có thể trau dồi kỹ năng quân sự trong phòng học quân sự
 Để cường hóa chiến thư: Để cường hóa chiến thư, bạn cần nuốt cuốn sách thẻ chiến tranh hoặc mảnh vỡ. Khi cấp độ của sách chiến tranh được tăng lên, cấp độ kỹ năng kèm theo nó cũng sẽ được cải thiện. Trình độ kỹ năng phù hợp với trình độ trong sách quân sự
 Tổng hợp Sách Chiến tranh: Khi số lượng rune ma thuật thu thập được đạt đến điều kiện tổng hợp, cuốn sách chiến tranh hoàn chỉnh có thể được tổng hợp; 20 rune xanh có thể đổi lấy 1 rune tím và 10 rune tím có thể đổi lấy 1 rune cam.
@@ -17045,7 +17045,7 @@ Huấn luyện công thành: Sử dụng binh lính công thành hoặc tướng
 Tạo hoặc vào Guild, cùng chiến đấu với các Đấu Thủ khác
 Tán gẫu Guild: Phát động đấu giao hữu! Bất kì thành viên nào Online đều có thể thấy khiêu chiến của bạn, khi 1 thành viên vào Giải Hữu Nghị, thì quyết đấu online sẽ bắt đầu. Đồng thời bạn có thể trao đổi với Đấu Thủ khác trên kênh Guild
 Guild: Xem trạng thái Guild hiện tại, xem thông tin Guild; Chủ Guild có thể tiến hành quản lý Guild
-EXP Guild: Đấu thủ có thể góp để tăng EXP Guild. Góp chia thành góp miễn phí, góp Gold và góp Gem, giá trị góp càng cao, EXP Guild tăng càng nhiều
+EXP Guild: Đấu thủ có thể góp để tăng EXP Guild. Góp chia thành góp miễn phí, góp Linh Thạch và góp Linh Thạch Cao Cấp, giá trị góp càng cao, EXP Guild tăng càng nhiều
 Tăng cấp Guild: EXP Guild đạt yêu cầu tăng cấp, Guild sẽ tự tăng cấp, sau khi tăng cấp, giới hạn thành viên Guild sẽ tăng lên
 Hạng Guild: 24:00 chủ nhật hằng tuần, hệ thống sẽ tổng kết hạng Guild và gửi EXP Guild, toàn thể thành viên đều nhận được Ma Tinh Guild
 Ma Tinh Guild: Sau khi góp Guild, đấu thủ sẽ nhận được Ma Tinh Guild, giá trị góp càng cao, Ma Tinh Guild nhận càng nhiều
@@ -17062,10 +17062,10 @@ Số lần mua: cấp VIP càng cao, số lần tạo lại Diệt Cóc Trời c
 Thám Hiểm là nơi cư trú của Đấu Thủ đến từ khắp nơi trên thế giới
 Đấu Thủ đến thăm: Trong Thành Thám Hiểm mỗi 3 giờ sẽ tạo mới ra 1 Đấu Thủ, tối đa có 5 Đấu Thủ ở lại
 Thực lực Đấu Thủ: Dựa vào cấp hiện tại của người chơi, Đấu Thủ đến sẽ có thực lực khác nhau. Trong đó Đấu Thủ dễ, trung và khó sẽ xuất hiện lúc thường. Đăng nhập cuối tuần, sẽ gặp được Đấu Thủ cấp BOSS cực mạnh.
-Đấu Thủ cấp BOSS: Đăng nhập T7 và CN, trong Thành Thám Hiểm sẽ tạo ra 1 Đấu Thủ cấp BOSS. BOSS mỗi ngày có 3 lần khiêu chiến, số lần khiêu chiến trong ngày dùng hết có thể dùng 100 Gold tiếp tục khiêu chiến. Nếu trước 24:00, BOSS chưa bị đánh bại sẽ rời khỏi
+Đấu Thủ cấp BOSS: Đăng nhập T7 và CN, trong Thành Thám Hiểm sẽ tạo ra 1 Đấu Thủ cấp BOSS. BOSS mỗi ngày có 3 lần khiêu chiến, số lần khiêu chiến trong ngày dùng hết có thể dùng 100 Linh Thạch tiếp tục khiêu chiến. Nếu trước 24:00, BOSS chưa bị đánh bại sẽ rời khỏi
 Thưởng Thám Hiểm: Đấu Thủ Dễ rơi 1 Xu Vòng Quay; Đấu Thủ Thường rơi 2 Xu Vòng Quay; Đấu Thủ Khó rơi 3 Xu Vòng Quay; Đấu Thủ BOSS rơi 15 Xu Vòng Quay
-Vòng Quay May Mắn: Tốn 1 Xu Vòng Quay để quay 1 lần, cũng có thể tốn 20 Gem để quay, mỗi lần quay đều có thưởng. Mỗi quay 1 lần sẽ nhận 1 Điểm May Mắn, khi Điểm May Mắn đầy, lần quay sau chắc chắn được UR. Điểm May Mắn về 0 mỗi đầu tháng
-Công bố xác suất của bánh xe may mắn: với mỗi lần quay, xác suất nhận được 5 đồng vàng là 35,07%, xác suất nhận được 10 đồng vàng là 33,03%, xác suất nhận được 50 đồng vàng là 24,1%, xác suất nhận được 100 đồng vàng là 0,96%, xác suất nhận được 200 đồng vàng là 0,1%, xác suất nhận được 300 đồng vàng là 0,002% và Xác suất nhận được 1 viên kim cương là 0,3%, xác suất nhận được 5 viên kim cương là 0,5%, xác suất nhận được 50 viên kim cương là 0,001%, xác suất nhận được 1 thẻ SR là 0,25%, xác suất nhận được 1 đồng xu may mắn là 4,689%, xác suất nhận được 2 đồng xu may mắn là 1,001% và xác suất nhận được 1 thẻ UR là 0,25%
+Vòng Quay May Mắn: Tốn 1 Xu Vòng Quay để quay 1 lần, cũng có thể tốn 20 Linh Thạch Cao Cấp để quay, mỗi lần quay đều có thưởng. Mỗi quay 1 lần sẽ nhận 1 Điểm May Mắn, khi Điểm May Mắn đầy, lần quay sau chắc chắn được UR. Điểm May Mắn về 0 mỗi đầu tháng
+Công bố xác suất của bánh xe may mắn: với mỗi lần quay, xác suất nhận được 5 đồng vàng là 35,07%, xác suất nhận được 10 đồng vàng là 33,03%, xác suất nhận được 50 đồng vàng là 24,1%, xác suất nhận được 100 đồng vàng là 0,96%, xác suất nhận được 200 đồng vàng là 0,1%, xác suất nhận được 300 đồng vàng là 0,002% và Xác suất nhận được 1 viên Linh Thạch Cao Cấp là 0,3%, xác suất nhận được 5 viên Linh Thạch Cao Cấp là 0,5%, xác suất nhận được 50 viên Linh Thạch Cao Cấp là 0,001%, xác suất nhận được 1 thẻ SR là 0,25%, xác suất nhận được 1 đồng xu may mắn là 4,689%, xác suất nhận được 2 đồng xu may mắn là 1,001% và xác suất nhận được 1 thẻ UR là 0,25%
 Đối thủ trong Định Càn Khôn có miễn thương vật lý, tăng theo độ khó. Khiêu chiến thắng sẽ nhận Rượu Ngon, Huyền Thiết và Cỏ Khô
 Độ khó: Định Càn Khôn chia làm 12 độ khó, tăng theo cấp chúa công, tướng phe địch có sức mạnh và khả năng miễn thương vật lý cao hơn, đồng thời sau khi khiêu chiến thắng sẽ nhận phần thưởng tăng tương ứng
 Số lần khiêu chiến: Người chơi mỗi ngày có 2 cơ hội khiêu chiến miễn phí
@@ -17100,7 +17100,7 @@ Hình đại diện nhân vật
 Nhận hình đại diện: Sử dụng obsidian linh hồn để mua hình đại diện của nhân vật. Soul Obsidian có thể thu được bằng cách quay bánh xe trên Obsidian Crest Wheel.
 Sử dụng hình đại diện: Khi mua hình đại diện thành công, bạn có thể chọn [Sử dụng ngay] hoặc vào giao diện thông tin đấu sĩ và nhấp vào [Sửa hình đại diện] để chuyển đổi hình đại diện.
 Da quái vật
-Nhận Skin: Dùng Ảo Tinh mua Skin cho bài mình thích. Ảo Tinh có thể nhận khi thắng thi đấu, hoặc dùng Gem đổi
+Nhận Skin: Dùng Ảo Tinh mua Skin cho bài mình thích. Ảo Tinh có thể nhận khi thắng thi đấu, hoặc dùng Linh Thạch Cao Cấp đổi
 Dùng Skin: Đến giao diện 【Skin】 của bài, có thể thay thế bài đã sở hữu thành Skin chỉ định
 Skin hạn giờ: Dùng Ảo Tinh trải nghiệm skin tạm thời, cũng có thể mua Skin vĩnh viễn. Thời hạn skin 3 ngày: 3 ngày kể từ ngày mua đầu tiên; Thời hạn skin 7 ngày: 7 ngày kể từ ngày mua đầu tiên
 Hiệu ứng thẻ
@@ -17212,7 +17212,7 @@ Thép rèn của Chiến binh: Mở Adamantium của Vương quốc Quỷ của 
 Đá nổ bùng nổ: Vàng quỷ nhận được từ các quyết đấu giả khác. Sau khi mở bạn sẽ nhận được Đá nổ.
 Ruy băng Grandmaster: Sử dụng 4 mảnh Thép rèn Fighter và 1 Runestone nổ để tổng hợp, có thể dùng để đổi lấy <Demon World Fighter Dragon Slaying Sword> và <Explosive Magician>
 Carnival Turntable: Bật bàn xoay và nhận thẻ hiếm
-Roulette Coupon: Dùng kim cương để đổi lấy Soul Obsidian và bạn sẽ nhận được Roulette Coupon.
+Roulette Coupon: Dùng Linh Thạch Cao Cấp để đổi lấy Soul Obsidian và bạn sẽ nhận được Roulette Coupon.
 Phần thưởng Bánh xe: Sử dụng vé bánh xe hoặc chip chiều để quay bánh xe lễ hội và có cơ hội nhận được đá quý, thẻ và thẻ hiếm.
 Quy tắc khen thưởng: Mỗi khi bạn nhận được phần thưởng trên bàn xoay, phần thưởng đó sẽ biến mất khỏi bàn xoay và phần thưởng còn lại được chia đều cho toàn bộ bàn xoay.
 Quy tắc của bàn xoay: sử dụng chip chiều hoặc đá quý trống để quay bàn xoay; bạn có thể sử dụng “phiếu giảm giá đặt lại giải thưởng” để đặt lại bàn xoay; quay bàn xoay sẽ ngẫu nhiên rớt giải thưởng; trong cùng một vòng, các giải thưởng đã rơi khỏi bàn quay sẽ không được chuyển nhượng nữa
@@ -17249,7 +17249,7 @@ Túi may mắn tích lũy: Nạp đá quý để nhận phần thưởng tương
 Bánh xe biểu tượng may mắn
 Quy tắc bánh xe quay: Mỗi khi tiêu thụ 1 phiếu biểu tượng may mắn, bạn có thể quay bánh xe một lần. Mỗi lần quay sẽ có phần thưởng và không bị rỗng.
 Phiếu biểu tượng may mắn: Bạn có thể chi 1.500 đồng vàng để đổi lấy 1 Pha lê ma thuật xã hội và nhận 1 Phiếu biểu tượng may mắn, hoặc tiêu thụ 1.000 viên đá quý để đổi lấy 10 Pha lê ma thuật xã hội và nhận 10 Phiếu biểu tượng may mắn, hoặc tiêu thụ 5.000 viên đá quý để đổi lấy 50 Pha lê ma thuật xã hội và nhận 50 Phiếu biểu tượng may mắn.
-Thông báo xác suất của Roulette Biểu tượng may mắn: Mỗi lần bạn quay, xác suất nhận được UR là 0,55%, xác suất nhận được lời mời thành thị là 11,05%, xác suất nhận được linh hồn cổ xưa là 11,05%, xác suất nhận được lời mời cạnh tranh là 11,05% và xác suất nhận được chip chiều là 11,05%, xác suất nhận được Lời mời bóng tối là 11,05%, xác suất nhận được Leya's vé rút bài là 11,05%, xác suất nhận được King's Quyết Đấu Note là 11,05%, xác suất nhận được Void Gem là 11,05% và xác suất nhận được Bình phong ấn không gian khác là 11,05%.
+Thông báo xác suất của Roulette Biểu tượng may mắn: Mỗi lần bạn quay, xác suất nhận được UR là 0,55%, xác suất nhận được lời mời thành thị là 11,05%, xác suất nhận được linh hồn cổ xưa là 11,05%, xác suất nhận được lời mời cạnh tranh là 11,05% và xác suất nhận được chip chiều là 11,05%, xác suất nhận được Lời mời bóng tối là 11,05%, xác suất nhận được Leya's vé rút bài là 11,05%, xác suất nhận được King's Quyết Đấu Note là 11,05%, xác suất nhận được Void Linh Thạch Cao Cấp là 11,05% và xác suất nhận được Bình phong ấn không gian khác là 11,05%.
 [Phong bì đỏ] Mở phong bì màu đỏ, tham gia trận đấu, nâng cấp phong bì màu đỏ kỷ niệm, nhận phần thưởng phong bì màu đỏ và chứng minh sức mạnh của bạn với tư cách là một đấu sĩ
 Phong bì đỏ kỷ niệm: Phong bì đỏ được chia thành phong bì đỏ kỷ niệm và phong bì đỏ đặc quyền. Mọi người đều tự động nhận được phong bì đỏ kỷ niệm vào đầu mùa giải và có thể nâng cấp lên phong bì đỏ đặc quyền bất cứ lúc nào để nhận được những phần thưởng độc quyền bổ sung hào phóng.
 Phong bì đỏ có hiệu lực: phong bì đỏ có hiệu lực cho mùa giải hiện tại. Sau khi kết thúc mùa giải này, cấp phong bao đỏ và các nhiệm vụ liên quan sẽ được đặt lại.
@@ -17274,7 +17274,7 @@ Cuộc thách đấu thời gian và không gian: Sử dụng các thẻ bạn s
 Thời gian mở cửa: Chủ Nhật hàng tuần từ 18:00 đến 23:00
 Điều kiện tham gia: Để mở ra trận đấu thời gian và không gian, bạn cần phải trả một vé vào cửa và số điểm của trận đấu đỉnh cao phải đạt 2000 điểm. Nếu không có vé, bạn có thể dùng đá quý mua xu may mắn để nhận vé miễn phí.
 Trận chiến quyết định: Để bắt trận, bạn vẫn cần duy trì số điểm quyết đấu cao nhất để đạt 2000 điểm và đấu với những đối thủ có sức mạnh tương đương để chiến đấu. Khi thất bại tích lũy ba lần, người chơi kết thúc cuộc quyết đấu thời gian và không gian và nhận được rương kho báu phần thưởng; nếu chiến thắng được duy trì, phần thưởng cuối cùng có thể nhận được sau 12 trận thắng. Trong cuộc đọ sức về thời gian và không gian, nếu sau 30 hiệp đấu mà hai bên vẫn không phân định được người thắng cuộc thì sẽ bị coi là thất bại.
-Rương kho báu quyết đấu: Rương kho báu chứa kim cương, Tinh thể Hư Không và các con dấu sưu tập. Rương kho báu chiến thắng càng cao, bạn càng có thể mở được những phần thưởng hậu hĩnh.
+Rương kho báu quyết đấu: Rương kho báu chứa Linh Thạch Cao Cấp, Tinh thể Hư Không và các con dấu sưu tập. Rương kho báu chiến thắng càng cao, bạn càng có thể mở được những phần thưởng hậu hĩnh.
 Thời gian chiến đấu: Mỗi hiệp có thời gian hoạt động mặc định là 90 giây
 Phạt thời gian trì hoãn: Nếu vòng này không có thao tác nào và vòng chơi bị hệ thống buộc phải kết thúc thì vòng tiếp theo sẽ chỉ có 15 giây thời gian thao tác. Sau khi thực hiện một thao tác hợp lệ trong vòng phạt, thời gian hoạt động bình thường sẽ được khôi phục ở vòng tiếp theo.
 Điểm quyết đấu thời gian và không gian: Chiến thắng trong cuộc quyết đấu sẽ kiếm được điểm quyết đấu thời gian và không gian, số điểm này sẽ được sử dụng để xếp hạng mùa giải.
@@ -17298,7 +17298,7 @@ Huấn luyện vận hành trong các cuộc thi trò chơi giúp rèn luyện k
 Bạc 
 Vàng 
 Bạch Kim 
-Kim Cương 
+Linh Thạch Cao Cấp 
 Huyền Thoại 
 Vương Giả 
 Chú Hề Ma Quái
@@ -17563,7 +17563,7 @@ Dùng triệu hồi quái dung hợp.
 Dung Hợp
 Ma Trận Đen
 Khi <Dark Mage> của chính bạn được triệu hồi hoặc Triệu Hồi Đặc Biệt, bạn có thể hủy lá bài của đối thủ.
-|Mô tả|\nCác lá bài mà Black Magic Array có thể lấy được bao gồm Dark Magician, Thousand Knives, Illusion Magic, Black Magic Array, Black Explosion Magic, Black Magic Explosion, Black Magic, Black Magic Enhancement, Black Magic Inheritance, Knight's Title, Sage's Gem, Black Magic's Rèm, Magic Spell Book, Miracle Resurrection và Eternal Soul.
+|Mô tả|\nCác lá bài mà Black Magic Array có thể lấy được bao gồm Dark Magician, Thousand Knives, Illusion Magic, Black Magic Array, Black Explosion Magic, Black Magic Explosion, Black Magic, Black Magic Enhancement, Black Magic Inheritance, Knight's Title, Sage's Linh Thạch Cao Cấp, Black Magic's Rèm, Magic Spell Book, Miracle Resurrection và Eternal Soul.
 Ma Trận Đen
 Rồng Trắng Giáng Lâm
 Phép triệu hồi dặc biệt <Thánh Kỵ Rồng Trắng>.
@@ -18841,10 +18841,10 @@ Lây Nhiễm Nảy Mầm
 Phép bảo vệ quái có từ khóa “Ma”.
 0
 Lây Nhiễm Nảy Mầm
-Chân Lực Kim Cương
+Chân Lực Linh Thạch Cao Cấp
 Phép có thể Triệu Hồi Đặc Biệt Quái Hai Tầng.
 0
-Chân Lực Kim Cương
+Chân Lực Linh Thạch Cao Cấp
 Sách Chiến Binh
 Một phép thuật có thể Triệu Hồi Đặc Biệt <Ngọn lửa tím chung>.
 0
@@ -22605,10 +22605,10 @@ Chiến Binh Komodo
 Chiến sĩ nửa người nửa rồng. Thân hình nhỏ nhắn nhanh nhẹn. Chiến lược phong phú.
 0
 Chiến Binh Komodo
-Rồng Kim Cương
-Rồng có toàn thân kim cương, phát ra ánh sánh chói lóa khiến người khác bị hỗn loạn.
+Rồng Linh Thạch Cao Cấp
+Rồng có toàn thân Linh Thạch Cao Cấp, phát ra ánh sánh chói lóa khiến người khác bị hỗn loạn.
 0
-Rồng Kim Cương
+Rồng Linh Thạch Cao Cấp
 Rồng Sát Thủ
 Rồng dùng răng nhỏ diệt con mồi. Tấn công với động tác rất nhanh, nhưng không có khả năng phòng thủ.
 0
@@ -22702,7 +22702,7 @@ Rồng hiện hình khi chiều tà. Lúc di chuyển đẹp như dải ngân h�
 0
 Rắn Biển Ngân Hà
 Rồng Alexandrite
-Rồng hiếm có vảy từ Gem đổi màu Alexandrite. Là biểu tượng cho sự thần bí.
+Rồng hiếm có vảy từ Linh Thạch Cao Cấp đổi màu Alexandrite. Là biểu tượng cho sự thần bí.
 0
 Rồng Alexandrite
 Rồng Bay
@@ -24753,7 +24753,7 @@ Anh hùng nguyên tố hoang dã
 Nó thuộc về bộ bài đầu tiên trong năm bộ bài thuộc dòng <HERO> và là bộ bài yêu thích của Judai Yujo, nhân vật chính của “Yu-Gi-Oh GX”.
 0
 E. Hoang mạc
-Anh hùng nguyên tố·Người kiếm vàng
+Anh hùng nguyên tố·Người kiếm Linh Thạch
 Nó thuộc về bộ bài đầu tiên trong năm bộ bài thuộc dòng <HERO> và là bộ bài yêu thích của Judai Yujo, nhân vật chính của “Yu-Gi-Oh GX”.
 0
 E·Golden Blade Man
@@ -31817,7 +31817,7 @@ Rương Thần Bí
 Gồm lá Bài UR thần bí
 Nhận từ |đăng nhập|
 Bánh Đoan Ngọ
-Bạn có thể nhận được 300 viên kim cương và 3000 đồng vàng. Có cơ hội nhất định bạn có thể nhận được <Zongzhong>, thứ có thể mở được trong hộp ma thuật.
+Bạn có thể nhận được 300 viên Linh Thạch Cao Cấp và 3000 đồng vàng. Có cơ hội nhất định bạn có thể nhận được <Zongzhong>, thứ có thể mở được trong hộp ma thuật.
 |Hoạt động|Nhận
 Bánh Chưng
 Bạn có thể nhận được 2.000 đến 3.000 đồng vàng và có thể mở nó trong hộp ma thuật.
@@ -31826,7 +31826,7 @@ Kí Hiệu Obelisk
 Trong |Đấu Tự Chọn| nhận được chứng nhận 12 trận thắng, có thể dùng để đổi <Obelisk The Tormentor>
 Nhận từ |Đấu Tự Chọn|
 Kẹo Ngọt
-Mở ra 800-1000 Gold hoặc <Thiệp Mời Thi Đấu>, có thể mở trong Hộp Ma Thuật
+Mở ra 800-1000 Linh Thạch hoặc <Thiệp Mời Thi Đấu>, có thể mở trong Hộp Ma Thuật
 Nhận từ |đăng nhập 1/6|
 Tháp Lego
 Mở nhận 3-5 <Thiệp Mời Thi Đấu>, mở trong Hộp Ma Thuật
@@ -32261,7 +32261,7 @@ Mũ của Hades
 Bạn không thể nhìn thấy tôi, bạn không thể nhìn thấy tôi, bạn không thể nhìn thấy tôi
 Mở | Tặng | Nhận | Tục ngữ nữ thần | Có được
 Thanh kiếm của Athena
-Làm bằng kim cương, mài sắc như đất sét
+Làm bằng Linh Thạch Cao Cấp, mài sắc như đất sét
 |Hoạt động|Nhận
 Tâm hồn rồng
 Bằng chứng chiến thắng trong sự kiện
@@ -32283,7 +32283,7 @@ Các sản phẩm đặc biệt từ thế giới ma quỷ có thể được s�
 |Quyết Đấu Đỉnh Cao|/|Cổng Quyết Đấu|/|Quyết Đấu Bóng Tối|/|Thành phố quyết đấu|Nhận được
 Thép rèn máy bay chiến đấu
 Một vật liệu cực kỳ hiếm có được thông qua rèn
-Mở của riêng bạn |Demon Realm Fine Gold|Nhận được
+Mở của riêng bạn |Demon Realm Fine Linh Thạch|Nhận được
 Đá Rune phát nổ
 Một vũ khí tấn công mạnh mẽ có được thông qua bùa mê
 Mở | Tặng | Nhận | Vàng quỷ | Có được
@@ -32404,9 +32404,9 @@ Xếp hạng vàng | Trận đấu đỉnh cao | thu được
 Chip bạch kim
 Con chip có thể trích xuất gói thẻ bạch kim đỉnh cao
 Xếp hạng Bạch Kim | Trận đấu đỉnh cao | thu được
-Chip kim cương
-Chip có thể chiết xuất được gói thẻ kim cương đỉnh cao
-Xếp hạng kim cương | Trận đấu đỉnh cao | thu được
+Chip Linh Thạch Cao Cấp
+Chip có thể chiết xuất được gói thẻ Linh Thạch Cao Cấp đỉnh cao
+Xếp hạng Linh Thạch Cao Cấp | Trận đấu đỉnh cao | thu được
 Chip huyền thoại
 Con chip có thể trích xuất gói thẻ huyền thoại đỉnh cao
 Cấp bậc huyền thoại | Trận đấu đỉnh cao | thu được
@@ -32518,8 +32518,8 @@ Phần thưởng chiến đấu của câu lạc bộ
 Tình bạn gắn kết
 Phần thưởng có thể được đổi trong <Trao đổi hiện vật> (bạn chỉ cần thu thập con dấu tay của một người bạn mỗi tuần?)
 |Thành tích|Phần thưởng nhận được
-Ngàn năm bụi bặm
-Phần thưởng có thể được đổi tại <Tàn tích của Pharaoh>
+Linh Thạch Cao Cấp
+Phần thưởng có thể được đổi tại <Shop Linh Thạch Cao Cấp>
 |Đăng nhập|Nhận phần thưởng
 Khung mặc định
 Khung hình đại diện mặc định của game. Trở thành VIP, khung đại diện mặc định cũng sẽ đổi
@@ -33187,22 +33187,22 @@ Chiến đấu |Quyết Đấu| thắng nhận được
 Nhóm bạch kim quyết đấu bốn rương kho báu chiến thắng liên tiếp
 Quyết Đấu |1| lần nhận thưởng |4 liên thắng|, được nhận tài nguyên chiến đấu
 Chiến đấu |Quyết Đấu| thắng nhận được
-Hộp kho báu chiến thắng đầu tiên trong trận đấu nhóm kim cương
+Hộp kho báu chiến thắng đầu tiên trong trận đấu nhóm Linh Thạch Cao Cấp
 Quyết Đấu nhận thưởng thắng lần đầu, được nhận tài nguyên chiến đấu
 Chiến đấu |Quyết Đấu| thắng nhận được
-Hộp kho báu chiến thắng liên tiếp trong trận đấu nhóm kim cương 2
+Hộp kho báu chiến thắng liên tiếp trong trận đấu nhóm Linh Thạch Cao Cấp 2
 Quyết Đấu nhận thưởng |2 liên thắng|, được nhận tài nguyên chiến đấu
 Chiến đấu |Quyết Đấu| thắng nhận được
-Nhóm kim cương quyết đấu ba rương kho báu chiến thắng liên tiếp
+Nhóm Linh Thạch Cao Cấp quyết đấu ba rương kho báu chiến thắng liên tiếp
 Quyết Đấu nhận thưởng |3 liên thắng|, được nhận tài nguyên chiến đấu
 Chiến đấu |Quyết Đấu| thắng nhận được
-Nhóm kim cương quyết đấu bốn rương kho báu chiến thắng liên tiếp
+Nhóm Linh Thạch Cao Cấp quyết đấu bốn rương kho báu chiến thắng liên tiếp
 Quyết Đấu nhận thưởng |4 liên thắng|, được nhận tài nguyên chiến đấu
 Chiến đấu |Quyết Đấu| thắng nhận được
-Hộp đựng kho báu chiến thắng liên tiếp của nhóm kim cương năm
+Hộp đựng kho báu chiến thắng liên tiếp của nhóm Linh Thạch Cao Cấp năm
 Quyết Đấu nhận thưởng |5 liên thắng|, được nhận tài nguyên chiến đấu
 Chiến đấu |Quyết Đấu| thắng nhận được
-Nhóm kim cương quyết đấu bốn rương kho báu chiến thắng liên tiếp
+Nhóm Linh Thạch Cao Cấp quyết đấu bốn rương kho báu chiến thắng liên tiếp
 Quyết Đấu |1| lần nhận thưởng |4 liên thắng|, được nhận tài nguyên chiến đấu
 Chiến đấu |Quyết Đấu| thắng nhận được
 Rương kho báu chiến thắng đầu tiên trong trận đấu nhóm huyền thoại
@@ -34819,7 +34819,7 @@ Nhạc Công Ma Huyền Rối
 Anh hùng đeo mặt nạ: Silmarillion
 Cần dùng hiệu quả của <Mặt Nạ Biến Hóa> để Triệu Hồi Đặc Biệt.
 0
-Kim Cương
+Linh Thạch Cao Cấp
 Anh hùng đeo mặt nạ · Bóng ma
 Cần dùng hiệu quả của <Mặt Nạ Biến Hóa> để Triệu Hồi Đặc Biệt.
 0
@@ -35496,7 +35496,7 @@ Thánh Kỵ-Isolde
 Quái có từ khóa “Thánh Kỵ” x2.
 |Mô tả|\nChỉ những quái vật chưa hành động mới có thể được sử dụng làm nguyên liệu liên kết. Không thể sử dụng quái vật dung hợp, đồng bộ và siêu quái vật làm nguyên liệu liên kết.
 Thánh Kỵ-Isolde
-No.52 Vua Cua Kim Cương
+No.52 Vua Cua Linh Thạch Cao Cấp
 Quái vật 4 sao X2
 0
 Vua Cua Khoan
@@ -36408,13 +36408,13 @@ Anh Hùng Tà Đạo·Kỵ Sĩ Bóng Tối
 Quái Tộc Quỷ + Quái Tộc Chiến Binh
 0
 E·Kỵ Sĩ Bóng Tối
-Gold
+Linh Thạch
 Tiền phổ thông, dùng mua tài nguyên
 |【Phiêu Lưu】| có thể nhận được/|【Đấu Trường】| có thể nhận được/|【Thưởng】| có thể nhận được
 Thể lực
 Dùng trong Thám Hiểm, Phiêu Lưu, Quyết đấu
 Mỗi cách một khoảng thời gian phục hồi/Người chơi |tăng cấp| có thể nhận được/Nhận mỗi ngày
-Gem
+Linh Thạch Cao Cấp
 Dùng để mua vật tư hiếm
 |Nạp| có thể nhận được
 EXP
@@ -36432,7 +36432,7 @@ Dùng cho trưởng thành người chơi, tích lũy đủ EXP có thể tăng 
 Điểm Thành Tựu
 Tài nguyên nhận khi đạt diều kiện 【Thành Tựu】
 Đạt yêu cầu đặc biệt trong |Thành Tựu| có thể nhận được
-Gold Clan
+Linh Thạch Clan
 Dùng tăng cấp Clan và tính năng liên quan
 Thành viên |cống hiến| nhận được/Diệt ma ở |Vực Núi Ma Quỷ| nhận được
 Gỗ Clan
@@ -42343,19 +42343,19 @@ Khế Ước Bảo Ngọc
 Chọn 1 lá bài có từ khóa “Thú Bảo Ngọc” trong Khu Bẫy Phép phe ta; thay thế thành quái rồi Triệu Hồi Đặc Biệt.
 Cầu Vồng-Cầu Nối
 Lấy 1 lá Phép/Bẫy khác tên có từ khóa “Bảo Ngọc” từ bộ bài phe ta vào tay.
-Gem-Trở Về I
+Linh Thạch Cao Cấp-Trở Về I
 Khi rời sân; dùng <Thú Bảo Ngọc·Thú Hồng Ngọc> đang bị loại bỏ tạm thời để thay thế lá bài này.
-Gem-Trở Về II
+Linh Thạch Cao Cấp-Trở Về II
 Khi rời sân; thay lá bài này bằng <Thú Bảo Ngọc·Rùa Bích Ngọc> đang bị tạm thời Loại Bỏ.
-Gem-Trở Về III
+Linh Thạch Cao Cấp-Trở Về III
 Khi rời sân; đưa <Thú Bảo Ngọc·Mèo Tử Tinh> đang bị loại bỏ tạm thời ra thay thế cho bài này.
-Gem-Trở Về IV
+Linh Thạch Cao Cấp-Trở Về IV
 Khi rời sân; thay thế bài này bằng <Thú Bảo Ngọc·Đại Bàng Coban> đang bị tạm thời loại bỏ.
-Gem-Trở Về V
+Linh Thạch Cao Cấp-Trở Về V
 Khi rời sân; thay lá bài này bằng <Thú Bảo Ngọc·Hổ Hoàng Ngọc> đang bị loại bỏ tạm thời.
-Gem-Trở Về VI
+Linh Thạch Cao Cấp-Trở Về VI
 Khi rời sân; dùng <Thú Bảo Ngọc·Ma Mút Hổ Phách> đang bị tạm thời loại bỏ để thay thế lá bài này.
-Gem-Trở Về VII
+Linh Thạch Cao Cấp-Trở Về VII
 Khi rời sân; thay bài này bằng <Thú Bảo Ngọc·Phi Mã Thanh Ngọc> đang bị loại bỏ tạm thời.
 Dung Hợp Triệu Hồi
 Chọn 1 quái Dung Hợp trong bộ bài phụ rồi Triệu Hồi Dung Hợp.
@@ -46429,7 +46429,7 @@ Lãnh Địa Gây Rối
 Khi có mặt; nếu trên sân phe ta có quái có từ khóa “Gây Rối”; tất cả quái có mặt trên sân hai bên sẽ hoán đổi điểm công và thủ.
 Ma Đao Nuốt Hồn
 Trang bị dành cho quái thường 3 sao trở xuống. Khi lên sân; hi sinh tất cả quái thường đang có trên sân phe ta ngoại trừ quái mục tiêu. Mỗi bài quái bị phá hủy; giúp quái mục tiêu tăng [1] tấn công.
-Chân Lực Kim Cương
+Chân Lực Linh Thạch Cao Cấp
 Khi trên sân đối thủ có quái đồng thời trên sân phe ta không có quái; có thể kích hoạt. Mỗi lượt chỉ 1 lần; có thể Triệu Hồi Đặc Biệt 1 Quái Hai Tầng [1] sao trở xuống trên tay phe ta.
 Cổng Chiến Binh
 Khi ở trên sân; khi một Quái Vật có từ khóa “Six Samurai” được Triệu hồi Thường hoặc Triệu Hồi Đặc Biệt; [1] <Bushido Counter> sẽ được thêm vào.
@@ -48325,25 +48325,25 @@ Tăng đòn tấn công của riêng bạn thêm X [1] điểm cho số lượng
 Chủ động: Kỹ năng này và “Điều Khiển Xác Chết II” mỗi lượt chỉ 1 lần. Đặt 1 Chỉ Thị XYZ lên bản thân.
 Điều Khiển Xác Chết II
 Chủ động: Kỹ năng này và “Điều Khiển Xác Chết I” mỗi lượt chỉ 1 lần. Chọn 1 bài ở mộ đối thủ đưa lên trên cùng bộ bài đối thủ.
-Gem-Đánh Bóng I
+Linh Thạch Cao Cấp-Đánh Bóng I
 Phép thay thế của quái này là <Thú Bảo Ngọc·Hồng Ngọc>.
-Gem-Đánh Bóng II
+Linh Thạch Cao Cấp-Đánh Bóng II
 Phép thay thế của quái này là <Thú Bảo Ngọc·Bích Ngọc>.
-Gem-Đánh Bóng III
+Linh Thạch Cao Cấp-Đánh Bóng III
 Bài Phép thay thế của quái đó là <Thú Bảo Ngọc·Tử Tinh>
-Gem-Đánh Bóng IV
+Linh Thạch Cao Cấp-Đánh Bóng IV
 Phép thay thế của quái này là <Thú Bảo Ngọc·Coban>.
-Gem-Đánh Bóng V
+Linh Thạch Cao Cấp-Đánh Bóng V
 Có thể dùng <Thú Bảo Ngọc·Hoàng Ngọc> làm bài phép thay thế cho bài này.
-Gem-Đánh Bóng VI
+Linh Thạch Cao Cấp-Đánh Bóng VI
 Phép thay thế của quái này là <Thú Bảo Ngọc·Hổ Phách>.
-Gem-Đánh Bóng VII
+Linh Thạch Cao Cấp-Đánh Bóng VII
 Phép thay thế của quái này là <Thú Bảo Ngọc·Thanh Ngọc>.
 Bảo Ngọc-Đỏ I
 Chủ động: Khi bài này được Triệu Hồi Đặc Biệt; chỉ trong lượt này có thể dùng. Chọn số lượng tùy ý các lá bài có từ khóa “Thú Bảo Ngọc” trong Khu Bẫy Phép phe ta; chuyển chúng thành quái và Triệu Hồi Đặc Biệt. Kỹ năng chỉ kích hoạt 1 lần.
 Bảo Ngọc-Đỏ II
 Khi Triệu Hồi Đặc Biệt bài này trong lượt đối thủ; sau khi lên sân; chọn ngẫu nhiên càng nhiều càng tốt các lá bài có từ khóa “Thú Bảo Ngọc” trong Khu Bẫy Phép phe ta; thay thế chúng thành quái và Triệu Hồi Đặc Biệt ở thế thủ.
-Gem-Triển Lãm
+Linh Thạch Cao Cấp-Triển Lãm
 Khi bị phá hủy từ trên sân; tạm thời Loại Bỏ bản thân; nếu khu Phép/Bẫy phe ta còn ô trống thì đặt phép thay thế của bản thân vào khu Phép/Bẫy.
 Bảo Ngọc-Bích
 Chủ động: Mỗi lượt chỉ 1 lần. chọn 1 quái có mặt trên sân; thay đổi tư thế công thủ.

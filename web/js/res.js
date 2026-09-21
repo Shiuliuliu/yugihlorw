@@ -401,6 +401,15 @@
 		return tex;
 	};
 
+	R.loadMaskedTexture = function (key, colourUrl, maskUrl) {
+		var tex = cc.textureCache.getTextureForKey(key);
+		if (tex && tex.isLoaded && tex.isLoaded()) return Promise.resolve(tex);
+		R.maskedTexture(key, colourUrl, maskUrl);
+		return maskedInflight[key] ? maskedInflight[key].then(function () {
+			return cc.textureCache.getTextureForKey(key);
+		}) : Promise.resolve(cc.textureCache.getTextureForKey(key));
+	};
+
 	/* ------------------------------------------------------------------ *
 	 * fetching
 	 * ------------------------------------------------------------------ */

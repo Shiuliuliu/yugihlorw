@@ -713,8 +713,8 @@ function var_0_1.popSelectTroop(arg_31_0)
 			else
 				var_31_9._str = string.format("%s %d", Str(STR.TROOP), iter_31_3)
 				var_31_9._isDef = false
-				var_31_9._hideRemark = ClientData.getValidActivityByType(Data.ActivityType.sensitive_day) ~= nil
-				var_31_9._remark = P._troopRemarks[iter_31_3]
+				var_31_9._hideRemark = false
+				var_31_9._remark = P._troopRemarks and P._troopRemarks[iter_31_3]
 				var_31_9._hideExchange = true
 
 				function var_31_9._handler(arg_39_0)
@@ -809,7 +809,12 @@ function var_0_1.updateBottomValueAreas(arg_43_0)
 		elseif Data.isRoomDarkTroop(arg_43_0._curTroopIndex) then
 			arg_43_0._btnTroop._label:setString(Str(STR.DARK_TROOP) .. arg_43_0._curTroopIndex - Data.TroopIndex.room_dark_battle1 + 1)
 		else
-			arg_43_0._btnTroop._label:setString(Str(STR.TROOP) .. " " .. arg_43_0._curTroopIndex)
+			local remark = P._troopRemarks and P._troopRemarks[arg_43_0._curTroopIndex]
+			if remark and remark ~= "" then
+				arg_43_0._btnTroop._label:setString(remark)
+			else
+				arg_43_0._btnTroop._label:setString(Str(STR.TROOP) .. " " .. arg_43_0._curTroopIndex)
+			end
 		end
 	end
 end

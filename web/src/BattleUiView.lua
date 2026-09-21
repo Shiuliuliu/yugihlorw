@@ -425,7 +425,12 @@ function var_0_0.leaveFilmMode(arg_20_0)
 
 		var_20_3(arg_20_0._btnSetting)
 		var_20_3(arg_20_0._btnAuto)
-		var_20_3(arg_20_0._btnSpeed)
+		if not arg_20_0._isOnlinePvp and arg_20_0._baseBattleType ~= Data.BattleType.base_PVP then
+			var_20_3(arg_20_0._btnSpeed)
+		else
+			arg_20_0._btnSpeed:setVisible(false)
+			arg_20_0._btnSpeed:setTouchEnabled(false)
+		end
 	end
 
 	if var_20_1 then
@@ -762,7 +767,11 @@ function var_0_0.showOppoOffline(arg_45_0)
 end
 
 function var_0_0.setBattleSpeed(arg_46_0, arg_46_1)
-	arg_46_1 = arg_46_1 or arg_46_0._battleSpeed
+	if arg_46_0._isOnlinePvp or arg_46_0._baseBattleType == Data.BattleType.base_PVP then
+		arg_46_1 = 3
+	else
+		arg_46_1 = arg_46_1 or arg_46_0._battleSpeed
+	end
 
 	local var_46_0
 
@@ -770,7 +779,7 @@ function var_0_0.setBattleSpeed(arg_46_0, arg_46_1)
 		var_46_0 = arg_46_1 > #var_0_0.BattleSpeed and 3 or var_0_0.BattleSpeed[arg_46_1]
 	else
 		if arg_46_1 == nil or arg_46_1 < 1 or arg_46_1 > #var_0_0.BattleSpeed then
-			arg_46_1 = 1
+			arg_46_1 = (arg_46_0._isOnlinePvp or arg_46_0._baseBattleType == Data.BattleType.base_PVP) and 3 or 1
 		end
 
 		var_46_0 = arg_46_0._isTesting and arg_46_1 ~= 1 and var_0_0.BattleSpeed[arg_46_1] * arg_46_0._speedFactor or var_0_0.BattleSpeed[arg_46_1]
@@ -778,7 +787,16 @@ function var_0_0.setBattleSpeed(arg_46_0, arg_46_1)
 
 	arg_46_0._battleSpeed = arg_46_1
 
-	arg_46_0._btnSpeed._icon:setString(string.format("x%d", arg_46_1))
+	if arg_46_0._btnSpeed and arg_46_0._btnSpeed._icon then
+		arg_46_0._btnSpeed._icon:setString(string.format("x%d", arg_46_1))
+	end
+
+	if arg_46_0._isOnlinePvp or arg_46_0._baseBattleType == Data.BattleType.base_PVP then
+		if arg_46_0._btnSpeed then
+			arg_46_0._btnSpeed:setVisible(false)
+			arg_46_0._btnSpeed:setTouchEnabled(false)
+		end
+	end
 
 	if lc.PLATFORM == cc.PLATFORM_OS_WINDOWS then
 		arg_46_0:runAction(lc.sequence(0, function()
@@ -1041,7 +1059,12 @@ function var_0_0.hideDropHand(arg_58_0)
 		arg_58_0._btnSetting:setTouchEnabled(true)
 		arg_58_0._btnReplay:setTouchEnabled(true)
 		arg_58_0._btnAuto:setTouchEnabled(true)
-		arg_58_0._btnSpeed:setTouchEnabled(true)
+		if not arg_58_0._isOnlinePvp and arg_58_0._baseBattleType ~= Data.BattleType.base_PVP then
+			arg_58_0._btnSpeed:setTouchEnabled(true)
+		else
+			arg_58_0._btnSpeed:setVisible(false)
+			arg_58_0._btnSpeed:setTouchEnabled(false)
+		end
 		arg_58_0:updateRoundButton()
 		var_58_0:updateBoardCardsInitialSkills()
 	end

@@ -42,32 +42,6 @@ function var_0_0.init(arg_2_0, arg_2_1)
 
 	arg_2_0._btnCancel = var_2_1
 
-	-- Online players count label
-	local onlineLabel = cc.Label:createWithTTF("Số người chơi trực tuyến hiện tại: ...", ClientView.TTF_FONT, ClientView.FontSize.S1)
-	onlineLabel:setColor(cc.c3b(255, 235, 120))
-	onlineLabel:enableOutline(cc.c4b(0, 0, 0, 220), 2)
-	lc.addChildToPos(arg_2_0, onlineLabel, cc.p(lc.w(arg_2_0) / 2, 350))
-	arg_2_0._onlineLabel = onlineLabel
-
-	local function updateOnlineCount()
-		local api = jsbridge and jsbridge.object("jdzcApi")
-		if api and api.post then
-			api:post("online_count", {}, function(rawRes)
-				local res = (type(rawRes) == "string") and require("json").decode(rawRes) or rawRes
-				if res and res.count then
-					pcall(function()
-						onlineLabel:setString("Số người chơi trực tuyến hiện tại: " .. tostring(res.count))
-					end)
-				end
-			end)
-		end
-	end
-	updateOnlineCount()
-	onlineLabel:runAction(cc.RepeatForever:create(cc.Sequence:create(
-		cc.DelayTime:create(3),
-		cc.CallFunc:create(updateOnlineCount)
-	)))
-
 	local var_2_2 = ClientView.createBMFont(ClientView.BMFont.huali_26, "0")
 
 	lc.addChildToPos(arg_2_0, var_2_2, cc.p(lc.x(var_2_1), lc.bottom(var_2_1) - 20 - lc.h(var_2_2) / 2))
@@ -151,6 +125,32 @@ function var_0_0.init(arg_2_0, arg_2_1)
 	lc.addChildToPos(arg_2_0, var_2_8, cc.p(lc.right(var_2_3) + var_2_5 / 2 + 10, lc.y(var_2_3)))
 
 	arg_2_0._btnArrowRight = var_2_8
+
+	-- Online players count label placed neatly above tip section
+	local onlineLabel = cc.Label:createWithTTF("Người chơi trực tuyến: ...", ClientView.TTF_FONT, ClientView.FontSize.S2)
+	onlineLabel:setColor(cc.c3b(255, 235, 120))
+	onlineLabel:enableOutline(cc.c4b(0, 0, 0, 200), 1)
+	lc.addChildToPos(arg_2_0, onlineLabel, cc.p(lc.w(arg_2_0) / 2, lc.top(var_2_3) + 16))
+	arg_2_0._onlineLabel = onlineLabel
+
+	local function updateOnlineCount()
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("online_count", {}, function(rawRes)
+				local res = (type(rawRes) == "string") and require("json").decode(rawRes) or rawRes
+				if res and res.count then
+					pcall(function()
+						onlineLabel:setString("Người chơi trực tuyến: " .. tostring(res.count))
+					end)
+				end
+			end)
+		end
+	end
+	updateOnlineCount()
+	onlineLabel:runAction(cc.RepeatForever:create(cc.Sequence:create(
+		cc.DelayTime:create(3),
+		cc.CallFunc:create(updateOnlineCount)
+	)))
 
 	if arg_2_1 == Data.FindMatchType.clash then
 		arg_2_0:runAction(lc.sequence(1, function()

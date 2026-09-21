@@ -19,6 +19,7 @@ except Exception:
 
 SHOP_PORT = int(os.environ.get("SHOP_PORT", 8082))
 MAIN_SERVER_URL = os.environ.get("MAIN_SERVER_URL", "http://127.0.0.1:8080")
+CHAT_SERVER_URL = os.environ.get("CHAT_SERVER_URL", "http://127.0.0.1:8084")
 
 DB_CONFIG = {
     'host': '127.0.0.1',
@@ -84,12 +85,14 @@ CHAR_PACKAGE_GR = {
 
 SERVER_LIYA_CARDS_MAP = {}
 SERVER_CHAR_CARDS_MAP = {}
+FIXED_DEPOT_PRICES = {}
 
 def load_pack_mappings():
-    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP
+    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP, FIXED_DEPOT_PRICES
     base_dir = os.path.dirname(os.path.abspath(__file__))
     liya_path = os.path.join(base_dir, 'liya_cards_map.json')
     char_path = os.path.join(base_dir, 'char_cards_map.json')
+    prices_path = os.path.join(base_dir, 'fixed_depot_prices.json')
 
     try:
         if os.path.isfile(liya_path):
@@ -108,6 +111,15 @@ def load_pack_mappings():
             print(f"[SHOP SERVER] Loaded {len(SERVER_CHAR_CARDS_MAP)} Character pack mappings.")
     except Exception as e:
         print(f"[SHOP SERVER] Error loading char_cards_map.json: {e}")
+
+    try:
+        if os.path.isfile(prices_path):
+            with open(prices_path, 'r', encoding='utf-8') as f:
+                _pm = json.load(f)
+                FIXED_DEPOT_PRICES = {int(k): int(v) for k, v in _pm.items()}
+            print(f"[SHOP SERVER] Loaded {len(FIXED_DEPOT_PRICES)} Fixed Depot prices.")
+    except Exception as e:
+        print(f"[SHOP SERVER] Error loading fixed_depot_prices.json: {e}")
 
 ALL_CARDS_MAP = {}
 ALL_CARDS_BY_QUALITY = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
@@ -160,19 +172,206 @@ try:
 except Exception as e:
     print(f"[SHOP SERVER] init_global_cards at startup failed: {e}")
 
+LIYA_PACKAGE_GR = {
+    1: [10270, 10293],
+    2: [10304, 10305],
+    3: [10306, 10307],
+    4: [10308, 10407],
+    5: [10446, 10639],
+    6: [10763, 10790],
+    7: [10895, 10896],
+    8: [10902, 10967],
+    9: [10969, 11083],
+    10: [11145, 11225],
+    11: [11308, 11338],
+    12: [11365, 11513],
+    13: [11662, 11695],
+    14: [11853, 11934],
+    15: [12006, 12142],
+    16: [12181, 20142],
+    17: [20233, 20352],
+    18: [20549, 20551],
+    19: [20552, 20566],
+    20: [20641, 20711]
+}
+
+CHAR_PACKAGE_GR = {
+    3: [30383, 20742],
+    2: [40250, 20779],
+    5: [20551, 11365],
+    15: [40336, 21046],
+    11201: [40336, 21046],
+    11210: [40336, 21046],
+    11250: [40336, 21046],
+    12: [40336, 21046],
+    18: [11513, 21100],
+    16: [20778],
+    8: [10407],
+    11: [10763]
+}
+
+def resolve_pack_cards(pkg_num, req_pool=None):
+    cards = []
+    # 1. Overwritten character / Liya pack mappings always take precedence
+    if pkg_num in SERVER_CHAR_CARDS_MAP:
+        cards = SERVER_CHAR_CARDS_MAP[pkg_num]
+    elif pkg_num in SERVER_LIYA_CARDS_MAP:
+        cards = SERVER_LIYA_CARDS_MAP[pkg_num]
+    elif pkg_num in (11201, 11210, 11250, 15, 12):
+        cards = SERVER_CHAR_CARDS_MAP.get(11201) or SERVER_CHAR_CARDS_MAP.get(15) or SERVER_CHAR_CARDS_MAP.get(12) or []
+    elif 101001 <= pkg_num <= 135050:
+        liya_idx = (pkg_num - 100000) // 1000
+        cards = SERVER_LIYA_CARDS_MAP.get(pkg_num) or SERVER_LIYA_CARDS_MAP.get(liya_idx) or []
+    elif 1 <= pkg_num <= 50 and pkg_num in SERVER_LIYA_CARDS_MAP:
+        cards = SERVER_LIYA_CARDS_MAP[pkg_num]
+    elif 10000 <= pkg_num < 20000:
+        cid = (pkg_num - 10000) // 100
+        cards = SERVER_CHAR_CARDS_MAP.get(pkg_num) or SERVER_CHAR_CARDS_MAP.get(cid) or []
+
+    # 2. Fallback to client req_pool if no server mapping found
+    if not cards and req_pool and len(req_pool) > 0:
+        cards = req_pool
+
+    return [int(x) for x in cards if int(x) in ALL_CARDS_MAP]
+
+def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, broadcast_fn=None):
+    pack_cids = resolve_pack_cards(pkg_num, req_pool)
+    pack_by_quality = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
+    for cid in pack_cids:
+        c = ALL_CARDS_MAP.get(cid)
+        if c:
+            q = c.get('quality', 'N')
+            if q in pack_by_quality:
+                pack_by_quality[q].append(c)
+            else:
+                pack_by_quality['N'].append(c)
+
+    pack_gr_cards = pack_by_quality['GR'][:]
+    if not pack_gr_cards:
+        gr_cids = []
+        if 101001 <= pkg_num <= 135050:
+            liya_idx = (pkg_num - 100000) // 1000
+            gr_cids = LIYA_PACKAGE_GR.get(liya_idx, [])
+        elif 1 <= pkg_num <= 50 and pkg_num in LIYA_PACKAGE_GR:
+            gr_cids = LIYA_PACKAGE_GR.get(pkg_num, [])
+        else:
+            cid = pkg_num
+            if cid in (11201, 11210, 11250, 15, 12):
+                cid = 15
+            elif 10000 <= cid < 20000:
+                cid = (cid - 10000) // 100
+            elif cid > 100:
+                cid = cid % 100
+            gr_cids = CHAR_PACKAGE_GR.get(cid, [])
+        for gid in gr_cids:
+            if gid in ALL_CARDS_MAP:
+                pack_gr_cards.append(ALL_CARDS_MAP[gid])
+    if not pack_gr_cards:
+        pack_gr_cards = pack_by_quality['UR'][:] or ALL_CARDS_BY_QUALITY.get('GR', [])
+
+    cards_won = []
+    has_ur = False
+    for card_idx in range(total_cards):
+        user_pity += (1.0 / 3.0)
+        force_ur = (user_pity >= 50.0) and (not has_ur)
+        
+        roll = random.random()
+        is_pack_card = True
+        if force_ur:
+            target_quality = 'UR'
+        elif roll < 0.000001:  # GR: 0.0001%
+            target_quality = 'GR'
+        elif roll < 0.020001:  # UR: 2%
+            target_quality = 'UR'
+        elif roll < 0.120001:  # SR: 10%
+            target_quality = 'SR'
+        elif roll < 0.320001:  # R: 20%
+            target_quality = 'R'
+        elif roll < 0.620001:  # N: 30%
+            target_quality = 'N'
+        else:                  # Remainder: ~38% random filler cards
+            is_pack_card = False
+
+        picked = None
+        if not is_pack_card:
+            # Remainder (~38%): random card from database as in previous commit
+            picked = random.choice(ALL_SR_AND_BELOW_CARDS) if ALL_SR_AND_BELOW_CARDS else random.choice(list(ALL_CARDS_MAP.values()))
+        elif target_quality == 'GR':
+            if pack_gr_cards:
+                picked = random.choice(pack_gr_cards)
+            elif pack_by_quality['UR']:
+                picked = random.choice(pack_by_quality['UR'])
+            else:
+                picked = random.choice(ALL_CARDS_BY_QUALITY.get('GR') or ALL_CARDS_BY_QUALITY.get('UR'))
+        else:
+            # Pick from pack overwritten list
+            if pack_by_quality[target_quality]:
+                picked = random.choice(pack_by_quality[target_quality])
+            else:
+                fallback_order = {
+                    'N': ['R', 'SR', 'UR'],
+                    'R': ['SR', 'N', 'UR'],
+                    'SR': ['R', 'UR', 'N'],
+                    'UR': ['SR', 'R', 'N']
+                }.get(target_quality, ['R', 'SR', 'UR', 'N'])
+                for fq in fallback_order:
+                    if pack_by_quality[fq]:
+                        picked = random.choice(pack_by_quality[fq])
+                        break
+                if not picked and pack_cids:
+                    picked_cid = random.choice(pack_cids)
+                    picked = ALL_CARDS_MAP.get(picked_cid)
+                if not picked:
+                    pool = ALL_CARDS_BY_QUALITY.get(target_quality) or ALL_SR_AND_BELOW_CARDS
+                    picked = random.choice(pool)
+
+        cid = picked['id']
+        cname = picked['name']
+        cquality = picked['quality']
+
+        if cquality in ['UR', 'GR']:
+            user_pity = 0.0
+            if cquality == 'UR':
+                has_ur = True
+            else:
+                char_name = user_acc.get('character_name', '') if user_acc else ''
+                announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa rút được lá bài cấp GR thần thánh [{cname}]!"
+                broadcast_msg = {
+                    "id": int(time.time()*1000) + card_idx,
+                    "timestamp": int(time.time()*1000),
+                    "account_id": 0,
+                    "name": "Hệ Thống",
+                    "level": 99,
+                    "avatar": 101,
+                    "content": announcement,
+                    "msg": announcement,
+                    "type": 2,
+                    "card_id": cid,
+                    "items": [{"info_id": cid, "num": 1}]
+                }
+                if broadcast_fn:
+                    try:
+                        broadcast_fn(broadcast_msg)
+                    except Exception as b_ex:
+                        print(f"[SHOP BROADCAST ERROR] {b_ex}")
+
+        cards_won.append({"info_id": cid, "num": 1, "name": cname, "quality": cquality})
+
+    return cards_won, user_pity, has_ur
+
+
 
 def notify_main_server_broadcast(broadcast_msg):
-    """Gửi thông báo thẻ hiếm (GR/UR) sang Game Server chính để phát WebSocket cho toàn bộ người chơi."""
+    """Gửi thông báo thẻ hiếm (GR/UR) sang Chat Server độc lập để lưu DB và phát WebSocket cho toàn bộ người chơi."""
     def _send():
         try:
-            url = f"{MAIN_SERVER_URL}/api/internal_broadcast"
-            data = json.dumps({"msg": broadcast_msg}).encode('utf-8')
-            req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+            url = f"{CHAT_SERVER_URL}/api/chat_send"
+            data = json.dumps(broadcast_msg, ensure_ascii=False).encode('utf-8')
+            req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'}, method='POST')
             with urllib.request.urlopen(req, timeout=3) as resp:
                 pass
         except Exception as e:
-            # Không làm gián đoạn shop nếu main server tạm thời chưa phản hồi
-            print(f"[SHOP BROADCAST WARN] Cannot forward GR broadcast to main server: {e}")
+            print(f"[SHOP BROADCAST WARN] Cannot forward GR broadcast to chat server: {e}")
     threading.Thread(target=_send, daemon=True).start()
 
 
@@ -269,117 +468,18 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                             else:
                                 cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (cost_val, acc_id))
 
-                            user_pity = user_acc.get('pity_count', 0) or 0
-                            cards_won = []
-                            has_ur = False
                             raw_card_pool = req.get('card_pool') or []
                             req_pool = [int(x) for x in raw_card_pool if str(x).isdigit()]
 
-                            if not ALL_CARDS_MAP:
-                                init_global_cards(cur)
-
-                            # Resolve pack pool from server maps if not provided
-                            if not req_pool:
-                                if pkg_num in (11201, 11210, 11250, 15):
-                                    req_pool = SERVER_CHAR_CARDS_MAP.get(15, []) or SERVER_CHAR_CARDS_MAP.get(11201, [])
-                                elif 101001 <= pkg_num <= 135050:
-                                    liya_idx = (pkg_num - 100000) // 1000
-                                    req_pool = SERVER_LIYA_CARDS_MAP.get(liya_idx, [])
-                                elif 1 <= pkg_num <= 32 and pkg_num in SERVER_LIYA_CARDS_MAP:
-                                    req_pool = SERVER_LIYA_CARDS_MAP.get(pkg_num, [])
-                                elif 10000 <= pkg_num < 20000:
-                                    cid = (pkg_num - 10000) // 100
-                                    req_pool = SERVER_CHAR_CARDS_MAP.get(cid, [])
-                                elif pkg_num in SERVER_CHAR_CARDS_MAP:
-                                    req_pool = SERVER_CHAR_CARDS_MAP.get(pkg_num, [])
-
-                            # Featured URs and GRs of this specific pack
-                            pack_ur_cards = []
-                            pack_gr_cards = []
-                            for cid in req_pool:
-                                c_info = ALL_CARDS_MAP.get(cid)
-                                if c_info:
-                                    if c_info['quality'] == 'UR':
-                                        pack_ur_cards.append(c_info)
-                                    elif c_info['quality'] == 'GR':
-                                        pack_gr_cards.append(c_info)
-
-                            # Fallback if pack has no URs
-                            if not pack_ur_cards:
-                                pack_ur_cards = ALL_CARDS_BY_QUALITY.get('UR', [])
-
-                            # Resolve pack GR cards if not directly in req_pool
-                            if not pack_gr_cards:
-                                gr_cids = []
-                                if 101001 <= pkg_num <= 135050:
-                                    liya_idx = (pkg_num - 100000) // 1000
-                                    gr_cids = LIYA_PACKAGE_GR.get(liya_idx, [])
-                                elif 1 <= pkg_num <= 32 and pkg_num in LIYA_PACKAGE_GR:
-                                    gr_cids = LIYA_PACKAGE_GR.get(pkg_num, [])
-                                else:
-                                    cid = pkg_num
-                                    if cid in (11201, 11210, 11250, 15):
-                                        cid = 15
-                                    elif 10000 <= cid < 20000:
-                                        cid = (cid - 10000) // 100
-                                    elif cid > 100:
-                                        cid = cid % 100
-                                    gr_cids = CHAR_PACKAGE_GR.get(cid, [])
-                                for gid in gr_cids:
-                                    if gid in ALL_CARDS_MAP:
-                                        pack_gr_cards.append(ALL_CARDS_MAP[gid])
-                                if not pack_gr_cards:
-                                    pack_gr_cards = ALL_CARDS_BY_QUALITY.get('GR', [])
-
-                            for card_idx in range(total_cards):
-                                user_pity += (1.0 / 3.0)
-                                force_ur = (user_pity >= 50.0) and (not has_ur)
-
-                                roll = random.random()
-                                if force_ur:
-                                    picked = random.choice(pack_ur_cards) if pack_ur_cards else random.choice(ALL_CARDS_BY_QUALITY['UR'])
-                                elif roll < 0.000001:  # GR: 0.0001%
-                                    picked = random.choice(pack_gr_cards) if pack_gr_cards else random.choice(ALL_CARDS_BY_QUALITY['GR'])
-                                elif roll < 0.020001:  # UR: 2% from pack featured URs
-                                    picked = random.choice(pack_ur_cards) if pack_ur_cards else random.choice(ALL_CARDS_BY_QUALITY['UR'])
-                                elif roll < 0.120001:  # SR: 10% from all cards in database
-                                    pool_sr = ALL_CARDS_BY_QUALITY.get('SR') or ALL_SR_AND_BELOW_CARDS
-                                    picked = random.choice(pool_sr)
-                                elif roll < 0.520001:  # R: 40% from all cards in database
-                                    pool_r = ALL_CARDS_BY_QUALITY.get('R') or ALL_SR_AND_BELOW_CARDS
-                                    picked = random.choice(pool_r)
-                                else:                  # N: remainder (~48%) from all cards in database
-                                    pool_n = ALL_CARDS_BY_QUALITY.get('N') or ALL_SR_AND_BELOW_CARDS
-                                    picked = random.choice(pool_n)
-
-                                cid = picked['id']
-                                cname = picked['name']
-                                cquality = picked['quality']
-
-                                if cquality in ['UR', 'GR']:
-                                    user_pity = 0.0
-                                    if cquality == 'UR':
-                                        has_ur = True
-                                    else:
-                                        announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{user_acc['character_name']}] vừa rút được lá bài cấp GR thần thánh [{cname}]!"
-                                        broadcast_msg = {
-                                            "id": int(time.time()*1000) + card_idx,
-                                            "timestamp": int(time.time()*1000),
-                                            "account_id": 0,
-                                            "name": "Hệ Thống",
-                                            "level": 99,
-                                            "avatar": 101,
-                                            "content": announcement,
-                                            "msg": announcement,
-                                            "type": 2,
-                                            "card_id": cid,
-                                            "items": [{"info_id": cid, "num": 1}]
-                                        }
-                                        # Forward to Main Server for WebSocket broadcast
-                                        notify_main_server_broadcast(broadcast_msg)
-                                        print(f"[SHOP GR DROP!] {announcement}")
-
-                                cards_won.append({"info_id": cid, "num": 1, "name": cname, "quality": cquality})
+                            user_pity = user_acc.get('pity_count', 0) or 0
+                            cards_won, user_pity, has_ur = execute_pack_lottery(
+                                pkg_num=pkg_num,
+                                total_cards=total_cards,
+                                user_pity=user_pity,
+                                req_pool=req_pool,
+                                user_acc=user_acc,
+                                broadcast_fn=notify_main_server_broadcast
+                            )
 
                             # Batch save cards won
                             card_counts = {}
@@ -425,7 +525,7 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                         if not acc:
                             resp = {"code": 404, "msg": "Account not found"}
                         elif acc['gem'] < gem_cost:
-                            resp = {"code": 400, "msg": "Không đủ Gem để đổi vàng!"}
+                            resp = {"code": 400, "msg": "Không đủ Linh Thạch Cao Cấp để đổi Linh Thạch!"}
                         else:
                             new_gem = acc['gem'] - gem_cost
                             new_gold = acc['gold'] + gold_gain
@@ -433,7 +533,7 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                             conn.commit()
                             resp = {
                                 "code": 200,
-                                "msg": f"Đổi thành công {gold_gain:,} Vàng!",
+                                "msg": f"Đổi thành công {gold_gain:,} Linh Thạch!",
                                 "gold": new_gold,
                                 "gem": new_gem
                             }
@@ -444,41 +544,85 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
         # -------------------------------------------------------------
         # 3. Mua Kho Chứa / Thẻ Kho (/api/buy_depot)
         # -------------------------------------------------------------
-        elif self.path == '/api/buy_depot':
+        elif self.path in ('/api/buy_depot', '/api/buy_card'):
             acc_id = req.get('account_id')
             card_id = int(req.get('card_id', 0))
+            prod_id = int(req.get('product_id') or req.get('depot_id') or 0)
             cost = int(req.get('cost', 0))
-            depot_id = req.get('depot_id')
-            if (card_id == 0 or cost == 0) and depot_id == 59:
+            cost_type = req.get('cost_type', 1)
+            count = max(1, int(req.get('count', 1)))
+
+            # Resolve fixed pricing
+            if card_id in FIXED_DEPOT_PRICES and cost <= 0:
+                cost = FIXED_DEPOT_PRICES[card_id]
+                cost_type = 1
+            elif prod_id == 59 or card_id == 40209:
                 card_id = 40209
+                cost = 200000
+                cost_type = 1
+            elif prod_id == 60 or card_id == 20005:
+                card_id = 20005
+                cost = 5000
+                cost_type = 1
+            elif prod_id == 61 or card_id == 20051:
+                card_id = 20051
                 cost = 100000
-            elif card_id == 40209:
+                cost_type = 1
+            elif prod_id == 62 or card_id == 20030:
+                card_id = 20030
                 cost = 100000
+                cost_type = 1
+            elif prod_id == 63 or card_id == 40713:
+                card_id = 40713
+                cost = 500000
+                cost_type = 1
+            elif card_id == 12248:
+                cost = 500000
+                cost_type = 1
+            elif prod_id and int(prod_id) >= 64 and cost == 0:
+                cost = 20000
 
             if not acc_id or card_id <= 0:
                 resp = {"code": 400, "msg": "Thông tin không hợp lệ!"}
             else:
+                total_cost = cost * count
+                is_gold = (cost_type in (1, '1', 'gold'))
+                is_gem = (cost_type in (3, '3', 'gem', 'diamond', 'ingot'))
+
                 with get_db() as conn:
                     with conn.cursor() as cur:
-                        cur.execute("SELECT gold, character_name FROM accounts WHERE id = %s", (acc_id,))
+                        cur.execute("SELECT gold, gem, character_name FROM accounts WHERE id = %s", (acc_id,))
                         acc = cur.fetchone()
                         if not acc:
                             resp = {"code": 404, "msg": "Account not found"}
-                        elif acc['gold'] < cost:
-                            resp = {"code": 400, "msg": "Không đủ vàng!"}
+                        elif is_gold and acc['gold'] < total_cost:
+                            resp = {"code": 400, "msg": "Không đủ Linh Thạch / Vàng!"}
+                        elif is_gem and acc['gem'] < total_cost:
+                            resp = {"code": 400, "msg": "Không đủ Gem / Kim Cương!"}
                         else:
-                            cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (cost, acc_id))
-                            cur.execute("INSERT INTO user_cards (account_id, card_id, count) VALUES (%s, %s, 1) ON DUPLICATE KEY UPDATE count = count + 1", (acc_id, card_id))
+                            if is_gold and total_cost > 0:
+                                cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (total_cost, acc_id))
+                            elif is_gem and total_cost > 0:
+                                cur.execute("UPDATE accounts SET gem = gem - %s WHERE id = %s", (total_cost, acc_id))
+
+                            cur.execute("""
+                                INSERT INTO user_cards (account_id, card_id, count)
+                                VALUES (%s, %s, %s)
+                                ON DUPLICATE KEY UPDATE count = count + %s
+                            """, (acc_id, card_id, count, count))
                             conn.commit()
-                            cur.execute("SELECT gold FROM accounts WHERE id = %s", (acc_id,))
-                            updated_gold = cur.fetchone()['gold']
+
+                            cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
+                            updated_acc = cur.fetchone() or {}
                             resp = {
                                 "code": 200,
                                 "msg": "Mua thẻ bài thành công!",
-                                "gold": updated_gold,
-                                "card_id": card_id
+                                "gold": updated_acc.get('gold', 0),
+                                "gem": updated_acc.get('gem', 0),
+                                "card_id": card_id,
+                                "count": count
                             }
-                            print(f"[SHOP BUY DEPOT] Account {acc_id} ({acc['character_name']}) bought card {card_id} for {cost} gold.")
+                            print(f"[SHOP BUY CARD] Account {acc_id} ({acc['character_name']}) bought {count}x card {card_id} for {total_cost} (type: {cost_type}).")
 
         # -------------------------------------------------------------
         # 4. Nhận Mã Quà Tặng Giftcode
@@ -562,9 +706,9 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                                             rewards.append({"info_id": 1, "num": reward_gold, "is_fragment": False, "level": 1})
 
                                         if reward_gold > 0 and reward_gem > 0:
-                                            reward_msg = f"Đổi quà thành công! Nhận {reward_gold:,} Vàng và {reward_gem:,} Gem!"
+                                            reward_msg = f"Đổi quà thành công! Nhận {reward_gold:,} Linh Thạch và {reward_gem:,} Gem!"
                                         elif reward_gold > 0:
-                                            reward_msg = f"Đổi quà thành công! Nhận {reward_gold:,} Vàng!"
+                                            reward_msg = f"Đổi quà thành công! Nhận {reward_gold:,} Linh Thạch!"
                                         elif reward_gem > 0:
                                             reward_msg = f"Đổi quà thành công! Nhận {reward_gem:,} Gem!"
                                         else:

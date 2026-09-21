@@ -303,7 +303,7 @@ function var_0_25.init(arg_3_0, arg_3_1)
 
 	local var_3_3 = arg_3_1.attach.character
 
-	arg_3_0._isNewRound = var_3_3.is_dynamic_timeout
+	arg_3_0._isNewRound = (var_3_3 and var_3_3.is_dynamic_timeout) or (lc.UserDefault and lc.UserDefault:getBoolForKey("is_dynamic_timeout", false)) or false
 	arg_3_0._characters = {}
 
 	for iter_3_7, iter_3_8 in pairs(Data._characterInfo) do
@@ -2734,6 +2734,10 @@ end
 
 function var_0_25.setNewRound(arg_174_0, arg_174_1)
 	arg_174_0._isNewRound = arg_174_1
+
+	if lc.UserDefault and lc.UserDefault.setBoolForKey then
+		lc.UserDefault:setBoolForKey("is_dynamic_timeout", arg_174_1 and true or false)
+	end
 
 	ClientData.sendIsNewRound(arg_174_1)
 end

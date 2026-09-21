@@ -374,6 +374,8 @@
 		 * the login/register tabs on a frame with no pixels -- 0x0 buttons
 		 * nobody can tap. ponytail: 1 MB kept resident for the session. */
 		if (typeof key === 'string' && /\.pvr\.ccz$/i.test(key)) return;
+		if (typeof key === 'string' && /bat_scene_.*_bg\.jpg$/i.test(key)) return;
+		if (typeof key === 'string' && /battle_frame_bg\.jpg$/i.test(key)) return;
 		if (typeof key === 'string') {
 			if (res.maskedInflight) delete res.maskedInflight[key];
 			if (res.pending) delete res.pending[key];

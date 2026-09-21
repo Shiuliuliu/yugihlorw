@@ -158,9 +158,9 @@ function var_0_0.addCardList(arg_9_0)
 
 				local var_9_19 = var_9_5._cost
 
-				if var_9_6 == 40209 then
+				if var_9_5._id >= 59 then
 					var_9_18 = 0
-					var_9_19 = 100000
+					var_9_19 = var_9_5._cost
 				elseif var_9_18 > 0 then
 					var_9_19 = var_9_19 * Data._globalInfo._magicShopDiscount[var_9_18] / 100
 				end
@@ -169,7 +169,7 @@ function var_0_0.addCardList(arg_9_0)
 					_infoId = var_9_6,
 					_price = var_9_19,
 					_priceType = var_9_5._resType,
-					_disCount = (var_9_6 == 40209) and 0 or var_9_18,
+					_disCount = (var_9_5._id >= 59) and 0 or var_9_18,
 					_id = var_9_5._id
 				})
 			end

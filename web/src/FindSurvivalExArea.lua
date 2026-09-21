@@ -252,11 +252,12 @@ function var_0_0.enterDoor(arg_18_0)
 
 	if P._propBag:hasProps(Data.PropsId.survival_ex_ticket, 1) then
 		local var_18_7 = var_18_6("img_icon_props_s7132", 1, Data.PropsId.survival_ex_ticket)
+		lc.addChildToPos(var_18_3, var_18_7, cc.p(lc.cw(var_18_0) - 105, 80))
 
-		lc.addChildToPos(var_18_3, var_18_7, cc.p(lc.cw(var_18_0), 80))
+		local var_18_8 = var_18_6("img_icon_res1_s", Data._globalInfo._SurvivalExCostGold, Data.ResType.gold)
+		lc.addChildToPos(var_18_3, var_18_8, cc.p(lc.cw(var_18_0) + 105, 80))
 	else
 		local var_18_8 = var_18_6("img_icon_res1_s", Data._globalInfo._SurvivalExCostGold, Data.ResType.gold)
-
 		lc.addChildToPos(var_18_3, var_18_8, cc.p(lc.cw(var_18_0), 80))
 	end
 
@@ -633,11 +634,7 @@ function var_0_0.updateSelectCards(arg_35_0)
 
 		if var_35_1 == 0 then
 			var_35_4._thumbnail:setOpacity(0)
-			var_35_4._thumbnail:runAction(lc.fadeTo(1, 255))
-
-			local var_35_5 = Particle.create("chuxian")
-
-			lc.addChildToCenter(var_35_4, var_35_5)
+			var_35_4._thumbnail:runAction(lc.fadeTo(0.3, 255))
 		else
 			var_35_4._thumbnail:setOpacity(255)
 		end
@@ -651,64 +648,47 @@ function var_0_0.updateSelectCards(arg_35_0)
 end
 
 function var_0_0.updateTroopList(arg_36_0)
-	local var_36_0 = arg_36_0:remainItemFromList()
+	if not arg_36_0._troopList then return end
+	local troopCards = P._playerFindSurvivalEx:getTroopCards()
+	local existingItems = arg_36_0._troopList:getItems()
 
-	arg_36_0:releaseTroopCards()
-
-	local var_36_1 = {}
-
-	for iter_36_0, iter_36_1 in ipairs(P._playerFindSurvivalEx:getTroopCards()) do
-		local var_36_2
-
-		for iter_36_2 = 1, #var_36_0 do
-			if var_36_0[iter_36_2]._card._infoId == iter_36_1._infoId then
-				var_36_2 = var_36_0[iter_36_2]
-
-				break
-			end
+	local existingMap = {}
+	for _, item in ipairs(existingItems) do
+		if item._card and item._card._infoId then
+			existingMap[item._card._infoId] = item
 		end
+	end
 
-		if not var_36_2 then
-			var_36_2 = ccui.Layout:create()
+	local newItems = {}
+	for _, tCard in ipairs(troopCards) do
+		local existing = existingMap[tCard._infoId]
+		if existing then
+			existing._card = tCard
+			if existing._item and existing._item._countArea then
+				existing._item._countArea:update(true, tCard._num)
+			end
+		else
+			local layout = ccui.Layout:create()
+			layout:retain()
 
-			var_36_2:retain()
-
-			local var_36_3 = var_0_1.createFromPool(iter_36_1._infoId, var_0_6)
-
-			var_36_3._countArea:update(true, iter_36_1._num)
-			var_36_2:setContentSize(var_36_3._thumbnail:getContentSize())
-			var_36_2:setAnchorPoint(cc.p(0.5, 0.5))
-			lc.addChildToPos(var_36_2, var_36_3, cc.p(lc.cw(var_36_2), lc.ch(var_36_2) + 10))
-			var_36_3._thumbnail:setTouchEnabled(true)
-			var_36_3._thumbnail:addTouchEventListener(function(arg_37_0, arg_37_1)
+			local widget = var_0_1.createFromPool(tCard._infoId, var_0_6)
+			widget._countArea:update(true, tCard._num)
+			layout:setContentSize(widget._thumbnail:getContentSize())
+			layout:setAnchorPoint(cc.p(0.5, 0.5))
+			lc.addChildToPos(layout, widget, cc.p(lc.cw(layout), lc.ch(layout) + 10))
+			widget._thumbnail:setTouchEnabled(true)
+			widget._thumbnail:addTouchEventListener(function(arg_37_0, arg_37_1)
 				arg_36_0:onTouchThumbnail(arg_37_0, arg_37_1, var_0_8.troop_card)
 			end)
 
-			var_36_2._item = var_36_3
-		else
-			var_36_2._item._countArea:update(true, iter_36_1._num)
+			layout._item = widget
+			layout._card = tCard
+			table.insert(newItems, layout)
 		end
-
-		table.insert(var_36_1, var_36_2)
-
-		var_36_2._card = iter_36_1
 	end
 
-	table.sort(var_36_1, function(arg_38_0, arg_38_1)
-		local var_38_0 = Data.getOriginId(arg_38_0._card._infoId)
-		local var_38_1 = Data.getOriginId(arg_38_1._card._infoId)
-
-		if var_38_0 < var_38_1 then
-			return true
-		elseif var_38_1 < var_38_0 then
-			return false
-		else
-			return arg_38_0._card._infoId < arg_38_1._card._infoId
-		end
-	end)
-
-	for iter_36_3, iter_36_4 in ipairs(var_36_1) do
-		arg_36_0._troopList:pushBackCustomItem(iter_36_4)
+	for _, item in ipairs(newItems) do
+		arg_36_0._troopList:pushBackCustomItem(item)
 	end
 
 	local var_36_4, var_36_5, var_36_6, var_36_7, var_36_8 = P._playerFindSurvivalEx:getTroopCardCount()
@@ -961,22 +941,13 @@ function var_0_0.playAction(arg_48_0, arg_48_1, arg_48_2)
 		end
 	end
 
-	local var_48_2 = cc.Node:create()
-
-	lc.addChildToPos(arg_48_0, var_48_2, arg_48_1)
-
-	local var_48_3 = Particle.create("sz1")
-
-	lc.addChildToCenter(var_48_2, var_48_3)
-
-	local var_48_4 = Particle.create("sz2")
-
-	lc.addChildToCenter(var_48_2, var_48_4)
-	var_48_2:setScale(2)
-	var_48_2:runAction(lc.sequence(lc.moveTo(0.4, var_48_0), lc.call(function()
-		var_48_3:setDuration(0.1)
-		var_48_4:setDuration(0.1)
-	end), lc.delay(1), lc.remove()))
+	if arg_48_1 then
+		local dot = cc.LayerColor:create(cc.c4b(255, 220, 100, 200), 20, 20)
+		dot:ignoreAnchorPointForPosition(false)
+		dot:setAnchorPoint(cc.p(0.5, 0.5))
+		lc.addChildToPos(arg_48_0, dot, arg_48_1)
+		dot:runAction(lc.sequence(lc.moveTo(0.2, var_48_0), lc.fadeOut(0.1), lc.remove()))
+	end
 end
 
 function var_0_0.enterBattleField(arg_50_0)
@@ -1000,14 +971,34 @@ function var_0_0.enterBattleField(arg_50_0)
 
 	lc.addChildToPos(var_50_0, var_50_2, cc.p(lc.cw(var_50_0), lc.h(var_50_0) - lc.ch(var_50_2)))
 
-	local var_50_3 = ClientView.createScale9ShaderButton("img_btn_1", function(arg_51_0)
-		arg_50_0:onFindingHall()
-	end, ClientView.CRECT_BUTTON, 140)
+	local sWin = (P._playerFindSurvivalEx and P._playerFindSurvivalEx._win) or 0
+	local sLose = (P._playerFindSurvivalEx and P._playerFindSurvivalEx._lose) or 0
+	local statBg = lc.createSprite({
+		_name = "img_com_bg_41",
+		_size = cc.size(420, 44),
+		_crect = cc.rect(29, 20, 1, 1)
+	})
+	lc.addChildToPos(var_50_2, statBg, cc.p(lc.cw(var_50_2), 85))
+	local statLabel = ClientView.createBMFont(ClientView.BMFont.huali_26, string.format("Thắng: %d/12    Thua: %d/3", sWin, sLose))
+	lc.addChildToCenter(statBg, statLabel)
 
-	lc.addChildToPos(var_50_2, var_50_3, cc.p(lc.cw(var_50_2), 20))
-	var_50_3:addLabel(Str(STR.START))
+	if sWin >= 12 or sLose >= 3 then
+		local finishBtn = ClientView.createScale9ShaderButton("img_btn_2", function()
+			arg_50_0:onFinishBattle()
+		end, ClientView.CRECT_BUTTON, 200)
+		lc.addChildToPos(var_50_2, finishBtn, cc.p(lc.cw(var_50_2), 20))
+		finishBtn:addLabel(sWin >= 12 and "Vô Địch (Nhận Thưởng)" or "Kết Thúc (Nhận Thưởng)")
+		arg_50_0._btnFind = finishBtn
+	else
+		local var_50_3 = ClientView.createScale9ShaderButton("img_btn_1", function(arg_51_0)
+			arg_50_0:onFindingHall()
+		end, ClientView.CRECT_BUTTON, 140)
 
-	arg_50_0._btnFind = var_50_3
+		lc.addChildToPos(var_50_2, var_50_3, cc.p(lc.cw(var_50_2), 20))
+		var_50_3:addLabel(Str(STR.START))
+
+		arg_50_0._btnFind = var_50_3
+	end
 
 	local var_50_4 = ClientView.createScale9ShaderButton("img_btn_1_s", function()
 		require("LogForm").create(Battle_pb.PB_BATTLE_SURVIVAL_EX):show()

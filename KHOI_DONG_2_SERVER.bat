@@ -1,8 +1,7 @@
 @echo off
-chcp 65001 >nul
-title YU-GI-OH ONLINE - HE THONG 2 SERVER DOC LAP [Game: 8080/9192 - Shop: 8082]
-color 0A
-cls
+cd /d "%~dp0"
+call KHOI_DONG_3_SERVER.bat
+exit /b
 
 cd /d "%~dp0"
 

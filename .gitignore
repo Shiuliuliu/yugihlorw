@@ -1,4 +1,4 @@
-﻿# Binaries & Executables
+# Binaries & Executables
 *.exe
 *.dll
 *.so
@@ -67,3 +67,4 @@ test
 .idea/
 .DS_Store
 Thumbs.db
+scratch/

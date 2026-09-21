@@ -6620,7 +6620,7 @@ return {
   ["_joinResult"]={[1]=0,},
   ["_keyword"]=0,["_link"]={[1]=1,[2]=2,[3]=3,[4]=7,},
   ["_linkAllCandidates"]="CNT(N==1)>0",["_linkCandidate"]="0.0",["_linkCount"]="#>=1",["_linkSelectedCandidates"]="CNT(N==1)>0",["_maxCount"]=1,["_nameSid"]=36363,["_nature"]=1,["_option"]=8194,["_originId"]=0,["_packageId"]={[1]=0,},
-  ["_picId"]=0,["_py"]="jjlmds",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14493,[2]=13384,[3]=3191,[4]=14494,[5]=14495,},
+  ["_picId"]=0,["_py"]="jjlmds",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14493,[2]=13384,[3]=3191,[4]=14494,[5]=14495,[6]=9504,[7]=9505,},
   ["_skin"]={[1]=0,},
   ["_star"]=0,["_syncComponent"]={[1]={[1]=0,},},},
   [40714]={["_atk"]={[1]=3500,},

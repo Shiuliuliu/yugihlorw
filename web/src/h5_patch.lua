@@ -364,11 +364,11 @@ local function syncPlayerDecksToWeb()
 			end
 			local cStr = jsonMod.encode(cards)
 			local eStr = jsonMod.encode(extra)
-			api:saveDeck(accId, slot, "Bộ Bài " .. tostring(slot), cStr, eStr)
+			local deckName = (P and P._troopRemarks and P._troopRemarks[slot] and P._troopRemarks[slot] ~= "") and P._troopRemarks[slot] or ("Bộ Bài " .. tostring(slot))
+			api:saveDeck(accId, slot, deckName, cStr, eStr)
 		end
 	end
 end
-
 
 -- Ensure player has all PVE bonus and world structures initialized
 local function ensurePlayerPveData()
@@ -426,6 +426,54 @@ function patchClientData()
 	end
 	_G.pollChatHistory = ClientData.pollChatHistory
 	ClientData._isWorking = true
+
+	-- DECK REMARK / RENAME SUPPORT (Task 2)
+	ClientData.sendTroopRemark = function(slot, name)
+		slot = tonumber(slot) or 1
+		name = tostring(name or "")
+		if P then
+			P._troopRemarks = P._troopRemarks or {}
+			P._troopRemarks[slot] = name
+		end
+		lc.UserDefault:setStringForKey("troop_remark_" .. tostring(slot), name)
+		lc.UserDefault:flush()
+
+		local accId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			local jsonMod = require("json")
+			local payload = jsonMod.encode({ account_id = accId, deck_slot = slot, deck_name = name })
+			api:post("save_deck_name", payload, function(resp) end)
+		end
+
+		local cb = ClientView.getActiveIndicator():hide()
+		if cb and type(cb) == "function" then
+			cb()
+		end
+
+		local runningScene = lc._runningScene
+		if runningScene and runningScene.updateTroopTitle then
+			runningScene:updateTroopTitle()
+		end
+
+		ToastManager.push("Đã đổi tên bộ bài thành công!")
+	end
+
+	local _origGetTroopName = ClientData.getTroopName
+	ClientData.getTroopName = function(slot, withNumber)
+		slot = tonumber(slot) or 1
+		local remark = P and P._troopRemarks and P._troopRemarks[slot]
+		if withNumber then
+			local rName = (remark and remark ~= "") and remark or Str(STR.REMARK_NONE)
+			return string.format("%s %d\n|%s|", Str(STR.TROOP), slot, rName)
+		else
+			if remark and remark ~= "" then
+				return remark
+			else
+				return string.format("%s %d", Str(STR.TROOP), slot)
+			end
+		end
+	end
 
 	-- Arena / Clash / Ladder sync for Web H5
 	ClientData.sendClashSync = function()
@@ -851,10 +899,10 @@ function patchClientData()
 					pData._privilege = pData._privilege or 0
 					pData._monthCardType = pData._monthCardType or 0
 					pData._isNpc = false
-					pData._isNewRound = false
-					pData._roundTimeInit = 30
-					pData._roundTimeMax = 45
-					pData._roundTimeDelta = 0
+					pData._isNewRound = (P and P._isNewRound) or false
+					pData._roundTimeInit = 90
+					pData._roundTimeMax = 120
+					pData._roundTimeDelta = (pData._isNewRound and 5) or 0
 					pData._fortressHp = (pData._fortressHp and pData._fortressHp > 0) and pData._fortressHp or 8000
 					pData._bossId = 0
 					pData._bossLevel = 1
@@ -876,10 +924,10 @@ function patchClientData()
 					oData._privilege = oData._privilege or 0
 					oData._monthCardType = oData._monthCardType or 0
 					oData._isNpc = false
-					oData._isNewRound = false
-					oData._roundTimeInit = 30
-					oData._roundTimeMax = 45
-					oData._roundTimeDelta = 0
+					oData._isNewRound = (P and P._isNewRound) or false
+					oData._roundTimeInit = 90
+					oData._roundTimeMax = 120
+					oData._roundTimeDelta = (oData._isNewRound and 5) or 0
 					oData._fortressHp = (oData._fortressHp and oData._fortressHp > 0) and oData._fortressHp or 8000
 					oData._bossId = 0
 					oData._bossLevel = 1
@@ -894,11 +942,38 @@ function patchClientData()
 
 					local repRes = (rd.result == 1 and Data.BattleResult.win) or (rd.result == 2 and Data.BattleResult.lose) or Data.BattleResult.draw
 
+					local isPlayerAttacker = true
+					local pCard = nil
+					for i = 1, #pData._usedCards do
+						local v = pData._usedCards[i]
+						if v and v > 10000 then
+							local base = v % 10000
+							if base >= 1000 and base < 3000 then
+								pCard = base
+								break
+							end
+						end
+					end
+					if pCard then
+						isPlayerAttacker = (pCard < 2000)
+					else
+						for i = 1, #oData._usedCards do
+							local v = oData._usedCards[i]
+							if v and v > 10000 then
+								local base = v % 10000
+								if base >= 1000 and base < 3000 then
+									isPlayerAttacker = (base >= 2000)
+									break
+								end
+							end
+						end
+					end
+
 					local repLog = ClientData._replayingLog or {
 						_id = replayId,
 						_replayId = replayId,
 						_resultType = repRes,
-						_isAttack = true,
+						_isAttack = isPlayerAttacker,
 						_trophy = rd.trophy_change or 25,
 						_oppoTrophy = 800,
 						_player = require("User").create({ id = (P and P._id) or 1, name = pData._name or "Duelist", level = pData._level or 50, avatar = pData._avatar or 101, trophy = pData._trophy or 800 }),
@@ -920,7 +995,7 @@ function patchClientData()
 						_ruleType = 0,
 						_timestamp = curTs,
 						_isWatcher = false,
-						_isAttacker = true,
+						_isAttacker = isPlayerAttacker,
 						_isOppoOnline = false,
 						_randomSeed = rd.seed or 12345,
 						_player = pData,
@@ -990,6 +1065,537 @@ function patchClientData()
 	ClientData.sendClashExQuit = function() return true end
 	ClientData.sendBuyTicket = function() return true end
 
+	-- =========================================================================
+	-- SURVIVAL & DRAFT (Sinh Tử Chiến / Đấu Trường / Quyết Đấu Đỉnh Cao) OFFLINE H5
+	-- =========================================================================
+	local CHAR_CARDS_MAP = {
+		[2] = { 10001, 10013, 10029, 10212, 10335, 10342, 10343, 10361, 10498, 10502, 10646, 10651, 10703, 10705, 10706, 10720, 10729, 10730, 10731, 10814, 10930, 10968, 10986, 10987, 10988, 10989, 10990, 10991, 10992, 10993, 10994, 10995, 10996, 11040, 11041, 11042, 11048, 11049, 11050, 11051, 11075, 11076, 11079, 11080, 11081, 11091, 11092, 11120, 11289, 11329, 11363, 11402, 11567, 11568, 11613, 11618, 11898, 11899, 11947, 11948, 11969, 12140, 12151, 12177, 12224, 12275, 12291, 12299, 20052, 20275, 20303, 20360, 20412, 20525, 20553, 20959, 20980, 21090, 21093, 21097, 21127, 21132, 30120, 30158, 30357, 30379, 30575, 30578, 40001, 40013, 40033, 40037, 40090, 40091, 40092, 40093, 40102, 40103, 40115, 40133, 40138, 40139, 40148, 40153, 40203, 40250, 40256, 40301, 40354, 40355, 40454, 40478, 40480, 40504, 40531, 40648, 40680, 40686, 40708, 40719, 40722, 20470, 20362, 20746, 20621, 20651, 20260, 20007, 20256, 20015, 20550, 20484, 20021, 20056, 20059, 20063, 20099, 20162, 20227, 20361, 20715, 10115, 10117, 10606, 10699, 40158 },
+		[3] = { 10004, 10006, 10048, 10242, 10266, 10477, 10624, 10645, 10702, 10849, 10850, 10867, 10897, 11146, 11147, 11148, 11149, 11150, 11151, 11152, 11153, 11154, 11155, 11156, 11157, 11158, 11159, 11225, 11252, 11297, 11299, 11300, 11301, 11302, 11303, 11309, 11336, 11379, 11510, 11512, 11577, 11594, 11609, 11610, 11615, 11619, 11622, 11632, 11633, 11730, 11797, 11798, 11804, 11875, 11918, 12043, 12051, 12052, 12053, 12093, 12127, 12130, 12181, 12204, 12251, 12265, 12266, 12273, 12282, 12283, 12307, 12310, 20001, 20002, 20003, 20006, 20009, 20010, 20012, 20013, 20014, 20027, 20043, 20160, 20432, 20433, 20456, 20493, 20518, 20519, 20520, 20529, 20543, 20544, 20646, 20664, 20750, 20751, 20760, 20764, 20765, 20815, 20900, 20911, 20913, 20951, 20960, 21045, 21098, 21126, 30022, 30024, 30031, 30161, 30247, 30248, 30383, 30388, 30389, 30479, 30554, 40140, 40141, 40142, 40143, 40150, 40157, 40173, 40199, 40200, 40201, 40202, 40441, 40442, 40494, 40495, 40496, 40617, 40664, 40709, 40712, 20310, 20311, 20316, 20514, 20516, 20517, 20521, 20523, 20566, 20852, 20858, 21073, 21119, 30482, 11921, 11296 },
+		[4] = { 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 10284, 10285, 10783, 10784, 10785, 10786, 11121, 11122, 11123, 11124, 11125, 11126, 11127, 11128, 11129, 11130, 11224, 11337, 11694, 12088, 12089, 12192, 20053, 20054, 20117, 20301, 20333, 20425, 20426, 20641, 21051, 21094, 30064, 30065, 30066, 30171, 30238, 30239, 30240, 40047, 40052, 40128, 40129, 40130, 40131, 40476, 40613, 40659, 40662 },
+		[5] = { 10086, 10118, 10405, 10620, 10621, 10622, 10787, 10815, 10848, 11013, 11020, 11093, 11221, 11318, 11319, 11320, 11321, 11322, 11323, 11324, 11325, 11326, 11327, 11328, 11365, 11368, 11497, 11498, 11499, 12037, 12039, 12040, 12091, 12092, 12167, 12168, 12312, 20189, 20190, 20197, 20198, 20292, 20380, 20534, 20535, 20536, 20538, 20549, 20551, 20552, 20565, 20840, 21018, 21020, 30036, 30124, 30132, 30138, 30423, 30424, 30425, 30442, 40160, 40194, 40210, 40211, 40212, 40213, 40288, 40431, 40498, 40585, 40616, 40675, 40718 },
+		[6] = { 10077, 10274, 10277, 10279, 10281, 20114, 30070, 10286, 20116, 10056, 10084, 40009, 30062, 10272, 10280, 10282, 10284, 10285, 20115, 10075, 20033, 20102, 10275, 10276, 10083, 10055, 10079, 10080, 10183, 10184, 10186, 10187, 10223, 30045, 10205, 10020, 10027, 10040, 10101, 10136, 10137, 10142, 10156, 10164, 10167, 10169, 10173, 10174, 10176, 10179, 10188, 10190, 10192, 10193, 20113, 20016, 20060, 20063, 20078 },
+		[7] = { 10868, 10869, 10870, 10871, 10879, 10920, 10925, 10926, 11554, 20317, 30177, 40332, 40333 },
+		[8] = { 10109, 10325, 10507, 10508, 10514, 10515, 10669, 10748, 10781, 10782, 10922, 11160, 11286, 11393, 11394, 11395, 11396, 11397, 11398, 11399, 11400, 11401, 11493, 11532, 11533, 11535, 11955, 11956, 11957, 11973, 11974, 11975, 11976, 11977, 11978, 11979, 11996, 11997, 12143, 12144, 12169, 12170, 12189, 12200, 12201, 12202, 12215, 20093, 20153, 20226, 20490, 20584, 20585, 20586, 20989, 20990, 20991, 21078, 21101, 30154, 30322, 30323, 30324, 30515, 30516, 30517, 30518, 30571, 30583, 40144, 40246, 40275, 40282, 40316, 40532, 40533, 40543, 40544, 40545, 40546, 40547, 40548, 40549, 40550, 40627, 40668 },
+		[9] = { 10482, 10483, 10484, 10485, 10486, 10487, 10488, 10489, 10490, 10576, 11008, 11356, 11357, 11358, 11359, 11360, 11361, 11362, 11371, 11719, 11720, 11721, 11722, 11723, 11724, 11725, 11726, 11727, 11728, 12047, 12048, 12094, 12095, 12096, 12097, 12098, 12099, 12100, 12101, 12102, 12114, 12199, 12303, 20556, 20557, 20818, 20819, 20820, 21024, 21053, 21064, 21130, 30121, 30428, 30429, 30430, 30431, 30432, 30555, 30556, 30557, 30558, 30559, 30561, 30565, 40094, 40163, 40232, 40402, 40403, 40404, 40405, 40406, 40553, 40588, 40589, 40618, 40619, 40620, 40621, 40622, 40623, 40625, 40626, 40720 },
+		[10] = { 12158, 12159, 12160, 12161, 12162, 12163, 12164, 12165, 12171, 12172, 21085, 21086, 21087, 21088, 30576, 40651, 40652, 40653, 40654, 40655, 40656, 40657, 40699 },
+		[11] = { 11473, 11474, 11475, 11476, 11477, 11478, 11479, 11480, 11485, 11621, 11679, 20632, 20633, 20634, 30347, 30348, 30349, 30570, 40181, 40184, 40205, 40227, 40241, 40242, 40262, 40270, 40284, 40285, 40286, 40287, 40291, 40296, 40324, 40337, 40338, 40340, 40367, 40382, 40389, 40391, 40397, 40401, 40411, 40412, 40450, 40456, 40469, 40497, 40502, 40522, 40567 },
+		[12] = { 10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697, 40170, 40646, 40558, 40607, 20511, 20486 },
+		[13] = { 40071, 40068, 40070, 30206, 40072, 10948, 40069, 10950, 10957, 10947, 10954, 10952, 10951, 10949, 40073, 20062, 10955, 30204, 30207, 10953, 10587, 20102, 20077, 20090, 30061, 20092, 10223, 10041, 10031, 30045, 10048, 10051, 10097, 30013, 20022, 10302, 10303, 10018, 10101, 10136, 10137, 10142, 10156, 10164, 10167, 10169, 10173, 10174, 10176, 10179, 10188, 20157, 20158, 20174, 20125, 20016, 20060, 20063, 20078 },
+		[14] = { 11857, 11858, 11859, 11860, 11861, 11862, 11863, 11864, 11865, 11866, 11867, 11868, 11869, 11890, 11891, 11936, 11937, 11938, 11939, 11940, 11941, 11942, 11954, 11987, 12254, 20952, 20953, 20954, 20955, 20956, 20957, 20997, 30505, 30506, 30507, 30521, 40484, 40485, 40486, 40487, 40488, 40489, 40490, 40491, 40526, 40527, 40528, 40529, 40703 },
+		[15] = { 10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697, 40170, 40646, 40558, 40607, 20511, 20486 },
+		[16] = { 11085, 11086, 11087, 11088, 11089, 11090, 11254, 11255, 11256, 11257, 11258, 11259, 11260, 11261, 11262, 11432, 11433, 11434, 11435, 11436, 11437, 11440, 11707, 11915, 12041, 12137, 12253, 20406, 20407, 20441, 20494, 20495, 20496, 20924, 21123, 30203, 30226, 30227, 30228, 30229, 30250, 30278, 30279, 30422, 30494, 30590, 40088, 40110, 40111, 40112, 40113, 40114, 40174, 40177, 40178, 40179, 40180, 40399, 40457, 40515, 40704, 40705, 40706 },
+		[17] = { 11834, 11835, 11836, 11837, 11838, 11839, 11840, 11841, 12075, 12076, 12193, 12289, 20880, 20881, 20882, 30457, 30458, 30459, 30460, 30461, 30547, 40463, 40464, 40465, 40466, 40663 },
+		[18] = { 10246, 10265, 10289, 10420, 10560, 10704, 10766, 11030, 11031, 11032, 11033, 11044, 11045, 11046, 11054, 11059, 11060, 11061, 11062, 11063, 11064, 11065, 11145, 11293, 11294, 11313, 11513, 11552, 11553, 11848, 11883, 11900, 12025, 12026, 12027, 12074, 12264, 12300, 20222, 20240, 20392, 20393, 20395, 20396, 20917, 21084, 30119, 30164, 30191, 30220, 30221, 30222, 30223, 30258, 30366, 30367, 30368, 30369, 30426, 30427, 30467, 30469, 30489, 40104, 40105, 40470, 40471, 40505 },
+		[19] = { 11766, 11767, 11768, 11769, 11770, 11771, 11772, 11773, 11774, 11775, 11776, 11777, 12109, 20832, 20833, 20834, 20835, 20836, 20863, 30438, 30439, 40427, 40428, 40429, 40430 },
+	}
+
+	local function generateDraftPool(charId)
+		local charCards = (charId and CHAR_CARDS_MAP[tonumber(charId)]) or (charId and CHAR_CARDS_MAP[tostring(charId)])
+		local charMonsters = {}
+		local charSpells = {}
+
+		if charCards and #charCards > 0 then
+			for _, cid in ipairs(charCards) do
+				cid = tonumber(cid)
+				if cid then
+					if cid < 20000 or cid >= 40000 then
+						table.insert(charMonsters, cid)
+					else
+						table.insert(charSpells, cid)
+					end
+				end
+			end
+		end
+
+		local fallbackMonsters = { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010 }
+		local fallbackSpells = { 20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003 }
+
+		local monsterPool = {}
+		if #charMonsters > 0 then
+			while #monsterPool < 60 do
+				for _, cid in ipairs(charMonsters) do
+					table.insert(monsterPool, cid)
+					if #monsterPool >= 60 then break end
+				end
+			end
+		else
+			monsterPool = fallbackMonsters
+		end
+
+		local spellPool = {}
+		if #charSpells > 0 then
+			while #spellPool < 40 do
+				for _, cid in ipairs(charSpells) do
+					table.insert(spellPool, cid)
+					if #spellPool >= 40 then break end
+				end
+			end
+		else
+			spellPool = fallbackSpells
+		end
+
+		-- Shuffle pools
+		for i = #monsterPool, 2, -1 do
+			local j = math.random(1, i)
+			monsterPool[i], monsterPool[j] = monsterPool[j], monsterPool[i]
+		end
+		for i = #spellPool, 2, -1 do
+			local j = math.random(1, i)
+			spellPool[i], spellPool[j] = spellPool[j], spellPool[i]
+		end
+
+		local pool = {}
+		local mIdx, sIdx = 1, 1
+		for r = 1, 20 do
+			local roundCards = {
+				monsterPool[mIdx] or 10001,
+				monsterPool[mIdx + 1] or 10002,
+				monsterPool[mIdx + 2] or 10003,
+				spellPool[sIdx] or 20001,
+				spellPool[sIdx + 1] or 20002,
+			}
+			mIdx = (mIdx + 3 > #monsterPool) and 1 or (mIdx + 3)
+			sIdx = (sIdx + 2 > #spellPool) and 1 or (sIdx + 2)
+			for i = 5, 2, -1 do
+				local j = math.random(1, i)
+				roundCards[i], roundCards[j] = roundCards[j], roundCards[i]
+			end
+			for _, c in ipairs(roundCards) do
+				table.insert(pool, c)
+			end
+		end
+		return pool
+	end
+
+	local function pickDraftCharacters()
+		local allChars = { 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
+		local validChars = {}
+		for _, id in ipairs(allChars) do
+			if Data and Data._characterInfo and Data._characterInfo[id] then
+				table.insert(validChars, id)
+				if P and P._characters and not P._characters[id] then
+					P._characters[id] = {
+						_level = 1,
+						_exp = 0,
+						_id = id,
+						_avatar = id * 100 + 1,
+						_skinId = nil,
+						_breakOut = false
+					}
+				end
+			end
+		end
+		if #validChars < 3 then
+			validChars = { 2, 3, 4 }
+		end
+		for i = #validChars, 2, -1 do
+			local j = math.random(1, i)
+			validChars[i], validChars[j] = validChars[j], validChars[i]
+		end
+		return { validChars[1], validChars[2], validChars[3] }
+	end
+
+
+
+	local function makeDraftSglMsg(msgType, extField, extVal)
+		local msg = {
+			type = msgType,
+			status = SglMsg_pb and SglMsg_pb.PB_STATUS_OK or 0,
+			Extensions = {},
+			HasField = function(self, f) return rawget(self, f) ~= nil end,
+			HasExtension = function(self, ext) return self.Extensions and self.Extensions[ext] ~= nil end
+		}
+		if extField ~= nil then
+			msg.Extensions[extField] = extVal
+		end
+		return msg
+	end
+
+	local function deliverDraftMsg(msg, cb)
+		pcall(function()
+			if ClientView and ClientView.getActiveIndicator then
+				local ind = ClientView.getActiveIndicator()
+				if ind and ind.hide then ind:hide() end
+			end
+		end)
+		if lc and lc.Scheduler and lc.Scheduler.scheduleScriptFunc then
+			local entry
+			entry = lc.Scheduler:scheduleScriptFunc(function()
+				if entry and lc.Scheduler.unscheduleScriptEntry then
+					pcall(function() lc.Scheduler:unscheduleScriptEntry(entry) end)
+				end
+				pcall(function()
+					if ClientView and ClientView.getActiveIndicator then
+						local ind = ClientView.getActiveIndicator()
+						if ind and ind.hide then ind:hide() end
+					end
+				end)
+				if ClientData and ClientData.onMsg then
+					ClientData.onMsg(msg)
+				end
+				if cb then pcall(cb) end
+			end, 0.05, false)
+		else
+			if ClientData and ClientData.onMsg then
+				ClientData.onMsg(msg)
+			end
+			if cb then pcall(cb) end
+		end
+	end
+
+	-- Safe guard Data.getCharacterBoneName
+	if Data and Data.getCharacterBoneName then
+		local _origGetBone = Data.getCharacterBoneName
+		Data.getCharacterBoneName = function(charId)
+			if P and P._characters and not P._characters[charId] then
+				P._characters[charId] = {
+					_level = 1,
+					_exp = 0,
+					_id = charId,
+					_avatar = charId * 100 + 1,
+					_skinId = nil,
+					_breakOut = false
+				}
+			end
+			return _origGetBone(charId)
+		end
+	end
+
+	-- 1. SURVIVAL EX (Sinh Tử Chiến)
+	ClientData.sendSurvivalExBuyTicket = function(ticketType)
+		local chars = pickDraftCharacters()
+		if P and P._playerFindSurvivalEx then
+			P._playerFindSurvivalEx._hasTicket = true
+			P._playerFindSurvivalEx._step = 0
+			P._playerFindSurvivalEx._characterId = 0
+			P._playerFindSurvivalEx._characters = chars
+			P._playerFindSurvivalEx._troopCards = {}
+			P._playerFindSurvivalEx._selected = {}
+			P._playerFindSurvivalEx._win = 0
+			P._playerFindSurvivalEx._lose = 0
+			pcall(function()
+				P._playerFindSurvivalEx:setTrophy(Data._globalInfo and Data._globalInfo._SurvivalExInitTrophy or 600)
+			end)
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_BUY_TICKET_SURVIVAL_EX, World_pb.SglWorldMsg.world_buy_ticket_resp, chars)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendSurvivalReselectCharacter = function()
+		if P and P._playerFindSurvivalEx then
+			P._playerFindSurvivalEx._rollTimes = (P._playerFindSurvivalEx._rollTimes or 0) + 1
+		end
+		local chars = pickDraftCharacters()
+		if P and P._playerFindSurvivalEx then
+			P._playerFindSurvivalEx._characters = chars
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_ROLL_CHAR_SURVIVAL_EX, World_pb.SglWorldMsg.world_roll_char_resp, chars)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendSurvivalExSelectCharacter = function(charId)
+		local pool = generateDraftPool(charId)
+		if P and P._playerFindSurvivalEx then
+			P._playerFindSurvivalEx._characterId = charId or (P._playerFindSurvivalEx._characters and P._playerFindSurvivalEx._characters[1]) or 2
+			P._playerFindSurvivalEx._step = 1
+			P._playerFindSurvivalEx._cardsPool = pool
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CHAR_SURVIVAL_EX, World_pb.SglWorldMsg.world_select_char_resp, pool)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendSurvivalExSelectCard = function(cardIdx)
+		local curStep = (P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._step) or 1
+		local nextStep = math.min(41, curStep + 1)
+		if P and P._playerFindSurvivalEx then
+			P._playerFindSurvivalEx._step = nextStep
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CARD_SURVIVAL_EX, World_pb.SglWorldMsg.world_select_card_resp, nextStep)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendSurvivalExQuit = function()
+		local winCount = (P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._win) or 0
+		local rewards = {
+			rank = (winCount >= 10) and 1 or (winCount >= 6 and 2 or 3),
+			resource = {
+				{ info_id = Data.ResType.gold, num = 5000 + winCount * 1000 }
+			}
+		}
+		if P and P._playerFindSurvivalEx then
+			P._playerFindSurvivalEx:clear()
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SURVIVAL_EX_GAME_OVER, World_pb.SglWorldMsg.world_survival_ex_end_resp, rewards)
+		deliverDraftMsg(msg)
+	end
+
+	-- 2. REGULAR SURVIVAL
+	ClientData.sendSurvivalBuyTicket = function(ticketType)
+		local chars = pickDraftCharacters()
+		if P and P._playerFindSurvival then
+			P._playerFindSurvival._hasTicket = true
+			P._playerFindSurvival._step = 0
+			P._playerFindSurvival._characterId = 0
+			P._playerFindSurvival._characters = chars
+			P._playerFindSurvival._troopCards = {}
+			P._playerFindSurvival._selected = {}
+			P._playerFindSurvival._win = 0
+			P._playerFindSurvival._lose = 0
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_BUY_TICKET_SURVIVAL, World_pb.SglWorldMsg.world_buy_ticket_resp, chars)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendSurvivalSelectCharacter = function(charId)
+		local pool = generateDraftPool(charId)
+		if P and P._playerFindSurvival then
+			P._playerFindSurvival._characterId = charId or (P._playerFindSurvival._characters and P._playerFindSurvival._characters[1]) or 2
+			P._playerFindSurvival._step = 1
+			P._playerFindSurvival._cardsPool = pool
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CHAR_SURVIVAL, World_pb.SglWorldMsg.world_select_char_resp, pool)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendSurvivalSelectCard = function(cardIdx)
+		local curStep = (P and P._playerFindSurvival and P._playerFindSurvival._step) or 1
+		local nextStep = math.min(41, curStep + 1)
+		if P and P._playerFindSurvival then
+			P._playerFindSurvival._step = nextStep
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CARD_SURVIVAL, World_pb.SglWorldMsg.world_select_card_resp, nextStep)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendSurvivalQuit = function()
+		local winCount = (P and P._playerFindSurvival and P._playerFindSurvival._win) or 0
+		local rewards = {
+			rank = (winCount >= 10) and 1 or (winCount >= 6 and 2 or 3),
+			resource = {
+				{ info_id = Data.ResType.gold, num = 3000 + winCount * 800 }
+			}
+		}
+		if P and P._playerFindSurvival then
+			P._playerFindSurvival:clear()
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SURVIVAL_GAME_OVER, World_pb.SglWorldMsg.world_survival_end_resp, rewards)
+		deliverDraftMsg(msg)
+	end
+
+	-- 3. LADDER DRAFT (Đấu Trường)
+	ClientData.sendLadderBuyTicket = function(ticketType)
+		local chars = pickDraftCharacters()
+		if P and P._playerFindLadder then
+			P._playerFindLadder._hasTicket = true
+			P._playerFindLadder._step = 0
+			P._playerFindLadder._characterId = 0
+			P._playerFindLadder._characters = chars
+			P._playerFindLadder._troopCards = {}
+			P._playerFindLadder._selected = {}
+			P._playerFindLadder._winCount = 0
+			P._playerFindLadder._loseCount = 0
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_BUY_TICKET, World_pb.SglWorldMsg.world_buy_ticket_resp, chars)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendLadderReselectCharacter = function()
+		local chars = pickDraftCharacters()
+		if P and P._playerFindLadder then
+			P._playerFindLadder._characters = chars
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_ROLL_CHAR, World_pb.SglWorldMsg.world_roll_char_resp, chars)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendLadderSelectCharacter = function(charId)
+		local pool = generateDraftPool(charId)
+		if P and P._playerFindLadder then
+			P._playerFindLadder._characterId = charId or (P._playerFindLadder._characters and P._playerFindLadder._characters[1]) or 2
+			P._playerFindLadder._step = 1
+			P._playerFindLadder._cardsPool = pool
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CHAR, World_pb.SglWorldMsg.world_select_char_resp, pool)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendLadderSelectCard = function(cardIdx)
+		local curStep = (P and P._playerFindLadder and P._playerFindLadder._step) or 1
+		local nextStep = math.min(41, curStep + 1)
+		if P and P._playerFindLadder then
+			P._playerFindLadder._step = nextStep
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CARD, World_pb.SglWorldMsg.world_select_card_resp, nextStep)
+		deliverDraftMsg(msg)
+	end
+
+	ClientData.sendLadderQuit = function()
+		local winCount = (P and P._playerFindLadder and P._playerFindLadder._winCount) or 0
+		local chestId = (Data and Data.PropsId and Data.PropsId.ladder_chest or 7000) + math.min(12, winCount) + 1
+		if P and P._playerFindLadder then
+			P._playerFindLadder:clear()
+		end
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_QUIT, World_pb.SglWorldMsg.world_quit_resp, {
+			{ num = 1, info_id = chestId }
+		})
+		deliverDraftMsg(msg)
+	end
+
+
+
+	-- =========================================================================
+	-- MAILBOX SYSTEM (Hòm Thư Phần Thưởng)
+	-- =========================================================================
+	local function loadPlayerMailsFromServer(cb)
+		local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if not (api and api.post) then return end
+		api:post("get_mails", { account_id = myId }, function(rawRes)
+			local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+			if res and res.code == 200 and res.mails then
+				if P and P._playerBonus then
+					P._playerBonus._serverBonuses = {}
+					for _, mail in ipairs(res.mails) do
+						local extraBonus = {}
+						local r = mail.rewards or {}
+						if r.gold and tonumber(r.gold) > 0 then
+							table.insert(extraBonus, { _infoId = 1, _count = tonumber(r.gold), _level = 1, _isFragment = false })
+						end
+						if r.gem and tonumber(r.gem) > 0 then
+							table.insert(extraBonus, { _infoId = 3, _count = tonumber(r.gem), _level = 1, _isFragment = false })
+						end
+						if r.gold_cup and tonumber(r.gold_cup) > 0 then
+							table.insert(extraBonus, { _infoId = 7204, _count = tonumber(r.gold_cup), _level = 1, _isFragment = false })
+						end
+						if r.silver_cup and tonumber(r.silver_cup) > 0 then
+							table.insert(extraBonus, { _infoId = 7205, _count = tonumber(r.silver_cup), _level = 1, _isFragment = false })
+						end
+						if r.bronze_cup and tonumber(r.bronze_cup) > 0 then
+							table.insert(extraBonus, { _infoId = 7206, _count = tonumber(r.bronze_cup), _level = 1, _isFragment = false })
+						end
+						if r.leya_ticket and tonumber(r.leya_ticket) > 0 then
+							table.insert(extraBonus, { _infoId = 7143, _count = tonumber(r.leya_ticket), _level = 1, _isFragment = false })
+						end
+						if r.card_id and tonumber(r.card_id) > 0 then
+							local cid = tonumber(r.card_id)
+							local cnt = tonumber(r.card_count or r.count or 1)
+							table.insert(extraBonus, { _infoId = cid, _count = cnt, _level = 1, _isFragment = false })
+						end
+						if r.cards and type(r.cards) == "table" then
+							for k, v in pairs(r.cards) do
+								local cid = tonumber(type(v) == "table" and (v.id or v.card_id) or k)
+								local cnt = tonumber(type(v) == "table" and (v.count or v.num) or v)
+								if cid and cid > 0 and cnt and cnt > 0 then
+									table.insert(extraBonus, { _infoId = cid, _count = cnt, _level = 1, _isFragment = false })
+								end
+							end
+						end
+						for k, v in pairs(r) do
+							if type(k) == "string" and k:sub(1, 5) == "card_" and k ~= "card_count" then
+								local cid = tonumber(k:sub(6))
+								local cnt = tonumber(v)
+								if cid and cid > 0 and cnt and cnt > 0 then
+									table.insert(extraBonus, { _infoId = cid, _count = cnt, _level = 1, _isFragment = false })
+								end
+							end
+						end
+
+						local bItem = {
+							_id = mail.id,
+							_timestamp = mail.timestamp or os.time(),
+							_isClaimed = (mail.claimed == 1),
+							_value = 0,
+							_title = mail.title,
+							_desc = mail.content,
+							_extraBonus = extraBonus,
+							canClaim = function(self) return not self._isClaimed end,
+							sendBonusDirty = function(self)
+								local ev = cc.EventCustom:new(Data.Event.bonus_dirty)
+								ev._data = self
+								lc.Dispatcher:dispatchEvent(ev)
+							end
+						}
+						table.insert(P._playerBonus._serverBonuses, bItem)
+					end
+					table.sort(P._playerBonus._serverBonuses, function(a, b)
+						if a._isClaimed ~= b._isClaimed then
+							return not a._isClaimed
+						end
+						return (a._timestamp or 0) > (b._timestamp or 0)
+					end)
+
+					local ev = cc.EventCustom:new(Data.Event.server_bonus_list_dirty)
+					lc.Dispatcher:dispatchEvent(ev)
+
+					if ClientView and ClientView.getMenuUI then
+						local menu = ClientView.getMenuUI()
+						if menu and menu.updateMailFlag then
+							menu:updateMailFlag()
+						end
+					end
+				end
+			end
+			if cb then pcall(cb) end
+		end)
+	end
+
+	_G.loadPlayerMailsFromServer = loadPlayerMailsFromServer
+
+	ClientData.sendClaimServerBonus = function(bonusId)
+		local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("claim_mail_reward", { account_id = myId, mail_id = bonusId }, function(rawRes)
+				local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+				if res and res.code == 200 then
+					if res.account then
+						if P then
+							if res.account.gold ~= nil then P._gold = res.account.gold end
+							if res.account.gem ~= nil then P._ingot = res.account.gem end
+							if res.account.gold_cup ~= nil then P._goldCup = res.account.gold_cup end
+						end
+						if ClientData._account then
+							for k, v in pairs(res.account) do
+								ClientData._account[k] = v
+							end
+						end
+					end
+					ToastManager.push(res.msg or "Nhận thưởng thành công!")
+					if P and P._playerBonus and P._playerBonus._serverBonuses then
+						for _, b in ipairs(P._playerBonus._serverBonuses) do
+							if b._id == bonusId then
+								b._isClaimed = true
+								if b._extraBonus and P and P.addResourcesData then
+									pcall(function() P:addResourcesData(b._extraBonus) end)
+								end
+								b:sendBonusDirty()
+								break
+							end
+						end
+					end
+					local ev = cc.EventCustom:new(Data.Event.server_bonus_list_dirty)
+					lc.Dispatcher:dispatchEvent(ev)
+					if ClientView and ClientView.getMenuUI then
+						local menu = ClientView.getMenuUI()
+						if menu and menu.updateMailFlag then
+							menu:updateMailFlag()
+						end
+					end
+				else
+					ToastManager.push((res and res.msg) or "Không thể nhận thưởng!")
+				end
+			end)
+		end
+	end
+
+	pcall(function()
+		local orig_replaceCityScene = ClientData.replaceCityScene
+		ClientData.replaceCityScene = function(...)
+			pcall(function() loadPlayerMailsFromServer() end)
+			return orig_replaceCityScene(...)
+		end
+	end)
+
 	-- Arena Matchmaking
 	ClientData.sendWorldFindEx = function(troopIndex, battleType)
 		local matchType = Data.FindMatchType.clash
@@ -1006,11 +1612,16 @@ function patchClientData()
 			offlineKind = "clash"
 			bType = Battle_pb.PB_BATTLE_WORLD_LADDER
 			sType = Data.BattleType.PVP_clash_npc
-		elseif battleType == Battle_pb.PB_BATTLE_SURVIVAL or battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX then
+		elseif battleType == Battle_pb.PB_BATTLE_SURVIVAL then
 			matchType = Data.FindMatchType.survival
 			offlineKind = "survival"
 			bType = Battle_pb.PB_BATTLE_SURVIVAL
-			sType = Data.BattleType.PVP_clash_npc
+			sType = Data.BattleType.PVP_survival
+		elseif battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX then
+			matchType = Data.FindMatchType.survival_ex
+			offlineKind = "survival_ex"
+			bType = Battle_pb.PB_BATTLE_SURVIVAL_EX
+			sType = Data.BattleType.PVP_survival_ex
 		elseif battleType == Battle_pb.PB_BATTLE_WORLD_LEGEND then
 			matchType = Data.FindMatchType.clash_ex
 			offlineKind = "clash_ex"
@@ -1024,7 +1635,14 @@ function patchClientData()
 		ClientData._usedCardsToAdd = {}
 		ClientData._observeUsedCards = {}
 
-		local pTroop = (P and P._playerCard and P._playerCard._troops and P._playerCard._troops[troopIndex or P._curTroopIndex or 1]) or {}
+		local pTroop
+		if battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX and P and P._playerFindSurvivalEx then
+			pTroop = P._playerFindSurvivalEx:getTroopCards(nil, true)
+		elseif battleType == Battle_pb.PB_BATTLE_SURVIVAL and P and P._playerFindSurvival then
+			pTroop = P._playerFindSurvival:getTroopCards(nil, true)
+		else
+			pTroop = (P and P._playerCard and P._playerCard._troops and P._playerCard._troops[troopIndex or P._curTroopIndex or 1]) or {}
+		end
 		local playerCards = {}
 		local playerLevels = {}
 		local playerSkins = {}
@@ -1142,11 +1760,11 @@ function patchClientData()
 					_level = (P and P._level) or 50,
 					_monthCardType = 0,
 					_roundTimeInit = 90,
-					_roundTimeMax = 90,
-					_roundTimeDelta = 0,
+					_roundTimeMax = 120,
+					_roundTimeDelta = (P and P._isNewRound and 5) or 0,
 					_fortressHp = 8000,
 					_avatarFrameId = 0,
-					_isNewRound = true,
+					_isNewRound = (P and P._isNewRound) or false,
 					_idInRoom = 0,
 					_bossId = 0,
 					_privilege = 0,
@@ -1156,7 +1774,13 @@ function patchClientData()
 					_vip = (P and P._vip) or 0,
 					_id = (P and P._id) or 1,
 					_name = (P and P._name) or "Player",
-					_avatar = ((P and P._avatar) or 2) * 100 + 1,
+					_avatar = (function()
+						local myChar = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX and P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._characterId) or (battleType == Battle_pb.PB_BATTLE_SURVIVAL and P and P._playerFindSurvival and P._playerFindSurvival._characterId)
+						if myChar and myChar > 0 then
+							return myChar * 100 + 1
+						end
+						return ((P and P._avatar) or 2) * 100 + 1
+					end)(),
 					_crown = (P and P._crown) or (function()
 						if ClientData and ClientData._account then
 							local gc = tonumber(ClientData._account.gold_cup) or 0
@@ -1182,11 +1806,11 @@ function patchClientData()
 					_level = oppoLevel or 50,
 					_monthCardType = 0,
 					_roundTimeInit = 90,
-					_roundTimeMax = 90,
-					_roundTimeDelta = 0,
+					_roundTimeMax = 120,
+					_roundTimeDelta = (P and P._isNewRound and 5) or 0,
 					_fortressHp = 8000,
 					_avatarFrameId = 0,
-					_isNewRound = true,
+					_isNewRound = (P and P._isNewRound) or false,
 					_idInRoom = 0,
 					_bossId = 0,
 					_privilege = 0,
@@ -1211,16 +1835,32 @@ function patchClientData()
 			if isOnlinePvp then
 				local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
 				if pvpNet then
-					local myId = (P and P._id) or 1
-					pvpNet:connect(matchId, myId, function(intsJson)
+					local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
+					pvpNet:connect(matchId, myId, function(intsJson, addTime, maxTime, timeLeft)
 						local ok, ints = pcall(json.decode, intsJson)
 						if ok and type(ints) == "table" and #ints > 0 then
+							local card_val = tonumber(ints[1]) or 0
+							local isCardAction = (card_val ~= BattleData.UseCardId.round and card_val ~= BattleData.UseCardId.retreat and card_val ~= 0)
+							local bonusSec = tonumber(addTime) or (isCardAction and 5 or 0)
+							local maxSec = tonumber(maxTime) or 120
+							local exactTime = tonumber(timeLeft)
+
+							local scene = lc._runningScene or ClientView._scene
+							local bUi = scene and scene._battleUi
+
+							-- Đồng bộ cơ chế tối ưu thời gian: Màn hình đối thủ tăng time ngay lập tức khi nhận action từ server!
+							if isCardAction and bUi then
+								if exactTime and exactTime > 0 and type(bUi.syncPvpRoundSeconds) == "function" then
+									bUi:syncPvpRoundSeconds(exactTime)
+								elseif bonusSec > 0 and type(bUi.addPvpRoundSeconds) == "function" then
+									bUi:addPvpRoundSeconds(bonusSec, maxSec)
+								end
+							end
+
 							ClientData._usedCardsToAdd = ClientData._usedCardsToAdd or {}
 							for _, val in ipairs(ints) do
 								table.insert(ClientData._usedCardsToAdd, tonumber(val) or 0)
 							end
-							local scene = lc._runningScene or ClientView._scene
-							local bUi = scene and scene._battleUi
 							if bUi and type(bUi.oppoTryUseCard) == "function" then
 								bUi:oppoTryUseCard()
 							end
@@ -1229,7 +1869,8 @@ function patchClientData()
 						local scene = lc._runningScene or ClientView._scene
 						local bUi = scene and scene._battleUi
 						if bUi and not bUi._isBattleEndSended then
-							local waitTime = (not bUi._round or bUi._round < 1) and 3.0 or 0.5
+							ToastManager.push("Đối thủ mất kết nối, đang chờ 15s kết nối lại...")
+							local waitTime = (not bUi._round or bUi._round < 1) and 5.0 or 15.0
 							bUi:runAction(lc.sequence(waitTime, function()
 								local curScene = lc._runningScene or ClientView._scene
 								local curUi = curScene and curScene._battleUi
@@ -1275,14 +1916,108 @@ function patchClientData()
 		ClientData._isFindingMatch = true
 		ClientData._findMatchSeq = (ClientData._findMatchSeq or 0) + 1
 		local curSeq = ClientData._findMatchSeq
+		local myAvatar = (function()
+			local myChar = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX and P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._characterId) or (battleType == Battle_pb.PB_BATTLE_SURVIVAL and P and P._playerFindSurvival and P._playerFindSurvival._characterId)
+			if myChar and myChar > 0 then
+				return myChar * 100 + 1
+			end
+			return ((P and P._avatar) or 2) * 100 + 1
+		end)()
+		local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
 
 		local api = jsbridge and jsbridge.object("jdzcApi")
+		-- SURVIVAL EX & SURVIVAL (Sinh Tử Chiến - Dedicated Port 8085 Room)
+		if battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX or battleType == Battle_pb.PB_BATTLE_SURVIVAL then
+			local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
+			local myChar = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX and P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._characterId) or (battleType == Battle_pb.PB_BATTLE_SURVIVAL and P and P._playerFindSurvival and P._playerFindSurvival._characterId) or 2
+			local reqPayload = {
+				account_id = myId,
+				name = (P and P._name) or "Player",
+				level = (P and P._level) or 50,
+				avatar = (myChar > 0 and (myChar * 100 + 1)) or (((P and P._avatar) or 2) * 100 + 1),
+				cards = rawCardIds,
+				extra_cards = {},
+				character_id = myChar,
+				gold_cup = tonumber((ClientData._account and ClientData._account.gold_cup) or 0) or 0,
+				silver_cup = tonumber((ClientData._account and ClientData._account.silver_cup) or 0) or 0,
+				bronze_cup = tonumber((ClientData._account and ClientData._account.bronze_cup) or 0) or 0
+			}
+
+			local api = jsbridge and jsbridge.object("jdzcApi")
+			if api and api.post then
+				api:post("survival/join", reqPayload, function(rawRes)
+					if not ClientData._isFindingMatch or ClientData._findMatchSeq ~= curSeq then
+						return
+					end
+					local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+					if res and res.code == 200 then
+						local roomId = res.room_id
+						local curPanel = ClientView._findMatchPanel
+						if res.player_count then
+							if P and P._playerFindSurvivalEx then P._playerFindSurvivalEx._hallUserNum = res.player_count end
+							if P and P._playerFindSurvival then P._playerFindSurvival._hallUserNum = res.player_count end
+							if curPanel and curPanel._userCountLabel then
+								curPanel._userCountLabel:setString(tostring(res.player_count) .. " / 25")
+							end
+							pcall(function() lc.sendEvent(Data.Event.survival_ex_info_dirty) end)
+							pcall(function() lc.sendEvent(Data.Event.survival_info_dirty) end)
+						end
+
+						if res.status == "matched" and res.oppo then
+							local oppo = res.oppo
+							startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, nil)
+							return
+						end
+
+						local pollEntry
+						local isFinished = false
+						pollEntry = lc.Scheduler:scheduleScriptFunc(function()
+							if not ClientData._isFindingMatch or ClientData._findMatchSeq ~= curSeq or isFinished then
+								if pollEntry then lc.Scheduler:unscheduleScriptEntry(pollEntry) end
+								return
+							end
+							api:post("survival/poll", { account_id = myId, room_id = roomId }, function(rawPoll)
+								if not ClientData._isFindingMatch or ClientData._findMatchSeq ~= curSeq or isFinished then
+									if pollEntry then lc.Scheduler:unscheduleScriptEntry(pollEntry) end
+									return
+								end
+								local pRes = (type(rawPoll) == "string") and json.decode(rawPoll) or rawPoll
+								if pRes and pRes.code == 200 then
+									local pPanel = ClientView._findMatchPanel
+									if pRes.player_count then
+										if P and P._playerFindSurvivalEx then P._playerFindSurvivalEx._hallUserNum = pRes.player_count end
+										if P and P._playerFindSurvival then P._playerFindSurvival._hallUserNum = pRes.player_count end
+										if pPanel and pPanel._userCountLabel then
+											pPanel._userCountLabel:setString(tostring(pRes.player_count) .. " / 25")
+										end
+										pcall(function() lc.sendEvent(Data.Event.survival_ex_info_dirty) end)
+										pcall(function() lc.sendEvent(Data.Event.survival_info_dirty) end)
+									end
+									if pRes.status == "matched" and pRes.oppo then
+										isFinished = true
+										if pollEntry then lc.Scheduler:unscheduleScriptEntry(pollEntry) end
+										local oppo = pRes.oppo
+										startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, pRes.seed, pRes.is_real_player, pRes.match_id, pRes.is_attacker, pRes.oppo_online, nil)
+									end
+								end
+							end)
+						end, 1.0, false)
+						ClientData._survivalPollEntry = pollEntry
+						ClientData._currentSurvivalRoomId = roomId
+					end
+				end)
+			end
+			return
+		end
+
 		local reqPayload = {
-			account_id = (ClientData._account and ClientData._account.id) or (P and P._id) or 1,
+			account_id = myId,
 			name = (P and P._name) or "Player",
 			level = (P and P._level) or 50,
-			avatar = ((P and P._avatar) or 2) * 100 + 1,
-			cards = rawCardIds
+			avatar = myAvatar,
+			cards = rawCardIds,
+			mode = offlineKind,
+			battle_type = battleType
 		}
 
 		if api and api.post then
@@ -1294,6 +2029,11 @@ function patchClientData()
 				local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
 				if res and res.status == "cancelled" then
 					print("[PVP] Server confirmed matchmaking cancelled.")
+					ClientData._isFindingMatch = false
+					local panel = ClientView._findMatchPanel
+					if panel and panel.hide then
+						panel:hide()
+					end
 					return
 				end
 				if res and res.oppo then
@@ -1310,19 +2050,42 @@ function patchClientData()
 					end
 					startWithOppo(o.name, o.level, o.avatar, o.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, oppoCrown)
 				else
-					-- Fallback to default troop
-					startWithOppo("Vua Trò Chơi", 50, 201, nil, nil, false, nil, true, false, nil)
+					local isSurv = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX or battleType == Battle_pb.PB_BATTLE_SURVIVAL)
+					local botChars = { 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
+					local botChar = isSurv and botChars[math.random(1, #botChars)] or 2
+					local botAvatar = botChar * 100 + 1
+					local botNames = isSurv and { "Đấu Sĩ Sinh Tử", "Thợ Săn Bài", "Kẻ Thách Thức", "Hiệp Sĩ Hoàng Gia", "Chiến Binh Sinh Tồn" } or { "Vua Trò Chơi" }
+					local botName = botNames[math.random(1, #botNames)]
+					startWithOppo(botName, 50, botAvatar, nil, nil, false, nil, true, false, nil)
 				end
 			end)
 		else
-			startWithOppo("Vua Trò Chơi", 50, 201, nil, nil, false, nil, true, false, nil)
+			local isSurv = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX or battleType == Battle_pb.PB_BATTLE_SURVIVAL)
+			local botChars = { 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
+			local botChar = isSurv and botChars[math.random(1, #botChars)] or 2
+			local botAvatar = botChar * 100 + 1
+			local botNames = isSurv and { "Đấu Sĩ Sinh Tử", "Thợ Săn Bài", "Kẻ Thách Thức", "Hiệp Sĩ Hoàng Gia", "Chiến Binh Sinh Tồn" } or { "Vua Trò Chơi" }
+			local botName = botNames[math.random(1, #botNames)]
+			startWithOppo(botName, 50, botAvatar, nil, nil, false, nil, true, false, nil)
 		end
 	end
 
 	ClientData.sendWorldFindExCancel = function()
+		if ClientData._currentSurvivalRoomId then
+			local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
+			local api = jsbridge and jsbridge.object("jdzcApi")
+			if api and api.post then
+				api:post("survival/cancel", { account_id = myId, room_id = ClientData._currentSurvivalRoomId })
+			end
+			if ClientData._survivalPollEntry then
+				pcall(function() lc.Scheduler:unscheduleScriptEntry(ClientData._survivalPollEntry) end)
+				ClientData._survivalPollEntry = nil
+			end
+			ClientData._currentSurvivalRoomId = nil
+		end
 		ClientData._isFindingMatch = false
 		ClientData._findMatchSeq = (ClientData._findMatchSeq or 0) + 1
-		local myId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+		local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
 		local api = jsbridge and jsbridge.object("jdzcApi")
 		if api and api.post then
 			api:post("cancel_pvp_match", { account_id = myId })
@@ -1337,7 +2100,7 @@ function patchClientData()
 	local orig_sendBattleUseCard = ClientData.sendBattleUseCard
 	ClientData.sendBattleUseCard = function(player, card_id, target_id, choice, extra)
 
-		if ClientData._isOppoOnline and ClientData._currentMatchId then
+		if (ClientData._isOppoOnline or ClientData._currentMatchId) and ClientData._currentMatchId then
 			local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
 			if pvpNet then
 				local ints = {}
@@ -1368,9 +2131,25 @@ function patchClientData()
 						end
 					end
 				end
+				local curTimeLeft = nil
+				local scene = lc._runningScene or ClientView._scene
+				local bUi = scene and scene._battleUi
+				if bUi and bUi._roundRealStartTime then
+					local totalDur = bUi._roundDuration or 90
+					curTimeLeft = math.max(0, totalDur - (os.time() - bUi._roundRealStartTime))
+				end
 				pcall(function()
-					pvpNet:sendAction(ClientData._currentMatchId, json.encode(ints))
+					pvpNet:sendAction(ClientData._currentMatchId, json.encode(ints), curTimeLeft)
 				end)
+			end
+		end
+		if card_id ~= BattleData.UseCardId.round and card_id ~= BattleData.UseCardId.retreat then
+			local scene = lc._runningScene or ClientView._scene
+			local bUi = scene and scene._battleUi
+			if bUi and type(bUi.addPvpRoundSeconds) == "function" then
+				bUi:addPvpRoundSeconds(5, 120)
+			elseif player and type(player.addRoundDuration) == "function" then
+				player:addRoundDuration()
 			end
 		end
 		if type(orig_sendBattleUseCard) == "function" then
@@ -1389,28 +2168,129 @@ function patchClientData()
 
 
 	-- Complete Shop & Tavern functions for Web H5
-	ClientData.sendBuyDiamond = function(id) return true end
-	ClientData.sendBuyRare = function(id) return true end
-	local function doBuyDepot(depotId, count)
+	local function doBuyShopCard(shopType, productId, count)
+		count = count or 1
 		pcall(function()
-			local prod = Data._productsExInfo and Data._productsExInfo[depotId]
-			local cardId = prod and (prod._cardId or prod._infoId) or (depotId == 59 and 40209 or 0)
-			local cost = prod and (prod._price or prod._cost) or (depotId == 59 and 100000 or 0)
-			if cardId == 40209 then cost = 100000 end
-			local totalCost = cost * (count or 1)
+			local cardId = 0
+			local cost = 0
+			local costType = 1 -- 1 = gold, 3 = gem
+
+			if shopType == "depot" then
+				local prod = Data._productsExInfo and (Data._productsExInfo[productId] or (function()
+					for _, item in pairs(Data._productsExInfo) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or (productId == 59 and 40209 or 0)
+				cost = prod and (prod._price or prod._cost) or (productId == 59 and 200000 or 0)
+				costType = prod and prod._resType or 1
+				if cardId == 20005 then cost = 5000
+				elseif cardId == 20051 or cardId == 20030 then cost = 100000
+				elseif cardId == 40209 then cost = 200000
+				elseif cardId == 40713 or cardId == 12248 then cost = 500000
+				elseif productId and productId >= 64 and cost == 0 then cost = 20000
+				end
+			elseif shopType == "rare" then
+				local prod = Data._rareProductsInfo and (Data._rareProductsInfo[productId] or (function()
+					for _, item in pairs(Data._rareProductsInfo) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or 0
+				cost = prod and (prod._price or prod._cost) or 0
+				costType = prod and prod._resType or 1
+				if P and P._playerMarket and P._playerMarket._rareGoodsMap then
+					P._playerMarket._rareGoodsMap[productId] = 1
+				end
+			elseif shopType == "diamond" then
+				local prod = Data._diamondProductsInfo and (Data._diamondProductsInfo[productId] or (function()
+					for _, item in pairs(Data._diamondProductsInfo) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or 0
+				cost = prod and (prod._price or prod._cost) or 0
+				costType = prod and prod._resType or 3
+			elseif shopType == "union" then
+				local prod = Data._unionProductsExInfo and (Data._unionProductsExInfo[productId] or (function()
+					for _, item in pairs(Data._unionProductsExInfo) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or 0
+				cost = prod and (prod._price or prod._cost) or 0
+				costType = prod and prod._resType or 1
+			elseif shopType == "collect" then
+				local prod = Data._collectProducts and (Data._collectProducts[productId] or (function()
+					for _, item in pairs(Data._collectProducts) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or 0
+				cost = prod and (prod._price or prod._cost) or 0
+				costType = prod and prod._resType or 1
+			elseif shopType == "ancient" then
+				local prod = Data._ancientProductsInfo and (Data._ancientProductsInfo[productId] or (function()
+					for _, item in pairs(Data._ancientProductsInfo) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or 0
+				cost = prod and (prod._price or prod._cost) or 0
+				costType = prod and prod._resType or 1
+			elseif shopType == "vote" then
+				local prod = Data._voteProductsInfo and (Data._voteProductsInfo[productId] or (function()
+					for _, item in pairs(Data._voteProductsInfo) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or 0
+				cost = prod and (prod._price or prod._cost) or 0
+				costType = prod and prod._resType or 1
+			elseif shopType == "goods" then
+				local prod = Data._productsInfo and (Data._productsInfo[productId] or (function()
+					for _, item in pairs(Data._productsInfo) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or 0
+				cost = prod and (prod._price or prod._cost) or 0
+				costType = prod and prod._resType or 1
+			elseif shopType == "privilege" or shopType == "month_card5" then
+				local prod = Data._monthCard5ProductsInfo and (Data._monthCard5ProductsInfo[productId] or (function()
+					for _, item in pairs(Data._monthCard5ProductsInfo) do
+						if item._id == productId then return item end
+					end
+				end)())
+				cardId = prod and (prod._cardId or prod._infoId) or 0
+				cost = prod and (prod._price or prod._cost) or 0
+				costType = prod and prod._resType or 7352
+			end
+
+			local totalCost = cost * count
 			local api = jsbridge and jsbridge.object("jdzcApi")
 			local reqFn = api and (api.request or api.post)
 			if reqFn then
 				local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
-				reqFn(api, "buy_depot", {
+				reqFn(api, "buy_card", {
 					account_id = accId,
-					depot_id = depotId,
+					shop_type = shopType,
+					product_id = productId,
+					depot_id = productId,
 					card_id = cardId,
-					cost = totalCost
+					cost = totalCost,
+					cost_type = costType,
+					count = count
 				}, function(rawRes)
 					local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
-					if res and res.gold and P then
-						P._gold = res.gold
+					if res and res.code == 200 then
+						if res.gold ~= nil and P then P._gold = res.gold end
+						if res.gem ~= nil and P then P._gem = res.gem end
+						if lc and lc.Dispatcher and Data and Data.Event then
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.ingot_dirty))
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.card_dirty))
+						end
 					end
 				end)
 			end
@@ -1418,23 +2298,33 @@ function patchClientData()
 		return true
 	end
 
-	ClientData.sendBuyDepot = function(id) return doBuyDepot(id, 1) end
+	ClientData.sendBuyDepot = function(id) return doBuyShopCard("depot", id, 1) end
+	ClientData.sendBuyRare = function(id) return doBuyShopCard("rare", id, 1) end
+	ClientData.sendBuyDiamond = function(id) return doBuyShopCard("diamond", id, 1) end
+	ClientData.sendBuyUnion = function(id) return doBuyShopCard("union", id, 1) end
+	ClientData.sendBuyCollect = function(id) return doBuyShopCard("collect", id, 1) end
+	ClientData.sendBuyAncient = function(id) return doBuyShopCard("ancient", id, 1) end
+	ClientData.sendBuyVote = function(id) return doBuyShopCard("vote", id, 1) end
+	ClientData.sendBuyGoods = function(id, count) return doBuyShopCard("goods", id, count) end
+	ClientData.sendBuyMonthCard5Product = function(id) return doBuyShopCard("privilege", id, 1) end
 	ClientData.sendBuySkin = function(skinId, skinType) return true end
-	ClientData.sendBuyGoods = function(id, count) return doBuyDepot(id, count) end
 	ClientData.sendProductBuy = function(prod) return true end
 	ClientData.sendBuyPackage = function(packageId, count) return true end
 
 	local CHAR_CARDS_MAP = {
-		[3] = {10004, 10006, 10048, 10242, 10266, 10477, 10624, 10645, 10702, 10849, 10850, 10867, 10897, 11146, 11147, 11148, 11149, 11150, 11151, 11152, 11153, 11154, 11155, 11156, 11157, 11158, 11159, 11225, 11252, 11297, 11299, 11300, 11301, 11302, 11303, 11309, 11336, 11379, 11510, 11512, 11577, 11594, 11609, 11610, 11615, 11619, 11622, 11632, 11633, 11730, 11797, 11798, 11804, 11875, 11918, 12043, 12051, 12052, 12053, 12093, 12127, 12130, 12181, 12204, 12251, 12265, 12266, 12273, 12282, 12283, 12307, 12310, 20001, 20002, 20003, 20006, 20009, 20010, 20012, 20013, 20014, 20027, 20043, 20160, 20432, 20433, 20456, 20493, 20518, 20519, 20520, 20529, 20543, 20544, 20646, 20664, 20750, 20751, 20760, 20764, 20765, 20815, 20900, 20911, 20913, 20951, 20960, 21045, 21098, 21126, 30022, 30024, 30031, 30161, 30247, 30248, 30383, 30388, 30389, 30479, 30554, 40140, 40141, 40142, 40143, 40150, 40157, 40173, 40199, 40200, 40201, 40202, 40441, 40442, 40494, 40495, 40496, 40617, 40664, 40709, 40712},
-		[2] = {10001, 10013, 10029, 10212, 10335, 10342, 10343, 10361, 10498, 10502, 10646, 10651, 10703, 10705, 10706, 10720, 10729, 10730, 10731, 10814, 10930, 10968, 10986, 10987, 10988, 10989, 10990, 10991, 10992, 10993, 10994, 10995, 10996, 11040, 11041, 11042, 11048, 11049, 11050, 11051, 11075, 11076, 11079, 11080, 11081, 11091, 11092, 11120, 11289, 11329, 11363, 11402, 11567, 11568, 11613, 11618, 11898, 11899, 11947, 11948, 11969, 12140, 12151, 12177, 12224, 12275, 12291, 12299, 20052, 20275, 20303, 20360, 20365, 20366, 20367, 20368, 20369, 20370, 20371, 20372, 20373, 20374, 20375, 20401, 20402, 20408, 20412, 20413, 20524, 20525, 20553, 20893, 20899, 20959, 20966, 20967, 20980, 21090, 21093, 21097, 21127, 21132, 30120, 30158, 30357, 30379, 30575, 30578, 40001, 40013, 40033, 40037, 40090, 40091, 40092, 40093, 40102, 40103, 40115, 40133, 40138, 40139, 40148, 40153, 40203, 40250, 40256, 40301, 40354, 40355, 40454, 40478, 40480, 40504, 40531, 40648, 40680, 40686, 40708, 40719, 40722},
+		[3] = {10004, 10006, 10048, 10242, 10266, 10477, 10624, 10645, 10702, 10849, 10850, 10867, 10897, 11146, 11147, 11148, 11149, 11150, 11151, 11152, 11153, 11154, 11155, 11156, 11157, 11158, 11159, 11225, 11252, 11297, 11299, 11300, 11301, 11302, 11303, 11309, 11336, 11379, 11510, 11512, 11577, 11594, 11609, 11610, 11615, 11619, 11622, 11632, 11633, 11730, 11797, 11798, 11804, 11875, 11918, 12043, 12051, 12052, 12053, 12093, 12127, 12130, 12181, 12204, 12251, 12265, 12266, 12273, 12282, 12283, 12307, 12310, 20001, 20002, 20003, 20006, 20009, 20010, 20012, 20013, 20014, 20027, 20043, 20160, 20432, 20433, 20456, 20493, 20518, 20519, 20520, 20529, 20543, 20544, 20646, 20664, 20750, 20751, 20760, 20764, 20765, 20815, 20900, 20911, 20913, 20951, 20960, 21045, 21098, 21126, 30022, 30024, 30031, 30161, 30247, 30248, 30383, 30388, 30389, 30479, 30554, 40140, 40141, 40142, 40143, 40150, 40157, 40173, 40199, 40200, 40201, 40202, 40441, 40442, 40494, 40495, 40496, 40617, 40664, 40709, 40712, 20310, 20311, 20316, 20514, 20516, 20517, 20521, 20523, 20566, 20852, 20858, 21073, 21119, 30482, 11921, 11296},
+		[2] = {10001, 10013, 10029, 10212, 10335, 10342, 10343, 10361, 10498, 10502, 10646, 10651, 10703, 10705, 10706, 10720, 10729, 10730, 10731, 10814, 10930, 10968, 10986, 10987, 10988, 10989, 10990, 10991, 10992, 10993, 10994, 10995, 10996, 11040, 11041, 11042, 11048, 11049, 11050, 11051, 11075, 11076, 11079, 11080, 11081, 11091, 11092, 11120, 11289, 11329, 11363, 11402, 11567, 11568, 11613, 11618, 11898, 11899, 11947, 11948, 11969, 12140, 12151, 12177, 12224, 12275, 12291, 12299, 20052, 20275, 20303, 20360, 20412, 20525, 20553, 20959, 20980, 21090, 21093, 21097, 21127, 21132, 30120, 30158, 30357, 30379, 30575, 30578, 40001, 40013, 40033, 40037, 40090, 40091, 40092, 40093, 40102, 40103, 40115, 40133, 40138, 40139, 40148, 40153, 40203, 40250, 40256, 40301, 40354, 40355, 40454, 40478, 40480, 40504, 40531, 40648, 40680, 40686, 40708, 40719, 40722, 20470, 20362, 20746, 20621, 20651, 20260, 20007, 20256, 20015, 20550, 20484, 20021, 20056, 20059, 20063, 20099, 20162, 20227, 20361, 20715, 10115, 10117, 10606, 10699, 40158},
 		[5] = {10086, 10118, 10405, 10620, 10621, 10622, 10787, 10815, 10848, 11013, 11020, 11093, 11221, 11318, 11319, 11320, 11321, 11322, 11323, 11324, 11325, 11326, 11327, 11328, 11365, 11368, 11497, 11498, 11499, 12037, 12039, 12040, 12091, 12092, 12167, 12168, 12312, 20189, 20190, 20197, 20198, 20292, 20380, 20534, 20535, 20536, 20538, 20549, 20551, 20552, 20565, 20840, 21018, 21020, 30036, 30124, 30132, 30138, 30423, 30424, 30425, 30442, 40160, 40194, 40210, 40211, 40212, 40213, 40288, 40431, 40498, 40585, 40616, 40675, 40718},
 		[4] = {10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 10284, 10285, 10783, 10784, 10785, 10786, 11121, 11122, 11123, 11124, 11125, 11126, 11127, 11128, 11129, 11130, 11224, 11337, 11694, 12088, 12089, 12192, 20053, 20054, 20117, 20301, 20333, 20425, 20426, 20641, 21051, 21094, 30064, 30065, 30066, 30171, 30238, 30239, 30240, 40047, 40052, 40128, 40129, 40130, 40131, 40476, 40613, 40659, 40662},
-		[15] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697},
-		[11201] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697},
-		[11210] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697},
-		[11250] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697},
+		[15] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697, 40170, 40646, 40558, 40607, 20511, 20486},
+		[11201] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697, 40170, 40646, 40558, 40607, 20511, 20486},
+		[11210] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697, 40170, 40646, 40558, 40607, 20511, 20486},
+		[11250] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697, 40170, 40646, 40558, 40607, 20511, 20486},
 		[16] = {11085, 11086, 11087, 11088, 11089, 11090, 11254, 11255, 11256, 11257, 11258, 11259, 11260, 11261, 11262, 11432, 11433, 11434, 11435, 11436, 11437, 11440, 11707, 11915, 12041, 12137, 12253, 20406, 20407, 20441, 20494, 20495, 20496, 20924, 21123, 30203, 30226, 30227, 30228, 30229, 30250, 30278, 30279, 30422, 30494, 30590, 40088, 40110, 40111, 40112, 40113, 40114, 40174, 40177, 40178, 40179, 40180, 40399, 40457, 40515, 40704, 40705, 40706},
-		[7] = {10868, 10869, 10870, 10871, 10879, 10920, 10925, 10926, 11554, 20317, 20318, 20319, 20320, 20321, 20322, 20339, 20340, 20341, 20690, 20691, 20692, 30177, 40332, 40333},
+		[7] = {10868, 10869, 10870, 10871, 10879, 10920, 10925, 10926, 11554, 20317, 30177, 40332, 40333},
+		[10701] = {10868, 10869, 10870, 10871, 10879, 10920, 10925, 10926, 11554, 20317, 30177, 40332, 40333},
+		[10710] = {10868, 10869, 10870, 10871, 10879, 10920, 10925, 10926, 11554, 20317, 30177, 40332, 40333},
+		[10750] = {10868, 10869, 10870, 10871, 10879, 10920, 10925, 10926, 11554, 20317, 30177, 40332, 40333},
 		[10] = {12158, 12159, 12160, 12161, 12162, 12163, 12164, 12165, 12171, 12172, 21085, 21086, 21087, 21088, 30576, 40651, 40652, 40653, 40654, 40655, 40656, 40657, 40699},
 		[8] = {10109, 10325, 10507, 10508, 10514, 10515, 10669, 10748, 10781, 10782, 10922, 11160, 11286, 11393, 11394, 11395, 11396, 11397, 11398, 11399, 11400, 11401, 11493, 11532, 11533, 11535, 11955, 11956, 11957, 11973, 11974, 11975, 11976, 11977, 11978, 11979, 11996, 11997, 12143, 12144, 12169, 12170, 12189, 12200, 12201, 12202, 12215, 20093, 20153, 20226, 20490, 20584, 20585, 20586, 20989, 20990, 20991, 21078, 21101, 30154, 30322, 30323, 30324, 30515, 30516, 30517, 30518, 30571, 30583, 40144, 40246, 40275, 40282, 40316, 40532, 40533, 40543, 40544, 40545, 40546, 40547, 40548, 40549, 40550, 40627, 40668},
 		[9] = {10482, 10483, 10484, 10485, 10486, 10487, 10488, 10489, 10490, 10576, 11008, 11356, 11357, 11358, 11359, 11360, 11361, 11362, 11371, 11719, 11720, 11721, 11722, 11723, 11724, 11725, 11726, 11727, 11728, 12047, 12048, 12094, 12095, 12096, 12097, 12098, 12099, 12100, 12101, 12102, 12114, 12199, 12303, 20556, 20557, 20818, 20819, 20820, 21024, 21053, 21064, 21130, 30121, 30428, 30429, 30430, 30431, 30432, 30555, 30556, 30557, 30558, 30559, 30561, 30565, 40094, 40163, 40232, 40402, 40403, 40404, 40405, 40406, 40553, 40588, 40589, 40618, 40619, 40620, 40621, 40622, 40623, 40625, 40626, 40720},
@@ -1455,7 +2345,7 @@ function patchClientData()
 		[6] = {10790, 10763, 11318, 11319, 11320, 11321, 11322, 11323, 11324, 11325, 11326, 11327, 11328, 11368, 11680, 11681, 11682, 11683, 11684, 11685, 11686, 11687, 11688, 11689, 12039, 12040, 12091, 12092, 12117, 12118, 12119, 12120, 12121, 12122, 12123, 12124, 12247, 20534, 20535, 20536, 20538, 20565, 20790, 20791, 21018, 21020, 21025, 21067, 21068, 21069, 21070, 30411, 30412, 30423, 30424, 30425, 30539, 30567, 30568, 40210, 40211, 40212, 40213, 40392, 40393, 40394, 40395, 40396, 40498, 40590, 40616, 40635, 40636, 40637, 40638, 40644, 40660, 10230, 10237, 10238, 10239, 10240, 10243, 10244, 10245, 10247, 10248, 10249, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258},
 		[7] = {10896, 10895, 10695, 10696, 10697, 10698, 10701, 11745, 11746, 11749, 11881, 11882, 12150, 20169, 20194, 20206, 20207, 20208, 20246, 20251, 20252, 20253, 20254, 20386, 20478, 20650, 20789, 20825, 20826, 20906, 20930, 20978, 20979, 30108, 30137, 30142, 30143, 30152, 30358, 30497, 30498, 40046, 10261, 10262, 10263, 10264, 10269, 10272, 10273, 10275, 10276, 10280, 10302, 10303, 10317, 10320, 10321, 10329, 10332, 10334, 10336, 10337},
 		[8] = {10967, 10902, 10710, 10711, 10712, 10774, 10946, 12057, 12058, 12059, 12060, 12061, 12062, 12063, 12086, 12246, 12301, 20288, 20471, 20472, 21012, 21032, 21033, 21034, 21035, 21036, 21037, 21038, 21050, 21121, 30185, 30537, 30543, 30550, 40598, 40599, 40600, 40601, 40602, 40603, 40612, 40678, 40685, 10338, 10340, 10357, 10362, 10363, 10366, 10377, 10378, 10379, 10380, 10381, 10396, 10397, 10401, 10408, 10411, 10418, 10421, 10422, 10426},
-		[9] = {11083, 10969, 10038, 10266, 10617, 10733, 10773, 10849, 10850, 10867, 10897, 11003, 11004, 11005, 11006, 11021, 11022, 11023, 11024, 11025, 11027, 11043, 11052, 11053, 11055, 11220, 11242, 11297, 11299, 11300, 11301, 11302, 11303, 11309, 11336, 11514, 11577, 11594, 11610, 11797, 11798, 11804, 11875, 11918, 12051, 12052, 12053, 12127, 12251, 12265, 12266, 20381, 20384, 20518, 20519, 20520, 20815, 40096, 40097, 40098, 40099, 40100, 40195, 40199, 40200, 40201, 40202, 40441, 40442, 40492, 40496, 40512, 40709, 10428, 10441, 10458, 10460, 10461, 10467, 10468, 10470, 10471, 10474, 10475, 10478, 10491, 10492, 10493, 10501, 10503, 10504, 10510, 10521},
+		[9] = {11083, 10969, 10038, 10266, 10617, 10733, 10773, 10849, 10850, 10867, 10897, 11003, 11004, 11005, 11006, 11021, 11022, 11023, 11024, 11025, 11027, 11043, 11052, 11053, 11055, 11220, 11242, 11297, 11299, 11300, 11301, 11302, 11303, 11309, 11336, 11514, 11577, 11594, 11610, 11797, 11798, 11804, 11875, 11918, 12051, 12052, 12053, 12127, 12251, 12265, 12266, 20381, 20384, 20518, 20519, 20520, 20815, 40096, 40097, 40098, 40099, 40100, 40195, 40199, 40200, 40201, 40202, 40441, 40442, 40492, 40496, 40512, 40709, 10428, 10441, 10458, 10460, 10461, 10467, 10468, 10470, 10471, 10474, 10475, 10478, 10491, 10492, 10493, 10501, 10503, 10504, 10510, 10521, 20310, 20311, 20316, 20514, 20516, 20517, 20521, 20523, 20566, 20852, 20858, 21073, 21119, 30482, 11921, 11296},
 		[10] = {11225, 11145, 10324, 11536, 11537, 11538, 11539, 11540, 11541, 11542, 11544, 11545, 11546, 11558, 11645, 11647, 11692, 11970, 11971, 11972, 12116, 12205, 12207, 12217, 12257, 12293, 20678, 20680, 20682, 20683, 20698, 20699, 20700, 20703, 20704, 20759, 20771, 20988, 21065, 21066, 21102, 21104, 30380, 30396, 30513, 30514, 40317, 40318, 40319, 40320, 40321, 40323, 40345, 40541, 40542, 40556, 40634, 40669, 40670, 40671, 40672, 40700, 40723, 10522, 10526, 10528, 10529, 10530, 10531, 10532, 10534, 10535, 10542, 10553, 10554, 10555, 10561, 10562, 10572, 10575, 10583, 10584, 10587},
 		[11] = {11338, 11308, 10732, 10796, 10826, 10827, 10918, 10919, 10923, 11142, 11202, 11203, 11204, 11205, 11381, 11382, 11383, 11384, 11385, 11386, 11387, 11388, 11412, 11885, 11886, 11887, 11888, 12104, 12218, 12252, 12285, 12288, 20271, 20583, 20635, 20909, 21107, 30243, 30487, 40433, 40434, 40435, 40436, 40437, 40438, 40447, 40449, 40628, 40683, 40698, 10588, 10589, 10590, 10594, 10608, 10611, 10612, 10613, 10614, 10615, 10627, 10628, 10630, 10647, 10648, 10650, 10654, 10658, 10671, 10672},
 		[12] = {11513, 11365, 10087, 10904, 10905, 10906, 10907, 10908, 10909, 10910, 10911, 10912, 10913, 10914, 10915, 10916, 10917, 10924, 11521, 11522, 11523, 11524, 11525, 11526, 11527, 11667, 11668, 11669, 11670, 11671, 11672, 20335, 20672, 20674, 20784, 20785, 20786, 20787, 30374, 30403, 40313, 40314, 40388, 10673, 10674, 10675, 10679, 10682, 10690, 10721, 10734, 10736, 10740, 10743, 10744, 10769, 10801, 10802, 10803, 10804, 10818, 10821, 10832},
@@ -1478,7 +2368,7 @@ function patchClientData()
 		[29] = {20551, 11354, 11364, 30313, 40232, 40230, 11355, 11360, 11362, 30314, 20557, 20947, 20195, 20970, 20369, 20165, 30591, 20862, 20944, 21116, 20198, 20975, 20523, 30427, 20853, 20580, 20251, 20762, 20554, 11361, 11357, 11356, 11358, 11359, 11371, 20558, 20559, 20560, 20390, 20245, 30073, 30003, 20108, 10261, 10357, 10441, 10504, 10575, 10244, 10628, 20033, 20069, 20092, 20130, 20016, 20045, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20057, 30017, 20018, 20077, 20102, 20064, 20060, 20063, 20078, 10759},
 		[30] = {20552, 11387, 30322, 20585, 20584, 11385, 30324, 11393, 20586, 11396, 11397, 20732, 21017, 20938, 20961, 20525, 20367, 30519, 20253, 20851, 20843, 20876, 30194, 20879, 20587, 11395, 11382, 11394, 11381, 20583, 11383, 11384, 11386, 11388, 30323, 20341, 20465, 20497, 20245, 30073, 30003, 20108, 10261, 10357, 10441, 10504, 10575, 10244, 10628, 20033, 20069, 20092, 20130, 20016, 20045, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 30034, 20057, 30017, 20018, 20077, 20102, 20064, 20060, 20063, 20078, 10759},
 		[31] = {40265, 11424, 40266, 11427, 11423, 11429, 11431, 11433, 11436, 11437, 20976, 20844, 30039, 40180, 40334, 20590, 20939, 20966, 20683, 20232, 20455, 20321, 20365, 20730, 20912, 20877, 11421, 11422, 11425, 11426, 11430, 11428, 20606, 11432, 11434, 11435, 20513, 20435, 20483, 20245, 30073, 30003, 20108, 10261, 10357, 10441, 10504, 10575, 10244, 10628, 20033, 20069, 20092, 20130, 20016, 20045, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20057, 30017, 20018, 20077, 20102, 20064, 20060, 20063, 20078, 10759},
-		[32] = {10244, 10261, 10290, 10291, 10357, 10441, 10504, 10575, 10628, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10759, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11462, 11463, 11464, 11465, 11466, 11467, 11555, 12008, 12042, 12078, 12173, 20016, 20018, 20033, 20045, 20057, 20060, 20063, 20064, 20069, 20077, 20078, 20092, 20102, 20108, 20113, 20125, 20130, 20145, 20157, 20158, 20174, 20228, 20229, 20233, 20245, 20340, 20373, 20374, 20608, 20623, 20624, 20626, 20666, 20693, 20694, 20765, 20940, 20943, 20945, 20964, 30003, 30017, 30019, 30073, 30272, 30341, 30342, 30343, 30344, 30345, 30368, 30369, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40182, 40262, 40263, 40272, 40273, 40274, 40276, 40277, 40278, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697},
+		[32] = {10244, 10261, 10290, 10291, 10357, 10441, 10504, 10575, 10628, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10759, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11462, 11463, 11464, 11465, 11466, 11467, 11555, 12008, 12042, 12078, 12173, 20016, 20018, 20033, 20045, 20057, 20060, 20063, 20064, 20069, 20077, 20078, 20092, 20102, 20108, 20113, 20125, 20130, 20145, 20157, 20158, 20174, 20228, 20229, 20233, 20245, 20340, 20373, 20374, 20608, 20623, 20624, 20626, 20666, 20693, 20694, 20765, 20940, 20943, 20945, 20964, 30003, 30017, 30019, 30073, 30272, 30341, 30342, 30343, 30344, 30345, 30368, 30369, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40182, 40262, 40263, 40272, 40273, 40274, 40276, 40277, 40278, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697, 40170, 40646, 40558, 40607, 20511, 20486},
 	}
 	ClientData._liyaCardsMap = LIYA_CARDS_MAP
 
@@ -1488,12 +2378,17 @@ function patchClientData()
 		if not rawget(_G, "Data") or not Data._recruitInfo then return end
 		if CHAR_CARDS_MAP then
 			for cid, cardList in pairs(CHAR_CARDS_MAP) do
+				local pidTbl = {}
+				for _, pId in ipairs(cardList) do
+					table.insert(pidTbl, { pId })
+				end
 				local baseVal = 10000 + cid * 100
 				for _, suffix in ipairs({1, 10, 50}) do
 					local pval = baseVal + suffix
 					if Data._recruitInfo[pval] then
 						Data._recruitInfo[pval]._rid = cardList
 						Data._recruitInfo[pval]._cards = cardList
+						Data._recruitInfo[pval]._pid = pidTbl
 						if not Data._recruitInfo[pval]._param then Data._recruitInfo[pval]._param = {} end
 						Data._recruitInfo[pval]._param[1] = Data.ResType.gold
 						Data._recruitInfo[pval]._param[2] = (suffix == 50 and 22500) or (suffix == 10 and 4500) or 500
@@ -1502,6 +2397,7 @@ function patchClientData()
 				if Data._recruitInfo[cid] then
 					Data._recruitInfo[cid]._rid = cardList
 					Data._recruitInfo[cid]._cards = cardList
+					Data._recruitInfo[cid]._pid = pidTbl
 					if not Data._recruitInfo[cid]._param then Data._recruitInfo[cid]._param = {} end
 					Data._recruitInfo[cid]._param[1] = Data.ResType.gold
 					Data._recruitInfo[cid]._param[2] = 500
@@ -1513,7 +2409,7 @@ function patchClientData()
 				Data._productsExInfo[59] = {
 					_id = 59,
 					_cardId = 40209,
-					_cost = 100000,
+					_cost = 200000,
 					_resType = 1,
 					_date = "20170101.0"
 				}
@@ -1521,12 +2417,17 @@ function patchClientData()
 		end
 		if LIYA_CARDS_MAP then
 			for liyaIdx, cardList in pairs(LIYA_CARDS_MAP) do
+				local pidTbl = {}
+				for _, pId in ipairs(cardList) do
+					table.insert(pidTbl, { pId })
+				end
 				local baseVal = 100000 + liyaIdx * 1000
 				for _, suffix in ipairs({1, 10, 50}) do
 					local pval = baseVal + suffix
 					if Data._recruitInfo[pval] then
 						Data._recruitInfo[pval]._rid = cardList
 						Data._recruitInfo[pval]._cards = cardList
+						Data._recruitInfo[pval]._pid = pidTbl
 						if not Data._recruitInfo[pval]._param then Data._recruitInfo[pval]._param = {} end
 						Data._recruitInfo[pval]._param[1] = Data.ResType.gold
 						Data._recruitInfo[pval]._param[2] = (suffix == 50 and 28500) or (suffix == 10 and 6000) or 600
@@ -1535,6 +2436,7 @@ function patchClientData()
 				if Data._recruitInfo[liyaIdx] then
 					Data._recruitInfo[liyaIdx]._rid = cardList
 					Data._recruitInfo[liyaIdx]._cards = cardList
+					Data._recruitInfo[liyaIdx]._pid = pidTbl
 					if not Data._recruitInfo[liyaIdx]._param then Data._recruitInfo[liyaIdx]._param = {} end
 					Data._recruitInfo[liyaIdx]._param[1] = Data.ResType.gold
 					Data._recruitInfo[liyaIdx]._param[2] = 600
@@ -1544,6 +2446,69 @@ function patchClientData()
 	end
 	pcall(injectPacks)
 
+	-- Universal Pack Card Pool Helper
+	ClientData.getPackCardPool = function(boxId)
+		local pool = {}
+		local added = {}
+
+		-- 1. Priority: Custom Overwritten Maps (CHAR_CARDS_MAP / LIYA_CARDS_MAP)
+		local isLiya = (boxId and boxId >= 101001 and boxId <= 135050)
+		if isLiya then
+			local liyaIdx = math.floor((boxId - 100000) / 1000)
+			local lm = ClientData._liyaCardsMap or LIYA_CARDS_MAP
+			local lCards = (lm and (lm[boxId] or lm[liyaIdx]))
+			if lCards then
+				for _, pId in ipairs(lCards) do
+					pId = tonumber(pId)
+					if pId and pId > 0 and not added[pId] then
+						added[pId] = true
+						table.insert(pool, pId)
+					end
+				end
+			end
+		else
+			local cid = (boxId and boxId >= 10000 and boxId < 20000) and math.floor((boxId - 10000) / 100) or nil
+			if boxId == 11201 or boxId == 11210 or boxId == 11250 then cid = 15 end
+			local cm = ClientData._charCardsMap or CHAR_CARDS_MAP
+			local cCards = (cm and (cm[boxId] or (cid and cm[cid])))
+			if cCards then
+				for _, pId in ipairs(cCards) do
+					pId = tonumber(pId)
+					if pId and pId > 0 and not added[pId] then
+						added[pId] = true
+						table.insert(pool, pId)
+					end
+				end
+			end
+		end
+
+		-- 2. Fallback to recruit._pid / drop._pid if not in custom maps
+		if #pool == 0 then
+			local recruit = (Data and Data._recruitInfo and Data._recruitInfo[boxId]) or (Data and Data._dropInfo and Data._dropInfo[boxId])
+			if recruit and recruit._pid then
+				for _, pv in ipairs(recruit._pid) do
+					local pId = type(pv) == "table" and (pv[1] or pv.id) or pv
+					pId = tonumber(pId)
+					if pId and pId > 0 and not added[pId] then
+						added[pId] = true
+						table.insert(pool, pId)
+					end
+				end
+			end
+			if #pool == 0 and recruit and recruit._rid then
+				for _, pId in ipairs(recruit._rid) do
+					pId = tonumber(pId)
+					if pId and pId > 0 and not added[pId] then
+						added[pId] = true
+						table.insert(pool, pId)
+					end
+				end
+			end
+		end
+
+		return pool
+	end
+
 	-- Card Box Info & Reset (Tavern / draw)
 	ClientData.sendCardBoxInfo = function(boxId)
 		pcall(injectPacks)
@@ -1551,24 +2516,11 @@ function patchClientData()
 		local s = lc._runningScene or ClientView._scene or lc.Director:getRunningScene()
 		local curScene = s and (s._layer or s)
 		if curScene and curScene._sceneId == ClientData.SceneId.tavern then
-			local recruit = (Data._recruitInfo and Data._recruitInfo[boxId]) or (Data._dropInfo and Data._dropInfo[boxId])
 			local respCards = {}
 			local added = {}
 
-			-- 1. Showcase all cards belonging to this pack (Liya or Character)
-			local isLiya = (boxId and boxId >= 101001 and boxId <= 135050)
-			local packList = nil
-			if isLiya then
-				local liyaIdx = math.floor((boxId - 100000) / 1000)
-				packList = LIYA_CARDS_MAP and LIYA_CARDS_MAP[liyaIdx]
-			elseif boxId and boxId >= 1 and boxId <= 32 and LIYA_CARDS_MAP and LIYA_CARDS_MAP[boxId] then
-				isLiya = true
-				packList = LIYA_CARDS_MAP[boxId]
-			else
-				local cid = (boxId and boxId >= 10000 and boxId < 20000) and math.floor((boxId - 10000) / 100) or nil
-				packList = (cid and CHAR_CARDS_MAP and CHAR_CARDS_MAP[cid]) or (CHAR_CARDS_MAP and CHAR_CARDS_MAP[boxId])
-			end
-
+			-- 1. Showcase all cards belonging to this pack (exact drop pool)
+			local packList = ClientData.getPackCardPool(boxId)
 			if packList and #packList > 0 then
 				for _, cardId in ipairs(packList) do
 					if not added[cardId] then
@@ -1590,39 +2542,7 @@ function patchClientData()
 				end
 			end
 
-			-- 2. If not a character pack or charList empty, check recruit._rid or recruit._pid
-			if #respCards == 0 and recruit then
-				local rids = recruit._rid or {}
-				if #rids == 0 and recruit._pid then
-					for _, pv in ipairs(recruit._pid) do
-						local pId = type(pv) == "table" and (pv[1] or pv.id) or pv
-						if pId and tonumber(pId) then
-							table.insert(rids, tonumber(pId))
-						end
-					end
-				end
-				for i = 1, #rids do
-					local cardId = rids[i]
-					if not added[cardId] then
-						local info = (Data.getInfo and Data.getInfo(cardId)) or (Data._monsterInfo and Data._monsterInfo[cardId]) or (Data._magicInfo and Data._magicInfo[cardId]) or (Data._trapInfo and Data._trapInfo[cardId]) or (Data._rareInfo and Data._rareInfo[cardId])
-						if info then
-							added[cardId] = true
-							local totalCount = (recruit._count and recruit._count[i]) or 1
-							local gotCount = 0
-							if P and P._playerCard then
-								gotCount = math.min(totalCount, P._playerCard:getCardCount(cardId))
-							end
-							table.insert(respCards, {
-								info_id = cardId,
-								get_num = gotCount,
-								remain_num = math.max(0, totalCount - gotCount)
-							})
-						end
-					end
-				end
-			end
-
-			-- 3. Fallback if still empty
+			-- 2. Fallback if still empty
 			if #respCards == 0 then
 				local list = {}
 				for id, _ in pairs(Data._monsterInfo or {}) do table.insert(list, id) end
@@ -1939,7 +2859,24 @@ function patchClientData()
 
 	jsres:setCallbacks(announce, addLanguage)
 
-	-- Ensure Str and ClientData.str always unescape \n to actual newline
+	local function filterCurrencyText(str)
+		if type(str) ~= "string" or str == "" then return str end
+		if string.find(str, "Gold") or string.find(str, "gold") then
+			str = string.gsub(str, "Gold", "Linh Thạch")
+			str = string.gsub(str, "gold", "Linh Thạch")
+		end
+		if string.find(str, "Gem") or string.find(str, "gem") then
+			str = string.gsub(str, "Gem", "Linh Thạch Cao Cấp")
+			str = string.gsub(str, "gem", "Linh Thạch Cao Cấp")
+		end
+		if string.find(str, "Kim Cương") or string.find(str, "kim cương") then
+			str = string.gsub(str, "Kim Cương", "Linh Thạch Cao Cấp")
+			str = string.gsub(str, "kim cương", "Linh Thạch Cao Cấp")
+		end
+		return str
+	end
+
+	-- Ensure Str and ClientData.str always unescape \n to actual newline and use Linh Thach terms
 	local _origStr = _G.Str
 	_G.Str = function(sid, ...)
 		local res = _origStr and _origStr(sid, ...)
@@ -1949,7 +2886,7 @@ function patchClientData()
 		if type(res) == "string" and string.find(res, "\\n") then
 			res = string.gsub(res, "\\n", "\n")
 		end
-		return res
+		return filterCurrencyText(res)
 	end
 	if rawget(_G, "ClientData") and ClientData.str then
 		local _origCdStr = ClientData.str
@@ -1958,9 +2895,11 @@ function patchClientData()
 			if type(res) == "string" and string.find(res, "\\n") then
 				res = string.gsub(res, "\\n", "\n")
 			end
-			return res
+			return filterCurrencyText(res)
 		end
 	end
+
+
 
 		-- Ensure all PVE attack/challenge inputs have _offlineMode = true
 	local _origGenInputFromResp = ClientData.genInputFromResp
@@ -2090,15 +3029,33 @@ function patchClientData()
 		return {}
 	end
 
+	local RESIDENT_CONTAINERS = {
+		["battle.jpm"] = true,
+		["battle.png.sfb"] = true,
+		["bat_loading.jpm"] = true,
+		["bat_loading.png.sfb"] = true,
+		["city.jpm"] = true,
+		["city.png.sfb"] = true,
+		["general.jpm"] = true,
+		["general.png.sfb"] = true,
+		["avatar.jpm"] = true,
+		["avatar.png.sfb"] = true,
+		["props.jpm"] = true,
+		["props.png.sfb"] = true,
+		["find.jpm"] = true,
+		["find.png.sfb"] = true,
+	}
+
 	ClientData.unloadLCRes = function(names)
 		if type(names) ~= "table" then
 			return
 		end
 
 		for _, name in ipairs(names) do
-			jsres:unloadContainer(name)
-
-			ClientData._lcres[name] = nil
+			if not RESIDENT_CONTAINERS[name] then
+				jsres:unloadContainer(name)
+				ClientData._lcres[name] = nil
+			end
 		end
 	end
 
@@ -3105,15 +4062,31 @@ ClientData.sendChangeName = function(newName)
 
 		local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
 		if pvpNet then
-			pvpNet:connect(matchId, myAccId, function(intsJson)
+			pvpNet:connect(matchId, myAccId, function(intsJson, addTime, maxTime, timeLeft)
 				local ok, ints = pcall(json.decode, intsJson)
 				if ok and type(ints) == "table" and #ints > 0 then
+					local card_val = tonumber(ints[1]) or 0
+					local isCardAction = (card_val ~= BattleData.UseCardId.round and card_val ~= BattleData.UseCardId.retreat and card_val ~= 0)
+					local bonusSec = tonumber(addTime) or (isCardAction and 5 or 0)
+					local maxSec = tonumber(maxTime) or 120
+					local exactTime = tonumber(timeLeft)
+
+					local scene = lc._runningScene or ClientView._scene
+					local bUi = scene and scene._battleUi
+
+					-- Đồng bộ cơ chế tối ưu thời gian: Màn hình đối thủ tăng time ngay lập tức khi nhận action từ server!
+					if isCardAction and bUi then
+						if exactTime and exactTime > 0 and type(bUi.syncPvpRoundSeconds) == "function" then
+							bUi:syncPvpRoundSeconds(exactTime)
+						elseif bonusSec > 0 and type(bUi.addPvpRoundSeconds) == "function" then
+							bUi:addPvpRoundSeconds(bonusSec, maxSec)
+						end
+					end
+
 					ClientData._usedCardsToAdd = ClientData._usedCardsToAdd or {}
 					for _, val in ipairs(ints) do
 						table.insert(ClientData._usedCardsToAdd, tonumber(val) or 0)
 					end
-					local scene = lc._runningScene or ClientView._scene
-					local bUi = scene and scene._battleUi
 					if bUi and type(bUi.oppoTryUseCard) == "function" then
 						bUi:oppoTryUseCard()
 					end
@@ -3122,7 +4095,8 @@ ClientData.sendChangeName = function(newName)
 				local scene = lc._runningScene or ClientView._scene
 				local bUi = scene and scene._battleUi
 				if bUi and not bUi._isBattleEndSended then
-					local waitTime = (not bUi._round or bUi._round < 1) and 3.0 or 0.5
+					ToastManager.push("Đối thủ mất kết nối, đang chờ 15s kết nối lại...")
+					local waitTime = (not bUi._round or bUi._round < 1) and 5.0 or 15.0
 					bUi:runAction(lc.sequence(waitTime, function()
 						local curScene = lc._runningScene or ClientView._scene
 						local curUi = curScene and curScene._battleUi
@@ -3190,57 +4164,38 @@ ClientData.sendChangeName = function(newName)
     -- ==========================================================
     -- 6 COMPREHENSIVE WEB EXTENSIONS
     -- ==========================================================
-    local CHAR_CARDS_MAP = {
-    [3] = {10004, 10006, 10048, 10242, 10266, 10477, 10624, 10645, 10702, 10849, 10850, 10867, 10897, 11146, 11147, 11148, 11149, 11150, 11151, 11152, 11153, 11154, 11155, 11156, 11157, 11158, 11159, 11225, 11252, 11297, 11299, 11300, 11301, 11302, 11303, 11309, 11336, 11379, 11510, 11512, 11577, 11594, 11609, 11610, 11615, 11619, 11622, 11632, 11633, 11730, 11797, 11798, 11804, 11875, 11918, 12043, 12051, 12052, 12053, 12093, 12127, 12130, 12181, 12204, 12251, 12265, 12266, 12273, 12282, 12283, 12307, 12310, 20001, 20002, 20003, 20006, 20009, 20010, 20012, 20013, 20014, 20027, 20043, 20160, 20432, 20433, 20456, 20493, 20518, 20519, 20520, 20529, 20543, 20544, 20646, 20664, 20750, 20751, 20760, 20764, 20765, 20815, 20900, 20911, 20913, 20951, 20960, 21045, 21098, 21126, 30022, 30024, 30031, 30161, 30247, 30248, 30383, 30388, 30389, 30479, 30554, 40140, 40141, 40142, 40143, 40150, 40157, 40173, 40199, 40200, 40201, 40202, 40441, 40442, 40494, 40495, 40496, 40617, 40664, 40709, 40712},
-    [2] = {10001, 10013, 10029, 10212, 10335, 10342, 10343, 10361, 10498, 10502, 10646, 10651, 10703, 10705, 10706, 10720, 10729, 10730, 10731, 10814, 10930, 10968, 10986, 10987, 10988, 10989, 10990, 10991, 10992, 10993, 10994, 10995, 10996, 11040, 11041, 11042, 11048, 11049, 11050, 11051, 11075, 11076, 11079, 11080, 11081, 11091, 11092, 11120, 11289, 11329, 11363, 11402, 11567, 11568, 11613, 11618, 11898, 11899, 11947, 11948, 11969, 12140, 12151, 12177, 12224, 12275, 12291, 12299, 20052, 20275, 20303, 20360, 20365, 20366, 20367, 20368, 20369, 20370, 20371, 20372, 20373, 20374, 20375, 20401, 20402, 20408, 20412, 20413, 20524, 20525, 20553, 20893, 20899, 20959, 20966, 20967, 20980, 21090, 21093, 21097, 21127, 21132, 30120, 30158, 30357, 30379, 30575, 30578, 40001, 40013, 40033, 40037, 40090, 40091, 40092, 40093, 40102, 40103, 40115, 40133, 40138, 40139, 40148, 40153, 40203, 40250, 40256, 40301, 40354, 40355, 40454, 40478, 40480, 40504, 40531, 40648, 40680, 40686, 40708, 40719, 40722},
-    [5] = {10086, 10118, 10405, 10620, 10621, 10622, 10787, 10815, 10848, 11013, 11020, 11093, 11221, 11318, 11319, 11320, 11321, 11322, 11323, 11324, 11325, 11326, 11327, 11328, 11365, 11368, 11497, 11498, 11499, 12037, 12039, 12040, 12091, 12092, 12167, 12168, 12312, 20189, 20190, 20197, 20198, 20292, 20380, 20534, 20535, 20536, 20538, 20549, 20551, 20552, 20565, 20840, 21018, 21020, 30036, 30124, 30132, 30138, 30423, 30424, 30425, 30442, 40160, 40194, 40210, 40211, 40212, 40213, 40288, 40431, 40498, 40585, 40616, 40675, 40718},
-    [4] = {10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 10284, 10285, 10783, 10784, 10785, 10786, 11121, 11122, 11123, 11124, 11125, 11126, 11127, 11128, 11129, 11130, 11224, 11337, 11694, 12088, 12089, 12192, 20053, 20054, 20117, 20301, 20333, 20425, 20426, 20641, 21051, 21094, 30064, 30065, 30066, 30171, 30238, 30239, 30240, 40047, 40052, 40128, 40129, 40130, 40131, 40476, 40613, 40659, 40662},
-    [15] = {10290, 10291, 10683, 10684, 10685, 10686, 10687, 10688, 10689, 10715, 10718, 10726, 10758, 10828, 10938, 10942, 10943, 10944, 10945, 11227, 11245, 11246, 11247, 11248, 11249, 11250, 11251, 11416, 11417, 11461, 11463, 11555, 12008, 12042, 12078, 12173, 40010, 40038, 40039, 40040, 40041, 40042, 40043, 40044, 40045, 40048, 40049, 40050, 40051, 40053, 40055, 40057, 40058, 40060, 40061, 40062, 40063, 40064, 40065, 40066, 40146, 40167, 40168, 40169, 40263, 40272, 40273, 40274, 40276, 40277, 40279, 40280, 40281, 40334, 40335, 40336, 40534, 40606, 40658, 40696, 40697},
-    [16] = {11085, 11086, 11087, 11088, 11089, 11090, 11254, 11255, 11256, 11257, 11258, 11259, 11260, 11261, 11262, 11432, 11433, 11434, 11435, 11436, 11437, 11440, 11707, 11915, 12041, 12137, 12253, 20406, 20407, 20441, 20494, 20495, 20496, 20924, 21123, 30203, 30226, 30227, 30228, 30229, 30250, 30278, 30279, 30422, 30494, 30590, 40088, 40110, 40111, 40112, 40113, 40114, 40174, 40177, 40178, 40179, 40180, 40399, 40457, 40515, 40704, 40705, 40706},
-    [7] = {10868, 10869, 10870, 10871, 10879, 10920, 10925, 10926, 11554, 20317, 20318, 20319, 20320, 20321, 20322, 20339, 20340, 20341, 20690, 20691, 20692, 30177, 40332, 40333},
-    [10] = {12158, 12159, 12160, 12161, 12162, 12163, 12164, 12165, 12171, 12172, 21085, 21086, 21087, 21088, 30576, 40651, 40652, 40653, 40654, 40655, 40656, 40657, 40699},
-    [8] = {10109, 10325, 10507, 10508, 10514, 10515, 10669, 10748, 10781, 10782, 10922, 11160, 11286, 11393, 11394, 11395, 11396, 11397, 11398, 11399, 11400, 11401, 11493, 11532, 11533, 11535, 11955, 11956, 11957, 11973, 11974, 11975, 11976, 11977, 11978, 11979, 11996, 11997, 12143, 12144, 12169, 12170, 12189, 12200, 12201, 12202, 12215, 20093, 20153, 20226, 20490, 20584, 20585, 20586, 20989, 20990, 20991, 21078, 21101, 30154, 30322, 30323, 30324, 30515, 30516, 30517, 30518, 30571, 30583, 40144, 40246, 40275, 40282, 40316, 40532, 40533, 40543, 40544, 40545, 40546, 40547, 40548, 40549, 40550, 40627, 40668},
-    [9] = {10482, 10483, 10484, 10485, 10486, 10487, 10488, 10489, 10490, 10576, 11008, 11356, 11357, 11358, 11359, 11360, 11361, 11362, 11371, 11719, 11720, 11721, 11722, 11723, 11724, 11725, 11726, 11727, 11728, 12047, 12048, 12094, 12095, 12096, 12097, 12098, 12099, 12100, 12101, 12102, 12114, 12199, 12303, 20556, 20557, 20818, 20819, 20820, 21024, 21053, 21064, 21130, 30121, 30428, 30429, 30430, 30431, 30432, 30555, 30556, 30557, 30558, 30559, 30561, 30565, 40094, 40163, 40232, 40402, 40403, 40404, 40405, 40406, 40553, 40588, 40589, 40618, 40619, 40620, 40621, 40622, 40623, 40625, 40626, 40720},
-    [18] = {10246, 10265, 10289, 10420, 10560, 10704, 10766, 11030, 11031, 11032, 11033, 11044, 11045, 11046, 11054, 11059, 11060, 11061, 11062, 11063, 11064, 11065, 11145, 11293, 11294, 11313, 11513, 11552, 11553, 11848, 11883, 11900, 12025, 12026, 12027, 12074, 12264, 12300, 20222, 20240, 20392, 20393, 20395, 20396, 20665, 20666, 20917, 21084, 30119, 30164, 30191, 30220, 30221, 30222, 30223, 30258, 30366, 30367, 30368, 30369, 30426, 30427, 30467, 30469, 30489, 40104, 40105, 40470, 40471, 40505},
-    [17] = {11834, 11835, 11836, 11837, 11838, 11839, 11840, 11841, 12075, 12076, 12193, 12289, 20880, 20881, 20882, 30457, 30458, 30459, 30460, 30461, 30547, 40463, 40464, 40465, 40466, 40663},
-    [11] = {11473, 11474, 11475, 11476, 11477, 11478, 11479, 11480, 11485, 11621, 11679, 20632, 20633, 20634, 30347, 30348, 30349, 30570, 40181, 40184, 40205, 40227, 40241, 40242, 40262, 40270, 40284, 40285, 40286, 40287, 40291, 40296, 40324, 40337, 40338, 40340, 40367, 40382, 40389, 40391, 40397, 40401, 40411, 40412, 40450, 40456, 40469, 40497, 40502, 40522, 40567},
-    [14] = {11857, 11858, 11859, 11860, 11861, 11862, 11863, 11864, 11865, 11866, 11867, 11868, 11869, 11890, 11891, 11936, 11937, 11938, 11939, 11940, 11941, 11942, 11954, 11987, 12254, 20952, 20953, 20954, 20955, 20956, 20957, 20997, 30505, 30506, 30507, 30521, 40484, 40485, 40486, 40487, 40488, 40489, 40490, 40491, 40526, 40527, 40528, 40529, 40703},
-    [19] = {11766, 11767, 11768, 11769, 11770, 11771, 11772, 11773, 11774, 11775, 11776, 11777, 12109, 20832, 20833, 20834, 20835, 20836, 20863, 30438, 30439, 40427, 40428, 40429, 40430},
-}
-
-
-    local function injectKeywordPacks()
-        if not rawget(_G, "Data") or not Data._recruitInfo then return end
-        for cid, cardList in pairs(CHAR_CARDS_MAP) do
-            local baseVal = 10000 + cid * 100
-            for _, suffix in ipairs({1, 10, 50}) do
-                local pval = baseVal + suffix
-                if Data._recruitInfo[pval] then
-                    Data._recruitInfo[pval]._rid = cardList
-                    Data._recruitInfo[pval]._cards = cardList
+    local function syncPackCardsToData()
+        if not rawget(_G, "Data") then return end
+        if Data._recruitInfo then
+            for boxId, rInfo in pairs(Data._recruitInfo) do
+                local pool = ClientData.getPackCardPool and ClientData.getPackCardPool(boxId)
+                if pool and #pool > 0 then
+                    rInfo._rid = pool
+                    rInfo._cards = pool
+                    local pidTbl = {}
+                    for _, cid in ipairs(pool) do
+                        table.insert(pidTbl, { cid })
+                    end
+                    rInfo._pid = pidTbl
                 end
-            end
-            if Data._recruitInfo[cid] then
-                Data._recruitInfo[cid]._rid = cardList
-                Data._recruitInfo[cid]._cards = cardList
             end
         end
-
-        local heroCards = CHAR_CARDS_MAP[15]
-        if heroCards then
-            for _, pval in ipairs({11201, 11210, 11250, 15}) do
-                if Data._recruitInfo and Data._recruitInfo[pval] then
-                    Data._recruitInfo[pval]._rid = heroCards
-                    Data._recruitInfo[pval]._cards = heroCards
-                end
-                if Data._dropInfo and Data._dropInfo[pval] then
-                    Data._dropInfo[pval]._rid = heroCards
-                    Data._dropInfo[pval]._cards = heroCards
+        if Data._dropInfo then
+            for boxId, dInfo in pairs(Data._dropInfo) do
+                local pool = ClientData.getPackCardPool and ClientData.getPackCardPool(boxId)
+                if pool and #pool > 0 then
+                    dInfo._rid = pool
+                    dInfo._cards = pool
+                    local pidTbl = {}
+                    for _, cid in ipairs(pool) do
+                        table.insert(pidTbl, { cid })
+                    end
+                    dInfo._pid = pidTbl
                 end
             end
         end
     end
-    pcall(injectKeywordPacks)
+    pcall(syncPackCardsToData)
 
     -- 1. ACHIEVEMENTS: Hook sendBonusRequest & claimBonus
     ClientData.sendBonusRequest = function(reqType)
@@ -4367,6 +5322,7 @@ local function patchBattleUi(BattleUi)
 
 	if not BattleUi then return end
 
+
 	-- Offline PVE Battle End Handler (Chapter / Elite / Commander / Rob Gold / Expedition)
 		if PlayerBattle and not PlayerBattle.setResult then
 		PlayerBattle.setResult = function(self, res)
@@ -4630,12 +5586,14 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 				if isClashRank and api and api.post then
 					local isBot = not (input and input._isOppoOnline and input._pvpMatch)
 					local oppoTrophy = (input and input._opponent and input._opponent._trophy) or (self._opponent and self._opponent._trophy) or 800
+					local battleRounds = (self._player and self._player._round) or (input and input._player and input._player._round) or 1
 					api:post("pvp_reward", {
 						account_id = accId,
 						result = (res == Data.BattleResult.win) and 1 or 2,
 						battle_type = "clash",
 						is_bot = isBot,
-						oppo_trophy = oppoTrophy
+						oppo_trophy = oppoTrophy,
+						rounds = battleRounds
 					}, function(rawRes)
 						local cr = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
 						if cr and cr.code == 200 then
@@ -4681,6 +5639,41 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 					else
 						finalizeBattleEnd(1, 1000, ((P and P._playerFindClash and P._playerFindClash._trophy) or 800) + 1, (P and P._gold) or 1000)
 					end
+				elseif self._battleType == Data.BattleType.PVP_survival_ex or (input and input._offlineKind == "survival_ex") then
+					local sEx = P and P._playerFindSurvivalEx
+					local dGold = (res == Data.BattleResult.win) and 3000 or 500
+					local dTrophy = (res == Data.BattleResult.win) and 15 or -10
+					local curT = (sEx and sEx._trophy) or 1000
+					local newT = math.max(0, curT + dTrophy)
+					if sEx then
+						sEx._trophy = newT
+						if res == Data.BattleResult.win then
+							sEx._win = (sEx._win or 0) + 1
+						else
+							sEx._lose = (sEx._lose or 0) + 1
+						end
+					end
+					local jdzcMod = _G.jdzc or package.loaded["jdzc"]
+					if jdzcMod and jdzcMod.captureSurvivalEx then
+						jdzcMod.captureSurvivalEx()
+					end
+					finalizeBattleEnd(dTrophy, dGold, newT, ((P and P._gold) or 0) + dGold)
+				elseif self._battleType == Data.BattleType.PVP_survival or (input and input._offlineKind == "survival") then
+					local sArea = P and P._playerFindSurvival
+					local dGold = (res == Data.BattleResult.win) and 2000 or 400
+					local curT = (P and P._playerFindClash and P._playerFindClash._trophy) or 800
+					if sArea then
+						if res == Data.BattleResult.win then
+							sArea._win = (sArea._win or 0) + 1
+						else
+							sArea._lose = (sArea._lose or 0) + 1
+						end
+					end
+					local jdzcMod = _G.jdzc or package.loaded["jdzc"]
+					if jdzcMod and jdzcMod.captureSurvival then
+						jdzcMod.captureSurvival()
+					end
+					finalizeBattleEnd(0, dGold, curT, ((P and P._gold) or 0) + dGold)
 				else
 					-- Non-rank or fallback
 					local dGold = (res == Data.BattleResult.win) and 1000 or 200
@@ -4714,6 +5707,16 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 		end
 		return ret
 	end
+
+	local oldBattleUiInit = BattleUi.init
+	if oldBattleUiInit then
+		BattleUi.init = function(self, scene, input, nameTag)
+			if ClientView and ClientView.updateScreenSize then
+				pcall(ClientView.updateScreenSize)
+			end
+			return oldBattleUiInit(self, scene, input, nameTag)
+		end
+	end
 end
 
 
@@ -4746,6 +5749,9 @@ local function patchResSwitchScene(ResSwitchScene)
 		rawset(self, "_switchedThisScene", true)
 
 		if self._toSceneId == ClientData.SceneId.battle then
+			if ClientView and ClientView.updateScreenSize then
+				pcall(ClientView.updateScreenSize)
+			end
 			lc.replaceScene(require("BattleScene").create(self._input))
 			ClientData.sendBattleLoadingDone()
 		else
@@ -4866,11 +5872,89 @@ local function patchBattleStep(BattleStep)
 	end
 end
 
+local function patchClientView(ClientView)
+	local target = (type(ClientView) == "table" and ClientView) or _G.ClientView
+	if not target or type(target) ~= "table" then return end
+
+	target.updateScreenSize = function()
+		if not lc or not lc.Director or not lc.Director.getVisibleSize then return end
+		local visSize = lc.Director:getVisibleSize()
+		if not visSize or visSize.width == 0 or visSize.height == 0 then return end
+
+		target.SCR_SIZE = visSize
+		target.SCR_W = visSize.width
+		target.SCR_CW = visSize.width / 2
+		target.SCR_H = visSize.height
+		target.SCR_CH = visSize.height / 2
+		target.SCR_EDGE = math.max(0, target.SCR_CW - 768)
+
+		local PlayerUi = _G.PlayerUi
+		if PlayerUi and PlayerUi.Pos then
+			local var_0_1 = target.SCR_CW - 28
+			local var_0_2 = 176
+			PlayerUi.Pos.boss = cc.p(target.SCR_CW, target.SCR_CH + 180)
+			PlayerUi.Pos.attacker_fortress = cc.p(target.SCR_CW, target.SCR_CH - 250)
+			PlayerUi.Pos.defender_fortress = cc.p(target.SCR_CW, target.SCR_CH + 250)
+			PlayerUi.Pos.attacker_grave = cc.p(target.SCR_CW - 524, target.SCR_CH - 75)
+			PlayerUi.Pos.defender_grave = cc.p(target.SCR_CW - 524, target.SCR_CH + 77)
+			PlayerUi.Pos.attacker_rare = cc.p(target.SCR_CW - 524, target.SCR_CH - 210)
+			PlayerUi.Pos.defender_rare = cc.p(target.SCR_CW - 525, target.SCR_CH + 214)
+			PlayerUi.Pos.attacker_cover = cc.p(target.SCR_CW + 460, target.SCR_CH - 60)
+			PlayerUi.Pos.defender_cover = cc.p(target.SCR_CW + 458, target.SCR_CH + 58)
+			PlayerUi.Pos.attacker_gems = {
+				cc.p(target.SCR_CW - 458, target.SCR_CH - 86),
+				cc.p(target.SCR_CW - 458, target.SCR_CH - 150),
+				cc.p(target.SCR_CW - 458, target.SCR_CH - 218)
+			}
+			PlayerUi.Pos.defender_gems = {
+				cc.p(target.SCR_CW - 458, target.SCR_CH + 86),
+				cc.p(target.SCR_CW - 458, target.SCR_CH + 154),
+				cc.p(target.SCR_CW - 458, target.SCR_CH + 218)
+			}
+			PlayerUi.Pos.attacker_hand_y = target.SCR_CH - 370
+			PlayerUi.Pos.defender_hand_y = target.SCR_CH + 410
+			PlayerUi.Pos.attacker_board_x = {
+				var_0_1,
+				var_0_1 + var_0_2,
+				var_0_1 - var_0_2,
+				var_0_1 + var_0_2 * 2,
+				var_0_1 - var_0_2 * 2,
+				var_0_1 + var_0_2
+			}
+			PlayerUi.Pos.defender_board_x = {
+				var_0_1,
+				var_0_1 - var_0_2,
+				var_0_1 + var_0_2,
+				var_0_1 - var_0_2 * 2,
+				var_0_1 + var_0_2 * 2,
+				var_0_1 - var_0_2
+			}
+			PlayerUi.Pos.attacker_board_y = target.SCR_CH - 150
+			PlayerUi.Pos.defender_board_y = target.SCR_CH + 150
+			PlayerUi.Pos.attacker_area = target.SCR_CH + 70
+		end
+
+		local ClientData = _G.ClientData
+		if ClientData and ClientData.initCamera3D then
+			pcall(function()
+				if ClientData._camera3D then
+					ClientData._camera3D:release()
+					ClientData._camera3D = nil
+				end
+				ClientData.initCamera3D()
+			end)
+		end
+	end
+
+	pcall(target.updateScreenSize)
+end
+
 local patches = {
 	BaseScene = patchBaseScene,
 	ResSwitchScene = patchResSwitchScene,
 	Data = patchData,
 	ClientData = patchClientData,
+	ClientView = patchClientView,
 	Socket_pb = patchSocket,
 	extern = patchExtern,
 	lcUtils = patchLcUtils,
@@ -5131,41 +6215,7 @@ function M.patchLateClientData()
 				end
 			end
 
-			local recruit = (Data._recruitInfo and Data._recruitInfo[boxId]) or (Data._dropInfo and Data._dropInfo[boxId])
-			local pool = {}
-			if isLiya and liyaIdx then
-				local lCards = LIYA_CARDS_MAP and LIYA_CARDS_MAP[liyaIdx]
-				if lCards then
-					for _, cidVal in ipairs(lCards) do
-						table.insert(pool, cidVal)
-					end
-				end
-			else
-				local cid = (boxId and boxId >= 10000 and boxId < 20000) and math.floor((boxId - 10000) / 100) or nil
-				if boxId == 11201 or boxId == 11210 or boxId == 11250 then
-					cid = 15
-				end
-				local charCards = (CHAR_CARDS_MAP and CHAR_CARDS_MAP[boxId]) or (cid and CHAR_CARDS_MAP and CHAR_CARDS_MAP[cid])
-				if charCards and #charCards > 0 then
-					for _, cidVal in ipairs(charCards) do
-						table.insert(pool, cidVal)
-					end
-				end
-			end
-			if #pool == 0 and recruit then
-				if recruit._rid and #recruit._rid > 0 then
-					for i = 1, #recruit._rid do
-						table.insert(pool, recruit._rid[i])
-					end
-				elseif recruit._pid then
-					for _, pv in ipairs(recruit._pid) do
-						local pId = type(pv) == "table" and (pv[1] or pv.id) or pv
-						if pId and tonumber(pId) then
-							table.insert(pool, tonumber(pId))
-						end
-					end
-				end
-			end
+			local pool = (ClientData.getPackCardPool and ClientData.getPackCardPool(boxId)) or {}
 
 			local api = jsbridge and jsbridge.object("jdzcApi")
 			if not api or not api.post then

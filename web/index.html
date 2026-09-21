@@ -4,15 +4,15 @@
 	<meta charset="utf-8">
 	<title>Yugihlor - trading "Nạp" game</title>
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20260919v14">
-	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260919v14">
-	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260919v14">
-	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20260919v14">
-	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20260919v14">
+	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20260921v3">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260921v3">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260921v3">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20260921v3">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20260921v3">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-	<link rel="preload" href="res/updater/HYB2GJM.TTF?v=20260919v14" as="font" type="font/ttf" crossorigin>
+	<link rel="preload" href="res/updater/HYB2GJM.TTF?v=20260921v3" as="font" type="font/ttf" crossorigin>
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
 	<style>
@@ -86,7 +86,7 @@
 			position: fixed; inset: 0; z-index: 100;
 			display: flex; align-items: flex-end; justify-content: center;
 			background:
-				url('res/updater/loading.jpg') center center / cover no-repeat,
+				url('res/updater/loading.jpg?v=20260921v3') center center / cover no-repeat,
 				#0d1a2e;
 			padding-bottom: clamp(28px, 6vh, 60px);
 		}
@@ -338,15 +338,16 @@
 			    "shape-nodes", "text-input", "actions", "labels",
 			    "transitions", "motion-streak", "editbox"],
 		"jsList": [
-			"js/res.js?v=20260919v14",
-			"js/engine.js?v=20260919v14",
-			"js/net.js?v=20260919v14"
+			"js/res.js?v=20260922v4",
+			"js/engine.js?v=20260922v4",
+			"js/net.js?v=20260922v4"
 		]
 	};
 
 	window.JDZC_TRACE_MEMBERS = false;
 	window.JDZC_CONFIG = Object.assign({
-		resBase: 'res/',
+		resBase: "res/",
+		entry: "main",
 		wsPort: 9192,
 		platform: "browser",
 		renderer: "webgl",
@@ -356,7 +357,7 @@
 		options: {
 			sdk: "offline"
 		},
-		version: '20260919v14',
+		version: '20260922v4',
 		wsHost: window.location.hostname || '127.0.0.1',
 		trace: false,
 		preload: [
@@ -370,6 +371,9 @@
 			'res/cards_back4.lcres',
 			'res/props.lcres',
 			'res/city.lcres',
+			'res/battle.lcres',
+			'res/bat_loading/bat_loading.lcres',
+			'res/effects/vs.lcres',
 			'res/cards_img_1.lcres',
 			'res/cards_img_2.lcres',
 			'res/cards_img_3.lcres',
@@ -382,7 +386,7 @@
 			'res/cards_img_10.lcres'
 		],
 		region: { id: 1, ip: window.location.hostname || '127.0.0.1', port: 9191, name: 'S1 - Yugihlor - trading "Nạp" game' },
-		version: '20260919v14',
+		version: '20260922v4',
 	}, window.JDZC_CONFIG || {});
 
 	if (!window.JDZC_CONFIG.wsUrl) {
@@ -516,13 +520,10 @@
 			}
 			console.log('[jdzcApi] post:', endpoint, payload);
 
-			// Tách server xử lý Shop / Mua gói bài / Giftcode / Phân tách bài sang Server 2 chuyên trách (cổng 8082)
-			var shopApis = ['buy_package', 'buy_gold', 'buy_depot', 'redeem_gift_code', 'gift_code', 'claim_gift', 'checkin', 'sync_currency', 'decompose_card', 'decompose_all'];
-			var targetUrl = '/api/' + endpoint;
-			if (shopApis.indexOf(endpoint) !== -1) {
-				var shopHost = window.SHOP_SERVER_URL || (window.location.protocol + '//' + (window.location.hostname || '127.0.0.1') + ':8082');
-				targetUrl = shopHost + '/api/' + endpoint;
-			}
+			// Tách server xử lý Shop / Mua gói bài / Giftcode / Phân tách bài sang Server 2 chuyên trách (cổng 8082).
+			// Web server (cổng 8080) tự động proxy các request này sang Shop Server (8082).
+			// Do đó luôn gọi cùng origin (/api/...) để hoạt động hoàn hảo cả khi chơi qua Domain HTTPS/Cloudflare và Localhost mà không bị lỗi chặn port.
+			var targetUrl = (window.SHOP_SERVER_URL ? window.SHOP_SERVER_URL : '') + '/api/' + endpoint;
 
 			fetch(targetUrl, {
 				method: 'POST',
@@ -558,6 +559,16 @@
 
 	window.injectOneChatMessage = function (m) {
 		if (!m) return;
+		if (m.timestamp) {
+			var msgTs = Number(m.timestamp);
+			var msgDate = new Date(msgTs > 1e12 ? msgTs : msgTs * 1000);
+			var now = new Date();
+			if (msgDate.getFullYear() !== now.getFullYear() ||
+			    msgDate.getMonth() !== now.getMonth() ||
+			    msgDate.getDate() !== now.getDate()) {
+				return;
+			}
+		}
 		if (window.jdzcLua && window.jdzcLua.run) {
 			try {
 				var id = Number(m.id || 0);
@@ -652,7 +663,16 @@
 
 	window.initChatWs = function () {
 		if (window._chatWs && (window._chatWs.readyState === WebSocket.OPEN || window._chatWs.readyState === WebSocket.CONNECTING)) return;
-		var wsUrl = (window.JDZC_CONFIG && window.JDZC_CONFIG.wsUrl) ? window.JDZC_CONFIG.wsUrl : ((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + (window.location.hostname || '127.0.0.1') + ':9192/ws');
+		var chatPort = (window.JDZC_CONFIG && window.JDZC_CONFIG.chatWsPort) ? window.JDZC_CONFIG.chatWsPort : 9193;
+		var wsUrl = (window.JDZC_CONFIG && window.JDZC_CONFIG.chatWsUrl) ? window.JDZC_CONFIG.chatWsUrl : null;
+		if (!wsUrl) {
+			if (window.location.protocol === 'https:') {
+				wsUrl = 'wss://' + window.location.host + '/chat_ws';
+			} else {
+				var host = window.location.hostname || '127.0.0.1';
+				wsUrl = 'ws://' + host + ':' + chatPort + '/ws';
+			}
+		}
 		var ws = new WebSocket(wsUrl);
 		ws.binaryType = 'arraybuffer';
 		window._chatWs = ws;
@@ -761,9 +781,9 @@
 					if (!text) return;
 					var pkt = JSON.parse(text);
 					if (pkt.t === "action" && pkt.ints) {
-						console.log('[PVP JS] Received action seq=' + pkt.seq + ' ints=' + pkt.ints.length);
+						console.log('[PVP JS] Received action seq=' + pkt.seq + ' ints=' + pkt.ints.length + ' add_time=' + pkt.add_time + (pkt.time_left ? ' time_left=' + pkt.time_left : ''));
 						if (self.onActionCallback) {
-							self.onActionCallback(JSON.stringify(pkt.ints));
+							self.onActionCallback(JSON.stringify(pkt.ints), pkt.add_time || 0, pkt.max_time || 120, pkt.time_left);
 						}
 					} else if (pkt.t === "peer_left" || pkt.t === "surrender") {
 						console.log('[PVP JS] Peer left / surrendered');
@@ -829,20 +849,24 @@
 		sendAction: function () {
 			var args = Array.prototype.slice.call(arguments);
 			if (typeof args[0] === 'object' && args.length >= 3) args.shift();
-			var matchId = args[0], intsRaw = args[1];
+			var matchId = args[0], intsRaw = args[1], timeLeft = args[2];
 			var ints = intsRaw;
 			if (typeof intsRaw === 'string') {
 				try { ints = JSON.parse(intsRaw); } catch(e) {}
 			}
 			if (!Array.isArray(ints) || ints.length === 0) return;
 			this.seq++;
-			console.log('[PVP JS] sendAction seq=' + this.seq + ' ints=' + ints.length + ' ' + ints.slice(0, 4));
-			this._sendPacket({
+			var pkt = {
 				t: "action",
 				match_id: String(matchId || this.matchId),
 				ints: ints,
 				seq: this.seq
-			});
+			};
+			if (timeLeft !== undefined && timeLeft !== null) {
+				pkt.time_left = Number(timeLeft);
+			}
+			console.log('[PVP JS] sendAction seq=' + this.seq + ' ints=' + ints.length + ' ' + ints.slice(0, 4) + (pkt.time_left ? ' timeLeft=' + pkt.time_left : ''));
+			this._sendPacket(pkt);
 		},
 
 		sendEnd: function () {
@@ -891,9 +915,9 @@
 	window.jdzcApi.pvpSendEnd = function () { return window.jdzcPvp.sendEnd.apply(window.jdzcPvp, arguments); };
 	window.jdzcApi.pvpLeave = function () { return window.jdzcPvp.leave.apply(window.jdzcPvp, arguments); };
 	</script>
-	<script src="dist/lua51.js?v=20260919v14"></script>
-	<script src="js/lua.js?v=20260919v14"></script>
-	<script src="vendor/CCBoot.js?v=20260919v14"></script>
-	<script src="js/boot.js?v=20260919v14"></script>
+	<script src="dist/lua51.js?v=20260922v4"></script>
+	<script src="js/lua.js?v=20260922v4"></script>
+	<script src="vendor/CCBoot.js?v=20260922v4"></script>
+	<script src="js/boot.js?v=20260922v4"></script>
 </body>
 </html>

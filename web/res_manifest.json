@@ -18891,7 +18891,228 @@
     "res/updater/loading_skin.jpg",
     "res/updater/loadingr.jpg",
     "res/updater/logo_10037.jpg",
-    "res/updater/logo_ASDK.jpg"
+    "res/updater/logo_ASDK.jpg",
+    "res/new/background.png",
+    "res/new/btn-khangdinh.png",
+    "res/new/btn-phudinh.png",
+    "res/new/btn-red.png",
+    "res/new/debug_big1_from_jpm.png",
+    "res/new/debug_big1_patched.png",
+    "res/new/debug_big3_from_jpm.png",
+    "res/new/debug_big3_patched.png",
+    "res/new/debug_res1_from_jpm.png",
+    "res/new/debug_res1_patched.png",
+    "res/new/debug_res3_from_jpm.png",
+    "res/new/debug_res3_patched.png",
+    "res/new/debug_res3_rotated_36x32.png",
+    "res/new/linh_thach.png",
+    "res/new/linh_thach_34.png",
+    "res/new/linh_thach_76.png",
+    "res/new/linh_thach_vip.png",
+    "res/new/linh_thach_vip_36.png",
+    "res/new/linh_thach_vip_76.png",
+    "res/new/preview_btn_cancel_180.png",
+    "res/new/preview_btn_confirm_180.png",
+    "res/new/test_cancel_120x60.png",
+    "res/new/test_cancel_140x78.png",
+    "res/new/test_cancel_180x78.png",
+    "res/new/test_cancel_240x78.png",
+    "res/new/test_cancel_80x40.png",
+    "res/new/test_confirm_120x60.png",
+    "res/new/test_confirm_140x78.png",
+    "res/new/test_confirm_180x78.png",
+    "res/new/test_confirm_240x78.png",
+    "res/new/test_confirm_80x40.png",
+    "res/new/test_kd_df_140.png",
+    "res/new/test_kd_df_180.png",
+    "res/new/test_kd_df_220.png",
+    "res/new/test_kd_s5_140.png",
+    "res/new/test_kd_s5_180.png",
+    "res/new/test_kd_s5_220.png",
+    "res/new/test_kd_s9_140.png",
+    "res/new/test_kd_s9_180.png",
+    "res/new/test_kd_s9_220.png",
+    "res/new/test_pd_df_140.png",
+    "res/new/test_pd_df_180.png",
+    "res/new/test_pd_df_220.png",
+    "res/new/test_pd_s5_140.png",
+    "res/new/test_pd_s5_180.png",
+    "res/new/test_pd_s5_220.png",
+    "res/new/buttons/cancel_100x40.png",
+    "res/new/buttons/cancel_100x60.png",
+    "res/new/buttons/cancel_100x78.png",
+    "res/new/buttons/cancel_110x44.png",
+    "res/new/buttons/cancel_110x60.png",
+    "res/new/buttons/cancel_110x78.png",
+    "res/new/buttons/cancel_120x40.png",
+    "res/new/buttons/cancel_120x60.png",
+    "res/new/buttons/cancel_120x70.png",
+    "res/new/buttons/cancel_120x78.png",
+    "res/new/buttons/cancel_140x44.png",
+    "res/new/buttons/cancel_140x60.png",
+    "res/new/buttons/cancel_140x70.png",
+    "res/new/buttons/cancel_140x78.png",
+    "res/new/buttons/cancel_146x70.png",
+    "res/new/buttons/cancel_150x60.png",
+    "res/new/buttons/cancel_150x78.png",
+    "res/new/buttons/cancel_152x78.png",
+    "res/new/buttons/cancel_160x60.png",
+    "res/new/buttons/cancel_160x78.png",
+    "res/new/buttons/cancel_170x78.png",
+    "res/new/buttons/cancel_180x50.png",
+    "res/new/buttons/cancel_180x56.png",
+    "res/new/buttons/cancel_180x60.png",
+    "res/new/buttons/cancel_180x70.png",
+    "res/new/buttons/cancel_180x78.png",
+    "res/new/buttons/cancel_200x60.png",
+    "res/new/buttons/cancel_200x78.png",
+    "res/new/buttons/cancel_210x60.png",
+    "res/new/buttons/cancel_210x78.png",
+    "res/new/buttons/cancel_220x60.png",
+    "res/new/buttons/cancel_220x70.png",
+    "res/new/buttons/cancel_220x78.png",
+    "res/new/buttons/cancel_240x78.png",
+    "res/new/buttons/cancel_250x56.png",
+    "res/new/buttons/cancel_250x60.png",
+    "res/new/buttons/cancel_250x78.png",
+    "res/new/buttons/cancel_260x60.png",
+    "res/new/buttons/cancel_260x64.png",
+    "res/new/buttons/cancel_260x78.png",
+    "res/new/buttons/cancel_300x78.png",
+    "res/new/buttons/cancel_60x50.png",
+    "res/new/buttons/cancel_60x60.png",
+    "res/new/buttons/cancel_80x40.png",
+    "res/new/buttons/cancel_80x60.png",
+    "res/new/buttons/cancel_82x60.png",
+    "res/new/buttons/confirm_100x40.png",
+    "res/new/buttons/confirm_100x60.png",
+    "res/new/buttons/confirm_100x78.png",
+    "res/new/buttons/confirm_110x44.png",
+    "res/new/buttons/confirm_110x60.png",
+    "res/new/buttons/confirm_110x78.png",
+    "res/new/buttons/confirm_120x40.png",
+    "res/new/buttons/confirm_120x60.png",
+    "res/new/buttons/confirm_120x70.png",
+    "res/new/buttons/confirm_120x78.png",
+    "res/new/buttons/confirm_140x44.png",
+    "res/new/buttons/confirm_140x60.png",
+    "res/new/buttons/confirm_140x70.png",
+    "res/new/buttons/confirm_140x78.png",
+    "res/new/buttons/confirm_146x70.png",
+    "res/new/buttons/confirm_150x60.png",
+    "res/new/buttons/confirm_150x78.png",
+    "res/new/buttons/confirm_152x78.png",
+    "res/new/buttons/confirm_160x60.png",
+    "res/new/buttons/confirm_160x78.png",
+    "res/new/buttons/confirm_170x78.png",
+    "res/new/buttons/confirm_180x50.png",
+    "res/new/buttons/confirm_180x56.png",
+    "res/new/buttons/confirm_180x60.png",
+    "res/new/buttons/confirm_180x70.png",
+    "res/new/buttons/confirm_180x78.png",
+    "res/new/buttons/confirm_200x60.png",
+    "res/new/buttons/confirm_200x78.png",
+    "res/new/buttons/confirm_210x60.png",
+    "res/new/buttons/confirm_210x78.png",
+    "res/new/buttons/confirm_220x60.png",
+    "res/new/buttons/confirm_220x70.png",
+    "res/new/buttons/confirm_220x78.png",
+    "res/new/buttons/confirm_240x78.png",
+    "res/new/buttons/confirm_250x56.png",
+    "res/new/buttons/confirm_250x60.png",
+    "res/new/buttons/confirm_250x78.png",
+    "res/new/buttons/confirm_260x60.png",
+    "res/new/buttons/confirm_260x64.png",
+    "res/new/buttons/confirm_260x78.png",
+    "res/new/buttons/confirm_300x78.png",
+    "res/new/buttons/confirm_60x50.png",
+    "res/new/buttons/confirm_60x60.png",
+    "res/new/buttons/confirm_80x40.png",
+    "res/new/buttons/confirm_80x60.png",
+    "res/new/buttons/confirm_82x60.png",
+    "res/new/buttons/red_100x40.png",
+    "res/new/buttons/red_100x60.png",
+    "res/new/buttons/red_100x78.png",
+    "res/new/buttons/red_110x44.png",
+    "res/new/buttons/red_110x60.png",
+    "res/new/buttons/red_110x78.png",
+    "res/new/buttons/red_120x40.png",
+    "res/new/buttons/red_120x60.png",
+    "res/new/buttons/red_120x70.png",
+    "res/new/buttons/red_120x78.png",
+    "res/new/buttons/red_140x44.png",
+    "res/new/buttons/red_140x60.png",
+    "res/new/buttons/red_140x70.png",
+    "res/new/buttons/red_140x78.png",
+    "res/new/buttons/red_146x70.png",
+    "res/new/buttons/red_150x60.png",
+    "res/new/buttons/red_150x78.png",
+    "res/new/buttons/red_152x78.png",
+    "res/new/buttons/red_160x60.png",
+    "res/new/buttons/red_160x78.png",
+    "res/new/buttons/red_170x78.png",
+    "res/new/buttons/red_180x50.png",
+    "res/new/buttons/red_180x56.png",
+    "res/new/buttons/red_180x60.png",
+    "res/new/buttons/red_180x70.png",
+    "res/new/buttons/red_180x78.png",
+    "res/new/buttons/red_200x60.png",
+    "res/new/buttons/red_200x78.png",
+    "res/new/buttons/red_210x60.png",
+    "res/new/buttons/red_210x78.png",
+    "res/new/buttons/red_220x60.png",
+    "res/new/buttons/red_220x70.png",
+    "res/new/buttons/red_220x78.png",
+    "res/new/buttons/red_240x78.png",
+    "res/new/buttons/red_250x56.png",
+    "res/new/buttons/red_250x60.png",
+    "res/new/buttons/red_250x78.png",
+    "res/new/buttons/red_260x60.png",
+    "res/new/buttons/red_260x64.png",
+    "res/new/buttons/red_260x78.png",
+    "res/new/buttons/red_300x78.png",
+    "res/new/buttons/red_60x50.png",
+    "res/new/buttons/red_60x60.png",
+    "res/new/buttons/red_80x40.png",
+    "res/new/buttons/red_80x60.png",
+    "res/new/buttons/red_82x60.png",
+    "res/new/extracted_btns/img_btn_1.png",
+    "res/new/extracted_btns/img_btn_1_s.png",
+    "res/new/extracted_btns/img_btn_2.png",
+    "res/new/extracted_btns/img_btn_2_s.png",
+    "res/new/extracted_btns/img_btn_3.png",
+    "res/new/extracted_btns/img_btn_4.png",
+    "res/new/thumb/10004.png",
+    "res/new/thumb/1004.png",
+    "res/new/thumb/inspect_10040.png",
+    "res/new/thumb/inspect_10041.png",
+    "res/new/thumb/inspect_10042.png",
+    "res/new/thumb/inspect_10043.png",
+    "res/new/thumb/inspect_10044.png",
+    "res/new/thumb/inspect_10045.png",
+    "res/new/thumb/inspect_10046.png",
+    "res/new/thumb/inspect_10047.png",
+    "res/new/thumb/inspect_10048.png",
+    "res/new/thumb/inspect_10049.png",
+    "res/new/thumb/inspect_10073.png",
+    "res/new/thumb/inspect_10074.png",
+    "res/new/thumb/old_10004_color.jpg",
+    "res/new/thumb/old_10004_extracted.png",
+    "res/new/thumb/old_dm.png",
+    "res/new/thumb/ptbd.png",
+    "res/new/thumb/ptbd_zoomed.png",
+    "res/new/thumb/served_10004.png",
+    "res/new/thumb/test_crop_125.png",
+    "res/new/thumb/test_crop_140.png",
+    "res/new/thumb/test_crop_155.png",
+    "res/new/thumb/test_crop_175.png",
+    "res/new/thumb/test_crop_190.png",
+    "res/new/thumb/test_feather_142.png",
+    "res/new/thumb/test_feather_150.png",
+    "res/new/thumb/test_feather_155.png",
+    "res/new/thumb/test_feather_160.png",
+    "res/new/thumb/test_ptbd_decoded.png",
+    "res/new/thumb/tienkiem.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [
@@ -23849,6 +24070,1774 @@
     "res/jpg/lottery_11901_mask.png": [
       252,
       530
+    ],
+    "res/new/background.png": [
+      1672,
+      940
+    ],
+    "new/background.png": [
+      1672,
+      940
+    ],
+    "res/new/btn-khangdinh.png": [
+      991,
+      194
+    ],
+    "new/btn-khangdinh.png": [
+      991,
+      194
+    ],
+    "res/new/btn-phudinh.png": [
+      987,
+      191
+    ],
+    "new/btn-phudinh.png": [
+      987,
+      191
+    ],
+    "res/new/btn-red.png": [
+      845,
+      203
+    ],
+    "new/btn-red.png": [
+      845,
+      203
+    ],
+    "res/new/debug_big1_from_jpm.png": [
+      76,
+      76
+    ],
+    "new/debug_big1_from_jpm.png": [
+      76,
+      76
+    ],
+    "res/new/debug_big1_patched.png": [
+      76,
+      76
+    ],
+    "new/debug_big1_patched.png": [
+      76,
+      76
+    ],
+    "res/new/debug_big3_from_jpm.png": [
+      76,
+      76
+    ],
+    "new/debug_big3_from_jpm.png": [
+      76,
+      76
+    ],
+    "res/new/debug_big3_patched.png": [
+      76,
+      76
+    ],
+    "new/debug_big3_patched.png": [
+      76,
+      76
+    ],
+    "res/new/debug_res1_from_jpm.png": [
+      34,
+      34
+    ],
+    "new/debug_res1_from_jpm.png": [
+      34,
+      34
+    ],
+    "res/new/debug_res1_patched.png": [
+      34,
+      34
+    ],
+    "new/debug_res1_patched.png": [
+      34,
+      34
+    ],
+    "res/new/debug_res3_from_jpm.png": [
+      32,
+      36
+    ],
+    "new/debug_res3_from_jpm.png": [
+      32,
+      36
+    ],
+    "res/new/debug_res3_patched.png": [
+      32,
+      36
+    ],
+    "new/debug_res3_patched.png": [
+      32,
+      36
+    ],
+    "res/new/debug_res3_rotated_36x32.png": [
+      36,
+      32
+    ],
+    "new/debug_res3_rotated_36x32.png": [
+      36,
+      32
+    ],
+    "res/new/linh_thach.png": [
+      465,
+      661
+    ],
+    "new/linh_thach.png": [
+      465,
+      661
+    ],
+    "res/new/linh_thach_34.png": [
+      34,
+      34
+    ],
+    "new/linh_thach_34.png": [
+      34,
+      34
+    ],
+    "res/new/linh_thach_76.png": [
+      76,
+      76
+    ],
+    "new/linh_thach_76.png": [
+      76,
+      76
+    ],
+    "res/new/linh_thach_vip.png": [
+      573,
+      968
+    ],
+    "new/linh_thach_vip.png": [
+      573,
+      968
+    ],
+    "res/new/linh_thach_vip_36.png": [
+      32,
+      36
+    ],
+    "new/linh_thach_vip_36.png": [
+      32,
+      36
+    ],
+    "res/new/linh_thach_vip_76.png": [
+      76,
+      76
+    ],
+    "new/linh_thach_vip_76.png": [
+      76,
+      76
+    ],
+    "res/new/preview_btn_cancel_180.png": [
+      180,
+      78
+    ],
+    "new/preview_btn_cancel_180.png": [
+      180,
+      78
+    ],
+    "res/new/preview_btn_confirm_180.png": [
+      180,
+      78
+    ],
+    "new/preview_btn_confirm_180.png": [
+      180,
+      78
+    ],
+    "res/new/test_cancel_120x60.png": [
+      120,
+      60
+    ],
+    "new/test_cancel_120x60.png": [
+      120,
+      60
+    ],
+    "res/new/test_cancel_140x78.png": [
+      140,
+      78
+    ],
+    "new/test_cancel_140x78.png": [
+      140,
+      78
+    ],
+    "res/new/test_cancel_180x78.png": [
+      180,
+      78
+    ],
+    "new/test_cancel_180x78.png": [
+      180,
+      78
+    ],
+    "res/new/test_cancel_240x78.png": [
+      240,
+      78
+    ],
+    "new/test_cancel_240x78.png": [
+      240,
+      78
+    ],
+    "res/new/test_cancel_80x40.png": [
+      80,
+      40
+    ],
+    "new/test_cancel_80x40.png": [
+      80,
+      40
+    ],
+    "res/new/test_confirm_120x60.png": [
+      120,
+      60
+    ],
+    "new/test_confirm_120x60.png": [
+      120,
+      60
+    ],
+    "res/new/test_confirm_140x78.png": [
+      140,
+      78
+    ],
+    "new/test_confirm_140x78.png": [
+      140,
+      78
+    ],
+    "res/new/test_confirm_180x78.png": [
+      180,
+      78
+    ],
+    "new/test_confirm_180x78.png": [
+      180,
+      78
+    ],
+    "res/new/test_confirm_240x78.png": [
+      240,
+      78
+    ],
+    "new/test_confirm_240x78.png": [
+      240,
+      78
+    ],
+    "res/new/test_confirm_80x40.png": [
+      80,
+      40
+    ],
+    "new/test_confirm_80x40.png": [
+      80,
+      40
+    ],
+    "res/new/test_kd_df_140.png": [
+      140,
+      78
+    ],
+    "new/test_kd_df_140.png": [
+      140,
+      78
+    ],
+    "res/new/test_kd_df_180.png": [
+      180,
+      78
+    ],
+    "new/test_kd_df_180.png": [
+      180,
+      78
+    ],
+    "res/new/test_kd_df_220.png": [
+      220,
+      78
+    ],
+    "new/test_kd_df_220.png": [
+      220,
+      78
+    ],
+    "res/new/test_kd_s5_140.png": [
+      140,
+      78
+    ],
+    "new/test_kd_s5_140.png": [
+      140,
+      78
+    ],
+    "res/new/test_kd_s5_180.png": [
+      180,
+      78
+    ],
+    "new/test_kd_s5_180.png": [
+      180,
+      78
+    ],
+    "res/new/test_kd_s5_220.png": [
+      220,
+      78
+    ],
+    "new/test_kd_s5_220.png": [
+      220,
+      78
+    ],
+    "res/new/test_kd_s9_140.png": [
+      140,
+      78
+    ],
+    "new/test_kd_s9_140.png": [
+      140,
+      78
+    ],
+    "res/new/test_kd_s9_180.png": [
+      180,
+      78
+    ],
+    "new/test_kd_s9_180.png": [
+      180,
+      78
+    ],
+    "res/new/test_kd_s9_220.png": [
+      220,
+      78
+    ],
+    "new/test_kd_s9_220.png": [
+      220,
+      78
+    ],
+    "res/new/test_pd_df_140.png": [
+      140,
+      78
+    ],
+    "new/test_pd_df_140.png": [
+      140,
+      78
+    ],
+    "res/new/test_pd_df_180.png": [
+      180,
+      78
+    ],
+    "new/test_pd_df_180.png": [
+      180,
+      78
+    ],
+    "res/new/test_pd_df_220.png": [
+      220,
+      78
+    ],
+    "new/test_pd_df_220.png": [
+      220,
+      78
+    ],
+    "res/new/test_pd_s5_140.png": [
+      140,
+      78
+    ],
+    "new/test_pd_s5_140.png": [
+      140,
+      78
+    ],
+    "res/new/test_pd_s5_180.png": [
+      180,
+      78
+    ],
+    "new/test_pd_s5_180.png": [
+      180,
+      78
+    ],
+    "res/new/test_pd_s5_220.png": [
+      220,
+      78
+    ],
+    "new/test_pd_s5_220.png": [
+      220,
+      78
+    ],
+    "res/new/buttons/cancel_100x40.png": [
+      100,
+      40
+    ],
+    "new/buttons/cancel_100x40.png": [
+      100,
+      40
+    ],
+    "res/new/buttons/cancel_100x60.png": [
+      100,
+      60
+    ],
+    "new/buttons/cancel_100x60.png": [
+      100,
+      60
+    ],
+    "res/new/buttons/cancel_100x78.png": [
+      100,
+      78
+    ],
+    "new/buttons/cancel_100x78.png": [
+      100,
+      78
+    ],
+    "res/new/buttons/cancel_110x44.png": [
+      110,
+      44
+    ],
+    "new/buttons/cancel_110x44.png": [
+      110,
+      44
+    ],
+    "res/new/buttons/cancel_110x60.png": [
+      110,
+      60
+    ],
+    "new/buttons/cancel_110x60.png": [
+      110,
+      60
+    ],
+    "res/new/buttons/cancel_110x78.png": [
+      110,
+      78
+    ],
+    "new/buttons/cancel_110x78.png": [
+      110,
+      78
+    ],
+    "res/new/buttons/cancel_120x40.png": [
+      120,
+      40
+    ],
+    "new/buttons/cancel_120x40.png": [
+      120,
+      40
+    ],
+    "res/new/buttons/cancel_120x60.png": [
+      120,
+      60
+    ],
+    "new/buttons/cancel_120x60.png": [
+      120,
+      60
+    ],
+    "res/new/buttons/cancel_120x70.png": [
+      120,
+      70
+    ],
+    "new/buttons/cancel_120x70.png": [
+      120,
+      70
+    ],
+    "res/new/buttons/cancel_120x78.png": [
+      120,
+      78
+    ],
+    "new/buttons/cancel_120x78.png": [
+      120,
+      78
+    ],
+    "res/new/buttons/cancel_140x44.png": [
+      140,
+      44
+    ],
+    "new/buttons/cancel_140x44.png": [
+      140,
+      44
+    ],
+    "res/new/buttons/cancel_140x60.png": [
+      140,
+      60
+    ],
+    "new/buttons/cancel_140x60.png": [
+      140,
+      60
+    ],
+    "res/new/buttons/cancel_140x70.png": [
+      140,
+      70
+    ],
+    "new/buttons/cancel_140x70.png": [
+      140,
+      70
+    ],
+    "res/new/buttons/cancel_140x78.png": [
+      140,
+      78
+    ],
+    "new/buttons/cancel_140x78.png": [
+      140,
+      78
+    ],
+    "res/new/buttons/cancel_146x70.png": [
+      146,
+      70
+    ],
+    "new/buttons/cancel_146x70.png": [
+      146,
+      70
+    ],
+    "res/new/buttons/cancel_150x60.png": [
+      150,
+      60
+    ],
+    "new/buttons/cancel_150x60.png": [
+      150,
+      60
+    ],
+    "res/new/buttons/cancel_150x78.png": [
+      150,
+      78
+    ],
+    "new/buttons/cancel_150x78.png": [
+      150,
+      78
+    ],
+    "res/new/buttons/cancel_152x78.png": [
+      152,
+      78
+    ],
+    "new/buttons/cancel_152x78.png": [
+      152,
+      78
+    ],
+    "res/new/buttons/cancel_160x60.png": [
+      160,
+      60
+    ],
+    "new/buttons/cancel_160x60.png": [
+      160,
+      60
+    ],
+    "res/new/buttons/cancel_160x78.png": [
+      160,
+      78
+    ],
+    "new/buttons/cancel_160x78.png": [
+      160,
+      78
+    ],
+    "res/new/buttons/cancel_170x78.png": [
+      170,
+      78
+    ],
+    "new/buttons/cancel_170x78.png": [
+      170,
+      78
+    ],
+    "res/new/buttons/cancel_180x50.png": [
+      180,
+      50
+    ],
+    "new/buttons/cancel_180x50.png": [
+      180,
+      50
+    ],
+    "res/new/buttons/cancel_180x56.png": [
+      180,
+      56
+    ],
+    "new/buttons/cancel_180x56.png": [
+      180,
+      56
+    ],
+    "res/new/buttons/cancel_180x60.png": [
+      180,
+      60
+    ],
+    "new/buttons/cancel_180x60.png": [
+      180,
+      60
+    ],
+    "res/new/buttons/cancel_180x70.png": [
+      180,
+      70
+    ],
+    "new/buttons/cancel_180x70.png": [
+      180,
+      70
+    ],
+    "res/new/buttons/cancel_180x78.png": [
+      180,
+      78
+    ],
+    "new/buttons/cancel_180x78.png": [
+      180,
+      78
+    ],
+    "res/new/buttons/cancel_200x60.png": [
+      200,
+      60
+    ],
+    "new/buttons/cancel_200x60.png": [
+      200,
+      60
+    ],
+    "res/new/buttons/cancel_200x78.png": [
+      200,
+      78
+    ],
+    "new/buttons/cancel_200x78.png": [
+      200,
+      78
+    ],
+    "res/new/buttons/cancel_210x60.png": [
+      210,
+      60
+    ],
+    "new/buttons/cancel_210x60.png": [
+      210,
+      60
+    ],
+    "res/new/buttons/cancel_210x78.png": [
+      210,
+      78
+    ],
+    "new/buttons/cancel_210x78.png": [
+      210,
+      78
+    ],
+    "res/new/buttons/cancel_220x60.png": [
+      220,
+      60
+    ],
+    "new/buttons/cancel_220x60.png": [
+      220,
+      60
+    ],
+    "res/new/buttons/cancel_220x70.png": [
+      220,
+      70
+    ],
+    "new/buttons/cancel_220x70.png": [
+      220,
+      70
+    ],
+    "res/new/buttons/cancel_220x78.png": [
+      220,
+      78
+    ],
+    "new/buttons/cancel_220x78.png": [
+      220,
+      78
+    ],
+    "res/new/buttons/cancel_240x78.png": [
+      240,
+      78
+    ],
+    "new/buttons/cancel_240x78.png": [
+      240,
+      78
+    ],
+    "res/new/buttons/cancel_250x56.png": [
+      250,
+      56
+    ],
+    "new/buttons/cancel_250x56.png": [
+      250,
+      56
+    ],
+    "res/new/buttons/cancel_250x60.png": [
+      250,
+      60
+    ],
+    "new/buttons/cancel_250x60.png": [
+      250,
+      60
+    ],
+    "res/new/buttons/cancel_250x78.png": [
+      250,
+      78
+    ],
+    "new/buttons/cancel_250x78.png": [
+      250,
+      78
+    ],
+    "res/new/buttons/cancel_260x60.png": [
+      260,
+      60
+    ],
+    "new/buttons/cancel_260x60.png": [
+      260,
+      60
+    ],
+    "res/new/buttons/cancel_260x64.png": [
+      260,
+      64
+    ],
+    "new/buttons/cancel_260x64.png": [
+      260,
+      64
+    ],
+    "res/new/buttons/cancel_260x78.png": [
+      260,
+      78
+    ],
+    "new/buttons/cancel_260x78.png": [
+      260,
+      78
+    ],
+    "res/new/buttons/cancel_300x78.png": [
+      300,
+      78
+    ],
+    "new/buttons/cancel_300x78.png": [
+      300,
+      78
+    ],
+    "res/new/buttons/cancel_60x50.png": [
+      60,
+      50
+    ],
+    "new/buttons/cancel_60x50.png": [
+      60,
+      50
+    ],
+    "res/new/buttons/cancel_60x60.png": [
+      60,
+      60
+    ],
+    "new/buttons/cancel_60x60.png": [
+      60,
+      60
+    ],
+    "res/new/buttons/cancel_80x40.png": [
+      80,
+      40
+    ],
+    "new/buttons/cancel_80x40.png": [
+      80,
+      40
+    ],
+    "res/new/buttons/cancel_80x60.png": [
+      80,
+      60
+    ],
+    "new/buttons/cancel_80x60.png": [
+      80,
+      60
+    ],
+    "res/new/buttons/cancel_82x60.png": [
+      82,
+      60
+    ],
+    "new/buttons/cancel_82x60.png": [
+      82,
+      60
+    ],
+    "res/new/buttons/confirm_100x40.png": [
+      100,
+      40
+    ],
+    "new/buttons/confirm_100x40.png": [
+      100,
+      40
+    ],
+    "res/new/buttons/confirm_100x60.png": [
+      100,
+      60
+    ],
+    "new/buttons/confirm_100x60.png": [
+      100,
+      60
+    ],
+    "res/new/buttons/confirm_100x78.png": [
+      100,
+      78
+    ],
+    "new/buttons/confirm_100x78.png": [
+      100,
+      78
+    ],
+    "res/new/buttons/confirm_110x44.png": [
+      110,
+      44
+    ],
+    "new/buttons/confirm_110x44.png": [
+      110,
+      44
+    ],
+    "res/new/buttons/confirm_110x60.png": [
+      110,
+      60
+    ],
+    "new/buttons/confirm_110x60.png": [
+      110,
+      60
+    ],
+    "res/new/buttons/confirm_110x78.png": [
+      110,
+      78
+    ],
+    "new/buttons/confirm_110x78.png": [
+      110,
+      78
+    ],
+    "res/new/buttons/confirm_120x40.png": [
+      120,
+      40
+    ],
+    "new/buttons/confirm_120x40.png": [
+      120,
+      40
+    ],
+    "res/new/buttons/confirm_120x60.png": [
+      120,
+      60
+    ],
+    "new/buttons/confirm_120x60.png": [
+      120,
+      60
+    ],
+    "res/new/buttons/confirm_120x70.png": [
+      120,
+      70
+    ],
+    "new/buttons/confirm_120x70.png": [
+      120,
+      70
+    ],
+    "res/new/buttons/confirm_120x78.png": [
+      120,
+      78
+    ],
+    "new/buttons/confirm_120x78.png": [
+      120,
+      78
+    ],
+    "res/new/buttons/confirm_140x44.png": [
+      140,
+      44
+    ],
+    "new/buttons/confirm_140x44.png": [
+      140,
+      44
+    ],
+    "res/new/buttons/confirm_140x60.png": [
+      140,
+      60
+    ],
+    "new/buttons/confirm_140x60.png": [
+      140,
+      60
+    ],
+    "res/new/buttons/confirm_140x70.png": [
+      140,
+      70
+    ],
+    "new/buttons/confirm_140x70.png": [
+      140,
+      70
+    ],
+    "res/new/buttons/confirm_140x78.png": [
+      140,
+      78
+    ],
+    "new/buttons/confirm_140x78.png": [
+      140,
+      78
+    ],
+    "res/new/buttons/confirm_146x70.png": [
+      146,
+      70
+    ],
+    "new/buttons/confirm_146x70.png": [
+      146,
+      70
+    ],
+    "res/new/buttons/confirm_150x60.png": [
+      150,
+      60
+    ],
+    "new/buttons/confirm_150x60.png": [
+      150,
+      60
+    ],
+    "res/new/buttons/confirm_150x78.png": [
+      150,
+      78
+    ],
+    "new/buttons/confirm_150x78.png": [
+      150,
+      78
+    ],
+    "res/new/buttons/confirm_152x78.png": [
+      152,
+      78
+    ],
+    "new/buttons/confirm_152x78.png": [
+      152,
+      78
+    ],
+    "res/new/buttons/confirm_160x60.png": [
+      160,
+      60
+    ],
+    "new/buttons/confirm_160x60.png": [
+      160,
+      60
+    ],
+    "res/new/buttons/confirm_160x78.png": [
+      160,
+      78
+    ],
+    "new/buttons/confirm_160x78.png": [
+      160,
+      78
+    ],
+    "res/new/buttons/confirm_170x78.png": [
+      170,
+      78
+    ],
+    "new/buttons/confirm_170x78.png": [
+      170,
+      78
+    ],
+    "res/new/buttons/confirm_180x50.png": [
+      180,
+      50
+    ],
+    "new/buttons/confirm_180x50.png": [
+      180,
+      50
+    ],
+    "res/new/buttons/confirm_180x56.png": [
+      180,
+      56
+    ],
+    "new/buttons/confirm_180x56.png": [
+      180,
+      56
+    ],
+    "res/new/buttons/confirm_180x60.png": [
+      180,
+      60
+    ],
+    "new/buttons/confirm_180x60.png": [
+      180,
+      60
+    ],
+    "res/new/buttons/confirm_180x70.png": [
+      180,
+      70
+    ],
+    "new/buttons/confirm_180x70.png": [
+      180,
+      70
+    ],
+    "res/new/buttons/confirm_180x78.png": [
+      180,
+      78
+    ],
+    "new/buttons/confirm_180x78.png": [
+      180,
+      78
+    ],
+    "res/new/buttons/confirm_200x60.png": [
+      200,
+      60
+    ],
+    "new/buttons/confirm_200x60.png": [
+      200,
+      60
+    ],
+    "res/new/buttons/confirm_200x78.png": [
+      200,
+      78
+    ],
+    "new/buttons/confirm_200x78.png": [
+      200,
+      78
+    ],
+    "res/new/buttons/confirm_210x60.png": [
+      210,
+      60
+    ],
+    "new/buttons/confirm_210x60.png": [
+      210,
+      60
+    ],
+    "res/new/buttons/confirm_210x78.png": [
+      210,
+      78
+    ],
+    "new/buttons/confirm_210x78.png": [
+      210,
+      78
+    ],
+    "res/new/buttons/confirm_220x60.png": [
+      220,
+      60
+    ],
+    "new/buttons/confirm_220x60.png": [
+      220,
+      60
+    ],
+    "res/new/buttons/confirm_220x70.png": [
+      220,
+      70
+    ],
+    "new/buttons/confirm_220x70.png": [
+      220,
+      70
+    ],
+    "res/new/buttons/confirm_220x78.png": [
+      220,
+      78
+    ],
+    "new/buttons/confirm_220x78.png": [
+      220,
+      78
+    ],
+    "res/new/buttons/confirm_240x78.png": [
+      240,
+      78
+    ],
+    "new/buttons/confirm_240x78.png": [
+      240,
+      78
+    ],
+    "res/new/buttons/confirm_250x56.png": [
+      250,
+      56
+    ],
+    "new/buttons/confirm_250x56.png": [
+      250,
+      56
+    ],
+    "res/new/buttons/confirm_250x60.png": [
+      250,
+      60
+    ],
+    "new/buttons/confirm_250x60.png": [
+      250,
+      60
+    ],
+    "res/new/buttons/confirm_250x78.png": [
+      250,
+      78
+    ],
+    "new/buttons/confirm_250x78.png": [
+      250,
+      78
+    ],
+    "res/new/buttons/confirm_260x60.png": [
+      260,
+      60
+    ],
+    "new/buttons/confirm_260x60.png": [
+      260,
+      60
+    ],
+    "res/new/buttons/confirm_260x64.png": [
+      260,
+      64
+    ],
+    "new/buttons/confirm_260x64.png": [
+      260,
+      64
+    ],
+    "res/new/buttons/confirm_260x78.png": [
+      260,
+      78
+    ],
+    "new/buttons/confirm_260x78.png": [
+      260,
+      78
+    ],
+    "res/new/buttons/confirm_300x78.png": [
+      300,
+      78
+    ],
+    "new/buttons/confirm_300x78.png": [
+      300,
+      78
+    ],
+    "res/new/buttons/confirm_60x50.png": [
+      60,
+      50
+    ],
+    "new/buttons/confirm_60x50.png": [
+      60,
+      50
+    ],
+    "res/new/buttons/confirm_60x60.png": [
+      60,
+      60
+    ],
+    "new/buttons/confirm_60x60.png": [
+      60,
+      60
+    ],
+    "res/new/buttons/confirm_80x40.png": [
+      80,
+      40
+    ],
+    "new/buttons/confirm_80x40.png": [
+      80,
+      40
+    ],
+    "res/new/buttons/confirm_80x60.png": [
+      80,
+      60
+    ],
+    "new/buttons/confirm_80x60.png": [
+      80,
+      60
+    ],
+    "res/new/buttons/confirm_82x60.png": [
+      82,
+      60
+    ],
+    "new/buttons/confirm_82x60.png": [
+      82,
+      60
+    ],
+    "res/new/buttons/red_100x40.png": [
+      100,
+      40
+    ],
+    "new/buttons/red_100x40.png": [
+      100,
+      40
+    ],
+    "res/new/buttons/red_100x60.png": [
+      100,
+      60
+    ],
+    "new/buttons/red_100x60.png": [
+      100,
+      60
+    ],
+    "res/new/buttons/red_100x78.png": [
+      100,
+      78
+    ],
+    "new/buttons/red_100x78.png": [
+      100,
+      78
+    ],
+    "res/new/buttons/red_110x44.png": [
+      110,
+      44
+    ],
+    "new/buttons/red_110x44.png": [
+      110,
+      44
+    ],
+    "res/new/buttons/red_110x60.png": [
+      110,
+      60
+    ],
+    "new/buttons/red_110x60.png": [
+      110,
+      60
+    ],
+    "res/new/buttons/red_110x78.png": [
+      110,
+      78
+    ],
+    "new/buttons/red_110x78.png": [
+      110,
+      78
+    ],
+    "res/new/buttons/red_120x40.png": [
+      120,
+      40
+    ],
+    "new/buttons/red_120x40.png": [
+      120,
+      40
+    ],
+    "res/new/buttons/red_120x60.png": [
+      120,
+      60
+    ],
+    "new/buttons/red_120x60.png": [
+      120,
+      60
+    ],
+    "res/new/buttons/red_120x70.png": [
+      120,
+      70
+    ],
+    "new/buttons/red_120x70.png": [
+      120,
+      70
+    ],
+    "res/new/buttons/red_120x78.png": [
+      120,
+      78
+    ],
+    "new/buttons/red_120x78.png": [
+      120,
+      78
+    ],
+    "res/new/buttons/red_140x44.png": [
+      140,
+      44
+    ],
+    "new/buttons/red_140x44.png": [
+      140,
+      44
+    ],
+    "res/new/buttons/red_140x60.png": [
+      140,
+      60
+    ],
+    "new/buttons/red_140x60.png": [
+      140,
+      60
+    ],
+    "res/new/buttons/red_140x70.png": [
+      140,
+      70
+    ],
+    "new/buttons/red_140x70.png": [
+      140,
+      70
+    ],
+    "res/new/buttons/red_140x78.png": [
+      140,
+      78
+    ],
+    "new/buttons/red_140x78.png": [
+      140,
+      78
+    ],
+    "res/new/buttons/red_146x70.png": [
+      146,
+      70
+    ],
+    "new/buttons/red_146x70.png": [
+      146,
+      70
+    ],
+    "res/new/buttons/red_150x60.png": [
+      150,
+      60
+    ],
+    "new/buttons/red_150x60.png": [
+      150,
+      60
+    ],
+    "res/new/buttons/red_150x78.png": [
+      150,
+      78
+    ],
+    "new/buttons/red_150x78.png": [
+      150,
+      78
+    ],
+    "res/new/buttons/red_152x78.png": [
+      152,
+      78
+    ],
+    "new/buttons/red_152x78.png": [
+      152,
+      78
+    ],
+    "res/new/buttons/red_160x60.png": [
+      160,
+      60
+    ],
+    "new/buttons/red_160x60.png": [
+      160,
+      60
+    ],
+    "res/new/buttons/red_160x78.png": [
+      160,
+      78
+    ],
+    "new/buttons/red_160x78.png": [
+      160,
+      78
+    ],
+    "res/new/buttons/red_170x78.png": [
+      170,
+      78
+    ],
+    "new/buttons/red_170x78.png": [
+      170,
+      78
+    ],
+    "res/new/buttons/red_180x50.png": [
+      180,
+      50
+    ],
+    "new/buttons/red_180x50.png": [
+      180,
+      50
+    ],
+    "res/new/buttons/red_180x56.png": [
+      180,
+      56
+    ],
+    "new/buttons/red_180x56.png": [
+      180,
+      56
+    ],
+    "res/new/buttons/red_180x60.png": [
+      180,
+      60
+    ],
+    "new/buttons/red_180x60.png": [
+      180,
+      60
+    ],
+    "res/new/buttons/red_180x70.png": [
+      180,
+      70
+    ],
+    "new/buttons/red_180x70.png": [
+      180,
+      70
+    ],
+    "res/new/buttons/red_180x78.png": [
+      180,
+      78
+    ],
+    "new/buttons/red_180x78.png": [
+      180,
+      78
+    ],
+    "res/new/buttons/red_200x60.png": [
+      200,
+      60
+    ],
+    "new/buttons/red_200x60.png": [
+      200,
+      60
+    ],
+    "res/new/buttons/red_200x78.png": [
+      200,
+      78
+    ],
+    "new/buttons/red_200x78.png": [
+      200,
+      78
+    ],
+    "res/new/buttons/red_210x60.png": [
+      210,
+      60
+    ],
+    "new/buttons/red_210x60.png": [
+      210,
+      60
+    ],
+    "res/new/buttons/red_210x78.png": [
+      210,
+      78
+    ],
+    "new/buttons/red_210x78.png": [
+      210,
+      78
+    ],
+    "res/new/buttons/red_220x60.png": [
+      220,
+      60
+    ],
+    "new/buttons/red_220x60.png": [
+      220,
+      60
+    ],
+    "res/new/buttons/red_220x70.png": [
+      220,
+      70
+    ],
+    "new/buttons/red_220x70.png": [
+      220,
+      70
+    ],
+    "res/new/buttons/red_220x78.png": [
+      220,
+      78
+    ],
+    "new/buttons/red_220x78.png": [
+      220,
+      78
+    ],
+    "res/new/buttons/red_240x78.png": [
+      240,
+      78
+    ],
+    "new/buttons/red_240x78.png": [
+      240,
+      78
+    ],
+    "res/new/buttons/red_250x56.png": [
+      250,
+      56
+    ],
+    "new/buttons/red_250x56.png": [
+      250,
+      56
+    ],
+    "res/new/buttons/red_250x60.png": [
+      250,
+      60
+    ],
+    "new/buttons/red_250x60.png": [
+      250,
+      60
+    ],
+    "res/new/buttons/red_250x78.png": [
+      250,
+      78
+    ],
+    "new/buttons/red_250x78.png": [
+      250,
+      78
+    ],
+    "res/new/buttons/red_260x60.png": [
+      260,
+      60
+    ],
+    "new/buttons/red_260x60.png": [
+      260,
+      60
+    ],
+    "res/new/buttons/red_260x64.png": [
+      260,
+      64
+    ],
+    "new/buttons/red_260x64.png": [
+      260,
+      64
+    ],
+    "res/new/buttons/red_260x78.png": [
+      260,
+      78
+    ],
+    "new/buttons/red_260x78.png": [
+      260,
+      78
+    ],
+    "res/new/buttons/red_300x78.png": [
+      300,
+      78
+    ],
+    "new/buttons/red_300x78.png": [
+      300,
+      78
+    ],
+    "res/new/buttons/red_60x50.png": [
+      60,
+      50
+    ],
+    "new/buttons/red_60x50.png": [
+      60,
+      50
+    ],
+    "res/new/buttons/red_60x60.png": [
+      60,
+      60
+    ],
+    "new/buttons/red_60x60.png": [
+      60,
+      60
+    ],
+    "res/new/buttons/red_80x40.png": [
+      80,
+      40
+    ],
+    "new/buttons/red_80x40.png": [
+      80,
+      40
+    ],
+    "res/new/buttons/red_80x60.png": [
+      80,
+      60
+    ],
+    "new/buttons/red_80x60.png": [
+      80,
+      60
+    ],
+    "res/new/buttons/red_82x60.png": [
+      82,
+      60
+    ],
+    "new/buttons/red_82x60.png": [
+      82,
+      60
+    ],
+    "res/new/extracted_btns/img_btn_1.png": [
+      40,
+      78
+    ],
+    "new/extracted_btns/img_btn_1.png": [
+      40,
+      78
+    ],
+    "res/new/extracted_btns/img_btn_1_s.png": [
+      30,
+      60
+    ],
+    "new/extracted_btns/img_btn_1_s.png": [
+      30,
+      60
+    ],
+    "res/new/extracted_btns/img_btn_2.png": [
+      40,
+      78
+    ],
+    "new/extracted_btns/img_btn_2.png": [
+      40,
+      78
+    ],
+    "res/new/extracted_btns/img_btn_2_s.png": [
+      30,
+      60
+    ],
+    "new/extracted_btns/img_btn_2_s.png": [
+      30,
+      60
+    ],
+    "res/new/extracted_btns/img_btn_3.png": [
+      40,
+      78
+    ],
+    "new/extracted_btns/img_btn_3.png": [
+      40,
+      78
+    ],
+    "res/new/extracted_btns/img_btn_4.png": [
+      40,
+      78
+    ],
+    "new/extracted_btns/img_btn_4.png": [
+      40,
+      78
+    ],
+    "res/new/thumb/10004.png": [
+      256,
+      256
+    ],
+    "new/thumb/10004.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/1004.png": [
+      256,
+      256
+    ],
+    "new/thumb/1004.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10040.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10040.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10041.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10041.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10042.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10042.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10043.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10043.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10044.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10044.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10045.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10045.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10046.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10046.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10047.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10047.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10048.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10048.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10049.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10049.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10073.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10073.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/inspect_10074.png": [
+      256,
+      256
+    ],
+    "new/thumb/inspect_10074.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/old_10004_color.jpg": [
+      256,
+      256
+    ],
+    "new/thumb/old_10004_color.jpg": [
+      256,
+      256
+    ],
+    "res/new/thumb/old_10004_extracted.png": [
+      256,
+      256
+    ],
+    "new/thumb/old_10004_extracted.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/old_dm.png": [
+      256,
+      256
+    ],
+    "new/thumb/old_dm.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/ptbd.png": [
+      1024,
+      1024
+    ],
+    "new/thumb/ptbd.png": [
+      1024,
+      1024
+    ],
+    "res/new/thumb/ptbd_zoomed.png": [
+      256,
+      256
+    ],
+    "new/thumb/ptbd_zoomed.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/served_10004.png": [
+      256,
+      256
+    ],
+    "new/thumb/served_10004.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_crop_125.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_crop_125.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_crop_140.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_crop_140.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_crop_155.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_crop_155.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_crop_175.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_crop_175.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_crop_190.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_crop_190.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_feather_142.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_feather_142.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_feather_150.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_feather_150.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_feather_155.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_feather_155.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_feather_160.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_feather_160.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/test_ptbd_decoded.png": [
+      256,
+      256
+    ],
+    "new/thumb/test_ptbd_decoded.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/tienkiem.png": [
+      1024,
+      1024
+    ],
+    "new/thumb/tienkiem.png": [
+      1024,
+      1024
     ]
   },
   "thumbs": {

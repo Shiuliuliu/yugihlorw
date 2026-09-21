@@ -1715,31 +1715,31 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 end
 
 function var_0_0.addRoundDuration(arg_52_0)
-	if arg_52_0._isOnlinePvp or ClientData._isOppoOnline then
-		return
-	end
-
 	if not arg_52_0._isNewRound then
 		return
 	end
 
-	if arg_52_0._survivalTimeStamp then
-		return
-	end
-
-	if not ClientData._battleRoundStartInfo then
-		return
-	end
-
-	if ClientData._battleRoundStartInfo._endTime - ClientData._battleRoundStartInfo._beginTime < 20 then
-		return
-	end
-
 	local var_52_0 = arg_52_0._round == 1 and arg_52_0._roundTimeDelta1 or arg_52_0._roundTimeDelta
-	local var_52_1 = arg_52_0._round == 1 and arg_52_0._roundTimeMax1 or arg_52_0._roundTimeMax
-	local var_52_2 = math.min(var_52_1, ClientData._battleRoundStartInfo._endTime - ClientData._battleRoundStartInfo._beginTime + var_52_0)
+	if not var_52_0 or var_52_0 <= 0 then
+		var_52_0 = 5
+	end
 
-	ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + var_52_2
+	local var_52_1 = arg_52_0._round == 1 and arg_52_0._roundTimeMax1 or arg_52_0._roundTimeMax
+	if not var_52_1 or var_52_1 <= 0 then
+		var_52_1 = 120
+	end
+
+	if ClientData._battleRoundStartInfo then
+		local curTotal = ClientData._battleRoundStartInfo._endTime - ClientData._battleRoundStartInfo._beginTime
+		local var_52_2 = math.min(var_52_1, curTotal + var_52_0)
+		ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + var_52_2
+	end
+
+	local scene = lc._runningScene
+	local battleUi = scene and (scene._battleUi or (scene._scene and scene._scene._battleUi))
+	if battleUi and type(battleUi.addPvpRoundSeconds) == "function" then
+		battleUi:addPvpRoundSeconds(var_52_0, var_52_1)
+	end
 end
 
 return var_0_0

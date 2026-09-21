@@ -242,11 +242,12 @@ function var_0_0.enterDoor(arg_16_0)
 
 	if P._propBag:hasProps(Data.PropsId.survival_ticket, 1) then
 		local var_16_7 = var_16_6("img_icon_props_s7132", 1, Data.PropsId.survival_ticket)
+		lc.addChildToPos(var_16_3, var_16_7, cc.p(lc.cw(var_16_0) - 105, 80))
 
-		lc.addChildToPos(var_16_3, var_16_7, cc.p(lc.cw(var_16_0), 80))
+		local var_16_8 = var_16_6("img_icon_res1_s", Data._globalInfo._SurvivalCostGold, Data.ResType.gold)
+		lc.addChildToPos(var_16_3, var_16_8, cc.p(lc.cw(var_16_0) + 105, 80))
 	else
 		local var_16_8 = var_16_6("img_icon_res1_s", Data._globalInfo._SurvivalCostGold, Data.ResType.gold)
-
 		lc.addChildToPos(var_16_3, var_16_8, cc.p(lc.cw(var_16_0), 80))
 	end
 

@@ -29,14 +29,22 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 		table.insert(card_collected, c.card_id)
 	end
 
-	-- Build troops from decks with aggregated card counts
+	-- Build troops and deck marks (custom names) from decks with aggregated card counts
 	local troops_list = {}
+	local deck_marks = {}
 	for i = 1, 5 do
 		troops_list[i] = pbMock({ troop_item = {} })
+		deck_marks[i] = (lc.UserDefault and lc.UserDefault:getStringForKey("troop_remark_" .. i, "")) or ""
 	end
 	for _, d in ipairs(decks or {}) do
 		local slot = tonumber(d.deck_slot) or 1
 		if slot >= 1 and slot <= 5 then
+			if d.deck_name and d.deck_name ~= "" and d.deck_name ~= "Deck" then
+				deck_marks[slot] = d.deck_name
+				if lc.UserDefault and lc.UserDefault.setStringForKey then
+					lc.UserDefault:setStringForKey("troop_remark_" .. slot, d.deck_name)
+				end
+			end
 			local BANNED_DECK_CARDS = { [40657] = true, [40693] = true, [40694] = true }
 			local counts, order = {}, {}
 			for _, cid in ipairs(d.cards or {}) do
@@ -308,6 +316,7 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 			records = {}
 		}),
 		prop = pbMock({
+			marks = deck_marks,
 			props = {
 				pbMock({ info_id = 7114, num = tonumber(acc.void_stone) or 5000 }), -- void_diamond
 				pbMock({ info_id = 7111, num = tonumber(acc.purple_ticket) or 500 }), -- ladder_ticket
@@ -317,7 +326,8 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 				pbMock({ info_id = 7110, num = 5000 }), -- rare_coin
 				pbMock({ info_id = 7120, num = 10000 }), -- magic_dust
 				pbMock({ info_id = 7117, num = 500 }), -- skin_crystal
-				pbMock({ info_id = 7346, num = 100 }) -- skill_item_token
+				pbMock({ info_id = 7346, num = 100 }), -- skill_item_token
+				pbMock({ info_id = 7352, num = 50000 }) -- month_card5_token / linh thạch cao cấp
 			},
 			chests = {},
 			crowns = (function()

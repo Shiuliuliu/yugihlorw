@@ -869,6 +869,19 @@ local function var_0_9()
 		return var_39_0
 	end
 
+	function var_8_0.newSurvivalExState()
+		local var_39_0 = var_8_0.newLadderState()
+
+		var_39_0.battleCount = 0
+		var_39_0.winCount = 0
+		var_39_0.loseCount = 0
+		var_39_0.troopCardsEx = {}
+		var_39_0.skills = {}
+		var_39_0.trophy = 0
+
+		return var_39_0
+	end
+
 	function var_8_0.newRoomState()
 		return {
 			localSlot = 2,
@@ -933,6 +946,7 @@ local function var_0_9()
 			version = var_8_0.STATE_VERSION,
 			ladder = var_8_0.newLadderState(),
 			survival = var_8_0.newSurvivalState(),
+			survival_ex = var_8_0.newSurvivalExState(),
 			battleSpeed = var_8_0.readLegacyBattleSpeed(),
 			troops = {},
 			troopDrafts = {},
@@ -1171,6 +1185,7 @@ local function var_0_9()
 		var_49_1.effects = type(var_49_1.effects) == "table" and var_49_1.effects or {}
 		var_49_1.ladder = type(var_49_1.ladder) == "table" and var_49_1.ladder or var_8_0.newLadderState()
 		var_49_1.survival = type(var_49_1.survival) == "table" and var_49_1.survival or var_8_0.newSurvivalState()
+		var_49_1.survival_ex = type(var_49_1.survival_ex) == "table" and var_49_1.survival_ex or var_8_0.newSurvivalExState()
 		var_49_1.ladderTrophy = math.max(0, tonumber(var_49_1.ladderTrophy) or 0)
 		var_49_1.clashTrophy = math.max(800, tonumber(var_49_1.clashTrophy) or 800)
 		var_49_1.clashWins = math.max(0, tonumber(var_49_1.clashWins) or 0)
@@ -4507,6 +4522,66 @@ local function var_0_9()
 		return var_142_1
 	end
 
+	function var_8_0.calcSurvivalRewards(arg_win)
+		arg_win = math.max(0, math.min(12, tonumber(arg_win) or 0))
+		local res = {}
+		local goldAmount = 5000 + arg_win * 2000
+		res[#res + 1] = { info_id = Data.ResType.gold, num = goldAmount }
+		if arg_win >= 3 then
+			local ingotAmount = arg_win * 50
+			res[#res + 1] = { info_id = Data.ResType.ingot, num = ingotAmount }
+		end
+		if arg_win >= 10 then
+			res[#res + 1] = { info_id = Data.PropsId.survival_ex_ticket, num = 1 }
+		end
+		local rank = (arg_win >= 12 and 1) or (arg_win >= 9 and 2) or (arg_win >= 6 and 3) or (arg_win >= 3 and 4) or 5
+		return var_8_1({
+			rank = rank,
+			resource = res
+		})
+	end
+
+	function var_8_0.makeSurvivalExPb()
+		local var_ex_0 = var_8_0.state.survival_ex or var_8_0.newSurvivalExState()
+		local var_cards = {}
+		local var_selected = {}
+
+		for iter_1 = 1, #(var_ex_0.cards or {}) do
+			var_cards[#var_cards + 1] = {
+				info_id = var_ex_0.cards[iter_1].infoId,
+				num = var_ex_0.cards[iter_1].num
+			}
+		end
+
+		for iter_1 = 1, #(var_ex_0.troopCardsEx or {}) do
+			var_cards[#var_cards + 1] = {
+				info_id = var_ex_0.troopCardsEx[iter_1].infoId,
+				num = var_ex_0.troopCardsEx[iter_1].num
+			}
+		end
+
+		for iter_2 = 1, #(var_ex_0.selected or {}) do
+			var_selected[iter_2] = var_ex_0.selected[iter_2] - 1
+		end
+
+		return var_8_1({
+			has_ticket = var_ex_0.hasTicket == true,
+			char_id = var_ex_0.characterId or 0,
+			step = var_ex_0.step or 0,
+			pool = var_8_3(var_ex_0.pool),
+			cards = var_cards,
+			chars = var_8_3(var_ex_0.characters),
+			selected = var_selected,
+			privilege_stamp = 0,
+			lose = var_ex_0.loseCount or 0,
+			win = var_ex_0.winCount or 0,
+			trophy = var_ex_0.trophy or (Data._globalInfo and Data._globalInfo._SurvivalExInitTrophy or 1000),
+			roll_times = var_ex_0.rollTimes or 0,
+			captures = {},
+			capture_skills = {}
+		})
+	end
+
 	function var_8_0.captureLadder()
 		if P == nil or P._playerFindLadder == nil then
 			return
@@ -4594,6 +4669,54 @@ local function var_0_9()
 		var_8_0.saveState()
 	end
 
+	function var_8_0.captureSurvivalEx()
+		if P == nil or P._playerFindSurvivalEx == nil then
+			return
+		end
+
+		local var_144_0 = var_8_0.state.survival_ex or var_8_0.newSurvivalExState()
+		local var_144_1 = P._playerFindSurvivalEx
+
+		if not var_144_1._hasTicket then
+			var_8_0.state.survival_ex = var_8_0.newSurvivalExState()
+			var_8_0.saveState()
+			return
+		end
+
+		local var_144_2 = var_8_0.newSurvivalExState()
+
+		var_144_2.hasTicket = true
+		var_144_2.characterId = var_144_1._characterId or 0
+		var_144_2.step = var_144_1._step or 0
+		var_144_2.pool = var_8_3(var_144_1._cardsPool)
+		var_144_2.characters = var_8_3(var_144_1._characters)
+		var_144_2.selected = var_8_3(var_144_1._selected)
+		var_144_2.battleCount = var_144_0.battleCount or 0
+		var_144_2.winCount = var_144_1._win or var_144_0.winCount or 0
+		var_144_2.loseCount = var_144_1._lose or var_144_0.loseCount or 0
+		var_144_2.trophy = var_144_1._trophy or var_144_0.trophy or 0
+		var_144_2.rollTimes = var_144_1._rollTimes or 0
+
+		for iter_144_0 = 1, #var_144_1._troopCards do
+			local var_144_3 = var_144_1._troopCards[iter_144_0]
+			var_144_2.cards[iter_144_0] = {
+				infoId = var_144_3._infoId,
+				num = var_144_3._num
+			}
+		end
+
+		for iter_144_1 = 1, #var_144_1._troopCardsEx do
+			local var_144_4 = var_144_1._troopCardsEx[iter_144_1]
+			var_144_2.troopCardsEx[iter_144_1] = {
+				infoId = var_144_4._infoId,
+				num = var_144_4._num
+			}
+		end
+
+		var_8_0.state.survival_ex = var_144_2
+		var_8_0.saveState()
+	end
+
 	function var_8_0.captureClash()
 		if P == nil or P._playerFindClash == nil then
 			return
@@ -4634,32 +4757,18 @@ local function var_0_9()
 	end
 
 	function var_8_0.pickCharacters()
-		local var_147_0 = {
-			1,
-			2,
-			3
-		}
-		local var_147_1 = {}
-
-		for iter_147_0 = 1, #var_147_0 do
-			if var_8_40(var_147_0[iter_147_0]) then
-				var_147_1[#var_147_1 + 1] = var_147_0[iter_147_0]
+		local var_147_0 = {}
+		local allChars = { 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
+		for _, id in ipairs(allChars) do
+			if Data and Data._characterInfo and Data._characterInfo[id] then
+				var_147_0[#var_147_0 + 1] = id
 			end
 		end
-
-		local var_147_2 = 1
-
-		while #var_147_1 < math.min(3, #var_8_0.characterIds) do
-			local var_147_3 = var_8_0.characterIds[var_147_2]
-
-			if not var_8_12(var_147_1, var_147_3) then
-				var_147_1[#var_147_1 + 1] = var_147_3
-			end
-
-			var_147_2 = var_147_2 + 1
+		if #var_147_0 < 3 then
+			var_147_0 = { 2, 3, 4 }
 		end
-
-		return var_147_1
+		local shuffled = var_8_13(var_147_0)
+		return { shuffled[1], shuffled[2], shuffled[3] }
 	end
 
 	local function var_8_44(arg_148_0)
@@ -8111,10 +8220,40 @@ local function var_0_9()
 		end
 
 		function ClientData.sendSurvivalQuit()
-			var_8_18(SglMsgType_pb.PB_TYPE_WORLD_SURVIVAL_GAME_OVER, World_pb.SglWorldMsg.world_survival_end_resp, var_8_1({
-				rank = 1,
-				resource = {}
-			}), var_8_0.captureSurvival)
+			local winCount = P and P._playerFindSurvival and P._playerFindSurvival._winCount or 0
+			var_8_18(SglMsgType_pb.PB_TYPE_WORLD_SURVIVAL_GAME_OVER, World_pb.SglWorldMsg.world_survival_end_resp, var_8_0.calcSurvivalRewards(winCount), var_8_0.captureSurvival)
+		end
+
+		function ClientData.sendSurvivalExBuyTicket()
+			var_8_18(SglMsgType_pb.PB_TYPE_WORLD_BUY_TICKET_SURVIVAL_EX, World_pb.SglWorldMsg.world_buy_ticket_resp, var_8_0.pickCharacters(), var_8_0.captureSurvivalEx)
+		end
+
+		function ClientData.sendSurvivalReselectCharacter()
+			var_8_18(SglMsgType_pb.PB_TYPE_WORLD_ROLL_CHAR_SURVIVAL_EX, World_pb.SglWorldMsg.world_roll_char_resp, var_8_0.pickCharacters(), var_8_0.captureSurvivalEx)
+		end
+
+		function ClientData.sendSurvivalExSelectCharacter(charId)
+			var_8_18(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CHAR_SURVIVAL_EX, World_pb.SglWorldMsg.world_select_char_resp, var_8_0.generateDraftPool(), var_8_0.captureSurvivalEx)
+		end
+
+		function ClientData.sendSurvivalExSelectCard(cardIdx)
+			local var_334_ex = math.min(41, (P._playerFindSurvivalEx._step or 1) + 1)
+
+			var_8_18(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CARD_SURVIVAL_EX, World_pb.SglWorldMsg.world_select_card_resp, var_334_ex, var_8_0.captureSurvivalEx)
+		end
+
+		function ClientData.sendSurvivalExQuit()
+			local winCount = P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._win or 0
+			var_8_18(SglMsgType_pb.PB_TYPE_WORLD_SURVIVAL_EX_GAME_OVER, World_pb.SglWorldMsg.world_survival_ex_end_resp, var_8_0.calcSurvivalRewards(winCount), var_8_0.captureSurvivalEx)
+		end
+
+		function ClientData.sendSurvivalExExploreStart()
+		end
+
+		function ClientData.sendSurvivalExExplorerEnd()
+		end
+
+		function ClientData.sendSurvivalExExEquipSkill(cardId, skills)
 		end
 
 		function ClientData.sendOpenBox()
@@ -8943,7 +9082,11 @@ local function var_0_9()
 				end
 
 				if var_390_13(arg_407_1) and not arg_407_0._isObserver and var_8_0.state ~= nil then
-					arg_407_0._battleSpeed = var_8_0.normalizeBattleSpeed(var_8_0.state.battleSpeed, var_390_14())
+					if arg_407_0._isOnlinePvp or (arg_407_1 and arg_407_1._pvpMatch) or arg_407_0._baseBattleType == Data.BattleType.base_PVP then
+						arg_407_0._battleSpeed = 3
+					else
+						arg_407_0._battleSpeed = var_8_0.normalizeBattleSpeed(var_8_0.state.battleSpeed, var_390_14())
+					end
 				end
 			end
 
@@ -9076,6 +9219,24 @@ local function var_0_9()
 					end
 
 					var_8_0.captureSurvival()
+				elseif var_410_2 == "survival_ex" then
+					local var_410_ex = var_8_0.state.survival_ex or var_8_0.newSurvivalExState()
+
+					var_410_ex.battleCount = (var_410_ex.battleCount or 0) + 1
+
+					if var_410_1 == Data.BattleResult.win then
+						var_410_ex.winCount = (var_410_ex.winCount or 0) + 1
+						if P and P._playerFindSurvivalEx then
+							P._playerFindSurvivalEx._win = var_410_ex.winCount
+						end
+					elseif var_410_1 == Data.BattleResult.lose then
+						var_410_ex.loseCount = (var_410_ex.loseCount or 0) + 1
+						if P and P._playerFindSurvivalEx then
+							P._playerFindSurvivalEx._lose = var_410_ex.loseCount
+						end
+					end
+
+					var_8_0.captureSurvivalEx()
 				elseif var_410_2 == "clash" then
 					var_410_3 = var_410_1 == Data.BattleResult.win and 25 or var_410_1 == Data.BattleResult.lose and -10 or 0
 					P._playerFindClash._trophy = math.max(800, (P._playerFindClash._trophy or 800) + var_410_3)
@@ -10203,22 +10364,7 @@ local function var_0_9()
 				ladder = var_8_0.makeLadderPb(),
 				dark = var_8_0.makeDarkPb(),
 				survival = var_8_0.makeSurvivalPb(),
-				survival_ex = var_8_1({
-					has_ticket = false,
-					trophy = 0,
-					roll_times = 0,
-					win = 0,
-					char_id = 0,
-					privilege_stamp = 0,
-					lose = 0,
-					step = 0,
-					pool = {},
-					cards = {},
-					chars = {},
-					selected = {},
-					captures = {},
-					capture_skills = {}
-				}),
+				survival_ex = var_8_0.makeSurvivalExPb(),
 				prop = var_8_1({
 					props = var_462_5,
 					chests = {},
@@ -10412,6 +10558,19 @@ local function var_0_9()
 		end
 
 		P._playerFindSurvival._isInHall = false
+
+		if P._playerFindSurvivalEx then
+			function P._playerFindSurvivalEx.getIsValidTime()
+				return 0
+			end
+
+			function P._playerFindSurvivalEx.getTimeTip()
+				return ""
+			end
+
+			P._playerFindSurvivalEx._isInHall = false
+		end
+
 		P._playerUnion._isSyncData = true
 
 		local var_463_1 = P._playerFindDark

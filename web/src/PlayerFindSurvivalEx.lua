@@ -436,42 +436,11 @@ function var_0_0.getSurvivalExDuration()
 end
 
 function var_0_0.getIsValidTime(arg_20_0)
-	local var_20_0, var_20_1, var_20_2, var_20_3 = ClientData.getServerDate()
-	local var_20_4 = arg_20_0:getSurvivalExDuration()
-	local var_20_5 = ClientData.getDayOfWeek()
-
-	var_20_5 = var_20_5 == 0 and 7 or var_20_5
-
-	local var_20_6 = var_20_4[3 * (var_20_5 - 1) + 2]
-	local var_20_7 = var_20_4[3 * (var_20_5 - 1) + 3]
-	local var_20_8 = 0
-
-	if var_20_0 < var_20_6 then
-		var_20_8 = 1
-	elseif var_20_7 <= var_20_0 then
-		var_20_8 = -1
-	end
-
-	return var_20_8
+	return 0
 end
 
 function var_0_0.getTimeTip(arg_21_0)
-	local var_21_0, var_21_1, var_21_2, var_21_3 = ClientData.getServerDate()
-	local var_21_4 = ClientData.getCurrentTime() - ClientData.getExpireTimestamp(0)
-	local var_21_5 = arg_21_0:getSurvivalExDuration()
-	local var_21_6 = ClientData.getDayOfWeek()
-
-	var_21_6 = var_21_6 == 0 and 7 or var_21_6
-
-	local var_21_7 = var_21_5[3 * (var_21_6 - 1) + 2]
-	local var_21_8 = var_21_5[3 * (var_21_6 - 1) + 3]
-	local var_21_9 = var_21_7 * 3600 - var_21_4
-
-	if var_21_7 == var_21_8 then
-		return Str(STR.FIND_SURVIVAL_EX_CLOSED)
-	else
-		return string.format(Str(STR.FIND_SURVIVAL_EX_TIME), var_21_7, 0, var_21_8, 0)
-	end
+	return ""
 end
 
 function var_0_0.isTroopValid(arg_22_0)
@@ -602,12 +571,14 @@ end
 
 function var_0_0.initExtraTroop(arg_31_0)
 	local var_31_0 = arg_31_0._characterId + 16000
-	local var_31_1 = Data._troopInfo[var_31_0]
+	local var_31_1 = Data._troopInfo[var_31_0] or Data._troopInfo[16002]
 
-	for iter_31_0, iter_31_1 in ipairs(var_31_1._infoId) do
-		local var_31_2 = var_31_1._num[iter_31_0]
+	if var_31_1 and var_31_1._infoId then
+		for iter_31_0, iter_31_1 in ipairs(var_31_1._infoId) do
+			local var_31_2 = var_31_1._num[iter_31_0]
 
-		arg_31_0:addToTroop(iter_31_1, var_31_2)
+			arg_31_0:addToTroop(iter_31_1, var_31_2)
+		end
 	end
 end
 

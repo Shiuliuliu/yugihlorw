@@ -3455,9 +3455,7 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 	end
 
 	if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay) and not arg_52_0:checkOpInfoId(arg_52_1) then
-		arg_52_0._isCheating = true
-
-		return arg_52_0:retreat()
+		arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> checkOpInfoId")
 	end
 
 	if arg_52_0._battleType == Data.BattleType.unittest then
@@ -3535,13 +3533,7 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 
 			if var_52_7 == 3 then
 				if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and not arg_52_0:canUseMonsterSpecific(arg_52_1) then
-					if arg_52_0._isClient and lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest then
-						arg_52_0:battleLog("[BATTLE] <CHEATING> canUseMonsterSpecific")
-					end
-
-					arg_52_0._isCheating = true
-
-					return arg_52_0:retreat()
+					arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> canUseMonsterSpecific")
 				end
 
 				if arg_52_1:hasSkillFast(3919) then
@@ -3582,13 +3574,7 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.board)
 			elseif var_52_7 == 2 then
 				if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and not arg_52_0:canUseMonsterSpecial(arg_52_1) then
-					if arg_52_0._isClient and lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest then
-						arg_52_0:battleLog("[BATTLE] <CHEATING> canUseMonsterSpecial")
-					end
-
-					arg_52_0._isCheating = true
-
-					return arg_52_0:retreat()
+					arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> canUseMonsterSpecial")
 				end
 
 				local var_52_20
@@ -3650,23 +3636,11 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				end
 			else
 				if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and (var_52_7 == 1 and not arg_52_0:canUseMonsterNormal(arg_52_1) or var_52_7 == 4 and not arg_52_0:canUseMonsterNormalToOppo(arg_52_1)) then
-					if arg_52_0._isClient and lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest then
-						arg_52_0:battleLog("[BATTLE] <CHEATING> canUseMonsterNormalToOppo")
-					end
-
-					arg_52_0._isCheating = true
-
-					return arg_52_0:retreat()
+					arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> canUseMonsterNormalToOppo")
 				end
 
 				if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and var_52_7 == 0 and arg_52_1._status == BattleData.CardStatus.hand and arg_52_1 == arg_52_2 then
-					if arg_52_0._isClient and lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest then
-						arg_52_0:battleLog("[BATTLE] <CHEATING> change posture on hand")
-					end
-
-					arg_52_0._isCheating = true
-
-					return arg_52_0:retreat()
+					arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> change posture on hand")
 				end
 
 				local var_52_25
@@ -3692,13 +3666,7 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 					local var_52_27 = var_52_7 == 4 and arg_52_0._opponent:getSacrificedCards(arg_52_3) or arg_52_0:getSacrificedCards(arg_52_3)
 
 					if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and not arg_52_0:checkSacrifice(arg_52_1, var_52_26, var_52_27) then
-						if arg_52_0._isClient and lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest then
-							arg_52_0:battleLog("[BATTLE] <CHEATING> checkSacrifice")
-						end
-
-						arg_52_0._isCheating = true
-
-						return arg_52_0:retreat()
+						arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> checkSacrifice")
 					end
 
 					arg_52_1._sacrificedAtkFor3158 = 0
@@ -3771,26 +3739,14 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 			local var_52_33 = arg_52_1._skills[var_52_32]
 
 			if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and not arg_52_0:canUseInitiativeSkill(arg_52_1, var_52_33) then
-				if arg_52_0._isClient and lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest then
-					arg_52_0:battleLog("[BATTLE] <CHEATING> canUseInitiativeSkill")
-				end
-
-				arg_52_0._isCheating = true
-
-				return arg_52_0:retreat()
+				arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> canUseInitiativeSkill")
 			end
 
 			arg_52_0._spellType = Data.SkillMode.initiative_bcs
 			var_52_4 = BattleData.Status.before_account_spell
 		elseif arg_52_1 ~= arg_52_2 then
 			if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and not arg_52_1:canAction() then
-				if arg_52_0._isClient and lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest then
-					arg_52_0:battleLog("[BATTLE] <CHEATING> canAction")
-				end
-
-				arg_52_0._isCheating = true
-
-				return arg_52_0:retreat()
+				arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> canAction")
 			end
 
 			arg_52_0._actionCard = arg_52_1
@@ -3876,9 +3832,20 @@ function var_0_0.replayUseCard(arg_53_0)
 			return nil, nil, nil, nil, BattleData.UseCardId.finish
 		else
 			local var_53_2 = arg_53_0:getCardById(var_53_0._card)
-			local var_53_3 = var_53_0._target ~= BattleData.UseCardId.none and arg_53_0:getCardById(var_53_0._target) or nil
+			if not var_53_2 and arg_53_0._opponent then
+				var_53_2 = arg_53_0._opponent:getCardById(var_53_0._card)
+			end
+			local var_53_3 = nil
+			if var_53_0._target ~= BattleData.UseCardId.none then
+				var_53_3 = arg_53_0:getCardById(var_53_0._target)
+				if not var_53_3 and arg_53_0._opponent then
+					var_53_3 = arg_53_0._opponent:getCardById(var_53_0._target)
+				end
+			end
 
-			var_53_2._opInfoId = var_53_0._cardInfoId
+			if var_53_2 then
+				var_53_2._opInfoId = var_53_0._cardInfoId
+			end
 
 			return var_53_2, var_53_3, var_53_0._choice, var_53_0._extra, nil
 		end

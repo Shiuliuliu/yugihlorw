@@ -144,7 +144,7 @@ function var_0_0.init(arg_2_0)
 	var_2_16:setVisible(P:getMaxCharacterLevel() >= ClientData.POS_UNLOCK_LEVEL)
 	var_2_17:setVisible(var_2_16:isVisible())
 
-	local var_2_18 = ClientView.createScale9ShaderButton(ClientData._isPosOn and "img_btn_1_s" or "img_btn_2_s", function(arg_13_0)
+	local var_2_18 = ClientView.createScale9ShaderButton(P._isNewRound and "img_btn_1_s" or "img_btn_2_s", function(arg_13_0)
 		arg_2_0:onSwitchRound(arg_13_0)
 	end, ClientView.CRECT_BUTTON_S, var_0_5)
 
