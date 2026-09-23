@@ -982,12 +982,19 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 		local var_amazon_monsters = B.filterInTypeCards(var_owner:getBattleCardsByKeyword("B", 6), Data.CardType.monster)
 		local var_destroy_count = #var_amazon_monsters
 		if var_destroy_count > 0 then
-			local var_oppo_st = B.filterAliveCards(var_owner._opponent:getBattleCards("CSD"))
+			local var_oppo_st = var_owner._opponent:getBattleCards("CSD")
 			if #var_oppo_st > 0 then
-				local var_targets = var_owner:randomTable(var_oppo_st, var_destroy_count)
-				for iter_d = 1, #var_targets do
-					local var_tg = var_targets[iter_d]
-					var_owner:changeCardStatus(var_tg, var_tg._status, BattleData.CardStatus.grave, nil, arg_15_1)
+				local var_pool = {}
+				for iter_p = 1, #var_oppo_st do
+					var_pool[iter_p] = var_oppo_st[iter_p]
+				end
+				local var_n = math.min(#var_pool, var_destroy_count)
+				for iter_d = 1, var_n do
+					local var_chosen_card, var_chosen_idx = var_owner:randomOne(var_pool)
+					if var_chosen_card ~= nil then
+						table.remove(var_pool, var_chosen_idx)
+						var_owner:changeCardStatus(var_chosen_card, var_chosen_card._status, BattleData.CardStatus.grave, nil, arg_15_1)
+					end
 				end
 				var_owner:account()
 			end

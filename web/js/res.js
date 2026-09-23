@@ -471,7 +471,7 @@
 	 * ------------------------------------------------------------------ */
 
 	function versionedUrl(url) {
-		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260924v4';
+		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260924v5';
 		if (!url || typeof url !== 'string') return url;
 		return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
 	}
