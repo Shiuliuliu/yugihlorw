@@ -382,15 +382,31 @@ function var_0_0.initBottomArea(arg_12_0)
 end
 
 function var_0_0.onExitRoom(arg_15_0)
+	if arg_15_0._isExiting then return end
 	local var_15_0 = Str(STR.CONFIRM_CLOSE_ROOM)
 
-	if P._roomJob == Data.RoomJob.leader then
+	if P and P._roomJob == Data.RoomJob.leader then
 		var_15_0 = Str(STR.CREATOR_CONFIRM_CLOSE_ROOM)
 	end
 
 	require("Dialog").showDialog(var_15_0, function()
-		P._playerRoom:exitMyRoom()
-		arg_15_0:hide()
+		if arg_15_0._isExiting then return end
+		arg_15_0._isExiting = true
+
+		if arg_15_0._roomPollSchedule then
+			lc.Scheduler:unscheduleScriptEntry(arg_15_0._roomPollSchedule)
+			arg_15_0._roomPollSchedule = nil
+		end
+
+		if P and P._playerRoom then
+			pcall(function() P._playerRoom:exitMyRoom() end)
+		else
+			ClientData.sendQuitRoom()
+		end
+
+		if lc._runningScene == arg_15_0 or (lc._runningScene and lc._runningScene._sceneId == ClientData.SceneId.in_room) then
+			ClientView.popScene()
+		end
 	end)
 end
 
@@ -686,7 +702,14 @@ function var_0_0.onEnter(arg_35_0)
 		arg_35_0:refreshView()
 	end))
 	table.insert(var_35_0, lc.addEventListener(Data.Event.room_exit_dirty, function(arg_37_0)
-		arg_35_0:hide()
+		if not arg_35_0._isExiting then
+			arg_35_0._isExiting = true
+			if arg_35_0._roomPollSchedule then
+				lc.Scheduler:unscheduleScriptEntry(arg_35_0._roomPollSchedule)
+				arg_35_0._roomPollSchedule = nil
+			end
+			arg_35_0:hide()
+		end
 	end))
 
 	arg_35_0._listeners = var_35_0
@@ -722,8 +745,13 @@ function var_0_0.onEnter(arg_35_0)
 						arg_35_0._roomPollSchedule = nil
 					end
 					ToastManager.push("Phòng đã đóng!")
-					P._playerRoom:exitMyRoom()
-					arg_35_0:hide()
+					if not arg_35_0._isExiting then
+						arg_35_0._isExiting = true
+						if P and P._playerRoom then
+							pcall(function() P._playerRoom:exitMyRoom() end)
+						end
+						arg_35_0:hide()
+					end
 				end
 			end)
 		end

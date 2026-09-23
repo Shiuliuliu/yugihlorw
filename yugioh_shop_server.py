@@ -86,16 +86,18 @@ CHAR_PACKAGE_GR = {
 SERVER_LIYA_CARDS_MAP = {}
 SERVER_CHAR_CARDS_MAP = {}
 SERVER_EXTRA_CARDS_MAP = {}
+SERVER_EXPANSION_CARDS_MAP = {}
 PACK_QUALITY_DISTRIBUTION = {}
 ANCIENT_CARD_IDS = set()
 FIXED_DEPOT_PRICES = {}
 
 def load_pack_mappings():
-    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP, SERVER_EXTRA_CARDS_MAP, PACK_QUALITY_DISTRIBUTION, ANCIENT_CARD_IDS, FIXED_DEPOT_PRICES
+    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP, SERVER_EXTRA_CARDS_MAP, SERVER_EXPANSION_CARDS_MAP, PACK_QUALITY_DISTRIBUTION, ANCIENT_CARD_IDS, FIXED_DEPOT_PRICES
     base_dir = os.path.dirname(os.path.abspath(__file__))
     liya_path = os.path.join(base_dir, 'liya_cards_map.json')
     char_path = os.path.join(base_dir, 'char_cards_map.json')
     extra_path = os.path.join(base_dir, 'extra_cards_map.json')
+    expansion_path = os.path.join(base_dir, 'expansion_cards_map.json')
     pack_dist_path = os.path.join(base_dir, 'pack_quality_distribution.json')
     prices_path = os.path.join(base_dir, 'fixed_depot_prices.json')
     ancient_path = os.path.join(base_dir, 'web', 'data', 'ancient_products.lua')
@@ -136,6 +138,15 @@ def load_pack_mappings():
             print(f"[SHOP SERVER] Loaded {len(SERVER_EXTRA_CARDS_MAP)} Extra pack mappings.")
     except Exception as e:
         print(f"[SHOP SERVER] Error loading extra_cards_map.json: {e}")
+
+    try:
+        if os.path.isfile(expansion_path):
+            with open(expansion_path, 'r', encoding='utf-8') as f:
+                _exm = json.load(f)
+                SERVER_EXPANSION_CARDS_MAP = {int(k): [int(x) for x in v] for k, v in _exm.items()}
+            print(f"[SHOP SERVER] Loaded {len(SERVER_EXPANSION_CARDS_MAP)} Expansion pack mappings.")
+    except Exception as e:
+        print(f"[SHOP SERVER] Error loading expansion_cards_map.json: {e}")
 
     try:
         if os.path.isfile(pack_dist_path):
@@ -307,13 +318,15 @@ CHAR_PACKAGE_GR = {
 
 def resolve_pack_cards(pkg_num, req_pool=None):
     cards = []
-    # 1. Custom 60 pack mappings always take precedence
+    # 1. Custom 60+ pack mappings always take precedence
     if pkg_num in SERVER_CHAR_CARDS_MAP:
         cards = SERVER_CHAR_CARDS_MAP[pkg_num]
     elif pkg_num in SERVER_LIYA_CARDS_MAP:
         cards = SERVER_LIYA_CARDS_MAP[pkg_num]
     elif pkg_num in SERVER_EXTRA_CARDS_MAP:
         cards = SERVER_EXTRA_CARDS_MAP[pkg_num]
+    elif pkg_num in SERVER_EXPANSION_CARDS_MAP:
+        cards = SERVER_EXPANSION_CARDS_MAP[pkg_num]
     elif 10201 <= pkg_num <= 12150:
         base_val = ((pkg_num - 10000) // 100) * 100 + 1
         cards = SERVER_CHAR_CARDS_MAP.get(pkg_num) or SERVER_CHAR_CARDS_MAP.get(base_val) or []
@@ -321,10 +334,14 @@ def resolve_pack_cards(pkg_num, req_pool=None):
         prefix = (pkg_num // 1000) * 1000
         base_val = prefix + 10
         cards = SERVER_LIYA_CARDS_MAP.get(pkg_num) or SERVER_LIYA_CARDS_MAP.get(base_val) or []
-    elif 121001 <= pkg_num <= 140050:
+    elif 121001 <= pkg_num <= 145050:
         prefix = (pkg_num // 1000) * 1000
         base_val = prefix + 10
         cards = SERVER_EXTRA_CARDS_MAP.get(pkg_num) or SERVER_EXTRA_CARDS_MAP.get(base_val) or []
+    elif 151001 <= pkg_num <= 155050:
+        prefix = (pkg_num // 1000) * 1000
+        base_val = prefix + 10
+        cards = SERVER_EXPANSION_CARDS_MAP.get(pkg_num) or SERVER_EXPANSION_CARDS_MAP.get(base_val) or []
 
     # 2. Fallback to client req_pool if no server mapping found
     if not cards and req_pool and len(req_pool) > 0:
@@ -340,17 +357,19 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
     elif 10201 <= pkg_num <= 12150:
         c_base = ((pkg_num - 10000) // 100) * 100 + 1
         if c_base in PACK_QUALITY_DISTRIBUTION: base_pkg_val = c_base
-    elif 101001 <= pkg_num <= 140050:
+    elif 101001 <= pkg_num <= 155050:
         prefix = (pkg_num // 1000) * 1000
         l_base = prefix + 10
         if l_base in PACK_QUALITY_DISTRIBUTION: base_pkg_val = l_base
-    elif 1 <= pkg_num <= 20:
+    elif 1 <= pkg_num <= 25:
         c_val = 10000 + pkg_num * 100 + 1
         l_val = 100000 + pkg_num * 1000 + 10
         e_val = 120000 + pkg_num * 1000 + 10
+        ex_val = 150000 + pkg_num * 1000 + 10
         if c_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = c_val
         elif l_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = l_val
         elif e_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = e_val
+        elif ex_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = ex_val
 
     q_pools = None
     if base_pkg_val and base_pkg_val in PACK_QUALITY_DISTRIBUTION:
@@ -555,7 +574,7 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
             if total_cards <= 0:
                 total_cards = 3
 
-            is_rare_or_extra = (101001 <= pkg_num <= 140050) or (pkg_num in SERVER_LIYA_CARDS_MAP) or (pkg_num in SERVER_EXTRA_CARDS_MAP)
+            is_rare_or_extra = (101001 <= pkg_num <= 155050) or (pkg_num in SERVER_LIYA_CARDS_MAP) or (pkg_num in SERVER_EXTRA_CARDS_MAP) or (pkg_num in SERVER_EXPANSION_CARDS_MAP)
             cost_val = int(req.get('cost_val', 0))
             if is_rare_or_extra:
                 expected_gold_cost = (28500 if packs >= 50 else (6000 if packs >= 10 else 600 * packs))

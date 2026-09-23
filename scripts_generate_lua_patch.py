@@ -5,15 +5,6 @@ import json
 with open('all_60_packs_summary.json', 'r', encoding='utf-8') as f:
     summary = json.load(f)
 
-with open('char_cards_map.json', 'r', encoding='utf-8') as f:
-    char_map = json.load(f)
-
-with open('liya_cards_map.json', 'r', encoding='utf-8') as f:
-    liya_map = json.load(f)
-
-with open('extra_cards_map.json', 'r', encoding='utf-8') as f:
-    extra_map = json.load(f)
-
 def format_card_list(cards):
     return "{" + ", ".join(str(c) for c in cards) + "}"
 
@@ -40,6 +31,14 @@ for p in summary['extra_packs']:
     name = p['name']
     prefix = (val // 1000) * 1000
     out.append(f'\t\t[{num}] = "{name}", [{prefix+1}] = "{name}", [{prefix+10}] = "{name}", [{prefix+50}] = "{name}",')
+
+for p in summary.get('expansion_packs', []):
+    num = p['num']
+    val = p['value']
+    name = p['name']
+    prefix = (val // 1000) * 1000
+    out.append(f'\t\t[{prefix+1}] = "{name}", [{prefix+10}] = "{name}", [{prefix+50}] = "{name}",')
+
 out.append("\t}")
 out.append("\tClientData._packTitles = PACK_TITLES")
 out.append("\tClientData.getPackTitle = function(boxId)")
@@ -65,6 +64,13 @@ for p in summary['extra_packs']:
     img = p['fallback_img']
     prefix = (val // 1000) * 1000
     out.append(f'\t\t[{prefix+1}] = "lottery_{img}", [{prefix+10}] = "lottery_{img}", [{prefix+50}] = "lottery_{img}",')
+
+for p in summary.get('expansion_packs', []):
+    val = p['value']
+    img = p['fallback_img']
+    prefix = (val // 1000) * 1000
+    out.append(f'\t\t[{prefix+1}] = "lottery_{img}", [{prefix+10}] = "lottery_{img}", [{prefix+50}] = "lottery_{img}",')
+
 out.append("\t}")
 out.append("\tClientData._packImages = PACK_IMAGES")
 out.append("\tClientData.getPackImageName = function(boxId)")
@@ -106,6 +112,18 @@ for p in summary['extra_packs']:
     out.append(f'\t\t[{prefix+1}] = {c_str}, [{prefix+10}] = {c_str}, [{prefix+50}] = {c_str},')
 out.append("\t}")
 out.append("\tClientData._extraCardsMap = EXTRA_CARDS_MAP\n")
+
+# EXPANSION_CARDS_MAP
+out.append("\tlocal EXPANSION_CARDS_MAP = {")
+for p in summary.get('expansion_packs', []):
+    num = p['num']
+    val = p['value']
+    prefix = (val // 1000) * 1000
+    c_str = format_card_list(p['cards'])
+    out.append(f'\t\t[{num}] = {c_str},')
+    out.append(f'\t\t[{prefix+1}] = {c_str}, [{prefix+10}] = {c_str}, [{prefix+50}] = {c_str},')
+out.append("\t}")
+out.append("\tClientData._expansionCardsMap = EXPANSION_CARDS_MAP\n")
 
 # injectPacks()
 out.append("""\t-- Card Box Info & Reset (Tavern / draw)
@@ -165,10 +183,19 @@ out.append("""\t-- Card Box Info & Reset (Tavern / draw)
 \t\t\tregisterPack(i, cList, 1001, 600)
 \t\tend
 
-\t\t-- Inject all 20 Extra theme packs (1, 10, 50)
-\t\tfor i = 1, 20 do
+\t\t-- Inject 22 Extra theme packs (1, 10, 50)
+\t\tfor i = 1, 22 do
 \t\t\tlocal prefix = 120000 + i * 1000
 \t\t\tlocal cList = EXTRA_CARDS_MAP[i] or EXTRA_CARDS_MAP[prefix + 10] or {}
+\t\t\tregisterPack(prefix + 1, cList, 1001, 600)
+\t\t\tregisterPack(prefix + 10, cList, 1001, 6000)
+\t\t\tregisterPack(prefix + 50, cList, 1001, 28500)
+\t\tend
+
+\t\t-- Inject 5 Expansion theme packs (1, 10, 50)
+\t\tfor i = 1, 5 do
+\t\t\tlocal prefix = 150000 + i * 1000
+\t\t\tlocal cList = EXPANSION_CARDS_MAP[i] or EXPANSION_CARDS_MAP[prefix + 10] or {}
 \t\t\tregisterPack(prefix + 1, cList, 1001, 600)
 \t\t\tregisterPack(prefix + 10, cList, 1001, 6000)
 \t\t\tregisterPack(prefix + 50, cList, 1001, 28500)
@@ -186,6 +213,7 @@ out.append("""\t-- Card Box Info & Reset (Tavern / draw)
 \t\t\tend
 \t\tend
 \tend
+\tClientData.injectPacks = injectPacks
 \tpcall(injectPacks)
 
 \t-- Universal Pack Card Pool Helper
@@ -195,7 +223,11 @@ out.append("""\t-- Card Box Info & Reset (Tavern / draw)
 \t\tlocal cList = nil
 
 \t\tif boxId then
-\t\t\tif boxId >= 121001 and boxId <= 140050 then
+\t\t\tif boxId >= 151001 and boxId <= 155050 then
+\t\t\t\tlocal expIdx = math.floor((boxId - 150000) / 1000)
+\t\t\t\tlocal xpm = ClientData._expansionCardsMap or EXPANSION_CARDS_MAP
+\t\t\t\tcList = xpm and (xpm[boxId] or xpm[expIdx])
+\t\t\telseif boxId >= 121001 and boxId <= 145000 then
 \t\t\t\tlocal eIdx = math.floor((boxId - 120000) / 1000)
 \t\t\t\tlocal em = ClientData._extraCardsMap or EXTRA_CARDS_MAP
 \t\t\t\tcList = em and (em[boxId] or em[eIdx])
@@ -207,6 +239,8 @@ out.append("""\t-- Card Box Info & Reset (Tavern / draw)
 \t\t\t\tlocal cIdx = math.floor((boxId - 10100) / 100)
 \t\t\t\tlocal cm = ClientData._charCardsMap or CHAR_CARDS_MAP
 \t\t\t\tcList = cm and (cm[boxId] or cm[cIdx])
+\t\t\telseif EXPANSION_CARDS_MAP and EXPANSION_CARDS_MAP[boxId] then
+\t\t\t\tcList = EXPANSION_CARDS_MAP[boxId]
 \t\t\telseif EXTRA_CARDS_MAP and EXTRA_CARDS_MAP[boxId] then
 \t\t\t\tcList = EXTRA_CARDS_MAP[boxId]
 \t\t\telseif LIYA_CARDS_MAP and LIYA_CARDS_MAP[boxId] then
@@ -246,7 +280,7 @@ out.append("""\t-- Card Box Info & Reset (Tavern / draw)
 \t\t\t\t\t\tadded[pId] = true
 \t\t\t\t\t\ttable.insert(pool, pId)
 \t\t\t\t\tend
-\t\t\t\tend
+\t\t\tend
 \t\t\tend
 \t\tend
 
@@ -257,4 +291,4 @@ lua_code = "\n".join(out)
 with open('generated_patch_pack_section.lua', 'w', encoding='utf-8') as f:
     f.write(lua_code)
 
-print("Generated generated_patch_pack_section.lua successfully!")
+print("Generated generated_patch_pack_section.lua successfully with all 4 tabs!")

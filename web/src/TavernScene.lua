@@ -31,7 +31,8 @@ var_0_1.TAB = {
 	god_pump = 10,
 	draw_card = 2,
 	god_shop = 8,
-	extra_card = 21
+	extra_card = 21,
+	expansion_card = 22
 }
 
 function var_0_1.create(arg_1_0, arg_1_1)
@@ -81,6 +82,11 @@ function var_0_1.init(arg_2_0, arg_2_1, arg_2_2)
 	table.insert(var_2_1, {
 		_index = var_0_1.TAB.extra_card,
 		_str = "Gói thẻ bài thêm"
+	})
+
+	table.insert(var_2_1, {
+		_index = var_0_1.TAB.expansion_card,
+		_str = "Gói bài mở rộng"
 	})
 
 	if #arg_2_0._godPumpPackages > 0 and P._vip >= 1 then
@@ -247,12 +253,14 @@ function var_0_1.generateCardPackageData(arg_5_0)
 	local var_5_7 = {}
 	local var_5_8 = {}
 	local var_5_extra = {}
+	local var_5_expansion = {}
 
 	arg_5_0._timeLimitPackages = var_5_1
 	arg_5_0._godPumpPackages = var_5_2
 	arg_5_0._drawCardPackages = var_5_3
 	arg_5_0._rareDrawCardPackages = var_5_4
 	arg_5_0._extraDrawCardPackages = var_5_extra
+	arg_5_0._expansionDrawCardPackages = var_5_expansion
 	arg_5_0._criticalPackages = var_5_5
 	arg_5_0._selectPackages = var_5_6
 	arg_5_0._clashPackages = var_5_7
@@ -294,14 +302,25 @@ function var_0_1.generateCardPackageData(arg_5_0)
 		end
 	end
 
-	-- Populate exactly 20 Extra Theme Packs
-	for i = 1, 20 do
+	-- Populate 22 Extra Theme Packs (20 existing + ES/CS + TrickStar)
+	for i = 1, 22 do
 		local prefix = 120000 + i * 1000
 		local p1 = getValidPackInfo(prefix + 1)
 		local p10 = getValidPackInfo(prefix + 10) or p1
 		local p50 = getValidPackInfo(prefix + 50) or p1
 		if p1 then
 			table.insert(var_5_extra, var_5_9(p1, p10, p50))
+		end
+	end
+
+	-- Populate 5 Expansion Packs (Gói bài mở rộng)
+	for i = 1, 5 do
+		local prefix = 150000 + i * 1000
+		local p1 = getValidPackInfo(prefix + 1)
+		local p10 = getValidPackInfo(prefix + 10) or p1
+		local p50 = getValidPackInfo(prefix + 50) or p1
+		if p1 then
+			table.insert(var_5_expansion, var_5_9(p1, p10, p50))
 		end
 	end
 
@@ -523,6 +542,22 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 
 			var_10_20:pushBackCustomItem(var_10_23)
 			table.insert(arg_10_0._recruitItems, var_10_23)
+		end
+	elseif arg_10_1._index == var_0_1.TAB.expansion_card then
+		local var_10_exp = arg_10_0._list
+		local var_10_exp_packs = arg_10_0._expansionDrawCardPackages
+
+		var_10_exp:setVisible(true)
+		var_10_exp:bindData(var_10_exp_packs, function(arg_exp_0, arg_exp_1)
+			arg_10_0:createRecruitItem(arg_exp_0, arg_exp_1)
+		end, math.min(8, #var_10_exp_packs), 1)
+
+		for iter_exp = 1, var_10_exp._cacheCount do
+			local var_exp_p = var_10_exp_packs[iter_exp]
+			local var_exp_item = arg_10_0:createRecruitItem(nil, var_exp_p)
+
+			var_10_exp:pushBackCustomItem(var_exp_item)
+			table.insert(arg_10_0._recruitItems, var_exp_item)
 		end
 	elseif arg_10_1._index == var_0_1.TAB.god_pump then
 		local var_10_24 = arg_10_0._list

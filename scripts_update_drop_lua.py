@@ -8,7 +8,7 @@ with open('all_60_packs_summary.json', 'r', encoding='utf-8') as f:
 
 pack_defs = {}
 
-# 1. Char packs
+# 1. Char packs (20 packs)
 for p in summary['char_packs']:
     num = p['num']
     val = p['value'] # e.g. 10201
@@ -19,10 +19,11 @@ for p in summary['char_packs']:
     pack_defs[val + 9] = {'type': 1002, 'cost': 4500, 'nameSid': sid, 'cards': cards, 'group': 'char', 'num': num, 'name': name}
     pack_defs[val + 49] = {'type': 1002, 'cost': 22500, 'nameSid': sid, 'cards': cards, 'group': 'char', 'num': num, 'name': name}
 
-# 2. Liya packs
+# 2. Liya packs (20 packs)
 for p in summary['liya_packs']:
     num = p['num']
     val = p['value'] # e.g. 101010
+    name = p['name']
     cards = p['cards']
     sid = 15224 + (num - 1) * 6
     prefix = (val // 1000) * 1000
@@ -30,16 +31,38 @@ for p in summary['liya_packs']:
     pack_defs[prefix + 10] = {'type': 1001, 'cost': 6000, 'nameSid': sid, 'cards': cards, 'group': 'liya', 'num': num, 'name': name}
     pack_defs[prefix + 50] = {'type': 1001, 'cost': 28500, 'nameSid': sid, 'cards': cards, 'group': 'liya', 'num': num, 'name': name}
 
-# 3. Extra packs
+# 3. Extra packs (22 packs: 20 existing + ES/CS + TrickStar)
 for p in summary['extra_packs']:
     num = p['num']
-    val = p['value'] # e.g. 121010
+    val = p['value'] # e.g. 121010..142010
+    name = p['name']
     cards = p['cards']
-    sid = (15344 + (num - 1) * 6) if num <= 16 else (56692 + (num - 17))
+    if num <= 16:
+        sid = 15344 + (num - 1) * 6
+    elif num <= 20:
+        sid = 56692 + (num - 17)
+    elif num == 21:
+        sid = 56696 # Gói Bài ES/CS
+    elif num == 22:
+        sid = 56697 # Gói Bài TrickStar
+    else:
+        sid = 56696
     prefix = (val // 1000) * 1000
     pack_defs[prefix + 1] = {'type': 1001, 'cost': 600, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num, 'name': name}
     pack_defs[prefix + 10] = {'type': 1001, 'cost': 6000, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num, 'name': name}
     pack_defs[prefix + 50] = {'type': 1001, 'cost': 28500, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num, 'name': name}
+
+# 4. Expansion packs (5 packs: 151010..155010)
+for p in summary.get('expansion_packs', []):
+    num = p['num']
+    val = p['value']
+    name = p['name']
+    cards = p['cards']
+    sid = 56698 + (num - 1) # 56698..56702
+    prefix = (val // 1000) * 1000
+    pack_defs[prefix + 1] = {'type': 1001, 'cost': 600, 'nameSid': sid, 'cards': cards, 'group': 'expansion', 'num': num, 'name': name}
+    pack_defs[prefix + 10] = {'type': 1001, 'cost': 6000, 'nameSid': sid, 'cards': cards, 'group': 'expansion', 'num': num, 'name': name}
+    pack_defs[prefix + 50] = {'type': 1001, 'cost': 28500, 'nameSid': sid, 'cards': cards, 'group': 'expansion', 'num': num, 'name': name}
 
 with open('web/data/drop.lua.orig', 'r', encoding='utf-8') as f:
     orig_content = f.read()
@@ -51,7 +74,6 @@ for m in pattern.finditer(orig_content):
     body = m.group(2)
     t = int(m.group(3))
     val = int(m.group(4))
-    # Capture the exact chunk text
     orig_entries[did] = {
         'did': did,
         'val': val,
@@ -74,11 +96,9 @@ def generate_entry_lua(did, val, pinfo):
     return "".join(lines)
 
 final_entries = {}
-# 1. First, populate all original entries as-is
 for did, e in orig_entries.items():
     final_entries[did] = e['raw']
 
-# 2. For pack_defs: if exists in orig, replace cleanly. If not, allocate new did
 max_did = max(orig_entries.keys())
 added = 0
 updated = 0
@@ -97,7 +117,6 @@ for val, pinfo in pack_defs.items():
 
 print(f"Updated {updated} pack entries, Added {added} new pack entries. Total entries: {len(final_entries)}")
 
-# Construct output
 out_lines = ["return {\n"]
 for did in sorted(final_entries.keys()):
     entry_str = final_entries[did].strip('\n')
