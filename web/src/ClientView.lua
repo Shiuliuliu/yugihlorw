@@ -5847,11 +5847,20 @@ end
 
 function var_0_0.createCardPackage(arg_294_0, arg_294_1)
 	local var_294_0 = cc.Node:create()
-	local var_294_1 = string.format("lottery_%d", arg_294_0._value)
+	local var_294_1 = (ClientData.getPackImageName and ClientData.getPackImageName(arg_294_0._value)) or string.format("lottery_%d", arg_294_0._value)
 	local var_294_2
 
-	if arg_294_0._value < 10201 or not lc.File:isFileExist(lc.formatJpg(var_294_1)) then
-		var_294_1 = "lottery_101001"
+	if not lc.File:isFileExist(lc.formatJpg(var_294_1)) then
+		if arg_294_0._value and arg_294_0._value >= 100000 then
+			local candidate = string.format("lottery_%d", (math.floor(arg_294_0._value / 1000) * 1000) + 1)
+			if lc.File:isFileExist(lc.formatJpg(candidate)) then
+				var_294_1 = candidate
+			else
+				var_294_1 = "lottery_101001"
+			end
+		else
+			var_294_1 = "lottery_101001"
+		end
 	end
 
 	if ClientData.isAnotherSkin() then
@@ -5874,7 +5883,7 @@ function var_0_0.createCardPackage(arg_294_0, arg_294_1)
 
 	local var_294_4 = 1
 
-	if Data.getIsRareRecruite(arg_294_0) then
+	if Data.getIsRareRecruite(arg_294_0) or (arg_294_0._value and arg_294_0._value >= 100000) then
 		var_294_4 = 0
 	elseif Data.getIsClashRecruite(arg_294_0) then
 		var_294_4 = 2
@@ -5905,6 +5914,21 @@ function var_0_0.createCardPackage(arg_294_0, arg_294_1)
 	lc.addChildToPos(var_294_0, var_294_6, cc.p(lc.cw(var_294_0), lc.h(var_294_0) - lc.ch(var_294_6)))
 	lc.addChildToPos(var_294_0, var_294_2, cc.p(lc.cw(var_294_0), lc.h(var_294_8) + lc.ch(var_294_2)))
 
+	-- Title banner for theme pack name
+	local packTitle = ClientData.getPackTitle and ClientData.getPackTitle(arg_294_0._value)
+	if packTitle and packTitle ~= "" then
+		local titleBg = lc.createSprite({
+			_name = "img_com_bg_45",
+			_crect = ClientView.CRECT_COM_BG45,
+			_size = cc.size(240, 44)
+		})
+		local titleLabel = ClientView.createTTF(packTitle, ClientView.FontSize.S1, cc.c3b(255, 230, 130))
+		titleLabel:enableOutline(cc.c4b(30, 20, 10, 255), 2)
+		lc.addChildToCenter(titleBg, titleLabel)
+		lc.addChildToPos(var_294_0, titleBg, cc.p(lc.cw(var_294_0), lc.h(var_294_0) - lc.h(var_294_6) - 16), 10)
+		var_294_0._titleBg = titleBg
+	end
+
 	if arg_294_0._type == 1001 then
 		local var_294_9 = Particle.create("leiya")
 
@@ -5918,6 +5942,9 @@ function var_0_0.createCardPackage(arg_294_0, arg_294_1)
 		var_294_2:setEffect(ClientView.SHADER_DISABLE)
 		var_294_6:setEffect(ClientView.SHADER_DISABLE)
 		var_294_8:setEffect(ClientView.SHADER_DISABLE)
+		if arg_295_0._titleBg then
+			arg_295_0._titleBg:setEffect(ClientView.SHADER_DISABLE)
+		end
 
 		if arg_295_0._particle then
 			arg_295_0._particle:setVisible(false)

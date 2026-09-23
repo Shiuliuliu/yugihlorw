@@ -30,7 +30,8 @@ var_0_1.TAB = {
 	new_shop = 17,
 	god_pump = 10,
 	draw_card = 2,
-	god_shop = 8
+	god_shop = 8,
+	extra_card = 21
 }
 
 function var_0_1.create(arg_1_0, arg_1_1)
@@ -62,7 +63,7 @@ function var_0_1.init(arg_2_0, arg_2_1, arg_2_2)
 
 	table.insert(var_2_1, {
 		_index = var_0_1.TAB.draw_card,
-		_str = Str(STR.CHARACTER) .. Str(STR.PACKAGE)
+		_str = "Gói bài nhân vật"
 	})
 
 	if P._vip >= 1 then
@@ -74,22 +75,13 @@ function var_0_1.init(arg_2_0, arg_2_1, arg_2_2)
 
 	table.insert(var_2_1, {
 		_index = var_0_1.TAB.rare_draw_card,
-		_str = Str(STR.RARE) .. Str(STR.PACKAGE)
+		_str = "Gói bài Lôi Nhã"
 	})
 
-	if #arg_2_0._clashPackages > 0 then
-		table.insert(var_2_1, {
-			_index = var_0_1.TAB.clash,
-			_str = Str(STR.CLASH_PACKAGE)
-		})
-	end
-
-	if #arg_2_0._collectPackages > 0 then
-		table.insert(var_2_1, {
-			_index = var_0_1.TAB.collect,
-			_str = Str(STR.COLLECT_PACKAGE)
-		})
-	end
+	table.insert(var_2_1, {
+		_index = var_0_1.TAB.extra_card,
+		_str = "Gói thẻ bài thêm"
+	})
 
 	if #arg_2_0._godPumpPackages > 0 and P._vip >= 1 then
 		table.insert(var_2_1, {
@@ -110,14 +102,6 @@ function var_0_1.init(arg_2_0, arg_2_1, arg_2_2)
 		table.insert(var_2_1, {
 			_index = var_0_1.TAB.depot_shop,
 			_str = Str(STR.DEPOT_SHOP)
-		})
-		table.insert(var_2_1, {
-			_index = var_0_1.TAB.vote_shop,
-			_str = Str(STR.VOTE_SHOP)
-		})
-		table.insert(var_2_1, {
-			_index = var_0_1.TAB.new_shop,
-			_str = Str(STR.NEW_SHOP)
 		})
 		table.insert(var_2_1, 1, {
 			_index = var_0_1.TAB.skill_shop,
@@ -262,11 +246,13 @@ function var_0_1.generateCardPackageData(arg_5_0)
 	local var_5_6 = {}
 	local var_5_7 = {}
 	local var_5_8 = {}
+	local var_5_extra = {}
 
 	arg_5_0._timeLimitPackages = var_5_1
 	arg_5_0._godPumpPackages = var_5_2
 	arg_5_0._drawCardPackages = var_5_3
 	arg_5_0._rareDrawCardPackages = var_5_4
+	arg_5_0._extraDrawCardPackages = var_5_extra
 	arg_5_0._criticalPackages = var_5_5
 	arg_5_0._selectPackages = var_5_6
 	arg_5_0._clashPackages = var_5_7
@@ -276,6 +262,43 @@ function var_0_1.generateCardPackageData(arg_5_0)
 		return {
 			...
 		}
+	end
+
+	local function getValidPackInfo(val)
+		return Data.getRecruiteInfo(val) or (Data._recruitInfo and Data._recruitInfo[val]) or (Data._dropInfo and Data._dropInfo[val])
+	end
+
+	-- Populate exactly 20 Character Theme Packs
+	for i = 1, 20 do
+		local baseVal = 10100 + i * 100
+		local p1 = getValidPackInfo(baseVal + 1)
+		local p10 = getValidPackInfo(baseVal + 10)
+		local p50 = getValidPackInfo(baseVal + 50)
+		if p1 and p10 and p50 then
+			table.insert(var_5_3, var_5_9(p1, p10, p50))
+		end
+	end
+
+	-- Populate exactly 20 Liya Theme Packs
+	for i = 1, 20 do
+		local prefix = 100000 + i * 1000
+		local p1 = getValidPackInfo(prefix + 1)
+		local p10 = getValidPackInfo(prefix + 10)
+		local p50 = getValidPackInfo(prefix + 50)
+		if p1 and p10 and p50 then
+			table.insert(var_5_4, var_5_9(p1, p10, p50))
+		end
+	end
+
+	-- Populate exactly 20 Extra Theme Packs
+	for i = 1, 20 do
+		local prefix = 120000 + i * 1000
+		local p1 = getValidPackInfo(prefix + 1)
+		local p10 = getValidPackInfo(prefix + 10)
+		local p50 = getValidPackInfo(prefix + 50)
+		if p1 and p10 and p50 then
+			table.insert(var_5_extra, var_5_9(p1, p10, p50))
+		end
 	end
 
 	if arg_5_0:isGuideRarePackage() then
@@ -315,9 +338,9 @@ function var_0_1.generateCardPackageData(arg_5_0)
 			elseif Data.getIsCollectionRecruite(var_5_0[var_5_10]) then
 				table.insert(var_5_8, var_5_9(var_5_0[var_5_10], var_5_0[var_5_10 + 1]))
 			elseif Data.getIsRareRecruite(var_5_0[var_5_10]) then
-				table.insert(var_5_4, var_5_9(var_5_0[var_5_10], var_5_0[var_5_10 + 1], var_5_0[var_5_10 + 2]))
+				-- Skip old rare packages to keep exactly 20 Liya theme packs
 			elseif Data.getIsCharacterRecruite(var_5_0[var_5_10]) then
-				table.insert(var_5_3, var_5_9(var_5_0[var_5_10], var_5_0[var_5_10 + 1], var_5_0[var_5_10 + 2]))
+				-- Skip old character packages to keep exactly 20 Character theme packs
 			elseif Data.getIsGodPumpRecruite(var_5_0[var_5_10]) then
 				table.insert(var_5_2, var_5_9(var_5_0[var_5_10], var_5_0[var_5_10 + 1]))
 			elseif Data.getIsClashRecruite(var_5_0[var_5_10]) then
@@ -346,7 +369,7 @@ function var_0_1.generateCardPackageData(arg_5_0)
 
 		return var_8_0._value > var_8_1._value
 	end)
-	table.reverse(var_5_4)
+	-- Liya theme packs are in order 1..20, keep natural order without reverse
 	table.sort(var_5_5, function(arg_9_0, arg_9_1)
 		local var_9_0 = arg_9_0[1]
 		local var_9_1 = arg_9_1[1]
@@ -481,9 +504,9 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 			var_10_16:pushBackCustomItem(var_10_19)
 			table.insert(arg_10_0._recruitItems, var_10_19)
 		end
-	elseif arg_10_1._index == var_0_1.TAB.collect then
+	elseif arg_10_1._index == var_0_1.TAB.extra_card then
 		local var_10_20 = arg_10_0._list
-		local var_10_21 = arg_10_0._collectPackages
+		local var_10_21 = arg_10_0._extraDrawCardPackages
 
 		var_10_20:setVisible(true)
 		var_10_20:bindData(var_10_21, function(arg_16_0, arg_16_1)
@@ -513,22 +536,6 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 			var_10_24:pushBackCustomItem(var_10_27)
 			table.insert(arg_10_0._recruitItems, var_10_27)
 		end
-	elseif arg_10_1._index == var_0_1.TAB.clash then
-		local var_10_28 = arg_10_0._list
-		local var_10_29 = arg_10_0._clashPackages
-
-		var_10_28:setVisible(true)
-		var_10_28:bindData(var_10_29, function(arg_18_0, arg_18_1)
-			arg_10_0:createRecruitItem(arg_18_0, arg_18_1)
-		end, math.min(8, #var_10_29), 1)
-
-		for iter_10_8 = 1, var_10_28._cacheCount do
-			local var_10_30 = var_10_29[iter_10_8]
-			local var_10_31 = arg_10_0:createRecruitItem(nil, var_10_30)
-
-			var_10_28:pushBackCustomItem(var_10_31)
-			table.insert(arg_10_0._recruitItems, var_10_31)
-		end
 	elseif arg_10_1._index == var_0_1.TAB.depot_shop then
 		arg_10_0._shopArea = require("DepotShopArea").create(lc.w(arg_10_0._list) - 100, lc.h(arg_10_0._list))
 
@@ -545,20 +552,12 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		arg_10_0._shopArea = require("DiamondShopArea").create(lc.w(arg_10_0._list) - 100, lc.h(arg_10_0._list) + 100)
 
 		lc.addChildToPos(arg_10_0, arg_10_0._shopArea, cc.p(lc.x(arg_10_0._list), lc.y(arg_10_0._list) - 20))
-	elseif arg_10_1._index == var_0_1.TAB.new_shop then
-		arg_10_0._shopArea = require("NewShopArea").create(lc.w(arg_10_0._list) - 100, lc.h(arg_10_0._list) + 100)
-
-		lc.addChildToPos(arg_10_0, arg_10_0._shopArea, cc.p(lc.x(arg_10_0._list), lc.y(arg_10_0._list) - 20))
 	elseif arg_10_1._index == var_0_1.TAB.badge_shop then
 		arg_10_0._shopArea = require("BadgeShopArea").create(lc.w(arg_10_0._list) - 100, lc.h(arg_10_0._list) + 100)
 
 		lc.addChildToPos(arg_10_0, arg_10_0._shopArea, cc.p(lc.x(arg_10_0._list), lc.y(arg_10_0._list) - 20))
 	elseif arg_10_1._index == var_0_1.TAB.month_card5_shop then
 		arg_10_0._shopArea = require("MonthCard5ShopArea").create(lc.w(arg_10_0._list) - 100, lc.h(arg_10_0._list) + 100)
-
-		lc.addChildToPos(arg_10_0, arg_10_0._shopArea, cc.p(lc.x(arg_10_0._list), lc.y(arg_10_0._list) - 20))
-	elseif arg_10_1._index == var_0_1.TAB.vote_shop then
-		arg_10_0._shopArea = require("VoteShopArea").create(lc.w(arg_10_0._list) - 100, lc.h(arg_10_0._list))
 
 		lc.addChildToPos(arg_10_0, arg_10_0._shopArea, cc.p(lc.x(arg_10_0._list), lc.y(arg_10_0._list) - 20))
 	elseif arg_10_1._index == var_0_1.TAB.vote_recovery then
@@ -768,7 +767,7 @@ function var_0_1.createCostArea(arg_32_0, arg_32_1, arg_32_2, arg_32_3, arg_32_4
 	local var_32_3 = arg_32_1._param[6]
 	local var_32_4 = arg_32_1._param[7]
 
-	local isLiyaPkg = Data.getIsRareRecruite(arg_32_1) or (arg_32_1._value and arg_32_1._value >= 101001 and arg_32_1._value <= 136050)
+	local isLiyaPkg = Data.getIsRareRecruite(arg_32_1) or (arg_32_1._value and arg_32_1._value >= 101001 and arg_32_1._value <= 140050)
 	local isCharPkg = Data.getIsCharacterRecruite(arg_32_1) or (arg_32_1._value and arg_32_1._value >= 10001 and arg_32_1._value < 100000)
 
 	local baseUnitPrice = 500
@@ -2114,20 +2113,7 @@ function var_0_1.isLocked(arg_75_0, arg_75_1)
 	elseif Data.getIsRareRecruite(arg_75_1) then
 		-- block empty
 	elseif Data.getIsCharacterRecruite(arg_75_1) then
-		local var_75_7
-
-		for iter_75_0, iter_75_1 in pairs(Data._characterInfo) do
-			if iter_75_1._packageIds[1] == var_75_2 then
-				var_75_7 = iter_75_1
-
-				break
-			end
-		end
-
-		if var_75_7 and not P:isCharacterUnlocked(var_75_7._id) then
-			var_75_0 = true
-			var_75_1 = string.format("%s\n|%s|", Str(STR.NEED_UNLOCK), lc.str(var_75_7._nameSid))
-		end
+		var_75_0 = false
 	end
 
 	return var_75_0, var_75_1

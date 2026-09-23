@@ -115,13 +115,29 @@ ALL_SR_AND_BELOW_CARDS = []
 ALL_CARD_MAX_COUNTS = {}
 SERVER_LIYA_CARDS_MAP = {}
 SERVER_CHAR_CARDS_MAP = {}
+SERVER_EXTRA_CARDS_MAP = {}
+PACK_QUALITY_DISTRIBUTION = {}
+ANCIENT_CARD_IDS = set()
 
 def load_pack_mappings():
-    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP, FIXED_DEPOT_PRICES
+    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP, SERVER_EXTRA_CARDS_MAP, PACK_QUALITY_DISTRIBUTION, ANCIENT_CARD_IDS, FIXED_DEPOT_PRICES
     base_dir = os.path.dirname(os.path.abspath(__file__))
     liya_path = os.path.join(base_dir, 'liya_cards_map.json')
     char_path = os.path.join(base_dir, 'char_cards_map.json')
+    extra_path = os.path.join(base_dir, 'extra_cards_map.json')
+    pack_dist_path = os.path.join(base_dir, 'pack_quality_distribution.json')
     prices_path = os.path.join(base_dir, 'fixed_depot_prices.json')
+    ancient_path = os.path.join(base_dir, 'web', 'data', 'ancient_products.lua')
+
+    try:
+        if os.path.isfile(ancient_path):
+            with open(ancient_path, 'r', encoding='utf-8') as f:
+                _at = f.read()
+            import re
+            ANCIENT_CARD_IDS = set(int(m.group(1)) for m in re.finditer(r'\[\"_cardId\"\]=(\d+)', _at))
+            print(f"[WEB SERVER] Loaded {len(ANCIENT_CARD_IDS)} Ancient Card IDs.")
+    except Exception as e:
+        print(f"[WEB SERVER] Error loading ancient_products.lua: {e}")
 
     try:
         if os.path.isfile(liya_path):
@@ -140,6 +156,24 @@ def load_pack_mappings():
             print(f"[WEB SERVER] Loaded {len(SERVER_CHAR_CARDS_MAP)} Character pack mappings.")
     except Exception as e:
         print(f"[WEB SERVER] Error loading char_cards_map.json: {e}")
+
+    try:
+        if os.path.isfile(extra_path):
+            with open(extra_path, 'r', encoding='utf-8') as f:
+                _em = json.load(f)
+                SERVER_EXTRA_CARDS_MAP = {int(k): [int(x) for x in v] for k, v in _em.items()}
+            print(f"[WEB SERVER] Loaded {len(SERVER_EXTRA_CARDS_MAP)} Extra pack mappings.")
+    except Exception as e:
+        print(f"[WEB SERVER] Error loading extra_cards_map.json: {e}")
+
+    try:
+        if os.path.isfile(pack_dist_path):
+            with open(pack_dist_path, 'r', encoding='utf-8') as f:
+                _pdm = json.load(f)
+                PACK_QUALITY_DISTRIBUTION = {int(k): v for k, v in _pdm.items()}
+            print(f"[WEB SERVER] Loaded {len(PACK_QUALITY_DISTRIBUTION)} Pack Quality Distributions.")
+    except Exception as e:
+        print(f"[WEB SERVER] Error loading pack_quality_distribution.json: {e}")
 
     try:
         if os.path.isfile(prices_path):
@@ -370,21 +404,24 @@ CHAR_PACKAGE_GR = {
 
 def resolve_pack_cards(pkg_num, req_pool=None):
     cards = []
-    # 1. Overwritten character / Liya pack mappings always take precedence
+    # 1. Custom 60 pack mappings always take precedence
     if pkg_num in SERVER_CHAR_CARDS_MAP:
         cards = SERVER_CHAR_CARDS_MAP[pkg_num]
     elif pkg_num in SERVER_LIYA_CARDS_MAP:
         cards = SERVER_LIYA_CARDS_MAP[pkg_num]
-    elif pkg_num in (11201, 11210, 11250, 15, 12):
-        cards = SERVER_CHAR_CARDS_MAP.get(11201) or SERVER_CHAR_CARDS_MAP.get(15) or SERVER_CHAR_CARDS_MAP.get(12) or []
-    elif 101001 <= pkg_num <= 135050:
-        liya_idx = (pkg_num - 100000) // 1000
-        cards = SERVER_LIYA_CARDS_MAP.get(pkg_num) or SERVER_LIYA_CARDS_MAP.get(liya_idx) or []
-    elif 1 <= pkg_num <= 50 and pkg_num in SERVER_LIYA_CARDS_MAP:
-        cards = SERVER_LIYA_CARDS_MAP[pkg_num]
-    elif 10000 <= pkg_num < 20000:
-        cid = (pkg_num - 10000) // 100
-        cards = SERVER_CHAR_CARDS_MAP.get(pkg_num) or SERVER_CHAR_CARDS_MAP.get(cid) or []
+    elif pkg_num in SERVER_EXTRA_CARDS_MAP:
+        cards = SERVER_EXTRA_CARDS_MAP[pkg_num]
+    elif 10201 <= pkg_num <= 12150:
+        base_val = ((pkg_num - 10000) // 100) * 100 + 1
+        cards = SERVER_CHAR_CARDS_MAP.get(pkg_num) or SERVER_CHAR_CARDS_MAP.get(base_val) or []
+    elif 101001 <= pkg_num <= 120050:
+        prefix = (pkg_num // 1000) * 1000
+        base_val = prefix + 10
+        cards = SERVER_LIYA_CARDS_MAP.get(pkg_num) or SERVER_LIYA_CARDS_MAP.get(base_val) or []
+    elif 121001 <= pkg_num <= 140050:
+        prefix = (pkg_num // 1000) * 1000
+        base_val = prefix + 10
+        cards = SERVER_EXTRA_CARDS_MAP.get(pkg_num) or SERVER_EXTRA_CARDS_MAP.get(base_val) or []
 
     # 2. Fallback to client req_pool if no server mapping found
     if not cards and req_pool and len(req_pool) > 0:
@@ -393,39 +430,50 @@ def resolve_pack_cards(pkg_num, req_pool=None):
     return [int(x) for x in cards if int(x) in ALL_CARDS_MAP]
 
 def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, broadcast_fn=None):
-    pack_cids = resolve_pack_cards(pkg_num, req_pool)
-    pack_by_quality = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
-    for cid in pack_cids:
-        c = ALL_CARDS_MAP.get(cid)
-        if c:
-            q = c.get('quality', 'N')
-            if q in pack_by_quality:
-                pack_by_quality[q].append(c)
-            else:
-                pack_by_quality['N'].append(c)
+    # Determine base package ID for quality pools
+    base_pkg_val = None
+    if pkg_num in PACK_QUALITY_DISTRIBUTION:
+        base_pkg_val = pkg_num
+    elif 10201 <= pkg_num <= 12150:
+        c_base = ((pkg_num - 10000) // 100) * 100 + 1
+        if c_base in PACK_QUALITY_DISTRIBUTION: base_pkg_val = c_base
+    elif 101001 <= pkg_num <= 140050:
+        prefix = (pkg_num // 1000) * 1000
+        l_base = prefix + 10
+        if l_base in PACK_QUALITY_DISTRIBUTION: base_pkg_val = l_base
+    elif 1 <= pkg_num <= 20:
+        c_val = 10000 + pkg_num * 100 + 1
+        l_val = 100000 + pkg_num * 1000 + 10
+        e_val = 120000 + pkg_num * 1000 + 10
+        if c_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = c_val
+        elif l_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = l_val
+        elif e_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = e_val
 
-    pack_gr_cards = pack_by_quality['GR'][:]
-    if not pack_gr_cards:
-        gr_cids = []
-        if 101001 <= pkg_num <= 135050:
-            liya_idx = (pkg_num - 100000) // 1000
-            gr_cids = LIYA_PACKAGE_GR.get(liya_idx, [])
-        elif 1 <= pkg_num <= 50 and pkg_num in LIYA_PACKAGE_GR:
-            gr_cids = LIYA_PACKAGE_GR.get(pkg_num, [])
-        else:
-            cid = pkg_num
-            if cid in (11201, 11210, 11250, 15, 12):
-                cid = 15
-            elif 10000 <= cid < 20000:
-                cid = (cid - 10000) // 100
-            elif cid > 100:
-                cid = cid % 100
-            gr_cids = CHAR_PACKAGE_GR.get(cid, [])
-        for gid in gr_cids:
-            if gid in ALL_CARDS_MAP:
-                pack_gr_cards.append(ALL_CARDS_MAP[gid])
-    if not pack_gr_cards:
-        pack_gr_cards = pack_by_quality['UR'][:] or ALL_CARDS_BY_QUALITY.get('GR', [])
+    q_pools = None
+    if base_pkg_val and base_pkg_val in PACK_QUALITY_DISTRIBUTION:
+        q_pools = PACK_QUALITY_DISTRIBUTION[base_pkg_val]
+
+    # If quality pools not found, build dynamically from pack cards
+    if not q_pools:
+        pack_cids = resolve_pack_cards(pkg_num, req_pool)
+        q_pools = {'GR': [], 'UR_ANCIENT': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
+        for cid in pack_cids:
+            c = ALL_CARDS_MAP.get(cid)
+            if c:
+                cq = (c.get('quality') or 'N').upper()
+                if cq == 'GR': q_pools['GR'].append(cid)
+                elif cid in ANCIENT_CARD_IDS: q_pools['UR_ANCIENT'].append(cid)
+                elif cq == 'UR': q_pools['UR'].append(cid)
+                elif cq == 'SR': q_pools['SR'].append(cid)
+                elif cq == 'R': q_pools['R'].append(cid)
+                else: q_pools['N'].append(cid)
+
+    # Collect all valid card IDs in this pack for ultimate fallback
+    all_pack_cids = []
+    for qk in ['GR', 'UR_ANCIENT', 'UR', 'SR', 'R', 'N']:
+        for cid in q_pools.get(qk, []):
+            if cid in ALL_CARDS_MAP and cid not in all_pack_cids:
+                all_pack_cids.append(cid)
 
     cards_won = []
     has_ur = False
@@ -434,66 +482,71 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
         force_ur = (user_pity >= 50.0) and (not has_ur)
         
         roll = random.random()
-        is_pack_card = True
+        # Exact drop rates:
+        # GR: 0.0005% (0.000005)
+        # UR Di tích cổ: 0.5% (0.005000)
+        # UR thường: 2% (0.020000)
+        # SR: 5% (0.050000)
+        # R: 40% (0.400000)
+        # N: 50% + remainder (~0.524995)
         if force_ur:
             target_quality = 'UR'
-        elif roll < 0.000001:  # GR: 0.0001%
+        elif roll < 0.000005:
             target_quality = 'GR'
-        elif roll < 0.020001:  # UR: 2%
+        elif roll < 0.005005:
+            target_quality = 'UR_ANCIENT'
+        elif roll < 0.025005:
             target_quality = 'UR'
-        elif roll < 0.120001:  # SR: 10%
+        elif roll < 0.075005:
             target_quality = 'SR'
-        elif roll < 0.320001:  # R: 20%
+        elif roll < 0.475005:
             target_quality = 'R'
-        elif roll < 0.620001:  # N: 30%
-            target_quality = 'N'
-        else:                  # Remainder: ~38% random filler cards
-            is_pack_card = False
-
-        picked = None
-        if not is_pack_card:
-            # Remainder (~38%): random card from database as in previous commit
-            picked = random.choice(ALL_SR_AND_BELOW_CARDS) if ALL_SR_AND_BELOW_CARDS else random.choice(list(ALL_CARDS_MAP.values()))
-        elif target_quality == 'GR':
-            if pack_gr_cards:
-                picked = random.choice(pack_gr_cards)
-            elif pack_by_quality['UR']:
-                picked = random.choice(pack_by_quality['UR'])
-            else:
-                picked = random.choice(ALL_CARDS_BY_QUALITY.get('GR') or ALL_CARDS_BY_QUALITY.get('UR'))
         else:
-            # Pick from pack overwritten list
-            if pack_by_quality[target_quality]:
-                picked = random.choice(pack_by_quality[target_quality])
-            else:
-                fallback_order = {
-                    'N': ['R', 'SR', 'UR'],
-                    'R': ['SR', 'N', 'UR'],
-                    'SR': ['R', 'UR', 'N'],
-                    'UR': ['SR', 'R', 'N']
-                }.get(target_quality, ['R', 'SR', 'UR', 'N'])
-                for fq in fallback_order:
-                    if pack_by_quality[fq]:
-                        picked = random.choice(pack_by_quality[fq])
-                        break
-                if not picked and pack_cids:
-                    picked_cid = random.choice(pack_cids)
-                    picked = ALL_CARDS_MAP.get(picked_cid)
-                if not picked:
-                    pool = ALL_CARDS_BY_QUALITY.get(target_quality) or ALL_SR_AND_BELOW_CARDS
-                    picked = random.choice(pool)
+            target_quality = 'N'
 
+        picked_cid = None
+        if target_quality == 'GR':
+            pool = q_pools.get('GR') or q_pools.get('UR_ANCIENT') or q_pools.get('UR')
+            picked_cid = random.choice(pool) if pool else None
+        elif target_quality == 'UR_ANCIENT':
+            pool = q_pools.get('UR_ANCIENT') or q_pools.get('UR')
+            picked_cid = random.choice(pool) if pool else None
+        elif target_quality == 'UR':
+            pool = q_pools.get('UR') or q_pools.get('UR_ANCIENT')
+            picked_cid = random.choice(pool) if pool else None
+        elif target_quality == 'SR':
+            pool = q_pools.get('SR') or q_pools.get('R') or q_pools.get('N') or q_pools.get('UR')
+            picked_cid = random.choice(pool) if pool else None
+        elif target_quality == 'R':
+            pool = q_pools.get('R') or q_pools.get('N') or q_pools.get('SR') or q_pools.get('UR')
+            picked_cid = random.choice(pool) if pool else None
+        else: # N
+            pool = q_pools.get('N') or q_pools.get('R') or q_pools.get('SR') or q_pools.get('UR')
+            picked_cid = random.choice(pool) if pool else None
+
+        if not picked_cid and all_pack_cids:
+            picked_cid = random.choice(all_pack_cids)
+
+        picked = ALL_CARDS_MAP.get(picked_cid) if picked_cid else random.choice(list(ALL_CARDS_MAP.values()))
         cid = picked['id']
         cname = picked['name']
         cquality = picked['quality']
 
-        if cquality in ['UR', 'GR']:
+        # Check for ancient UR or GR announcement
+        is_ancient_ur = (target_quality == 'UR_ANCIENT' or cid in ANCIENT_CARD_IDS)
+        if cquality == 'GR' or is_ancient_ur or cquality == 'UR':
             user_pity = 0.0
             if cquality == 'UR':
                 has_ur = True
-            else:
-                char_name = user_acc.get('character_name', '') if user_acc else ''
+
+            char_name = user_acc.get('character_name', '') if user_acc else ''
+            announcement = None
+            if cquality == 'GR':
                 announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa rút được lá bài cấp GR thần thánh [{cname}]!"
+            elif is_ancient_ur and random.random() < 0.3:
+                announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai quật được bảo vật di tích cổ [{cname}]!"
+
+            if announcement and broadcast_fn:
                 broadcast_msg = {
                     "id": int(time.time()*1000) + card_idx,
                     "timestamp": int(time.time()*1000),
@@ -507,11 +560,10 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     "card_id": cid,
                     "items": [{"info_id": cid, "num": 1}]
                 }
-                if broadcast_fn:
-                    try:
-                        broadcast_fn(broadcast_msg)
-                    except Exception as b_ex:
-                        print(f"[BROADCAST ERROR] {b_ex}")
+                try:
+                    broadcast_fn(broadcast_msg)
+                except Exception as b_ex:
+                    print(f"[BROADCAST ERROR] {b_ex}")
 
         cards_won.append({"info_id": cid, "num": 1, "name": cname, "quality": cquality})
 
@@ -1576,7 +1628,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 cost_val = int(req.get('cost_val', 0))
                 if cost_val <= 0:
                     packs = total_cards // 3 or 1
-                    if 101001 <= pkg_num <= 135050:
+                    if 101001 <= pkg_num <= 140050:
                         cost_val = (28500 if packs >= 50 else (6000 if packs >= 10 else 600 * packs))
                     else:
                         cost_val = (22500 if packs >= 50 else (4500 if packs >= 10 else 500 * packs))
