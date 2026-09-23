@@ -976,6 +976,32 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 	if not arg_15_1._isBorrowed then
 		lc.clearTable(arg_15_1._saved)
 	end
+
+	local var_owner = arg_15_1._owner or arg_15_0
+	if arg_15_1._infoId == 10120 then
+		local var_amazon_monsters = B.filterInTypeCards(var_owner:getBattleCardsByKeyword("B", 6), Data.CardType.monster)
+		local var_destroy_count = #var_amazon_monsters
+		if var_destroy_count > 0 then
+			local var_oppo_st = B.filterAliveCards(var_owner._opponent:getBattleCards("CSD"))
+			if #var_oppo_st > 0 then
+				local var_targets = var_owner:randomTable(var_oppo_st, var_destroy_count)
+				for iter_d = 1, #var_targets do
+					local var_tg = var_targets[iter_d]
+					var_owner:changeCardStatus(var_tg, var_tg._status, BattleData.CardStatus.grave, nil, arg_15_1)
+				end
+				var_owner:account()
+			end
+		end
+	end
+
+	if arg_15_1._type == Data.CardType.monster and arg_15_1:isKeyword(8) then
+		local var_mdkh_cards = var_owner:getBattleCardsByInfoId("S", 30124)
+		if #var_mdkh_cards > 0 then
+			local var_burn_amount = 200 * #var_mdkh_cards
+			var_owner._opponent:addDamage(var_owner._opponent._fortress, var_owner._opponent:calcFortressDamage(var_burn_amount), var_mdkh_cards[1], 8038, Data.SkillMode.using)
+			var_owner:account()
+		end
+	end
 end
 
 function var_0_0.addCardToGrave(arg_16_0, arg_16_1)

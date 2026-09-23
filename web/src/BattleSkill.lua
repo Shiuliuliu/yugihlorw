@@ -16,11 +16,11 @@ function var_0_0.castSkill(arg_1_0, arg_1_1, arg_1_2, arg_1_3)
 
 	if var_1_0 == Data.SkillType.attack or arg_1_2._id == 6136 or arg_1_2._id == 6137 or arg_1_2._id == 6553 then
 		var_1_2 = arg_1_0:castAttackSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif (var_1_0 == Data.SkillType.defend or arg_1_2._id == 9008 or arg_1_2._id == 9771 or arg_1_2._id == 9417 or arg_1_2._id == 13761) and arg_1_2._id ~= 2243 and arg_1_2._id ~= 2318 and arg_1_2._id ~= 2324 and arg_1_2._id ~= 2369 and arg_1_2._id ~= 2375 and arg_1_2._id ~= 2383 and arg_1_2._id ~= 2384 and arg_1_2._id ~= 2390 and arg_1_2._id ~= 2437 and arg_1_2._id ~= 2488 and arg_1_2._id ~= 2560 and arg_1_2._id ~= 2611 and arg_1_2._id ~= 2664 and arg_1_2._id ~= 2781 and arg_1_2._id ~= 2913 and arg_1_2._id ~= 2982 and arg_1_2._id ~= 2985 then
+	elseif (var_1_0 == Data.SkillType.defend or arg_1_2._id == 9008 or arg_1_2._id == 9771 or arg_1_2._id == 9417 or arg_1_2._id == 13761) and arg_1_2._id ~= 2081 and arg_1_2._id ~= 2243 and arg_1_2._id ~= 2318 and arg_1_2._id ~= 2324 and arg_1_2._id ~= 2369 and arg_1_2._id ~= 2375 and arg_1_2._id ~= 2383 and arg_1_2._id ~= 2384 and arg_1_2._id ~= 2390 and arg_1_2._id ~= 2437 and arg_1_2._id ~= 2488 and arg_1_2._id ~= 2560 and arg_1_2._id ~= 2611 and arg_1_2._id ~= 2664 and arg_1_2._id ~= 2781 and arg_1_2._id ~= 2913 and arg_1_2._id ~= 2982 and arg_1_2._id ~= 2985 then
 		var_1_2 = arg_1_0:castDefendSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif (var_1_0 == Data.SkillType.monsterSpell or arg_1_2._id == 6349 or arg_1_2._id == 6593 or arg_1_2._id == 6868 or arg_1_2._id == 2369 or arg_1_2._id == 2375 or arg_1_2._id == 2383 or arg_1_2._id == 2384 or arg_1_2._id == 2390 or arg_1_2._id == 2437 or arg_1_2._id == 2488 or arg_1_2._id == 2560 or arg_1_2._id == 2611 or arg_1_2._id == 2664 or arg_1_2._id == 2781 or arg_1_2._id == 9251 or arg_1_2._id == 9253 or arg_1_2._id == 9254 or arg_1_2._id == 9257 or arg_1_2._id == 9259 or arg_1_2._id == 9261 or arg_1_2._id == 9265 or arg_1_2._id == 9403 or arg_1_2._id == 9414 or arg_1_2._id == 9453 or arg_1_2._id == 9462 or arg_1_2._id == 9507 or arg_1_2._id == 9685 or arg_1_2._id == 13007 or arg_1_2._id == 13975 or arg_1_2._id == 7824) and arg_1_2._id ~= 3705 and arg_1_2._id ~= 3850 then
 		var_1_2 = arg_1_0:castMonsterSpellSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif var_1_0 == Data.SkillType.monsterHalo or arg_1_2._id == 2913 or arg_1_2._id == 9512 or arg_1_2._id == 13471 or arg_1_2._id == 13779 then
+	elseif var_1_0 == Data.SkillType.monsterHalo or arg_1_2._id == 2081 or arg_1_2._id == 2913 or arg_1_2._id == 9512 or arg_1_2._id == 13471 or arg_1_2._id == 13779 then
 		var_1_2 = arg_1_0:castMonsterHaloSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif var_1_0 == Data.SkillType.monster2Halo and arg_1_2._id ~= 9796 and arg_1_2._id ~= 9868 then
 		var_1_2 = arg_1_0:castMonster2HaloSkill(arg_1_1, arg_1_2, arg_1_3)
@@ -2241,10 +2241,6 @@ function var_0_0.castDefendSkill(arg_3_0, arg_3_1, arg_3_2, arg_3_3)
 
 				var_3_13 = true
 			end
-		end
-	elseif var_3_4 == 2081 then
-		if arg_3_1:getBuffValue(true, BattleData.PositiveType.xyzMark) > 0 and arg_3_1:disableUnderSkillByDestroy(var_3_5, var_3_4, arg_3_3) then
-			var_3_13 = true
 		end
 	elseif var_3_4 == 2082 then
 		if not arg_3_1:hasShieldExInType(BattleData.PositiveType.shieldMonster) and arg_3_1:getBuffValue(true, BattleData.PositiveType.xyzMark) > 0 and var_3_3:isMonsterRare() and arg_3_1:disableUnderSkillByDestroy(var_3_5, var_3_4, arg_3_3) then
@@ -17669,6 +17665,14 @@ function var_0_0.castMonsterHaloSkill(arg_5_0, arg_5_1, arg_5_2, arg_5_3)
 		arg_5_0:incPositiveValue(arg_5_1, BattleData.PositiveType.irony, var_5_6._refCards[1] + 65536, Data.AggregateType.max, var_5_5, var_5_4, arg_5_3)
 
 		var_5_13 = true
+	elseif var_5_4 == 2081 then
+		local var_5_27 = arg_5_0:getBattleCardsByKeyword("B", var_5_6._refCards[1])
+
+		for iter_5_1 = 1, #var_5_27 do
+			arg_5_0:incShield(var_5_27[iter_5_1], var_5_6._refSkills, false, false, var_5_5, var_5_4, arg_5_3)
+
+			var_5_13 = true
+		end
 	elseif var_5_4 == 6023 or var_5_4 == 6665 then
 		local var_5_27 = arg_5_0:getBattleCardsByKeyword("B", var_5_6._refCards[1])
 
@@ -67916,6 +67920,10 @@ function var_0_0.canUseMonsterSpecial(arg_19_0, arg_19_1, arg_19_2)
 
 	if arg_19_1._mark3383 then
 		return true, nil, var_19_0
+	end
+
+	if arg_19_1._infoId == 10120 and #B.filterInTypeCards(arg_19_0:getBattleCardsByKeyword("G", 6), Data.CardType.monster) > 0 then
+		return true, nil, var_19_0, arg_19_1._skills[1]
 	end
 
 	local var_19_1 = {

@@ -1267,7 +1267,7 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 		arg_38_1._changed._posChange = var_38_17
 	end
 
-	if arg_38_1:isMonsterRare() or arg_38_1._type == Data.CardType.boss and arg_38_1._info._isDeamon == 1 or arg_38_1._type == Data.CardType.fortress or arg_38_1._type == Data.CardType.magic or arg_38_1._type == Data.CardType.trap then
+	if arg_38_1:isMonsterRare() or arg_38_1._type == Data.CardType.monster or arg_38_1._type == Data.CardType.boss and arg_38_1._info._isDeamon == 1 or arg_38_1._type == Data.CardType.fortress or arg_38_1._type == Data.CardType.magic or arg_38_1._type == Data.CardType.trap then
 		if B.isStatusChange(BattleData.NegativeType.count, arg_38_1._negativeStatus, arg_38_1._negativeValues, arg_38_1._old._negativeStatus, arg_38_1._old._negativeValues) then
 			arg_38_1._changed._negativeStatus = {}
 		end

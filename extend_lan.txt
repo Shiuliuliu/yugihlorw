@@ -22529,10 +22529,10 @@ Hổ Rừng Amazon
 Sinh sống lâu năm trong bộ lạc Amazon, thân mật với từng cá nhân.
 0
 Hổ Rừng Amazon
-Thánh Chiến Sĩ Amazon
-Chiến sĩ chuyên chiến đấu, đồng đội càng nhiều thì chiến đấu càng hăng.
+Ka men rai đơ Amazon
+Có thể Triệu hồi Đặc biệt từ tay khi trong mộ có quái thú 'Amazon'. Khi lên sân, ngẫu nhiên tiêu diệt bài Phép/Bẫy trên sân đối phương bằng số quái thú 'Amazon' trên sân phe ta. Quái thú này tăng 100 ATK với mỗi quái thú 'Amazon' trên sân phe ta.
 |Giải thích|\nBản thân Thánh chiến Amazon cũng có từ khóa “Amazon”, nên khi chỉ có 1 Thánh chiến binh Amazon trên sân thì ATK là 1800, còn khi có 1 Thánh chiến binh Amazon và 1 Quái Vật Amazon khác trên sân thì ATK là 1900, v. v.
-Thánh Chiến Sĩ Amazon
+Ka men rai đơ Amazon
 Người Huấn Luyện Amazon
 Thông hiểu chiến thuật gây rối đội hình phe địch.
 |Mô tả|\nĐòn tấn công của Amazon Trainee sẽ không khiến quái vật đi vào nghĩa địa và sẽ không kích hoạt kỹ năng vào nghĩa địa của quái vật đối thủ. Mỗi khi một con quái vật bị tiêu diệt, đòn tấn công của một người sẽ tăng thêm 200 và học viên Amazon ngày càng trở nên mạnh mẽ hơn\n\n|Cách nhận được|\nCó thể mua tại Time Capsule
@@ -54250,7 +54250,7 @@ Dùng năng lượng để tăng cường, giáng cho kẻ địch không kịp 
 0
 Tăng Cường Năng Lượng
 Mắt Đỏ Khải Hoàn
-Bài bẫy chủ yếu của gia tộc Mắt Đỏ, khi có mặt trên sân sẽ khiến đối thủ khó lòng chống đỡ.
+Bài bẫy chủ yếu của gia tộc Mắt Đỏ. Mỗi khi quái thú 'Mắt Đỏ' lên sân phe ta, trừ 200 LP đối phương.
 0
 Mắt Đỏ Khải Hoàn
 Ngư Lôi Đột Kích

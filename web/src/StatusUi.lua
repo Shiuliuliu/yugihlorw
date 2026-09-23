@@ -332,7 +332,7 @@ end
 function var_0_0.accountHalo(arg_19_0, arg_19_1, arg_19_2, arg_19_3)
 	local var_19_0 = arg_19_3._owner._isAttacker == arg_19_0._isAttacker and arg_19_0 or arg_19_0._opponentUi
 
-	if arg_19_3:isMonsterRare() and not arg_19_3._negativeStatus[BattleData.NegativeType.haloSkillFrozen] and (arg_19_3._sourceStatus == BattleData.CardStatus.leave or arg_19_3._sourceStatus == BattleData.CardStatus.pile or arg_19_3._sourceStatus == BattleData.CardStatus.hand or arg_19_3._sourceStatus == BattleData.CardStatus.grave) and arg_19_3._destStatus == BattleData.CardStatus.board then
+	if (arg_19_3:isMonsterRare() or arg_19_3._type == Data.CardType.monster or arg_19_3._type == Data.CardType.magic or arg_19_3._type == Data.CardType.trap) and not arg_19_3._negativeStatus[BattleData.NegativeType.haloSkillFrozen] and (arg_19_3._sourceStatus == BattleData.CardStatus.leave or arg_19_3._sourceStatus == BattleData.CardStatus.pile or arg_19_3._sourceStatus == BattleData.CardStatus.hand or arg_19_3._sourceStatus == BattleData.CardStatus.grave) and arg_19_3._destStatus == BattleData.CardStatus.board then
 		local var_19_1 = var_19_0:getCardSprite(arg_19_3)
 
 		for iter_19_0 = 1, #arg_19_3._skills do
@@ -1065,7 +1065,7 @@ function var_0_0.playAction(arg_25_0, arg_25_1, arg_25_2, arg_25_3, arg_25_4)
 	elseif arg_25_2 == var_0_0.Action.update_positive_status then
 		if arg_25_1 ~= nil then
 			arg_25_0._battleUi:runAction(lc.sequence(lc.delay(arg_25_3), lc.call(function()
-				if arg_25_1._card:isMonsterRare() or arg_25_1._card._type == Data.CardType.magic or arg_25_1._card._type == Data.CardType.trap then
+				if arg_25_1._card:isMonsterRare() or arg_25_1._card._type == Data.CardType.monster or arg_25_1._card._type == Data.CardType.magic or arg_25_1._card._type == Data.CardType.trap then
 					arg_25_1:updatePositiveStatus()
 				elseif arg_25_1._card._type == Data.CardType.boss and arg_25_1._card._info._isDeamon == 1 then
 					arg_25_0:efcBossPositiveStatus(arg_25_1, arg_25_1._card)

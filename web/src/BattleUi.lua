@@ -1611,7 +1611,8 @@ function var_0_0.onBattleEvent(arg_60_0, arg_60_1)
 		var_60_3:updateBoardCardsInitialSkills()
 	elseif var_60_1 == BattleData.Status.account_halo then
 		var_60_5 = var_60_3:accountHalo(var_60_5, var_60_1, var_60_2)
-		var_60_5 = var_60_3:accountAction(var_60_5, var_60_1, var_60_2)
+		var_60_5 = arg_60_0._playerUi:accountAction(var_60_5, var_60_1, var_60_2)
+		var_60_5 = arg_60_0._opponentUi:accountAction(var_60_5, var_60_1, var_60_2)
 	elseif var_60_1 == BattleData.Status.account_event then
 		var_60_5 = var_60_3:accountEvent(var_60_5)
 

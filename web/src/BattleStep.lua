@@ -4026,6 +4026,8 @@ function var_0_0.accountHalo(arg_58_0)
 	B.appendTable(var_58_1, arg_58_0:getBattleCardsBySkillFast("G", 13558))
 	B.appendTable(var_58_1, arg_58_0._opponent:getBattleCardsBySkillFast("G", 13558))
 
+	local var_halo_changed = false
+
 	for iter_58_0 = 1, #var_58_1 do
 		local var_58_2 = var_58_1[iter_58_0]
 		local var_58_3 = 1
@@ -4035,6 +4037,7 @@ function var_0_0.accountHalo(arg_58_0)
 				table.remove(var_58_2._underSkills, var_58_3)
 
 				var_58_0._needAccount = true
+				var_halo_changed = true
 			else
 				var_58_3 = var_58_3 + 1
 			end
@@ -4049,6 +4052,7 @@ function var_0_0.accountHalo(arg_58_0)
 						table.remove(var_58_2._positiveSkills[iter_58_1], var_58_4)
 
 						var_58_0._needAccount = true
+						var_halo_changed = true
 					else
 						var_58_4 = var_58_4 + 1
 					end
@@ -4065,6 +4069,7 @@ function var_0_0.accountHalo(arg_58_0)
 						table.remove(var_58_2._negativeSkills[iter_58_2], var_58_5)
 
 						var_58_0._needAccount = true
+						var_halo_changed = true
 					else
 						var_58_5 = var_58_5 + 1
 					end
@@ -4072,13 +4077,6 @@ function var_0_0.accountHalo(arg_58_0)
 			end
 		end
 	end
-
-	-- Reset _needAccount after halo strip pass.
-	-- Halo buffs are stripped above then immediately re-applied by the cast loop below.
-	-- This strip+re-apply is normal behavior and does NOT require a full account()
-	-- recalculation every halo cycle. account() will only run if the cast pass
-	-- genuinely sets _needAccount=true (non-halo skills do this, halo mode is guarded).
-	var_58_0._needAccount = false
 
 	local var_58_6 = {}
 
@@ -4116,6 +4114,7 @@ function var_0_0.accountHalo(arg_58_0)
 
 				if var_58_12._priority == var_58_9 then
 					var_58_11._owner:castSkill(var_58_11, var_58_12, Data.SkillMode.halo)
+					var_halo_changed = true
 				end
 
 				var_58_11._accountHaloIndex = var_58_11._accountHaloIndex + 1
@@ -4130,13 +4129,27 @@ function var_0_0.accountHalo(arg_58_0)
 		var_58_10 = 255
 	end
 
-	if var_58_0._needAccount then
+	if var_halo_changed or var_58_0._needAccount then
 		arg_58_0:account()
+	end
+
+	local var_has_changes = false
+	local var_check_cards = B.mergeTable({
+		arg_58_0:getBoardCards(),
+		arg_58_0._opponent:getBoardCards(),
+		{ arg_58_0._fortress, arg_58_0._opponent._fortress }
+	})
+	for iter_chk = 1, #var_check_cards do
+		local c = var_check_cards[iter_chk]
+		if c and c._changed and next(c._changed) ~= nil then
+			var_has_changes = true
+			break
+		end
 	end
 
 	arg_58_0._stepStatus = BattleData.Status.after_account_halo
 
-	if var_58_0._needAccount and not arg_58_0._isReviewing then
+	if (var_has_changes or var_58_0._needAccount) and not arg_58_0._isReviewing then
 		return arg_58_0:sendEvent(BattleData.Status.account_halo)
 	else
 		return arg_58_0:step()
