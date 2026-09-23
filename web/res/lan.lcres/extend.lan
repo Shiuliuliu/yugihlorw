@@ -36380,10 +36380,10 @@ Bộ Điều Khiển Đồng Minh
 Quái Tộc Máy Móc thuộc tính Quang x2
 0
 Bộ Điều Khiển Đồng Minh
-Mắt Đỏ-Rồng Đen Toàn Thép
+mắt đỏ-Rồng đen toàn thép
 Quái X2
 |Mô tả|\nChỉ những quái vật chưa hành động mới có thể được sử dụng làm nguyên liệu liên kết. Không thể sử dụng quái vật dung hợp, đồng bộ và siêu quái vật làm nguyên liệu liên kết.
-Rồng Toàn Thép Mắt Đỏ
+mắt đỏ-Rồng đen toàn thép
 Tinh Linh Mắt Xanh
 1 Quái Tộc Rồng·Tộc Phù Thủy 4 sao trở xuống
 |Mô tả|\nChỉ những quái vật chưa hành động mới có thể được sử dụng làm nguyên liệu liên kết. Không thể sử dụng quái vật dung hợp, đồng bộ và siêu quái vật làm nguyên liệu liên kết.
@@ -43189,7 +43189,7 @@ Hình Bóng Quá Khứ
 Nó có thể được kích hoạt khi có một quái vật thuộc loại telekinesis trên sân của bạn. Bạn có thể tạm thời trục xuất một Quái Vật trên sân của đối thủ và đưa nó trở lại sân vào đầu lượt của đối thủ (nó không thuộc về triệu hồi thông thường hoặc Triệu Hồi Đặc Biệt).
 Ảo Ảnh Đại Dương
 Triệu Hồi Đặc Biệt 1 Quái Nghi Thức có từ khóa “Gishki” từ bài trên tay phe ta; quái vừa triệu hồi nhận được “Khóa”; “Linh Hồn Trở Lại”.
-Phán Truyền Của Thần
+Cửu Thiên Huyền Sát
 Khi đối thủ Triệu Hồi Thường·Triệu Hồi Đặc Biệt quái hoặc dùng bài Phép·Bẫy sẽ kích hoạt; vô hiệu hóa và phá hủy bài của đối thủ.
 Tam Giác Cánh Đen
 Nó có thể được kích hoạt khi có một Quái Vật có từ khóa “Black Feather” trên sân của bạn. Nếu có ít hơn 2 Quái Vật trên sân của đối thủ; hãy phá hủy tất cả bẫy đã đặt trên sân của đối thủ. Nếu có nhiều hơn 1 quái vật trên sân của đối thủ; hãy tiêu diệt tất cả phép thuật và bẫy trên sân của đối thủ.
@@ -46088,7 +46088,7 @@ Khi trên sân phe ta có quái khác có từ khóa “Kết Giới Băng” ng
 Lãnh Địa Kết Giới Băng
 Khi có mặt; mỗi lượt có thể triệu hồi thường thêm tối đa 1 quái có từ khóa “Kết Giới Băng”
 Đấu Chí Amazon
-Quái phe ta có từ khóa “Amazon” nhận được “Chiến Ý”
+Khi có mặt; quái có từ khóa “Amazon” phe ta nhận thêm kỹ năng “Tấn Công Tăng Cường”, đồng thời nhận thêm 100 ATK cho mỗi quái có từ khóa “Amazon” trên sân và trong mộ phe ta.
 Báu Vật Amazon
 Trang bị cho Quái có từ khóa “Amazon”. Quái nhận trang bị nhận được 1 lần “Thương Tích”; “Khiên Chiến Đấu” khi bắt đầu mỗi lượt
 Thể Sương Mù
@@ -46376,7 +46376,7 @@ Khi có mặt; nếu quái có từ khóa “B. E. S.” trên sân phe ta bị 
 Cổng Dung Hợp
 Kỹ năng kích hoạt: Chỉ một lần trong lượt; triệu hồi Quái Vật dung hợp từ bộ bài phụ. Chỉ Quái Vật được triệu tập Dung Hợp mới có thể được Triệu Hồi Đặc Biệt bằng hiệu ứng của các lá bài khác; ngoại trừ nguyên liệu Dung Hợp được sử dụng.
 Bộ Lạc Amazon
-Quái có từ khóa “Amazon” trên sân phe ta tăng [1] tấn công.
+Quái có từ khóa “Amazon” trên sân phe ta tăng [1] tấn công và nhận được “Tường Chắn Quái/Phép/Bẫy”.
 Nhiệt Huyết Amazon
 Mỗi lượt chỉ 1 lần. Khi quái có từ khóa “Amazon” trên sân phe ta bị phá hủy và đưa vào mộ; từ bộ bài phe ta Triệu Hồi Đặc Biệt 1 quái có từ khóa “Amazon”; có cấp sao thấp hơn hoặc bằng bài bị phá hủy.
 Lồng Nghi Thức
@@ -47766,7 +47766,7 @@ Chủ động: Có thể dùng khi trên sân phe ta không có quái; mỗi lư
 Goblin Chặn Đường
 Khi có mặt; quái trên sân phe ta nhận được “Dao Tiêu Hồn”
 Quyết Chiến
-Khi ở trên sân; Quái Vật có từ khóa “Amazon” ở bên sân của bạn nhận được “Tâm hồn tan vỡ”
+Khi ở trên sân; Quái Vật có từ khóa “Amazon” ở bên sân của bạn nhận được “Tâm hồn tan vỡ”, đồng thời khi nhận thiệt hại trong chiến đấu, bỏ qua sát thương vào điểm LP.
 Châu Báu Người Bọ
 Khi quái có từ khóa “Người Bọ” phe ta bị quái đối thủ tấn công sẽ kích hoạt. Tăng cho quái phe ta [1] công và thủ.
 Bọ Thép Đổi Chỗ
@@ -51454,7 +51454,7 @@ Bài này trên nguyên tắc mang từ khóa “Cipher”.
 Cipher Giáng Lâm
 Kỹ năng bộ bài thêm chủ động: Mỗi lượt chỉ 1 lần. Hi sinh 1 Quái XYZ chưa hành động; có từ khóa “Cipher” trên sân phe ta; sau đó bài này được Triệu Hồi XYZ và nhận được số Chỉ Thị XYZ bằng số chỉ thị mục tiêu đang có +1.
 Sóng Ánh Sáng-Che Phủ
-Chủ động: Xóa 2 Chỉ Thị XYZ đang có; tất cả quái thuộc tính Quang trên sân phe ta nhận được “Tường Chắn Quái/Phép/Bẫy” cho đến khi đối thủ kết thúc lượt kế.
+Chủ động: Xóa 2 Chỉ Thị XYZ đang có; tất cả quái có từ khóa “Ánh Sáng” và “Ngân Hà” trên sân phe ta nhận được “Khiên Chắn Quái/Phép/Bẫy” cho đến khi đối thủ kết thúc lượt kế.
 Sóng Ánh Sáng-Khuếch Tán
 Chủ động: Mỗi lượt chỉ 1 lần. Bài này chưa hành động có thể dùng. Hi sinh bài này; chọn 1 Quái XYZ Tộc Rồng bậc [1] trở xuống trong mộ phe ta làm mục tiêu. Quái mục tiêu được Triệu Hồi XYZ; nhận được số Chỉ Thị XYZ bằng số chỉ thị bài này đang có +1. Nếu mục tiêu là quái thuộc tính Quang; sẽ nhận được “Sóng Ánh Sáng-Điều Hòa”.
 Sóng Ánh Sáng-Điều Hòa
@@ -52110,7 +52110,7 @@ Kỹ năng mộ chủ động: Chọn và lấy 1 Quái Synclone trong mộ phe 
 Amazon-Tấn Kiến
 Chủ động: Mỗi lượt chỉ 1 lần. Chỉ trong lượt bài này được Triệu Hồi Dung Hợp lên sân có thể dùng. Chọn và Triệu Hồi Đặc Biệt 1 quái có từ khóa “Amazon” trong bộ bài phe ta.
 Amazon-Lĩnh Vực
-Khi có mặt; khiến tất cả quái có từ khóa “Amazon” trên sân phe ta ngoài bản thân bài này nhận được “Tường Chắn Quái/Phép/Bẫy”/“Khiên Chắn Hiệu Quả”.
+Khi có mặt; khiến tất cả quái có từ khóa “Amazon” trên sân phe ta ngoài bản thân bài này nhận được “Khiên Chắn Quái/Phép/Bẫy”/“Khiên Chắn Hiệu Quả”.
 Amazon-Mệnh Lệnh
 Khi bài này dùng <Nữ Đế Amazon> và <Nữ Vương Amazon> làm nguyên liệu dung hợp để Triệu Hồi Dung Hợp; khi lên sân; loại bỏ tất cả quái không phải Quái Link trong mộ đối thủ.
 Thống Tướng-Mật Lệnh
@@ -54721,10 +54721,10 @@ Hình Bóng Quá Khứ
 Bài bẫy có thể Triệu Hồi Đặc Biệt Quái “Gishki”.
 0
 Ảo Ảnh Đại Dương
-Phán Truyền Của Thần
+Cửu Thiên Huyền Sát
 Bẫy có thể vô hiệu bài của đối thủ.
 0
-Phán Truyền Của Thần
+Cửu Thiên Huyền Sát
 Mất Trọng Lực
 Các lá Bẫy không thể được Triệu hồi Thường hoặc Triệu Hồi Đặc Biệt bởi cả hai bên.
 0
@@ -56675,3 +56675,9 @@ Cái chạm của thần linh
 Khi kích hoạt lá bài này việc kích hoạt và hiệu ứng của nó không thể bị vô hiệu hóa. Đến hết lượt này vô hiệu hóa hiệu ứng của toàn bộ quái vật trên sân đối thủ đồng thời đưa ATK và DEF của chúng về 0. Sau khi xử lý xong xáo lá bài này trở lại Bộ Bài.
 |Phép Kích Hoạt Nhanh|\nKhông thể bị ngăn cản. Toàn bộ quái vật đối thủ bị vô hiệu hóa và có ATK cùng DEF bằng 0 trong lượt này. Lá bài tự quay về Bộ Bài sau khi xử lý.
 Cái chạm của thần linh
+Lời Gọi Amazoness
+Kích hoạt từ tay: Chọn ngẫu nhiên 1 quái vật Nữ Chiến Binh Amazoness từ bộ bài đưa lên tay.
+Cứu Viện Đấu Trường
+Đưa lá bài này từ tay vào Mộ: Chọn 1 Đấu Trường Amazoness từ bộ bài đưa lên tay.
+Hộ Thể XYZ
+Khi bài này mang Chỉ Thị XYZ; sẽ không thể bị phá hủy bởi hiệu quả.

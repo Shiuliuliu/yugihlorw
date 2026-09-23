@@ -106,12 +106,31 @@
 		];
 	}
 
-	function loadBlob(blob) {
+	function loadBlob(blob, timeoutMs) {
 		return new Promise(function (resolve, reject) {
 			var url = URL.createObjectURL(blob);
 			var img = new Image();
-			img.onload = function () { URL.revokeObjectURL(url); resolve(img); };
-			img.onerror = function (e) { URL.revokeObjectURL(url); reject(e); };
+			var settled = false;
+			var timer = setTimeout(function () {
+				if (settled) return;
+				settled = true;
+				try { URL.revokeObjectURL(url); } catch (e) {}
+				reject(new Error('loadBlob timeout'));
+			}, timeoutMs || 25000);
+			img.onload = function () {
+				if (settled) return;
+				settled = true;
+				clearTimeout(timer);
+				try { URL.revokeObjectURL(url); } catch (e) {}
+				resolve(img);
+			};
+			img.onerror = function (e) {
+				if (settled) return;
+				settled = true;
+				clearTimeout(timer);
+				try { URL.revokeObjectURL(url); } catch (e) {}
+				reject(e || new Error('loadBlob error'));
+			};
 			img.src = url;
 		});
 	}
@@ -186,7 +205,11 @@
 		'img_icon_res1_s': { path: 'res/new/linh_thach_34.png', w: 34, h: 34 },
 		'res_ico_1': { path: 'res/new/linh_thach_76.png', w: 76, h: 76 },
 		'img_icon_res3_s': { path: 'res/new/linh_thach_vip_36.png', w: 32, h: 36 },
-		'res_ico_3': { path: 'res/new/linh_thach_vip_76.png', w: 76, h: 76 }
+		'res_ico_3': { path: 'res/new/linh_thach_vip_76.png', w: 76, h: 76 },
+		'card_ico_40718': { path: 'res/new/thumb/card_ico_40718.png', w: 82, h: 82 },
+		'card_ico_40718_3': { path: 'res/new/thumb/card_ico_40718.png', w: 82, h: 82 },
+		'card_ico_30244': { path: 'res/new/thumb/card_ico_30244.png', w: 82, h: 82 },
+		'card_ico_30244_3': { path: 'res/new/thumb/card_ico_30244.png', w: 82, h: 82 }
 	};
 
 	function addFrames(frames, texture, owner) {
@@ -368,11 +391,27 @@
 
 	R.emptyTexture = emptyTexture;
 
-	function loadImage(url) {
+	function loadImage(url, timeoutMs) {
 		return new Promise(function (resolve, reject) {
 			var img = new Image();
-			img.onload = function () { resolve(img); };
-			img.onerror = function () { reject(new Error('404 ' + url)); };
+			var settled = false;
+			var timer = setTimeout(function () {
+				if (settled) return;
+				settled = true;
+				reject(new Error('loadImage timeout ' + url));
+			}, timeoutMs || 25000);
+			img.onload = function () {
+				if (settled) return;
+				settled = true;
+				clearTimeout(timer);
+				resolve(img);
+			};
+			img.onerror = function () {
+				if (settled) return;
+				settled = true;
+				clearTimeout(timer);
+				reject(new Error('404 ' + url));
+			};
 			img.src = url;
 		});
 	}
@@ -432,7 +471,7 @@
 	 * ------------------------------------------------------------------ */
 
 	function versionedUrl(url) {
-		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v10';
+		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260923v3';
 		if (!url || typeof url !== 'string') return url;
 		return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
 	}
@@ -445,15 +484,16 @@
 		});
 	}
 
-	R.loadTexture = function (path) {
+	R.loadTexture = function (path, timeoutMs) {
 		/* a loose image: res/jpg/foo.jpg, res/particle/bar.png, ... */
 		var cleanPath = (typeof path === 'string') ? path.split('?')[0] : path;
 		var tex = cc.textureCache.getTextureForKey(cleanPath) || cc.textureCache.getTextureForKey(path);
 		if (tex) return Promise.resolve(tex);
 		return new Promise(function (resolve) {
+			var timer = setTimeout(function () { resolve(null); }, timeoutMs || 25000);
 			var t = cc.textureCache.addImage(versionedUrl(R.base + cleanPath.replace(/^res\//, '')),
-						 function (t) { resolve(t); });
-			if (!t) resolve(null);
+						 function (t) { clearTimeout(timer); resolve(t); });
+			if (!t) { clearTimeout(timer); resolve(null); }
 		});
 	};
 
@@ -536,7 +576,9 @@
 				}
 				if (/\.(jpg|png)$/.test(name)) {
 					return new Promise(function (resolve) {
+						var timer = setTimeout(function () { resolve(); }, 25000);
 						var t = cc.textureCache.addImage(versionedUrl(dir + name), function (tex) {
+							clearTimeout(timer);
 							/* the game addresses a container's images by
 							 * entry name, not by URL */
 							if (tex && !(tex instanceof Error)) cacheUnder(name, tex);
@@ -544,7 +586,7 @@
 							R.announce(name);
 							resolve();
 						});
-						if (!t) resolve();
+						if (!t) { clearTimeout(timer); resolve(); }
 					});
 				}
 				return Promise.resolve();   /* .bin and friends: not used here */
@@ -664,7 +706,8 @@
 			return /\.pvr\.ccz$/i.test(f);
 		});
 
-		return Promise.all(wanted.map(function (path) {
+		var pvrTimeout = new Promise(function (resolve) { setTimeout(resolve, 4000); });
+		var pvrPromise = Promise.all(wanted.map(function (path) {
 			return fetchBuffer(R.base + path.replace(/^res\//, ''))
 				.then(function (ccz) { return inflate(ccz.slice(16)); })
 				.then(function (raw) {
@@ -672,6 +715,8 @@
 				})
 				.catch(function (e) { cc.log('[res] ' + path + ': ' + e); });
 		})).then(function () { return wanted.length; });
+
+		return Promise.race([pvrPromise, pvrTimeout]);
 	};
 
 	/* ------------------------------------------------------------------ *
@@ -788,11 +833,15 @@
 			'res/new/buttons/red_180x78.png',
 			'res/new/buttons/red_200x78.png',
 			'res/new/buttons/red_220x78.png',
-			'res/new/buttons/red_240x78.png'
+			'res/new/buttons/red_240x78.png',
+			'res/new/thumb/card_ico_40718.png',
+			'res/new/thumb/card_ico_30244.png'
 		];
 		var promises = assets.map(function (path) {
 			return new Promise(function (resolve) {
+				var timer = setTimeout(function () { resolve(null); }, 5000);
 				cc.textureCache.addImage(versionedUrl(path), function (tex) {
+					clearTimeout(timer);
 					if (tex && !(tex instanceof Error)) {
 						cc.textureCache._textures[path] = tex;
 					}

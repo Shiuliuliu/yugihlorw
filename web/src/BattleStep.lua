@@ -1365,6 +1365,26 @@ function var_0_0.getIsFortressDied(arg_18_0)
 end
 
 function var_0_0.getIsAllCardsDied(arg_19_0)
+	-- In online PvP, the remote opponent's defeat cannot be unilaterally assumed by local client heuristics
+	if arg_19_0._isOnlinePvp and (arg_19_0._playerType == BattleData.PlayerType.opponent or arg_19_0._playerType == BattleData.PlayerType.observe) then
+		return false
+	end
+
+	-- If an action card (e.g. monster summon) is currently being resolved
+	if arg_19_0._actionCard and (arg_19_0._actionCard:isMonsterRare() or arg_19_0._actionCard._type == Data.CardType.monster) then
+		return false
+	end
+
+	-- If any cards are queued to enter the board (e.g. tribute summon in progress)
+	if arg_19_0._cardStatusToChange and #arg_19_0._cardStatusToChange > 0 then
+		for iter_19_sc = 1, #arg_19_0._cardStatusToChange do
+			local sc = arg_19_0._cardStatusToChange[iter_19_sc]
+			if sc and sc._destStatus == BattleData.CardStatus.board then
+				return false
+			end
+		end
+	end
+
 	if #arg_19_0._pileCards > 0 then
 		return false
 	end
@@ -4052,6 +4072,13 @@ function var_0_0.accountHalo(arg_58_0)
 			end
 		end
 	end
+
+	-- Reset _needAccount after halo strip pass.
+	-- Halo buffs are stripped above then immediately re-applied by the cast loop below.
+	-- This strip+re-apply is normal behavior and does NOT require a full account()
+	-- recalculation every halo cycle. account() will only run if the cast pass
+	-- genuinely sets _needAccount=true (non-halo skills do this, halo mode is guarded).
+	var_58_0._needAccount = false
 
 	local var_58_6 = {}
 

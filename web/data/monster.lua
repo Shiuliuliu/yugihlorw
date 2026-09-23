@@ -5379,7 +5379,7 @@ return {
   ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=25131,["_category"]=5,["_cost"]=0,["_descSid"]=25129,["_guideSid"]=25130,["_hp"]={[1]=500,},
   ["_id"]=10785,["_isHide"]=0,["_joinResult"]={[1]=0,},
   ["_keyword"]=6,["_maxCount"]=3,["_nameSid"]=25128,["_nature"]=3,["_option"]=2,["_originId"]=0,["_packageId"]={[1]=311001,},
-  ["_picId"]=0,["_py"]="ymxcwzh",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=3656,[2]=3657,[3]=6165,},
+  ["_picId"]=0,["_py"]="ymxcwzh",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=3656,[2]=3657,[3]=6165,[4]=14611,},
   ["_skin"]={[1]=0,},
   ["_star"]=2,},
   [10786]={["_atk"]={[1]=500,},

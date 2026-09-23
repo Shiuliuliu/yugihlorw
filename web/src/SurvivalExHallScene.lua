@@ -33,6 +33,10 @@ function var_0_0.init(arg_2_0)
 		return false
 	end
 
+	if P and P._playerFindSurvivalEx then
+		P._playerFindSurvivalEx._isInHall = true
+	end
+
 	arg_2_0:setEx(false)
 	arg_2_0:createTopArea()
 
@@ -145,6 +149,11 @@ function var_0_0.createTopArea(arg_5_0)
 			if not var_7_2._isShowing then
 				var_7_2:show(Str(STR.WAITTING_ACCOUNT))
 			end
+			if var_7_1 < -2 and not arg_5_0._isTimeoutQuit then
+				arg_5_0._isTimeoutQuit = true
+				ToastManager.push("Hết thời gian xếp bài! Bạn bị xử thua trong giải đấu.")
+				ClientData.sendSurvivalExQuit()
+			end
 		else
 			ClientView.getActiveIndicator():hide()
 		end
@@ -155,6 +164,13 @@ function var_0_0.createTopArea(arg_5_0)
 		var_5_2._bar:setPercent(var_7_4)
 		var_5_2._label:setString(ClientData.formatTime(var_7_3))
 		var_5_9:setString(P._playerFindSurvivalEx._hallUserNum or 0)
+
+		local loseCount = P._playerFindSurvivalEx._lose or 0
+		for i = 1, 2 do
+			if arg_5_0._loseSprites and arg_5_0._loseSprites[i] then
+				arg_5_0._loseSprites[i]:setVisible(i <= loseCount)
+			end
+		end
 
 		local var_7_5 = P._playerFindSurvivalEx._skills[1]
 
@@ -345,16 +361,8 @@ function var_0_0.updateSelectCards(arg_17_0)
 		var_17_3._countArea:update(true, var_17_2._num)
 		var_17_3:setVisible(true)
 
-		if P._playerFindSurvivalEx:getTroopCardCount(var_17_2._infoId) >= Data.getInfo(var_17_2._infoId)._maxCount * 2 then
-			var_17_3._thumbnail._frame._frame:setEffect(ClientView.SHADER_DISABLE)
-			var_17_3._thumbnail._frame:setEffect(ClientView.SHADER_DISABLE)
-
-			var_17_3._isValid = false
-		else
-			var_17_3._thumbnail._frame:setEffect(nil)
-
-			var_17_3._isValid = true
-		end
+		var_17_3._thumbnail._frame:setEffect(nil)
+		var_17_3._isValid = true
 	end
 
 	arg_17_0._pageLeft:setVisible(arg_17_0._curPage > 1)
@@ -624,8 +632,6 @@ function var_0_0.onItemTap(arg_30_0, arg_30_1, arg_30_2)
 		if arg_30_2 == var_0_10.select_card then
 			if P._playerFindSurvivalEx:getTroopCardCount(nil, arg_30_0._isEx) >= arg_30_0._maxTroopCount then
 				ToastManager.push(Str(STR.FULL_IN_TROOP))
-			elseif var_30_2 >= var_30_1._maxCount * 2 then
-				ToastManager.push(Str(STR.CARD_MAX_IN_ROOP))
 			else
 				P._playerFindSurvivalEx:captures2Troop(var_30_0, 1)
 

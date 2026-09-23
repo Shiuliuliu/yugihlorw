@@ -33,6 +33,10 @@ function var_0_0.init(arg_2_0)
 		return false
 	end
 
+	if P and P._playerFindSurvival then
+		P._playerFindSurvival._isInHall = true
+	end
+
 	arg_2_0:createTopArea()
 
 	function arg_2_0._titleArea._btnBack._callback()
@@ -262,16 +266,8 @@ function var_0_0.updateSelectCards(arg_14_0)
 		var_14_3._countArea:update(true, var_14_2._num)
 		var_14_3:setVisible(true)
 
-		if P._playerFindSurvival:getTroopCardCount(var_14_2._infoId) >= Data.getInfo(var_14_2._infoId)._maxCount * 2 then
-			var_14_3._thumbnail._frame._frame:setEffect(ClientView.SHADER_DISABLE)
-			var_14_3._thumbnail._frame:setEffect(ClientView.SHADER_DISABLE)
-
-			var_14_3._isValid = false
-		else
-			var_14_3._thumbnail._frame:setEffect(nil)
-
-			var_14_3._isValid = true
-		end
+		var_14_3._thumbnail._frame:setEffect(nil)
+		var_14_3._isValid = true
 	end
 
 	arg_14_0._pageLeft:setVisible(arg_14_0._curPage > 1)
@@ -516,8 +512,6 @@ function var_0_0.onItemTap(arg_25_0, arg_25_1, arg_25_2)
 		if arg_25_2 == var_0_10.select_card then
 			if P._playerFindSurvival:getTroopCardCount() >= P._playerFindSurvival.MAX_TROOP_COUNT then
 				ToastManager.push(Str(STR.FULL_IN_TROOP))
-			elseif var_25_2 >= var_25_1._maxCount * 2 then
-				ToastManager.push(Str(STR.CARD_MAX_IN_ROOP))
 			else
 				P._playerFindSurvival:captures2Troop(var_25_0, 1)
 

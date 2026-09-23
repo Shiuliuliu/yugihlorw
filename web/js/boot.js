@@ -95,7 +95,7 @@
 		Boot.total = 9 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260922v10';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260923v3';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
 			done(fetchJson('lua_src.json?v=' + ver)),
@@ -121,11 +121,16 @@
 			 * be handed a complete table before Lua runs. */
 			status('Đang tải tài nguyên hình ảnh...');
 			var preloadList = config.preload || [];
-			function safe(tag, p) {
+			function safe(tag, p, timeoutMs) {
 				if (!p || typeof p.then !== 'function') return Promise.resolve(p);
-				return p.then(function(res) {
-					return res;
-				}).catch(function(err) {
+				var limit = timeoutMs || (isIOS ? 30000 : 25000);
+				var timer = new Promise(function (resolve) {
+					setTimeout(function () {
+						console.warn('[boot] ' + tag + ' timed out (' + limit + 'ms), proceeding to prevent freeze');
+						resolve(null);
+					}, limit);
+				});
+				return Promise.race([p, timer]).catch(function (err) {
 					console.warn('[boot] ' + tag + ' notice:', err);
 					return null;
 				});
@@ -139,13 +144,13 @@
 				done(safe('CustomAssets', jdzcRes.preloadCustomAssets ? jdzcRes.preloadCustomAssets() : Promise.resolve())),
 				done(safe('Shaders', global.jdzcPreloadShaders ? global.jdzcPreloadShaders() : Promise.resolve())),
 			]).then(function () {
-				/* Load containers with controlled concurrency (max 4 parallel) */
+				/* Load containers with controlled concurrency (2 on iOS to avoid canvas memory exhaustion, 4 on desktop) */
 				var index = 0;
-				var concurrency = 4;
+				var concurrency = isIOS ? 2 : 4;
 				function loadNext() {
 					if (index >= preloadList.length) return Promise.resolve();
 					var path = preloadList[index++];
-					return done(safe('Container ' + path, jdzcRes.loadContainer(path))).then(loadNext);
+					return done(safe('Container ' + path, jdzcRes.loadContainer(path), 35000)).then(loadNext);
 				}
 				var workers = [];
 				for (var w = 0; w < Math.min(concurrency, preloadList.length); w++) {

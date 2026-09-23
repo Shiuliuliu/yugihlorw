@@ -891,7 +891,7 @@ return {
   ["_picId"]=0,["_py"]="rhzm",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=7144,},
   ["_targetType"]=0,["_type"]=13,},
   [20301]={["_available"]=1,["_briefNameSid"]=18735,["_descSid"]=18733,["_guideSid"]=18734,["_id"]=20301,["_isHide"]=0,["_isSummon"]=1,["_keyword"]=6,["_maxCount"]=3,["_nameSid"]=18732,["_option"]=4,["_originId"]=0,["_packageId"]={[1]=0,},
-  ["_picId"]=0,["_py"]="ymxzl",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=7145,[2]=7146,},
+  ["_picId"]=0,["_py"]="ymxzl",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=7145,[2]=7146,[3]=14610,},
   ["_targetType"]=0,["_type"]=13,},
   [20302]={["_available"]=1,["_briefNameSid"]=18739,["_descSid"]=18737,["_guideSid"]=18738,["_id"]=20302,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=0,["_maxCount"]=1,["_nameSid"]=18736,["_option"]=16,["_originId"]=0,["_packageId"]={[1]=406101,},
   ["_picId"]=0,["_py"]="yszk",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=7147,},

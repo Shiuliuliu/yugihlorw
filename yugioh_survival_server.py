@@ -140,11 +140,46 @@ def trigger_room_ready(room):
     available_ais = list(room["ais"])
     random.shuffle(available_ais)
 
-    # Pair real players together
+    # Prioritize pairing real players against AI bots first
+    remaining_real_pids = []
+    for pid in real_pids:
+        if available_ais:
+            bot = available_ais.pop(0)
+            p = room["players"][pid]
+            match_id = f"sm_{int(now*1000)}_{pid}_ai"
+            seed = random.randint(1, 65535)
+
+            room["matches"][pid] = {
+                "code": 200,
+                "status": "matched",
+                "room_id": room["id"],
+                "match_id": match_id,
+                "seed": seed,
+                "is_attacker": True,
+                "first": True,
+                "is_real_player": False,
+                "oppo_online": False,
+                "oppo": {
+                    "name": bot["name"],
+                    "level": bot["level"],
+                    "avatar": bot["avatar"],
+                    "cards": bot["cards"],
+                    "extra_cards": [],
+                    "gold_cup": bot.get("gold_cup", 0),
+                    "silver_cup": bot.get("silver_cup", 0),
+                    "bronze_cup": bot.get("bronze_cup", 0),
+                    "is_real_player": False
+                }
+            }
+            print(f"[SURVIVAL MATCH] Real vs AI: {p['name']} (ID {pid}) vs {bot['name']} in Room {room['id']}")
+        else:
+            remaining_real_pids.append(pid)
+
+    # If AI bots are exhausted and real players remain, pair real players together
     i = 0
-    while i < len(real_pids) - 1:
-        p1_id = real_pids[i]
-        p2_id = real_pids[i+1]
+    while i < len(remaining_real_pids) - 1:
+        p1_id = remaining_real_pids[i]
+        p2_id = remaining_real_pids[i+1]
         p1 = room["players"][p1_id]
         p2 = room["players"][p2_id]
 
@@ -201,11 +236,11 @@ def trigger_room_ready(room):
         print(f"[SURVIVAL MATCH] Real vs Real: {p1['name']} (ID {p1_id}) vs {p2['name']} (ID {p2_id}) in Room {room['id']}")
         i += 2
 
-    # If odd number of real players, pair last player with AI bot
-    if i < len(real_pids):
-        last_pid = real_pids[i]
+    # If 1 leftover real player, pair with a fallback AI
+    if i < len(remaining_real_pids):
+        last_pid = remaining_real_pids[i]
         p = room["players"][last_pid]
-        bot = available_ais.pop(0) if available_ais else room["ais"][0]
+        bot = room["ais"][0]
         match_id = f"sm_{int(now*1000)}_{last_pid}_ai"
         seed = random.randint(1, 65535)
 
@@ -231,7 +266,7 @@ def trigger_room_ready(room):
                 "is_real_player": False
             }
         }
-        print(f"[SURVIVAL MATCH] Real vs AI: {p['name']} (ID {last_pid}) vs {bot['name']} in Room {room['id']}")
+        print(f"[SURVIVAL MATCH] Real vs AI (fallback): {p['name']} (ID {last_pid}) vs {bot['name']} in Room {room['id']}")
 
     if ACTIVE_ROOM and ACTIVE_ROOM["id"] == room["id"]:
         ACTIVE_ROOM = None
@@ -329,9 +364,10 @@ class SurvivalHandler(BaseHTTPRequestHandler):
 
                 real_cnt = len(room["players"])
 
-                # If 2 or more real players in room, fast-start countdown (5s) so players see 2/25 then match starts
-                if real_cnt >= 2:
-                    room["expires_at"] = min(room["expires_at"], now + 5)
+                # If 15 real players joined, start match immediately
+                if real_cnt >= 15:
+                    trigger_room_ready(room)
+                    ACTIVE_ROOM = None
 
                 rem = max(0, int(room["expires_at"] - now))
                 print(f"[SURVIVAL JOIN] Player {req.get('name')} (ID {acc_id}) joined Room {room['id']}. Real: {real_cnt}/25, Time left: {rem}s")

@@ -7278,7 +7278,11 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 	local var_304_1 = Data._skillInfo[arg_304_1._id]
 	local var_304_2 = var_304_1._val[math.min(arg_304_1._level, #var_304_1._val)] or 0
 
-	if arg_304_1._id == 3002 or arg_304_1._id == 3351 or arg_304_1._id == 3357 or arg_304_1._id == 3680 then
+	if arg_304_1._id == 14610 then
+		return true, B.sortCardsByBoardPos(arg_304_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_304_0:getBattleCardsByType("P", Data.CardType.monster), 6))), 1
+	elseif arg_304_1._id == 14611 then
+		return true, arg_304_0:filterCanChangeToHandCards(arg_304_0:getBattleCardsByInfoId("P", 20301)), 1
+	elseif arg_304_1._id == 3002 or arg_304_1._id == 3351 or arg_304_1._id == 3357 or arg_304_1._id == 3680 then
 		local var_304_3 = B.sortCardsByBoardPos(B.filterNotBindedAllyEquipCards(arg_304_0:getBattleCardsByInfoId("B", var_304_1._refCards[1])))
 
 		if #var_304_3 > 0 then
@@ -13271,6 +13275,19 @@ function var_0_0.getDamageByAttack(arg_308_0, arg_308_1, arg_308_2, arg_308_3, a
 
 		if arg_308_4 and arg_308_4._info._category == Data._skillInfo[7139]._refCards[1] and arg_308_1._owner == arg_308_4._owner then
 			return 0
+		end
+	end
+
+	local var_targetOwner = arg_308_1 and arg_308_1._owner
+	if var_targetOwner and not var_targetOwner._isSkillDisabled then
+		local hasBaoLoc = var_targetOwner:hasBattleCardsBySkillFast("S", 8007) or #var_targetOwner:getBattleCardsByInfoId("S", 30171) > 0
+		if hasBaoLoc then
+			if arg_308_4 and arg_308_4._owner == var_targetOwner and arg_308_4:isKeyword(6) then
+				return 0
+			end
+			if arg_308_3 and arg_308_3._owner == var_targetOwner and arg_308_3:isKeyword(6) then
+				return 0
+			end
 		end
 	end
 

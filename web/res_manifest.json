@@ -17522,6 +17522,12 @@
     ],
     "res/thumb_magic/20566_3.lcres": [
       "20566_3.jpg"
+    ],
+    "res/thumb_trap/30244_3.lcres": [
+      "30244_3.jpg"
+    ],
+    "res/thumb_rare/40718_3.lcres": [
+      "40718_3.jpm"
     ]
   },
   "files": [
@@ -19118,7 +19124,11 @@
     "res/updater/logo_10037.jpg",
     "res/updater/logo_ASDK.jpg",
     "res/new/thumb/20566.png",
-    "res/new/thumb/20566_3.png"
+    "res/new/thumb/20566_3.png",
+    "res/new/thumb/40718.png",
+    "res/new/thumb/card_ico_40718.png",
+    "res/new/thumb/card_ico_30244.png",
+    "res/new/thumb/cuu-thien-huyen-sat.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [
@@ -25864,6 +25874,36 @@
     "new/thumb/20566_3.png": [
       1024,
       1024
+    ],
+    "res/thumb_trap/30244.lcres/30244.jpg": 22490,
+    "res/thumb_trap/30244_3.lcres/30244_3.jpg": 22490,
+    "res/new/thumb/40718.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/card_ico_40718.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_30244.png": [
+      82,
+      82
+    ],
+    "res/thumb_rare/40718.jpm": [
+      256,
+      256
+    ],
+    "res/thumb_rare/40718_3.jpm": [
+      256,
+      256
+    ],
+    "res/thumb_trap/30244.jpg": [
+      242,
+      242
+    ],
+    "res/thumb_trap/30244_3.jpg": [
+      242,
+      242
     ]
   },
   "thumbs": {
@@ -27645,7 +27685,8 @@
       "30588",
       "30589",
       "30590",
-      "30591"
+      "30591",
+      "30244_3"
     ]
   }
 }

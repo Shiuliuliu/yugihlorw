@@ -5466,6 +5466,13 @@ local function var_0_9()
 			var_174_3 = Data.BattleType.PVP_clash_npc
 			var_174_4 = Data.BattleSceneType.gold_scene
 			var_174_7 = "Đối thủ sinh tồn cục bộ"
+		elseif arg_174_0 == "survival_ex" then
+			var_174_0 = P._playerFindSurvivalEx:getTroopCards(nil, true)
+			var_174_1 = P._playerFindSurvivalEx._characterId or 2
+			var_174_2 = Battle_pb.PB_BATTLE_SURVIVAL_EX
+			var_174_3 = Data.BattleType.PVP_survival_ex
+			var_174_4 = Data.BattleSceneType.gold_scene
+			var_174_7 = "Đấu sĩ Sinh Tử Chiến"
 		elseif arg_174_0 == "clash" then
 			var_174_0 = var_8_47(P._curTroopIndex)
 			var_174_2 = Battle_pb.PB_BATTLE_WORLD_LADDER
@@ -8248,12 +8255,25 @@ local function var_0_9()
 		end
 
 		function ClientData.sendSurvivalExExploreStart()
+			local var_338_4 = var_8_0.makeBattleInput("survival_ex")
+			if var_338_4 == nil then
+				ToastManager.push("Chưa đủ điều kiện tham gia chiến đấu")
+				return
+			end
+			ClientData._isOppoOnline = false
+			ClientData._battleFromFindIndex = Data.FindMatchType.survival_ex
+			ClientData.setBattleFromSceneId(ClientData.SceneId.survival_ex_hall)
+			lc.pushScene(require("ResSwitchScene").create(ClientData.SceneId.survival_ex_hall, ClientData.SceneId.battle, var_338_4))
 		end
 
 		function ClientData.sendSurvivalExExplorerEnd()
+			lc.sendEvent(Data.Event.survival_ex_explore_end)
 		end
 
 		function ClientData.sendSurvivalExExEquipSkill(cardId, skills)
+			if P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._skills then
+				P._playerFindSurvivalEx._skills[cardId] = skills
+			end
 		end
 
 		function ClientData.sendOpenBox()
@@ -8291,6 +8311,9 @@ local function var_0_9()
 			elseif arg_338_1 == Battle_pb.PB_BATTLE_SURVIVAL then
 				var_338_0 = "survival"
 				var_338_1 = Data.FindMatchType.survival
+			elseif arg_338_1 == Battle_pb.PB_BATTLE_SURVIVAL_EX then
+				var_338_0 = "survival_ex"
+				var_338_1 = Data.FindMatchType.survival_ex
 			elseif arg_338_1 == Battle_pb.PB_BATTLE_DARK then
 				var_338_0 = "dark"
 				var_338_1 = Data.FindMatchType.dark
@@ -8301,6 +8324,30 @@ local function var_0_9()
 				ToastManager.push("Chế độ chơi này tạm thời không hỗ trợ ngoại tuyến")
 				ClientData.sendWorldFindExCancel()
 
+				return
+			end
+
+			if var_338_0 == "survival_ex" then
+				local sEx = P._playerFindSurvivalEx
+				if sEx then
+					sEx._hasTicket = true
+					sEx._lose = 0
+					sEx._win = 0
+					sEx._skills = sEx._skills or { [0] = {}, [1] = {} }
+					sEx._captures = sEx._captures or {}
+					sEx._capturesEx = sEx._capturesEx or {}
+					sEx._dieTimeStamp = ClientData.getCurrentTime() + 480
+					sEx._hallUserNum = 16
+					sEx._isInHall = true
+
+					local hallResp = World_pb.SglWorldMsg.world_survival_ex_hall_info_resp
+					hallResp.num = 16
+					hallResp.is_in_hall = true
+					hallResp.gameover_timestamp = (ClientData.getCurrentTime() + 480) * 1000
+					hallResp.start_timestamp = ClientData.getCurrentTime() * 1000
+
+					var_8_18(SglMsgType_pb.PB_TYPE_WORLD_SURVIVAL_EX_HALL_INFO, World_pb.SglWorldMsg.world_survival_ex_hall_info_resp, hallResp, var_8_0.captureSurvivalEx)
+				end
 				return
 			end
 
@@ -9226,13 +9273,80 @@ local function var_0_9()
 
 					if var_410_1 == Data.BattleResult.win then
 						var_410_ex.winCount = (var_410_ex.winCount or 0) + 1
-						if P and P._playerFindSurvivalEx then
-							P._playerFindSurvivalEx._win = var_410_ex.winCount
+						local sEx = P and P._playerFindSurvivalEx
+						if sEx then
+							sEx._win = var_410_ex.winCount
+							-- 1. Gain +120s survival countdown time
+							sEx._getSeconds = 120
+							sEx._dieTimeStamp = math.max(ClientData.getCurrentTime(), sEx._dieTimeStamp or 0) + 120
+
+							-- 2. Capture 1-2 cards from the defeated opponent
+							local oppo = arg_410_0._opponent
+							local oppoCards = oppo and (oppo._cards or oppo._troopCards or oppo._deckCards)
+							if oppoCards and #oppoCards > 0 then
+								local numToCapture = math.min(2, #oppoCards)
+								for k = 1, numToCapture do
+									local rndIdx = math.random(1, #oppoCards)
+									local capCard = oppoCards[rndIdx]
+									local capCardId = type(capCard) == "number" and capCard or (capCard._infoId or capCard._cardId or capCard._id)
+									if capCardId and capCardId > 0 then
+										sEx:addToCaptures(capCardId, 1)
+									end
+								end
+								if sEx.sortFunc then
+									table.sort(sEx._captures, sEx.sortFunc)
+								end
+							end
+
+							-- 3. Gain 3 monster skill choices to enhance cards
+							sEx._skills = sEx._skills or {}
+							sEx._skills[0] = {}
+							sEx._skills[1] = sEx._skills[1] or {}
+							local availableSkillIds = { 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029, 1030 }
+							for k = 1, 3 do
+								local rndSkill = availableSkillIds[math.random(1, #availableSkillIds)]
+								sEx._skills[0][k] = rndSkill * Data.INFO_ID_FRAGMENT_SIZE_LARGE
+							end
+
+							-- 4. Reduce remaining tournament players
+							sEx._hallUserNum = math.max(1, (sEx._hallUserNum or 16) - 1)
+
+							-- 5. Check if player won the entire tournament (Champion)
+							if sEx._hallUserNum <= 1 then
+								sEx._rank = 1
+								sEx._rewards = {
+									{ _infoId = Data.PropsId.big_card_package, _count = 3 },
+									{ _infoId = Data.ResType.survival_ex_trophy, _count = 500 },
+									{ _infoId = 7339, _count = 1000 }
+								}
+								P:addResource(7339, nil, 1000)
+								P:addResource(Data.ResType.survival_ex_trophy, nil, 500)
+								ToastManager.push("CHÚC MỪNG! Bạn đã loại toàn bộ đối thủ và trở thành QUÁN QUÂN Sinh Tử Chiến!")
+							else
+								ToastManager.push(string.format("Thắng trận! Bạn lấy được bài của đối thủ, nhận 3 hiệu ứng quái thú và +120s! Còn lại %d người chơi.", sEx._hallUserNum))
+							end
+							lc.sendEvent(Data.Event.survival_ex_info_dirty)
 						end
 					elseif var_410_1 == Data.BattleResult.lose then
 						var_410_ex.loseCount = (var_410_ex.loseCount or 0) + 1
-						if P and P._playerFindSurvivalEx then
-							P._playerFindSurvivalEx._lose = var_410_ex.loseCount
+						local sEx = P and P._playerFindSurvivalEx
+						if sEx then
+							sEx._lose = var_410_ex.loseCount
+							if sEx._lose >= 2 then
+								-- 2 losses: ELIMINATED!
+								sEx._rank = math.max(2, sEx._hallUserNum or 2)
+								sEx._rewards = {
+									{ _infoId = Data.PropsId.small_card_package, _count = 1 },
+									{ _infoId = Data.ResType.survival_ex_trophy, _count = 20 }
+								}
+								P:addResource(Data.ResType.survival_ex_trophy, nil, 20)
+								ToastManager.push("Bạn đã thua 2 trận (hết 2 mạng) và bị loại khỏi giải đấu Sinh Tử Chiến!")
+								ClientData.sendSurvivalExQuit()
+							else
+								-- 1 loss: 1 life left!
+								ToastManager.push("Bạn đã bị xử thua 1 trận! Bạn còn đúng 1 mạng cuối cùng!")
+							end
+							lc.sendEvent(Data.Event.survival_ex_info_dirty)
 						end
 					end
 

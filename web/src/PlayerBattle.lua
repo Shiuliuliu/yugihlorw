@@ -143,7 +143,9 @@ end
 function var_0_0.skillCasted(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 	arg_2_0:battleLog("[BATTLE] %s\t%s", Str(arg_2_1._type ~= Data.CardType.fortress and arg_2_1._info._nameSid or STR.FORTRESS), Str(Data._skillInfo[arg_2_2._id]._nameSid))
 
-	arg_2_0:getActionCard()._needAccount = true
+	if arg_2_3 ~= Data.SkillMode.halo then
+		arg_2_0:getActionCard()._needAccount = true
+	end
 
 	if arg_2_3 ~= Data.SkillMode.halo then
 		table.insert(arg_2_1._castedSkills, arg_2_2)
@@ -1721,7 +1723,7 @@ function var_0_0.addRoundDuration(arg_52_0)
 
 	local var_52_0 = arg_52_0._round == 1 and arg_52_0._roundTimeDelta1 or arg_52_0._roundTimeDelta
 	if not var_52_0 or var_52_0 <= 0 then
-		var_52_0 = 5
+		var_52_0 = 2
 	end
 
 	local var_52_1 = arg_52_0._round == 1 and arg_52_0._roundTimeMax1 or arg_52_0._roundTimeMax

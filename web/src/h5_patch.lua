@@ -1098,9 +1098,9 @@ function patchClientData()
 			for _, cid in ipairs(charCards) do
 				cid = tonumber(cid)
 				if cid then
-					if cid < 20000 or cid >= 40000 then
+					if cid < 20000 then
 						table.insert(charMonsters, cid)
-					else
+					elseif cid < 40000 then
 						table.insert(charSpells, cid)
 					end
 				end
@@ -1679,6 +1679,21 @@ function patchClientData()
 			end
 		end
 
+		if battleType == Battle_pb.PB_BATTLE_SURVIVAL or battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX then
+			local myChar = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX and P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._characterId) or (battleType == Battle_pb.PB_BATTLE_SURVIVAL and P and P._playerFindSurvival and P._playerFindSurvival._characterId) or 2
+			local charCards = (myChar and CHAR_CARDS_MAP[tonumber(myChar)]) or (myChar and CHAR_CARDS_MAP[tostring(myChar)])
+			if charCards then
+				for _, cid in ipairs(charCards) do
+					cid = tonumber(cid)
+					if cid and cid >= 40000 then
+						table.insert(playerCards, { info_id = cid, num = 1 })
+						table.insert(playerLevels, { info_id = cid, level = 1 })
+						table.insert(playerSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
+					end
+				end
+			end
+		end
+
 		local grade = (P and P._playerFindClash and P._playerFindClash._grade) or 1
 		local sceneType = 10 + math.max(1, math.min(6, tonumber(grade) or 1))
 
@@ -1720,6 +1735,21 @@ function patchClientData()
 					table.insert(oppoLevels, { info_id = cid, level = 1 })
 					table.insert(oppoSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
 					oppoCount = oppoCount + 1
+				end
+			end
+
+			if battleType == Battle_pb.PB_BATTLE_SURVIVAL or battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX then
+				local oppoCharId = math.floor((oppoAvatar or 201) / 100)
+				local oCharCards = (oppoCharId and CHAR_CARDS_MAP[tonumber(oppoCharId)]) or (oppoCharId and CHAR_CARDS_MAP[tostring(oppoCharId)])
+				if oCharCards then
+					for _, cid in ipairs(oCharCards) do
+						cid = tonumber(cid)
+						if cid and cid >= 40000 then
+							table.insert(oppoCards, { info_id = cid, num = 1 })
+							table.insert(oppoLevels, { info_id = cid, level = 1 })
+							table.insert(oppoSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
+						end
+					end
 				end
 			end
 
@@ -1841,7 +1871,7 @@ function patchClientData()
 						if ok and type(ints) == "table" and #ints > 0 then
 							local card_val = tonumber(ints[1]) or 0
 							local isCardAction = (card_val ~= BattleData.UseCardId.round and card_val ~= BattleData.UseCardId.retreat and card_val ~= 0)
-							local bonusSec = tonumber(addTime) or (isCardAction and 5 or 0)
+							local bonusSec = tonumber(addTime) or (isCardAction and 2 or 0)
 							local maxSec = tonumber(maxTime) or 120
 							local exactTime = tonumber(timeLeft)
 
@@ -1869,22 +1899,14 @@ function patchClientData()
 						local scene = lc._runningScene or ClientView._scene
 						local bUi = scene and scene._battleUi
 						if bUi and not bUi._isBattleEndSended then
-							ToastManager.push("Đối thủ mất kết nối, đang chờ 15s kết nối lại...")
-							local waitTime = (not bUi._round or bUi._round < 1) and 5.0 or 15.0
-							bUi:runAction(lc.sequence(waitTime, function()
-								local curScene = lc._runningScene or ClientView._scene
-								local curUi = curScene and curScene._battleUi
-								if curUi and not curUi._isBattleEndSended then
-									curUi._forceResult = Data.BattleResult.win
-									curUi:hideThinking()
-									if curUi._opponent and type(curUi.retreat) == "function" then
-										curUi:retreat(curUi._opponent)
-									else
-										curUi:sendBattleEnd(false, Data.BattleResult.win)
-									end
-									ToastManager.push("Đối thủ đã rời trận, bạn đã giành chiến thắng!")
-								end
-							end))
+							bUi._forceResult = Data.BattleResult.win
+							bUi:hideThinking()
+							if bUi._opponent and type(bUi.retreat) == "function" then
+								bUi:retreat(bUi._opponent)
+							else
+								bUi:sendBattleEnd(false, Data.BattleResult.win)
+							end
+							ToastManager.push("Đối thủ đã rời trận, bạn đã giành chiến thắng!")
 						end
 					end, function(peerResult)
 						local scene = lc._runningScene or ClientView._scene
@@ -2147,7 +2169,7 @@ function patchClientData()
 			local scene = lc._runningScene or ClientView._scene
 			local bUi = scene and scene._battleUi
 			if bUi and type(bUi.addPvpRoundSeconds) == "function" then
-				bUi:addPvpRoundSeconds(5, 120)
+				bUi:addPvpRoundSeconds(2, 120)
 			elseif player and type(player.addRoundDuration) == "function" then
 				player:addRoundDuration()
 			end
@@ -2876,9 +2898,39 @@ function patchClientData()
 		return str
 	end
 
+	local CARD_NAME_OVERRIDES = {
+		[54724] = "Cửu Thiên Huyền Sát",
+		[54727] = "Cửu Thiên Huyền Sát",
+		[43192] = "Cửu Thiên Huyền Sát",
+		[36383] = "mắt đỏ-Rồng đen toàn thép",
+		[36386] = "mắt đỏ-Rồng đen toàn thép",
+		[51457] = "Chủ động: Xóa 2 Chỉ Thị XYZ đang có; tất cả quái có từ khóa “Ánh Sáng” và “Ngân Hà” trên sân phe ta nhận được “Khiên Chắn Quái/Phép/Bẫy”. Kỹ năng chỉ kích hoạt 1 lần.",
+		[52113] = "Khi có mặt; khiến tất cả quái có từ khóa “Amazon” trên sân phe ta ngoài bản thân bài này nhận được “Khiên Chắn Quái/Phép/Bẫy”/“Khiên Chắn Hiệu Quả”.",
+		[46091] = "Khi có mặt; quái có từ khóa “Amazon” phe ta nhận thêm kỹ năng “Tấn Công Tăng Cường”, đồng thời nhận thêm 100 công cho mỗi quái “Amazon” trên sân và trong mộ phe ta.",
+		[47769] = "Khi ở trên sân; Quái Vật có từ khóa “Amazon” ở bên sân của bạn nhận được “Tâm hồn tan vỡ”, đồng thời khi quái “Amazon” phe ta nhận sát thương chiến đấu thì người chơi không bị trừ LP.",
+		[46379] = "Quái có từ khóa “Amazon” trên sân phe ta tăng 500 tấn công và nhận được “Tường Chắn Quái/Phép/Bẫy”.",
+		[18733] = "Tất cả quái “Amazon” trên sân phe ta tăng 500 công và nhận “Tường Chắn Quái/Phép/Bẫy”. Kĩ năng chủ động: 1 lượt 1 lần, lấy 1 quái “Amazon” từ bộ bài lên tay.",
+		[56678] = "Bộ Lạc-Chiêu Mộ",
+		[56679] = "Kĩ năng chủ động: 1 lượt 1 lần, lấy 1 quái có từ khóa “Amazon” từ bộ bài lên tay.",
+		[56680] = "Hổ Con-Tìm Lạc",
+		[56681] = "Kĩ năng chủ động tay: 1 lượt 1 lần, đưa bản thân vào mộ, sau đó lấy 1 lá “Bộ lạc Amazon” từ bộ bài lên tay.",
+		[25129] = "Kĩ năng chủ động tay: 1 lượt 1 lần, đưa bản thân vào mộ, sau đó lấy 1 lá “Bộ lạc Amazon” từ bộ bài lên tay.",
+		[51805] = "Chủ động: Mỗi lượt tối đa 2 lần. Chọn và Triệu Hồi Đặc Biệt 1 quái có từ khóa “CS” từ mộ phe ta. Kỹ năng chỉ kích hoạt 1 lần.",
+		[51817] = "Kỹ năng tay chủ động: Mỗi lượt tối đa 1 lần. Loại bỏ bản thân bài này; lấy một lá bài không cùng tên; có từ khóa “CS” từ bộ bài phe ta vào tay.",
+		[44025] = "Mỗi lượt chỉ được dùng 1 lá. Hi sinh 2000 LP; Triệu Hồi Đặc Biệt 2 quái không cùng tên; có từ khóa “CS” từ bộ bài phe ta. Sau đó trong lượt này; khi Triệu Hồi Đặc Biệt quái từ ngoài bộ bài thêm; chỉ có thể Triệu Hồi Đặc Biệt quái có từ khóa “CS”.",
+		[44023] = "Khi ở trong nghĩa địa; nó được kích hoạt khi đối thủ tấn công; ngoại trừ chính nó. Tất cả quái vật trên sân của đối thủ đều giảm sức tấn công đi 500 điểm (xuyên thủng “lá chắn bẫy”) và người chơi của bạn tăng thêm 800 điểm sinh mệnh. Nếu đòn tấn công của Quái Vật đối phương trên sân trở thành 0 do hiệu ứng này; tất cả Quái Vật của đối thủ chỉ không thể tấn công trong vòng này.",
+		[47515] = "Khi bài này có mặt; quái phe ta có từ khóa “CS” lên sân sẽ tăng tấn công bằng tổng số loại quái có từ khóa “CS” đang có trong mộ/mộ bài loại bỏ phe ta x100.",
+		[36968] = "Hộ Thể Mắt Đỏ",
+		[36969] = "Khi lá bài này trên sân, tất cả quái có từ khóa “Mắt Đỏ” sẽ nhận “Tường Chắn Quái/Phép/Bẫy”.",
+		[34292] = "Khi lá bài này trên sân, tất cả quái có từ khóa “Mắt Đỏ” sẽ nhận “Tường Chắn Quái/Phép/Bẫy”.",
+	}
+
 	-- Ensure Str and ClientData.str always unescape \n to actual newline and use Linh Thach terms
 	local _origStr = _G.Str
 	_G.Str = function(sid, ...)
+		if sid and CARD_NAME_OVERRIDES[sid] then
+			return CARD_NAME_OVERRIDES[sid]
+		end
 		local res = _origStr and _origStr(sid, ...)
 		if not res and rawget(_G, "ClientData") and ClientData.str then
 			res = ClientData.str(sid, ...)
@@ -2891,6 +2943,9 @@ function patchClientData()
 	if rawget(_G, "ClientData") and ClientData.str then
 		local _origCdStr = ClientData.str
 		ClientData.str = function(sid, ...)
+			if sid and CARD_NAME_OVERRIDES[sid] then
+				return CARD_NAME_OVERRIDES[sid]
+			end
 			local res = _origCdStr(sid, ...)
 			if type(res) == "string" and string.find(res, "\\n") then
 				res = string.gsub(res, "\\n", "\n")
@@ -4067,7 +4122,7 @@ ClientData.sendChangeName = function(newName)
 				if ok and type(ints) == "table" and #ints > 0 then
 					local card_val = tonumber(ints[1]) or 0
 					local isCardAction = (card_val ~= BattleData.UseCardId.round and card_val ~= BattleData.UseCardId.retreat and card_val ~= 0)
-					local bonusSec = tonumber(addTime) or (isCardAction and 5 or 0)
+					local bonusSec = tonumber(addTime) or (isCardAction and 2 or 0)
 					local maxSec = tonumber(maxTime) or 120
 					local exactTime = tonumber(timeLeft)
 
@@ -4095,22 +4150,14 @@ ClientData.sendChangeName = function(newName)
 				local scene = lc._runningScene or ClientView._scene
 				local bUi = scene and scene._battleUi
 				if bUi and not bUi._isBattleEndSended then
-					ToastManager.push("Đối thủ mất kết nối, đang chờ 15s kết nối lại...")
-					local waitTime = (not bUi._round or bUi._round < 1) and 5.0 or 15.0
-					bUi:runAction(lc.sequence(waitTime, function()
-						local curScene = lc._runningScene or ClientView._scene
-						local curUi = curScene and curScene._battleUi
-						if curUi and not curUi._isBattleEndSended then
-							curUi._forceResult = Data.BattleResult.win
-							curUi:hideThinking()
-							if curUi._opponent and type(curUi.retreat) == "function" then
-								curUi:retreat(curUi._opponent)
-							else
-								curUi:sendBattleEnd(false, Data.BattleResult.win)
-							end
-							ToastManager.push("Đối thủ đã rời trận, bạn đã giành chiến thắng!")
-						end
-					end))
+					bUi._forceResult = Data.BattleResult.win
+					bUi:hideThinking()
+					if bUi._opponent and type(bUi.retreat) == "function" then
+						bUi:retreat(bUi._opponent)
+					else
+						bUi:sendBattleEnd(false, Data.BattleResult.win)
+					end
+					ToastManager.push("Đối thủ đã rời trận, bạn đã giành chiến thắng!")
 				end
 			end, function(peerResult)
 				local scene = lc._runningScene or ClientView._scene
@@ -5649,10 +5696,53 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 						sEx._trophy = newT
 						if res == Data.BattleResult.win then
 							sEx._win = (sEx._win or 0) + 1
+							-- Gain +120s survival time (up to 480s)
+							sEx._dieTimeStamp = math.min(ClientData.getCurrentTime() + 480, (sEx._dieTimeStamp or ClientData.getCurrentTime()) + 120)
+
+							-- Capture 1-2 cards from opponent's deck
+							if oppoTroopCards and #oppoTroopCards > 0 then
+								local numCap = math.min(2, #oppoTroopCards)
+								for _ = 1, numCap do
+									local cEntry = oppoTroopCards[math.random(1, #oppoTroopCards)]
+									local cid = type(cEntry) == "table" and (cEntry._infoId or cEntry.info_id or cEntry[1]) or cEntry
+									if cid and tonumber(cid) and tonumber(cid) > 0 then
+										sEx:addToCaptures(tonumber(cid), 1)
+									end
+								end
+							end
+
+							-- Generate 3 monster skill effects for selection
+							sEx._skills[0] = {}
+							local poolSkills = { 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020 }
+							for i = 1, 3 do
+								sEx._skills[0][i] = poolSkills[math.random(1, #poolSkills)]
+							end
+
+							-- Reduce remaining hall players
+							sEx._hallUserNum = math.max(1, (sEx._hallUserNum or 16) - 1)
+
+							-- Check if sole survivor (Rank 1 Champion!)
+							if sEx._hallUserNum <= 1 then
+								sEx._rank = 1
+								ToastManager.push("CHÚC MỪNG! BẠN LÀ NGƯỜI SỐNG SÓT DUY NHẤT - VÔ ĐỊCH GIẢI ĐẤU!")
+								local winCount = sEx._win or 12
+								ClientData.sendSurvivalExQuit()
+							else
+								ToastManager.push(string.format("Thắng trận! Bạn cướp được bài, nhận 3 kỹ năng quái thú. Còn lại %d đấu sĩ.", sEx._hallUserNum))
+							end
 						else
 							sEx._lose = (sEx._lose or 0) + 1
+							sEx._hallUserNum = math.max(1, (sEx._hallUserNum or 16) - 1)
+							if sEx._lose >= 2 then
+								ToastManager.push("Bạn đã bị trừ hết 2 mạng và bị loại khỏi giải đấu!")
+								sEx._isInHall = false
+								ClientData.sendSurvivalExQuit()
+							else
+								ToastManager.push("Bạn đã thua 1 mạng! Còn 1 mạng sống duy nhất trong giải đấu.")
+							end
 						end
 					end
+					lc.sendEvent(Data.Event.survival_ex_explore_end)
 					local jdzcMod = _G.jdzc or package.loaded["jdzc"]
 					if jdzcMod and jdzcMod.captureSurvivalEx then
 						jdzcMod.captureSurvivalEx()
@@ -5665,6 +5755,38 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 					if sArea then
 						if res == Data.BattleResult.win then
 							sArea._win = (sArea._win or 0) + 1
+							sArea._captures = sArea._captures or {}
+							local cardCounts = {}
+							if oppoTroopCards and #oppoTroopCards > 0 then
+								for _, cEntry in ipairs(oppoTroopCards) do
+									local cid = type(cEntry) == "table" and (cEntry._infoId or cEntry.info_id or cEntry[1]) or cEntry
+									if cid and tonumber(cid) and tonumber(cid) > 0 then
+										cid = tonumber(cid)
+										local ctype = Data.getType(cid)
+										if ctype == Data.CardType.monster or ctype == Data.CardType.magic or ctype == Data.CardType.trap then
+											local num = type(cEntry) == "table" and (cEntry._num or cEntry.num) or 1
+											cardCounts[cid] = (cardCounts[cid] or 0) + (tonumber(num) or 1)
+										end
+									end
+								end
+							end
+							for cid, count in pairs(cardCounts) do
+								local found = false
+								for _, cap in ipairs(sArea._captures) do
+									if cap._infoId == cid then
+										cap._num = (cap._num or 0) + count
+										found = true
+										break
+									end
+								end
+								if not found then
+									table.insert(sArea._captures, { _infoId = cid, _num = count })
+								end
+							end
+							if sArea.sortFunc then
+								table.sort(sArea._captures, sArea.sortFunc)
+							end
+							lc.sendEvent(Data.Event.survival_explore_end)
 						else
 							sArea._lose = (sArea._lose or 0) + 1
 						end
@@ -5731,6 +5853,8 @@ local function patchBaseScene(BaseScene)
 	end
 	BaseScene.onAttack = function(self, input)
 		local fromId = self._sceneId or ClientData.SceneId.city
+		ClientData._fromSceneId = fromId
+		ClientData._lastSceneId = fromId
 		local swScene = require("ResSwitchScene").create(fromId, ClientData.SceneId.battle, input)
 		lc.replaceScene(swScene)
 	end
@@ -5755,7 +5879,80 @@ local function patchResSwitchScene(ResSwitchScene)
 			lc.replaceScene(require("BattleScene").create(self._input))
 			ClientData.sendBattleLoadingDone()
 		else
-			ClientData.replaceCityScene()
+			ClientView.getMenuUI()
+			ClientView.getChatPanel()
+			ClientView.getResourceUI()
+
+			local var_19_0 = false
+			local toId = self._toSceneId
+
+			if toId == ClientData.SceneId.world then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("WorldScene").create())
+				var_19_0 = true
+			elseif ClientData._isAutoBattle then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("FindScene").create(Data.FindMatchType.clash))
+			elseif toId == ClientData.SceneId.factory_monster or toId == ClientData.SceneId.factory_magic or toId == ClientData.SceneId.factory_trap or toId == ClientData.SceneId.factory_rare then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("CardBoxScene").create(toId))
+			elseif toId == ClientData.SceneId.manage_troop then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("HeroCenterScene").create())
+			elseif toId == ClientData.SceneId.union then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("UnionScene").create())
+			elseif toId == ClientData.SceneId.find then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("FindScene").create(ClientData._battleFromFindIndex or Data.FindMatchType.clash))
+			elseif toId == ClientData.SceneId.in_room then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("FindScene").create(Data.FindMatchType.clash))
+				lc.pushScene(require("InRoomScene").create())
+			elseif toId == ClientData.SceneId.survival_hall then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("FindScene").create(Data.FindMatchType.survival))
+				lc.pushScene(require("SurvivalHallScene").create())
+			elseif toId == ClientData.SceneId.survival_ex_hall then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("FindScene").create(Data.FindMatchType.survival_ex))
+				lc.pushScene(require("SurvivalExHallScene").create())
+			elseif toId == ClientData.SceneId.union_world then
+				lc.replaceScene(require("UnionWorldScene").create())
+			elseif toId == ClientData.SceneId.union_war then
+				lc.replaceScene(require("UnionWorldScene").create())
+				if ClientData._savedUnionData then
+					lc.pushScene(require("UnionWarScene").create(ClientData._savedUnionData._city, ClientData._savedUnionData._isAttacking))
+				end
+			elseif toId == ClientData.SceneId.tavern then
+				ClientData.replaceCityScene()
+				lc.pushScene(require("TavernScene").create())
+			else
+				ClientData.replaceCityScene()
+				var_19_0 = true
+			end
+
+			if var_19_0 then
+				if GuideManager.isGuideEnabled() then
+					if lc._runningScene then lc._runningScene._needGuideStartStep = true end
+				elseif ClientData._battleFromCopy then
+					lc.pushScene(require("ExpeditionScene").create())
+				else
+					local var_19_1 = ClientData._battleFromTravel
+					if var_19_1 and (GuideManager.getCurDifficultyStepName() ~= "check duel" or not (P._playerWorld._curLevel[1] > 10104)) and (GuideManager.getCurRecruiteStepName() ~= "check union" or not (P:getMaxCharacterLevel() >= P._playerCity:getUnionUnlockLevel())) then
+						require("TravelPanel").create(var_19_1._id):show()
+					else
+						local var_19_2 = ClientData._battleFromTeach
+						if var_19_2 and (GuideManager.getCurDifficultyStepName() ~= "check duel" or not (P._playerWorld._curLevel[1] > 10104)) and (GuideManager.getCurRecruiteStepName() ~= "check union" or not (P:getMaxCharacterLevel() >= P._playerCity:getUnionUnlockLevel())) then
+							require("TeachingForm").create(var_19_2):show()
+						end
+					end
+				end
+			end
+
+			ClientData._battleFromCopy = nil
+			ClientData._battleFromTravel = nil
+			ClientData._battleFromTeach = nil
 		end
 	end
 

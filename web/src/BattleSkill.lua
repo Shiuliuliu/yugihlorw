@@ -38163,12 +38163,14 @@ function var_0_0.castMonster3HaloSkill(arg_7_0, arg_7_1, arg_7_2, arg_7_3)
 	elseif var_7_4 == 13685 then
 		arg_7_1:removeMark(BattleData.PositiveType.xyzMark, 2)
 
-		local var_7_478 = arg_7_0:getBattleCardsByNature("B", var_7_6._refCards[1])
+		local var_7_478 = arg_7_0:getBoardCards()
 
 		for iter_7_93 = 1, #var_7_478 do
-			arg_7_0:incShield(var_7_478[iter_7_93], var_7_6._refSkills, true, false, var_7_5, var_7_4, arg_7_3)
-
-			var_7_13 = true
+			local targetCard = var_7_478[iter_7_93]
+			if targetCard:isKeyword(18) or targetCard:isKeyword(147) or targetCard:isKeyword(148) or targetCard:isKeyword(206) or targetCard:isKeyword(237) then
+				arg_7_0:incShield(targetCard, { 11002, 11003, 11004 }, true, false, var_7_5, var_7_4, arg_7_3)
+				var_7_13 = true
+			end
 		end
 	elseif var_7_4 == 13686 then
 		if arg_7_3 == Data.SkillMode.initiative_bcs then
@@ -40363,7 +40365,7 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 		local var_8_25 = arg_8_0:getBattleCardsByKeyword("B", var_8_6._refCards[1], Data.CARD_MAX_LEVEL, arg_8_1)
 
 		for iter_8_1 = 1, #var_8_25 do
-			arg_8_0:incShield(var_8_25[iter_8_1], var_8_6._refSkills, false, true, var_8_5, var_8_4, arg_8_3)
+			arg_8_0:incShield(var_8_25[iter_8_1], { 11002, 11003, 11004, 12007 }, false, true, var_8_5, var_8_4, arg_8_3)
 
 			var_8_13 = true
 		end
@@ -44078,6 +44080,32 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 
 			for iter_8_52 = 1, #var_8_304 do
 				arg_8_0:decAtk(var_8_304[iter_8_52], var_8_303, true, var_8_5, var_8_4, arg_8_3)
+
+				var_8_13 = true
+			end
+		end
+	elseif var_8_4 == 14610 then
+		var_8_13 = arg_8_0:setCardStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.hand)
+
+		if not var_8_13 then
+			local var_c = arg_8_0:randomOne(arg_8_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_8_0:getBattleCardsByType("P", Data.CardType.monster), 6)))
+
+			if var_c ~= nil then
+				arg_8_0:setCardStatus(var_c, BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3)
+
+				var_8_13 = true
+			end
+		end
+	elseif var_8_4 == 14611 then
+		arg_8_0:setCardStatus(arg_8_1, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3)
+
+		var_8_13 = arg_8_0:setCardStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.hand)
+
+		if not var_8_13 then
+			local var_c = arg_8_0:filterCanChangeToHandCards(arg_8_0:getBattleCardsByInfoId("P", 20301))[1]
+
+			if var_c ~= nil then
+				arg_8_0:setCardStatus(var_c, BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3)
 
 				var_8_13 = true
 			end
@@ -52902,7 +52930,33 @@ function var_0_0.castMagicHaloSkill(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 		end
 	end
 
-	if var_12_4 == 7001 or var_12_4 == 7184 or var_12_4 == 7254 then
+	if var_12_4 == 7001 then
+		local var_12_18 = arg_12_0:getBattleCardsByKeyword("B", var_12_6._refCards[1])
+		local var_allAmazon = arg_12_0:getBattleCardsByKeyword("BG", var_12_6._refCards[1])
+		local var_amazonMonsterCount = 0
+		for iter_am = 1, #var_allAmazon do
+			local var_c = var_allAmazon[iter_am]
+			if var_c._type == Data.CardType.monster or var_c:isMonsterRare() then
+				var_amazonMonsterCount = var_amazonMonsterCount + 1
+			end
+		end
+		local var_bonusAtk = var_amazonMonsterCount * 100
+
+		for iter_12_0 = 1, #var_12_18 do
+			local var_12_19 = var_12_18[iter_12_0]
+
+			arg_12_0:incPositiveStatus(var_12_19, {
+				BattleData.PositiveType.extraSkill
+			}, true, var_12_5, var_12_4, arg_12_3)
+			arg_12_0:incPositiveValue(var_12_19, BattleData.PositiveType.extraSkill, 65536 + var_12_6._refSkills[1], Data.AggregateType.table, var_12_5, var_12_4, arg_12_3)
+
+			if var_bonusAtk > 0 then
+				arg_12_0:incAtk(var_12_19, var_bonusAtk, true, var_12_5, var_12_4, arg_12_3)
+			end
+
+			var_12_13 = true
+		end
+	elseif var_12_4 == 7184 or var_12_4 == 7254 then
 		local var_12_18 = arg_12_0:getBattleCardsByKeyword("B", var_12_6._refCards[1])
 
 		for iter_12_0 = 1, #var_12_18 do
@@ -54061,6 +54115,7 @@ function var_0_0.castMagicHaloSkill(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 
 		for iter_12_30 = 1, #var_12_105 do
 			arg_12_0:incAtk(var_12_105[iter_12_30], var_12_7, true, var_12_5, var_12_4, arg_12_3)
+			arg_12_0:incShield(var_12_105[iter_12_30], { 12008, 12009, 12010 }, false, true, var_12_5, var_12_4, arg_12_3)
 
 			var_12_13 = true
 		end
@@ -102897,6 +102952,10 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		return #arg_40_0:filterCanChangeToBoardCards(arg_40_0:getBattleCardsByCategoryGroup("G", var_40_1._refCards, Data.CARD_MAX_LEVEL, arg_40_1)) > 0
 	elseif var_40_0 == 14607 then
 		return #arg_40_0:filterCanChangeToBoardCards(arg_40_0:getBattleCardsByInfoId("P", var_40_1._refCards[1])) > 0
+	elseif var_40_0 == 14610 then
+		return #arg_40_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_40_0:getBattleCardsByType("P", Data.CardType.monster), 6)) > 0
+	elseif var_40_0 == 14611 then
+		return #arg_40_0:filterCanChangeToHandCards(arg_40_0:getBattleCardsByInfoId("P", 20301)) > 0
 	end
 
 	return false

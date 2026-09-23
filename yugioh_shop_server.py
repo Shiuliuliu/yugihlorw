@@ -124,21 +124,77 @@ def load_pack_mappings():
 ALL_CARDS_MAP = {}
 ALL_CARDS_BY_QUALITY = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
 ALL_SR_AND_BELOW_CARDS = []
+ALL_CARD_MAX_COUNTS = {}
+ALL_SHOP_PRODUCTS = {
+    'depot': {},
+    'rare': {},
+    'diamond': {},
+    'union': {},
+    'collect': {},
+    'ancient': {},
+    'vote': {},
+    'goods': {},
+    'privilege': {}
+}
+
+def parse_lua_products(fp):
+    items = {}
+    if not os.path.exists(fp):
+        return items
+    try:
+        with open(fp, 'r', encoding='utf-8', errors='ignore') as f:
+            txt = f.read()
+        import re
+        for m in re.finditer(r'\[(\d+)\]\s*=\s*\{([^}]+)\}', txt):
+            pid = int(m.group(1))
+            d = {}
+            for p in re.finditer(r'\[\"_(\w+)\"\]\s*=\s*([^,]+)', m.group(2)):
+                val = p.group(2).strip().strip('"')
+                try:
+                    if '.' in val: val = float(val)
+                    else: val = int(val)
+                except: pass
+                d[p.group(1)] = val
+            items[pid] = d
+    except Exception as e:
+        print(f"[SHOP LOAD ERROR] {fp}: {e}")
+    return items
+
+def load_all_shop_data():
+    global ALL_SHOP_PRODUCTS
+    web_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web")
+    data_dir = os.path.join(web_dir, "data")
+    file_map = {
+        'depot': 'products_ex.lua',
+        'rare': 'rare_products.lua',
+        'diamond': 'diamond_products.lua',
+        'union': 'union_products_ex.lua',
+        'collect': 'collection_products.lua',
+        'ancient': 'ancient_products.lua',
+        'vote': 'vote_products.lua',
+        'goods': 'products.lua',
+        'privilege': 'privilege_products.lua'
+    }
+    for stype, fname in file_map.items():
+        fp = os.path.join(data_dir, fname)
+        ALL_SHOP_PRODUCTS[stype] = parse_lua_products(fp)
+    print(f"[SHOP SERVER] Loaded products: {', '.join(f'{k}:{len(v)}' for k, v in ALL_SHOP_PRODUCTS.items())}")
 
 def init_global_cards(cur=None):
-    global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS
+    global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS, ALL_CARD_MAX_COUNTS
     def _do(cursor):
-        global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS
+        global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS, ALL_CARD_MAX_COUNTS
         cursor.execute("""
-            SELECT id, name, quality FROM (
-                SELECT id, name, quality FROM card_monsters
-                UNION ALL SELECT id, name, quality FROM card_spells
-                UNION ALL SELECT id, name, quality FROM card_traps
-                UNION ALL SELECT id, name, quality FROM card_extra
+            SELECT id, name, quality, max_count FROM (
+                SELECT id, name, quality, max_count FROM card_monsters
+                UNION ALL SELECT id, name, quality, max_count FROM card_spells
+                UNION ALL SELECT id, name, quality, max_count FROM card_traps
+                UNION ALL SELECT id, name, quality, 3 AS max_count FROM card_extra
             ) AS all_cards
         """)
         rows = cursor.fetchall()
         ALL_CARDS_MAP.clear()
+        ALL_CARD_MAX_COUNTS.clear()
         for q in ALL_CARDS_BY_QUALITY:
             ALL_CARDS_BY_QUALITY[q].clear()
         ALL_SR_AND_BELOW_CARDS.clear()
@@ -146,6 +202,8 @@ def init_global_cards(cur=None):
             cid = int(r['id'])
             cname = r['name']
             cq = (r['quality'] or 'N').upper()
+            m_cnt = r.get('max_count')
+            ALL_CARD_MAX_COUNTS[cid] = int(m_cnt) if m_cnt is not None else 3
             cobj = {'id': cid, 'name': cname, 'quality': cq}
             ALL_CARDS_MAP[cid] = cobj
             if cq in ALL_CARDS_BY_QUALITY:
@@ -154,6 +212,8 @@ def init_global_cards(cur=None):
                 ALL_CARDS_BY_QUALITY['N'].append(cobj)
             if cq in ('SR', 'R', 'N'):
                 ALL_SR_AND_BELOW_CARDS.append(cobj)
+        ALL_CARD_MAX_COUNTS[12171] = 1
+        ALL_CARD_MAX_COUNTS[12172] = 1
         print(f"[SHOP SERVER] Loaded {len(ALL_CARDS_MAP)} total cards into memory cache (GR: {len(ALL_CARDS_BY_QUALITY['GR'])}, UR: {len(ALL_CARDS_BY_QUALITY['UR'])}, SR: {len(ALL_CARDS_BY_QUALITY['SR'])}, R: {len(ALL_CARDS_BY_QUALITY['R'])}, N: {len(ALL_CARDS_BY_QUALITY['N'])}).")
 
     try:
@@ -167,6 +227,7 @@ def init_global_cards(cur=None):
         print(f"[SHOP SERVER] Error loading global cards into memory: {e}")
 
 load_pack_mappings()
+load_all_shop_data()
 try:
     init_global_cards()
 except Exception as e:
@@ -548,81 +609,123 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
             acc_id = req.get('account_id')
             card_id = int(req.get('card_id', 0))
             prod_id = int(req.get('product_id') or req.get('depot_id') or 0)
-            cost = int(req.get('cost', 0))
-            cost_type = req.get('cost_type', 1)
-            count = max(1, int(req.get('count', 1)))
+            count = max(1, min(3, int(req.get('count', 1))))
+            shop_type = str(req.get('shop_type', 'depot')).lower()
 
-            # Resolve fixed pricing
-            if card_id in FIXED_DEPOT_PRICES and cost <= 0:
-                cost = FIXED_DEPOT_PRICES[card_id]
-                cost_type = 1
-            elif prod_id == 59 or card_id == 40209:
-                card_id = 40209
-                cost = 200000
-                cost_type = 1
-            elif prod_id == 60 or card_id == 20005:
-                card_id = 20005
-                cost = 5000
-                cost_type = 1
-            elif prod_id == 61 or card_id == 20051:
-                card_id = 20051
-                cost = 100000
-                cost_type = 1
-            elif prod_id == 62 or card_id == 20030:
-                card_id = 20030
-                cost = 100000
-                cost_type = 1
-            elif prod_id == 63 or card_id == 40713:
-                card_id = 40713
-                cost = 500000
-                cost_type = 1
+            # Authoritative price resolution from server catalogs
+            server_cost = 0
+            server_cost_type = 1  # 1: gold, 3: gem
+            is_legit_item = False
+
+            special_fixed = {
+                59: (40209, 200000, 1),
+                60: (20005, 5000, 1),
+                61: (20051, 100000, 1),
+                62: (20030, 100000, 1),
+                63: (40713, 500000, 1),
+            }
+            if prod_id in special_fixed:
+                card_id, server_cost, server_cost_type = special_fixed[prod_id]
+                is_legit_item = True
+            elif card_id == 40209:
+                server_cost, server_cost_type, is_legit_item = 200000, 1, True
+            elif card_id == 20005:
+                server_cost, server_cost_type, is_legit_item = 5000, 1, True
+            elif card_id == 20051:
+                server_cost, server_cost_type, is_legit_item = 100000, 1, True
+            elif card_id == 20030:
+                server_cost, server_cost_type, is_legit_item = 100000, 1, True
+            elif card_id == 40713:
+                server_cost, server_cost_type, is_legit_item = 500000, 1, True
             elif card_id == 12248:
-                cost = 500000
-                cost_type = 1
-            elif prod_id and int(prod_id) >= 64 and cost == 0:
-                cost = 20000
+                server_cost, server_cost_type, is_legit_item = 500000, 1, True
+            elif prod_id > 0:
+                pool = ALL_SHOP_PRODUCTS.get(shop_type, {})
+                pinfo = pool.get(prod_id)
+                if not pinfo:
+                    for st, sp in ALL_SHOP_PRODUCTS.items():
+                        if prod_id in sp:
+                            pinfo = sp[prod_id]
+                            break
+                if pinfo:
+                    cid = int(pinfo.get('cardId', 0) or pinfo.get('infoId', 0))
+                    c_cost = int(pinfo.get('cost', 0) or pinfo.get('price', 0))
+                    c_type = pinfo.get('resType', 1)
+                    if cid > 0 and c_cost > 0:
+                        card_id = cid
+                        server_cost = c_cost
+                        server_cost_type = c_type
+                        is_legit_item = True
+
+            if not is_legit_item and card_id in FIXED_DEPOT_PRICES:
+                f_cost = FIXED_DEPOT_PRICES[card_id]
+                if f_cost > 0:
+                    server_cost = f_cost
+                    server_cost_type = 1
+                    is_legit_item = True
+
+            card_info = ALL_CARDS_MAP.get(card_id)
+            is_gr = (card_info and card_info.get('quality') == 'GR')
 
             if not acc_id or card_id <= 0:
-                resp = {"code": 400, "msg": "Thông tin không hợp lệ!"}
+                resp = {"code": 400, "msg": "Thông tin thẻ bài hoặc tài khoản không hợp lệ!"}
+            elif not is_legit_item or server_cost <= 0:
+                resp = {"code": 400, "msg": "Thẻ bài này không được bán trong Shop!"}
+                print(f"[SECURITY BLOCKED] Account {acc_id} tried to buy unlisted card {card_id} (cost={server_cost})")
+            elif is_gr:
+                resp = {"code": 403, "msg": "Thẻ bài cấp GR không thể mua trực tiếp từ Shop!"}
+                print(f"[SECURITY BLOCKED] Account {acc_id} tried to buy GR card {card_id}!")
             else:
-                total_cost = cost * count
-                is_gold = (cost_type in (1, '1', 'gold'))
-                is_gem = (cost_type in (3, '3', 'gem', 'diamond', 'ingot'))
+                total_cost = server_cost * count
+                is_gold = (server_cost_type in (1, '1', 'gold'))
+                is_gem = (server_cost_type in (3, '3', 'gem', 'diamond', 'ingot', 7339, '7339', 7114, '7114'))
 
                 with get_db() as conn:
                     with conn.cursor() as cur:
-                        cur.execute("SELECT gold, gem, character_name FROM accounts WHERE id = %s", (acc_id,))
+                        cur.execute("SELECT status, gold, gem, character_name FROM accounts WHERE id = %s", (acc_id,))
                         acc = cur.fetchone()
-                        if not acc:
-                            resp = {"code": 404, "msg": "Account not found"}
-                        elif is_gold and acc['gold'] < total_cost:
-                            resp = {"code": 400, "msg": "Không đủ Linh Thạch / Vàng!"}
-                        elif is_gem and acc['gem'] < total_cost:
-                            resp = {"code": 400, "msg": "Không đủ Gem / Kim Cương!"}
+                        if not acc or acc.get('status', 1) == 0:
+                            resp = {"code": 403, "msg": "Tài khoản không tồn tại hoặc đã bị khóa!"}
                         else:
-                            if is_gold and total_cost > 0:
-                                cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (total_cost, acc_id))
-                            elif is_gem and total_cost > 0:
-                                cur.execute("UPDATE accounts SET gem = gem - %s WHERE id = %s", (total_cost, acc_id))
+                            cur.execute("SELECT count FROM user_cards WHERE account_id = %s AND card_id = %s", (acc_id, card_id))
+                            card_row = cur.fetchone() or {}
+                            cur_owned = card_row.get('count', 0)
+                            max_allowed = ALL_CARD_MAX_COUNTS.get(card_id, 3)
+                            if cur_owned >= max_allowed:
+                                resp = {"code": 400, "msg": f"Bạn đã sở hữu tối đa {max_allowed} bản sao của thẻ bài này!"}
+                            elif cur_owned + count > max_allowed:
+                                resp = {"code": 400, "msg": f"Chỉ có thể mua thêm {max_allowed - cur_owned} bản sao nữa!"}
+                            elif is_gold and acc['gold'] < total_cost:
+                                resp = {"code": 400, "msg": f"Không đủ Vàng / Linh Thạch! (Cần {total_cost:,}, có {acc['gold']:,})"}
+                            elif is_gem and acc['gem'] < total_cost:
+                                resp = {"code": 400, "msg": f"Không đủ Gem / Kim Cương! (Cần {total_cost:,}, có {acc['gem']:,})"}
+                            else:
+                                if is_gold and total_cost > 0:
+                                    cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (total_cost, acc_id))
+                                elif is_gem and total_cost > 0:
+                                    cur.execute("UPDATE accounts SET gem = gem - %s WHERE id = %s", (total_cost, acc_id))
 
-                            cur.execute("""
-                                INSERT INTO user_cards (account_id, card_id, count)
-                                VALUES (%s, %s, %s)
-                                ON DUPLICATE KEY UPDATE count = count + %s
-                            """, (acc_id, card_id, count, count))
-                            conn.commit()
+                                cur.execute("""
+                                    INSERT INTO user_cards (account_id, card_id, count)
+                                    VALUES (%s, %s, %s)
+                                    ON DUPLICATE KEY UPDATE count = count + %s
+                                """, (acc_id, card_id, count, count))
+                                conn.commit()
 
-                            cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
-                            updated_acc = cur.fetchone() or {}
-                            resp = {
-                                "code": 200,
-                                "msg": "Mua thẻ bài thành công!",
-                                "gold": updated_acc.get('gold', 0),
-                                "gem": updated_acc.get('gem', 0),
-                                "card_id": card_id,
-                                "count": count
-                            }
-                            print(f"[SHOP BUY CARD] Account {acc_id} ({acc['character_name']}) bought {count}x card {card_id} for {total_cost} (type: {cost_type}).")
+                                cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
+                                updated_acc = cur.fetchone() or {}
+                                final_count = cur_owned + count
+
+                                resp = {
+                                    "code": 200,
+                                    "msg": "Mua thẻ bài thành công!",
+                                    "card_id": card_id,
+                                    "count": final_count,
+                                    "bought_count": count,
+                                    "gold": updated_acc.get('gold', 0),
+                                    "gem": updated_acc.get('gem', 0)
+                                }
+                                print(f"[SHOP BUY CARD SUCCESS] Account {acc_id} ({acc['character_name']}) bought {count}x card {card_id} for {total_cost} ({'Gold' if is_gold else 'Gem'}). Total owned: {final_count}.")
 
         # -------------------------------------------------------------
         # 4. Nhận Mã Quà Tặng Giftcode
@@ -764,21 +867,28 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
         # 6. Đồng Bộ Tiền Tệ (/api/sync_currency)
         # -------------------------------------------------------------
         elif self.path == '/api/sync_currency':
-            acc_id = req.get('account_id')
-            currency = req.get('currency_type', 'gold')
-            delta = int(req.get('delta', 0))
-            action = req.get('action', 'sync')
-            with get_db() as conn:
-                with conn.cursor() as cur:
-                    if currency == 'gem':
-                        cur.execute("UPDATE accounts SET gem = GREATEST(0, gem + %s) WHERE id = %s", (delta, acc_id))
-                    else:
-                        cur.execute("UPDATE accounts SET gold = GREATEST(0, gold + %s) WHERE id = %s", (delta, acc_id))
-                    conn.commit()
-                    cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
-                    row = cur.fetchone() or {'gold': 0, 'gem': 0}
-            resp = {"code": 200, "msg": "OK", "gold": row['gold'], "gem": row['gem']}
-            print(f"[SHOP CURRENCY SYNC] Account {acc_id}: {currency} delta {delta} -> gold={row['gold']}, gem={row['gem']} ({action})")
+            # SECURITY LOCK: Chặn tuyệt đối người chơi tự ý bơm tiền, chỉ cho phép server nội bộ
+            internal_secret = req.get('internal_secret')
+            if internal_secret != 'YGO_INTERNAL_SECRET_SECURE_KEY_2026':
+                acc_id = req.get('account_id')
+                print(f"[SHOP SECURITY ALERT] Blocked unauthorized /api/sync_currency attempt for account {acc_id}!")
+                resp = {"code": 403, "msg": "Truy cập bị từ chối: Chỉ server nội bộ mới có quyền cập nhật tài nguyên!"}
+            else:
+                acc_id = req.get('account_id')
+                currency = req.get('currency_type', 'gold')
+                delta = int(req.get('delta', 0))
+                action = req.get('action', 'sync')
+                with get_db() as conn:
+                    with conn.cursor() as cur:
+                        if currency == 'gem':
+                            cur.execute("UPDATE accounts SET gem = GREATEST(0, gem + %s) WHERE id = %s", (delta, acc_id))
+                        else:
+                            cur.execute("UPDATE accounts SET gold = GREATEST(0, gold + %s) WHERE id = %s", (delta, acc_id))
+                        conn.commit()
+                        cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
+                        row = cur.fetchone() or {'gold': 0, 'gem': 0}
+                resp = {"code": 200, "msg": "OK", "gold": row['gold'], "gem": row['gem']}
+                print(f"[SHOP CURRENCY SYNC] Account {acc_id}: {currency} delta {delta} -> gold={row['gold']}, gem={row['gem']} ({action})")
 
         # -------------------------------------------------------------
         # 7. Phân Tách Thẻ Bài Đơn (/api/decompose_card)

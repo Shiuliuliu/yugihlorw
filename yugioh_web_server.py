@@ -112,14 +112,16 @@ def get_db():
 
 ALL_CARDS_BY_QUALITY = {'GR': [], 'UR': [], 'SR': [], 'R': [], 'N': []}
 ALL_SR_AND_BELOW_CARDS = []
+ALL_CARD_MAX_COUNTS = {}
 SERVER_LIYA_CARDS_MAP = {}
 SERVER_CHAR_CARDS_MAP = {}
 
 def load_pack_mappings():
-    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP
+    global SERVER_LIYA_CARDS_MAP, SERVER_CHAR_CARDS_MAP, FIXED_DEPOT_PRICES
     base_dir = os.path.dirname(os.path.abspath(__file__))
     liya_path = os.path.join(base_dir, 'liya_cards_map.json')
     char_path = os.path.join(base_dir, 'char_cards_map.json')
+    prices_path = os.path.join(base_dir, 'fixed_depot_prices.json')
 
     try:
         if os.path.isfile(liya_path):
@@ -139,19 +141,29 @@ def load_pack_mappings():
     except Exception as e:
         print(f"[WEB SERVER] Error loading char_cards_map.json: {e}")
 
+    try:
+        if os.path.isfile(prices_path):
+            with open(prices_path, 'r', encoding='utf-8') as f:
+                _pm = json.load(f)
+                FIXED_DEPOT_PRICES.update({int(k): int(v) for k, v in _pm.items()})
+            print(f"[WEB SERVER] Loaded {len(FIXED_DEPOT_PRICES)} Fixed Depot prices.")
+    except Exception as e:
+        print(f"[WEB SERVER] Error loading fixed_depot_prices.json: {e}")
+
 def init_global_cards_cache(cur=None):
-    global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS
+    global ALL_CARDS_MAP, ALL_CARDS_BY_QUALITY, ALL_SR_AND_BELOW_CARDS, ALL_CARD_MAX_COUNTS
     def _do(cursor):
         cursor.execute("""
-            SELECT id, name, quality FROM (
-                SELECT id, name, quality FROM card_monsters
-                UNION ALL SELECT id, name, quality FROM card_spells
-                UNION ALL SELECT id, name, quality FROM card_traps
-                UNION ALL SELECT id, name, quality FROM card_extra
+            SELECT id, name, quality, max_count FROM (
+                SELECT id, name, quality, max_count FROM card_monsters
+                UNION ALL SELECT id, name, quality, max_count FROM card_spells
+                UNION ALL SELECT id, name, quality, max_count FROM card_traps
+                UNION ALL SELECT id, name, quality, 3 AS max_count FROM card_extra
             ) AS all_cards
         """)
         rows = cursor.fetchall()
         ALL_CARDS_MAP.clear()
+        ALL_CARD_MAX_COUNTS.clear()
         for q in ALL_CARDS_BY_QUALITY:
             ALL_CARDS_BY_QUALITY[q].clear()
         ALL_SR_AND_BELOW_CARDS.clear()
@@ -159,6 +171,8 @@ def init_global_cards_cache(cur=None):
             cid = int(r['id'])
             cname = r['name']
             cq = (r['quality'] or 'N').upper()
+            m_cnt = r.get('max_count')
+            ALL_CARD_MAX_COUNTS[cid] = int(m_cnt) if m_cnt is not None else 3
             cobj = {'id': cid, 'name': cname, 'quality': cq}
             ALL_CARDS_MAP[cid] = cobj
             if cq in ALL_CARDS_BY_QUALITY:
@@ -167,6 +181,8 @@ def init_global_cards_cache(cur=None):
                 ALL_CARDS_BY_QUALITY['N'].append(cobj)
             if cq in ('SR', 'R', 'N'):
                 ALL_SR_AND_BELOW_CARDS.append(cobj)
+        ALL_CARD_MAX_COUNTS[12171] = 1
+        ALL_CARD_MAX_COUNTS[12172] = 1
         print(f"[WEB SERVER] Loaded {len(ALL_CARDS_MAP)} cards cache (GR: {len(ALL_CARDS_BY_QUALITY['GR'])}, UR: {len(ALL_CARDS_BY_QUALITY['UR'])}, SR: {len(ALL_CARDS_BY_QUALITY['SR'])}, R: {len(ALL_CARDS_BY_QUALITY['R'])}, N: {len(ALL_CARDS_BY_QUALITY['N'])}).")
     try:
         if cur:
@@ -529,6 +545,8 @@ def authenticate_account(username, password):
             acc = cur.fetchone()
             if not acc:
                 return None, "Tài khoản không tồn tại!"
+            if acc.get('status', 1) == 0:
+                return None, "Tài khoản của bạn đã bị khóa vĩnh viễn do vi phạm quy định trò chơi!"
             
             hashed = hashlib.sha256(password.encode('utf-8')).hexdigest()
             if acc['password'] == password or acc['password'] == hashed:
@@ -621,7 +639,7 @@ def get_player_full_data(account_id):
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM accounts WHERE id = %s", (account_id,))
             acc = cur.fetchone()
-            if not acc: return None
+            if not acc or acc.get('status', 1) == 0: return None
             
             acc_clean = dict(acc)
             acc_clean.pop('password', None)
@@ -667,7 +685,7 @@ def get_player_full_data(account_id):
             checkins = [{"checkin_type": r['checkin_type'], "day_index": r['day_index'], "claim_date": str(r['claim_date'])} for r in cur.fetchall()]
             cur.execute("SELECT achieve_id, progress, is_claimed FROM user_achievements WHERE account_id = %s", (account_id,))
             achievements = [{"id": r['achieve_id'], "progress": r['progress'], "is_claimed": r['is_claimed']} for r in cur.fetchall()]
-            cur.execute("SELECT id, character_name, level, trophy, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup FROM accounts ORDER BY trophy DESC, level DESC, id ASC LIMIT 10")
+            cur.execute("SELECT id, character_name, level, trophy, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup FROM accounts WHERE status = 1 ORDER BY trophy DESC, level DESC, id ASC LIMIT 10")
             top_rows = cur.fetchall()
             leaderboard = [
                 {
@@ -1258,7 +1276,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 # Determine caching policy
                 is_versioned = ('?v=' in self.path or '&v=' in self.path)
                 is_nocache = (clean_path == '/index.html' or clean_path.endswith('.html'))
-                is_static_res = clean_path.startswith('/res/') or (ext_lower in IMMUTABLE_STATIC_EXTS)
+                is_dynamic_bundle = clean_path in ('/lua_src.json', '/data_dumps.json', '/res_manifest.json')
+                is_static_res = (clean_path.startswith('/res/') or (ext_lower in IMMUTABLE_STATIC_EXTS)) and not is_dynamic_bundle
                 is_immutable = is_static_res and is_versioned
 
                 def apply_cache_headers():
@@ -1266,6 +1285,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                         self.send_header('Pragma', 'no-cache')
                         self.send_header('Expires', '0')
+                    elif is_dynamic_bundle:
+                        self.send_header('Cache-Control', 'no-cache, must-revalidate')
+                        self.send_header('Pragma', 'no-cache')
                     elif is_immutable:
                         self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
                     elif is_versioned:
@@ -1452,20 +1474,25 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         clean_cards = []
                         clean_extra = []
                         remaining_counts = dict(owned_counts)
+                        deck_counts = {}
 
                         for c in (raw_cards or []):
                             try: cid = int(c)
                             except: continue
-                            if cid in remaining_counts and remaining_counts[cid] > 0:
+                            limit = ALL_CARD_MAX_COUNTS.get(cid, 3)
+                            if cid in remaining_counts and remaining_counts[cid] > 0 and deck_counts.get(cid, 0) < limit:
                                 clean_cards.append(cid)
                                 remaining_counts[cid] -= 1
+                                deck_counts[cid] = deck_counts.get(cid, 0) + 1
 
                         for c in (raw_extra or []):
                             try: cid = int(c)
                             except: continue
-                            if cid in remaining_counts and remaining_counts[cid] > 0:
+                            limit = ALL_CARD_MAX_COUNTS.get(cid, 3)
+                            if cid in remaining_counts and remaining_counts[cid] > 0 and deck_counts.get(cid, 0) < limit:
                                 clean_extra.append(cid)
                                 remaining_counts[cid] -= 1
+                                deck_counts[cid] = deck_counts.get(cid, 0) + 1
 
                         cur.execute("""
                             INSERT INTO user_decks (account_id, deck_slot, deck_name, cards, extra_cards, is_active)
@@ -1505,6 +1532,14 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             elif self.path == '/api/sync_currency':
+                # SECURITY LOCK: Chặn tuyệt đối người chơi tự ý bơm tiền, chỉ cho phép server nội bộ
+                internal_secret = req.get('internal_secret')
+                if internal_secret != 'YGO_INTERNAL_SECRET_SECURE_KEY_2026':
+                    acc_id = req.get('account_id')
+                    print(f"[SECURITY ALERT] Blocked unauthorized /api/sync_currency attempt for account {acc_id}!")
+                    self._send_json({"code": 403, "msg": "Truy cập bị từ chối: Chỉ server nội bộ mới có quyền cập nhật tài nguyên!"}, 403)
+                    return
+
                 acc_id = req.get('account_id')
                 currency = req.get('currency_type', 'gold')
                 delta = int(req.get('delta', 0))
@@ -1682,41 +1717,37 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 acc_id = req.get('account_id')
                 card_id = int(req.get('card_id', 0))
                 prod_id = int(req.get('product_id') or req.get('depot_id') or 0)
-                cost = int(req.get('cost', 0))
-                cost_type = req.get('cost_type', 1)
-                count = max(1, int(req.get('count', 1)))
+                count = max(1, min(3, int(req.get('count', 1))))
                 shop_type = str(req.get('shop_type', 'depot')).lower()
 
-                # 1. Resolve card_id and cost from shop data or fixed prices if needed
-                if card_id in FIXED_DEPOT_PRICES and cost <= 0:
-                    cost = FIXED_DEPOT_PRICES[card_id]
-                    cost_type = 1
-                elif prod_id == 59 or card_id == 40209:
-                    card_id = 40209
-                    cost = 200000
-                    cost_type = 1
-                elif prod_id == 60 or card_id == 20005:
-                    card_id = 20005
-                    cost = 5000
-                    cost_type = 1
-                elif prod_id == 61 or card_id == 20051:
-                    card_id = 20051
-                    cost = 100000
-                    cost_type = 1
-                elif prod_id == 62 or card_id == 20030:
-                    card_id = 20030
-                    cost = 100000
-                    cost_type = 1
-                elif prod_id == 63 or card_id == 40713:
-                    card_id = 40713
-                    cost = 500000
-                    cost_type = 1
-                elif card_id == 12248:
-                    cost = 500000
-                    cost_type = 1
+                # Authoritative price resolution from server catalogs
+                server_cost = 0
+                server_cost_type = 1  # 1: gold, 3: gem
+                is_legit_item = False
 
-                # If card_id is still 0, look up in ALL_SHOP_PRODUCTS
-                if card_id <= 0 and prod_id > 0:
+                special_fixed = {
+                    59: (40209, 200000, 1),
+                    60: (20005, 5000, 1),
+                    61: (20051, 100000, 1),
+                    62: (20030, 100000, 1),
+                    63: (40713, 500000, 1),
+                }
+                if prod_id in special_fixed:
+                    card_id, server_cost, server_cost_type = special_fixed[prod_id]
+                    is_legit_item = True
+                elif card_id == 40209:
+                    server_cost, server_cost_type, is_legit_item = 200000, 1, True
+                elif card_id == 20005:
+                    server_cost, server_cost_type, is_legit_item = 5000, 1, True
+                elif card_id == 20051:
+                    server_cost, server_cost_type, is_legit_item = 100000, 1, True
+                elif card_id == 20030:
+                    server_cost, server_cost_type, is_legit_item = 100000, 1, True
+                elif card_id == 40713:
+                    server_cost, server_cost_type, is_legit_item = 500000, 1, True
+                elif card_id == 12248:
+                    server_cost, server_cost_type, is_legit_item = 500000, 1, True
+                elif prod_id > 0:
                     pool = ALL_SHOP_PRODUCTS.get(shop_type, {})
                     pinfo = pool.get(prod_id)
                     if not pinfo:
@@ -1725,58 +1756,84 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 pinfo = sp[prod_id]
                                 break
                     if pinfo:
-                        card_id = int(pinfo.get('cardId', 0))
-                        if cost <= 0:
-                            cost = int(pinfo.get('cost', 0))
-                        if cost_type == 1 and pinfo.get('resType'):
-                            cost_type = pinfo.get('resType')
+                        cid = int(pinfo.get('cardId', 0) or pinfo.get('infoId', 0))
+                        c_cost = int(pinfo.get('cost', 0) or pinfo.get('price', 0))
+                        c_type = pinfo.get('resType', 1)
+                        if cid > 0 and c_cost > 0:
+                            card_id = cid
+                            server_cost = c_cost
+                            server_cost_type = c_type
+                            is_legit_item = True
+
+                if not is_legit_item and card_id in FIXED_DEPOT_PRICES:
+                    f_cost = FIXED_DEPOT_PRICES[card_id]
+                    if f_cost > 0:
+                        server_cost = f_cost
+                        server_cost_type = 1
+                        is_legit_item = True
+
+                card_info = ALL_CARDS_MAP.get(card_id)
+                is_gr = (card_info and card_info.get('quality') == 'GR')
 
                 if not acc_id or card_id <= 0:
                     resp = {"code": 400, "msg": "Thông tin thẻ bài hoặc tài khoản không hợp lệ!"}
+                elif not is_legit_item or server_cost <= 0:
+                    resp = {"code": 400, "msg": "Thẻ bài này không được bán trong Shop!"}
+                    print(f"[SECURITY BLOCKED] Account {acc_id} tried to buy unlisted card {card_id} (cost={server_cost})")
+                elif is_gr:
+                    resp = {"code": 403, "msg": "Thẻ bài cấp GR không thể mua trực tiếp từ Shop!"}
+                    print(f"[SECURITY BLOCKED] Account {acc_id} tried to buy GR card {card_id}!")
                 else:
-                    total_cost = cost * count
-                    is_gold = (cost_type in (1, '1', 'gold'))
-                    is_gem = (cost_type in (3, '3', 'gem', 'diamond', 'ingot'))
+                    total_cost = server_cost * count
+                    is_gold = (server_cost_type in (1, '1', 'gold'))
+                    is_gem = (server_cost_type in (3, '3', 'gem', 'diamond', 'ingot', 7339, '7339', 7114, '7114'))
 
                     with get_db() as conn:
                         with conn.cursor() as cur:
-                            cur.execute("SELECT gold, gem, character_name FROM accounts WHERE id = %s", (acc_id,))
+                            cur.execute("SELECT status, gold, gem, character_name FROM accounts WHERE id = %s", (acc_id,))
                             acc = cur.fetchone()
-                            if not acc:
-                                resp = {"code": 404, "msg": "Tài khoản không tồn tại!"}
-                            elif is_gold and acc['gold'] < total_cost:
-                                resp = {"code": 400, "msg": f"Không đủ Vàng / Linh Thạch! (Cần {total_cost:,}, có {acc['gold']:,})"}
-                            elif is_gem and acc['gem'] < total_cost:
-                                resp = {"code": 400, "msg": f"Không đủ Gem / Kim Cương! (Cần {total_cost:,}, có {acc['gem']:,})"}
+                            if not acc or acc.get('status', 1) == 0:
+                                resp = {"code": 403, "msg": "Tài khoản không tồn tại hoặc đã bị khóa!"}
                             else:
-                                if is_gold and total_cost > 0:
-                                    cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (total_cost, acc_id))
-                                elif is_gem and total_cost > 0:
-                                    cur.execute("UPDATE accounts SET gem = gem - %s WHERE id = %s", (total_cost, acc_id))
-
-                                cur.execute("""
-                                    INSERT INTO user_cards (account_id, card_id, count)
-                                    VALUES (%s, %s, %s)
-                                    ON DUPLICATE KEY UPDATE count = count + %s
-                                """, (acc_id, card_id, count, count))
-                                conn.commit()
-
-                                cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
-                                updated_acc = cur.fetchone() or {}
                                 cur.execute("SELECT count FROM user_cards WHERE account_id = %s AND card_id = %s", (acc_id, card_id))
                                 card_row = cur.fetchone() or {}
-                                final_count = card_row.get('count', count)
+                                cur_owned = card_row.get('count', 0)
+                                max_allowed = ALL_CARD_MAX_COUNTS.get(card_id, 3)
+                                if cur_owned >= max_allowed:
+                                    resp = {"code": 400, "msg": f"Bạn đã sở hữu tối đa {max_allowed} bản sao của thẻ bài này!"}
+                                elif cur_owned + count > max_allowed:
+                                    resp = {"code": 400, "msg": f"Chỉ có thể mua thêm {max_allowed - cur_owned} bản sao nữa!"}
+                                elif is_gold and acc['gold'] < total_cost:
+                                    resp = {"code": 400, "msg": f"Không đủ Vàng / Linh Thạch! (Cần {total_cost:,}, có {acc['gold']:,})"}
+                                elif is_gem and acc['gem'] < total_cost:
+                                    resp = {"code": 400, "msg": f"Không đủ Gem / Kim Cương! (Cần {total_cost:,}, có {acc['gem']:,})"}
+                                else:
+                                    if is_gold and total_cost > 0:
+                                        cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (total_cost, acc_id))
+                                    elif is_gem and total_cost > 0:
+                                        cur.execute("UPDATE accounts SET gem = gem - %s WHERE id = %s", (total_cost, acc_id))
 
-                                resp = {
-                                    "code": 200,
-                                    "msg": "Mua thẻ bài thành công!",
-                                    "card_id": card_id,
-                                    "count": final_count,
-                                    "bought_count": count,
-                                    "gold": updated_acc.get('gold', 0),
-                                    "gem": updated_acc.get('gem', 0)
-                                }
-                                print(f"[BUY CARD SUCCESS] Account {acc_id} ({acc['character_name']}) bought {count}x card {card_id} (Shop: {shop_type}, Cost: {total_cost} type {cost_type}). Owned: {final_count}.")
+                                    cur.execute("""
+                                        INSERT INTO user_cards (account_id, card_id, count)
+                                        VALUES (%s, %s, %s)
+                                        ON DUPLICATE KEY UPDATE count = count + %s
+                                    """, (acc_id, card_id, count, count))
+                                    conn.commit()
+
+                                    cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
+                                    updated_acc = cur.fetchone() or {}
+                                    final_count = cur_owned + count
+
+                                    resp = {
+                                        "code": 200,
+                                        "msg": "Mua thẻ bài thành công!",
+                                        "card_id": card_id,
+                                        "count": final_count,
+                                        "bought_count": count,
+                                        "gold": updated_acc.get('gold', 0),
+                                        "gem": updated_acc.get('gem', 0)
+                                    }
+                                    print(f"[BUY CARD SUCCESS] Account {acc_id} ({acc['character_name']}) bought {count}x card {card_id} for {total_cost} ({'Gold' if is_gold else 'Gem'}). Total owned: {final_count}.")
 
             elif self.path == '/api/decompose_card':
                 acc_id = req.get('account_id')
@@ -1887,8 +1944,14 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 if acc_id:
                     with get_db() as conn:
                         with conn.cursor() as cur:
-                            cur.execute("SELECT gold, exp, level, trophy FROM accounts WHERE id = %s", (acc_id,))
+                            cur.execute("SELECT status, gold, exp, level, trophy FROM accounts WHERE id = %s", (acc_id,))
                             acc = cur.fetchone()
+                            if not acc or acc.get('status') == 0:
+                                self.send_response(403)
+                                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                                self.end_headers()
+                                self.wfile.write(json.dumps({"code": 403, "msg": "Tài khoản bị khóa!"}).encode('utf-8'))
+                                return
                             if acc:
                                 player_trophy = acc['trophy'] if acc.get('trophy') is not None else 800
                                 
@@ -1983,7 +2046,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 cur.execute("""
                                     SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
                                     FROM accounts
-                                    WHERE character_id = %s
+                                    WHERE status = 1 AND character_id = %s
                                     ORDER BY level DESC, exp DESC, id ASC
                                     LIMIT 50
                                 """, (sub_type,))
@@ -1992,6 +2055,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 cur.execute("""
                                     SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
                                     FROM accounts
+                                    WHERE status = 1
                                     ORDER BY level DESC, exp DESC, id ASC
                                     LIMIT 50
                                 """)
@@ -2000,6 +2064,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             cur.execute("""
                                 SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
                                 FROM accounts
+                                WHERE status = 1
                                 ORDER BY level DESC, id ASC
                                 LIMIT 50
                             """)
@@ -2008,6 +2073,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             cur.execute("""
                                 SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
                                 FROM accounts
+                                WHERE status = 1
                                 ORDER BY trophy DESC, level DESC, id ASC
                                 LIMIT 50
                             """)
@@ -2045,7 +2111,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 cur.execute("""
                                     SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
                                     FROM accounts WHERE id = %s
-                                """, (req_acc_id,))
+                                 """, (req_acc_id,))
                                 self_acc = cur.fetchone()
                                 if self_acc:
                                     if rank_type in (1714, 1723):
@@ -2053,7 +2119,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                         my_exp = self_acc.get('exp') or 0
                                         cur.execute("""
                                             SELECT COUNT(*) as higher FROM accounts
-                                            WHERE level > %s OR (level = %s AND (exp > %s OR (exp = %s AND id < %s)))
+                                            WHERE status = 1 AND (level > %s OR (level = %s AND (exp > %s OR (exp = %s AND id < %s))))
                                         """, (my_lvl, my_lvl, my_exp, my_exp, self_acc['id']))
                                         my_rank = cur.fetchone()['higher'] + 1
                                         my_val = my_lvl
@@ -2062,7 +2128,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                         my_lvl = self_acc.get('level') or 1
                                         cur.execute("""
                                             SELECT COUNT(*) as higher FROM accounts
-                                            WHERE trophy > %s OR (trophy = %s AND (level > %s OR (level = %s AND id < %s)))
+                                            WHERE status = 1 AND (trophy > %s OR (trophy = %s AND (level > %s OR (level = %s AND id < %s))))
                                         """, (my_trophy, my_trophy, my_lvl, my_lvl, self_acc['id']))
                                         my_rank = cur.fetchone()['higher'] + 1
                                         my_val = my_trophy
@@ -2095,17 +2161,16 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     with conn.cursor() as cur:
                         cur.execute("""
                             SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup
-                            FROM accounts WHERE id = %s
+                            FROM accounts WHERE id = %s AND status = 1
                         """, (uid,))
                         user = cur.fetchone()
                         if user:
                             u_trophy = user.get('trophy', 0) or 0
-                            cur.execute("SELECT COUNT(*) as higher FROM accounts WHERE trophy > %s", (u_trophy,))
+                            cur.execute("SELECT COUNT(*) as higher FROM accounts WHERE status = 1 AND trophy > %s", (u_trophy,))
                             rank = cur.fetchone()['higher'] + 1
-                        else:
-                            rank = 1
                 if not user:
-                    user = {'id': uid, 'character_name': f'Duelist_{uid}', 'level': 1, 'trophy': 800, 'character_id': 3, 'avatar': 301}
+                    self._send_json({"code": 404, "msg": "Tài khoản không tồn tại hoặc đã bị khóa!"})
+                    return
                 char_av = user.get('avatar')
                 if not char_av or char_av < 100:
                     cid = user.get('character_id') or 3
@@ -2390,8 +2455,11 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 my_gc, my_sc, my_bc = 0, 0, 0
                 with get_db() as conn:
                     with conn.cursor() as cur:
-                        cur.execute("SELECT trophy, gold_cup, silver_cup, bronze_cup FROM accounts WHERE id = %s", (acc_id,))
+                        cur.execute("SELECT status, trophy, gold_cup, silver_cup, bronze_cup FROM accounts WHERE id = %s", (acc_id,))
                         t_row = cur.fetchone()
+                        if not t_row or t_row.get('status') == 0:
+                            self._send_json({"code": 403, "status": "banned", "msg": "Tài khoản bị khóa!"})
+                            return
                         if t_row:
                             if t_row.get('trophy') is not None:
                                 my_trophy = int(t_row['trophy'])
@@ -2582,8 +2650,11 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 try:
                     with get_db() as conn:
                         with conn.cursor() as cur:
-                            cur.execute("SELECT gold_cup, silver_cup, bronze_cup, trophy FROM accounts WHERE id = %s", (acc_id,))
+                            cur.execute("SELECT status, gold_cup, silver_cup, bronze_cup, trophy FROM accounts WHERE id = %s", (acc_id,))
                             row = cur.fetchone()
+                            if not row or row.get('status') == 0:
+                                self._send_json({"code": 403, "msg": "Tài khoản bị khóa!"})
+                                return
                             if row:
                                 acc_gc = int(row.get('gold_cup', 0) or 0)
                                 acc_sc = int(row.get('silver_cup', 0) or 0)
@@ -2676,8 +2747,11 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     try:
                         with get_db() as conn:
                             with conn.cursor() as cur:
-                                cur.execute("SELECT gold_cup, silver_cup, bronze_cup, trophy FROM accounts WHERE id = %s", (acc_id,))
+                                cur.execute("SELECT status, gold_cup, silver_cup, bronze_cup, trophy FROM accounts WHERE id = %s", (acc_id,))
                                 row = cur.fetchone()
+                                if not row or row.get('status') == 0:
+                                    self._send_json({"code": 403, "msg": "Tài khoản bị khóa!"})
+                                    return
                                 if row:
                                     guest_gc = int(row.get('gold_cup', 0) or 0)
                                     guest_sc = int(row.get('silver_cup', 0) or 0)
@@ -3113,24 +3187,60 @@ async def ws_handler(websocket):
                             print(f"[WS LOBBY CHAT ERR] {e}")
             elif t == "bind_match":
                 match_id = str(pkt.get("match_id", ""))
-                user_id = pkt.get("user_id", "")
+                user_id = str(pkt.get("user_id", ""))
+                reconnected = False
                 if match_id:
                     WS_CLIENT_META[websocket] = {"match_id": match_id, "user_id": user_id}
                     if match_id not in ACTIVE_MATCHES:
-                        ACTIVE_MATCHES[match_id] = {"p1": websocket, "p2": None}
+                        ACTIVE_MATCHES[match_id] = {
+                            "p1": websocket, "p2": None,
+                            "p1_user": user_id, "p2_user": None,
+                            "p1_reconnect_token": 0, "p2_reconnect_token": 0
+                        }
                         print(f"[PVP WS] Match {match_id}: p1 bound (user {user_id})")
                     else:
                         match = ACTIVE_MATCHES[match_id]
-                        if match.get("p1") == websocket:
-                            print(f"[PVP WS] Match {match_id}: p1 confirmed (user {user_id})")
+                        slot = None
+                        if match.get("p1_user") == user_id and user_id != "":
+                            slot = "p1"
+                        elif match.get("p2_user") == user_id and user_id != "":
+                            slot = "p2"
+                        elif match.get("p1") == websocket:
+                            slot = "p1"
                         elif match.get("p2") == websocket:
-                            print(f"[PVP WS] Match {match_id}: p2 confirmed (user {user_id})")
+                            slot = "p2"
                         elif match.get("p1") is None:
-                            match["p1"] = websocket
-                            print(f"[PVP WS] Match {match_id}: p1 bound (user {user_id})")
+                            slot = "p1"
+                        elif match.get("p2") is None:
+                            slot = "p2"
                         else:
-                            match["p2"] = websocket
-                            print(f"[PVP WS] Match {match_id}: p2 bound (user {user_id})")
+                            slot = "p1"
+
+                        old_ws = match.get(slot)
+                        if old_ws != websocket:
+                            reconnected = True
+                            match[slot] = websocket
+                            if match.get("turn_ws") == old_ws:
+                                match["turn_ws"] = websocket
+                            if user_id:
+                                match[f"{slot}_user"] = user_id
+                            token_key = f"{slot}_reconnect_token"
+                            match[token_key] = match.get(token_key, 0) + 1
+                            print(f"[PVP WS] Match {match_id}: {slot} reconnected (user {user_id}, token={match[token_key]})")
+                            
+                            peer_ws = match.get("p2" if slot == "p1" else "p1")
+                            if peer_ws:
+                                try:
+                                    asyncio.create_task(peer_ws.send(make_pvp_frame({
+                                        "t": "peer_resumed",
+                                        "match_id": match_id,
+                                        "msg": "Đối thủ đã kết nối lại trận đấu!"
+                                    })))
+                                except Exception:
+                                    pass
+                        else:
+                            print(f"[PVP WS] Match {match_id}: {slot} confirmed (user {user_id})")
+
                         p1 = match.get("p1")
                         p2 = match.get("p2")
                         if p1 and p2 and not match.get("ready_sent"):
@@ -3140,7 +3250,7 @@ async def ws_handler(websocket):
                             except: pass
                             try: asyncio.create_task(p2.send(ready_msg))
                             except: pass
-                    await websocket.send(make_pvp_frame({"t": "bind_ok", "match_id": match_id}))
+                    await websocket.send(make_pvp_frame({"t": "bind_ok", "match_id": match_id, "reconnected": reconnected}))
 
             elif t == "create":
                 code = str(pkt.get("code") or random.randint(1000, 9999))
@@ -3163,9 +3273,17 @@ async def ws_handler(websocket):
                     host_ws = room["host"]
                     guest_ws = websocket
                     
-                    ACTIVE_MATCHES[match_id] = {"p1": host_ws, "p2": guest_ws}
-                    WS_CLIENT_META[host_ws] = {"match_id": match_id}
-                    WS_CLIENT_META[guest_ws] = {"match_id": match_id}
+                    host_user = str(WS_CLIENT_META.get(host_ws, {}).get("user_id") or "")
+                    guest_user = str(pkt.get("info", {}).get("id") or pkt.get("user_id") or "")
+                    ACTIVE_MATCHES[match_id] = {
+                        "p1": host_ws, "p2": guest_ws,
+                        "p1_user": host_user, "p2_user": guest_user,
+                        "p1_reconnect_token": 0, "p2_reconnect_token": 0,
+                        "turn_ws": host_ws,
+                        "last_action_time": time.time()
+                    }
+                    WS_CLIENT_META[host_ws] = {"match_id": match_id, "user_id": host_user}
+                    WS_CLIENT_META[guest_ws] = {"match_id": match_id, "user_id": guest_user}
                     
                     host_deck = room["host_deck"]
                     guest_deck = pkt.get("deck")
@@ -3212,9 +3330,18 @@ async def ws_handler(websocket):
                         match_id = f"m_{int(time.time()*1000)}"
                         seed = random.randint(1, 65535)
                         first = random.choice([True, False])
-                        ACTIVE_MATCHES[match_id] = {"p1": websocket, "p2": other_ws}
-                        WS_CLIENT_META[websocket] = {"match_id": match_id}
-                        WS_CLIENT_META[other_ws] = {"match_id": match_id}
+                        p1_user = str(WS_CLIENT_META.get(websocket, {}).get("user_id") or (pkt.get("info") or {}).get("id") or "")
+                        p2_user = str(WS_CLIENT_META.get(other_ws, {}).get("user_id") or (other_info or {}).get("id") or "")
+                        turn_ws = websocket if first else other_ws
+                        ACTIVE_MATCHES[match_id] = {
+                            "p1": websocket, "p2": other_ws,
+                            "p1_user": p1_user, "p2_user": p2_user,
+                            "p1_reconnect_token": 0, "p2_reconnect_token": 0,
+                            "turn_ws": turn_ws,
+                            "last_action_time": time.time()
+                        }
+                        WS_CLIENT_META[websocket] = {"match_id": match_id, "user_id": p1_user}
+                        WS_CLIENT_META[other_ws] = {"match_id": match_id, "user_id": p2_user}
                         
                         await websocket.send(make_pvp_frame({
                             "t": "matched",
@@ -3283,20 +3410,23 @@ async def ws_handler(websocket):
                         peer_ws = None
                     if peer_ws:
                         try:
-                            # Cơ chế tối ưu thời gian phía server:
-                            # Khi đánh một lá bài hành động (không phải kết thúc lượt 1 hay đầu hàng 2):
-                            # Tăng 5s thời gian vòng đấu cho trận đấu (tối đa 120s)
+                            # Update activity timestamp and turn
+                            match["last_action_time"] = time.time()
                             ints = pkt.get("ints", [])
                             card_id = ints[0] if len(ints) > 0 else 0
-                            if card_id not in (1, 2) and card_id != 0:
-                                pkt["add_time"] = 5
+                            if card_id == 1:
+                                match["turn_ws"] = peer_ws
+                                print(f"[PVP TURN] Match {match_id}: round ended, turn switched to peer")
+                            elif card_id not in (1, 2) and card_id != 0:
+                                match["turn_ws"] = websocket
+                                pkt["add_time"] = 2
                                 pkt["max_time"] = 120
                                 if "time_left" in pkt:
                                     try:
-                                        pkt["time_left"] = min(120.0, float(pkt["time_left"]) + 5.0)
+                                        pkt["time_left"] = min(120.0, float(pkt["time_left"]) + 2.0)
                                     except:
                                         pass
-                                print(f"[PVP TIME] Match {match_id}: +5s round time added on server for action card {card_id} (time_left={pkt.get('time_left')})")
+                                print(f"[PVP TIME] Match {match_id}: +2s round time added on server for action card {card_id} (time_left={pkt.get('time_left')})")
                             await peer_ws.send(make_pvp_frame(pkt))
                             print(f"[PVP ACTION] Match {match_id}: relayed ints len={len(ints)} {ints[:4] if len(ints)>=4 else ints} seq={pkt.get('seq')}")
                         except Exception as e:
@@ -3321,6 +3451,16 @@ async def ws_handler(websocket):
                             # If sender won ('1' or 'win'): peer lost ('2' / '-1')
                             # If sender lost / surrendered ('-1', '2', 'lose'): peer won ('1')
                             sender_won = (raw_res == "1" or raw_res == "win")
+
+                            # SAFEGUARD:
+                            # A player can always surrender (sender_won is False).
+                            # If a player claims victory (sender_won is True), verify they are not the waiting player while the turn player is actively playing!
+                            turn_ws = match.get("turn_ws")
+                            last_action = match.get("last_action_time", 0)
+                            if sender_won and turn_ws and websocket != turn_ws and (time.time() - last_action < 60.0):
+                                print(f"[PVP END BLOCKED] Match {match_id}: non-turn player claimed victory while turn player is actively playing ({time.time()-last_action:.1f}s ago). Blocked!")
+                                return
+
                             peer_res = "2" if sender_won else "1"
                             peer_pkt = dict(pkt)
                             peer_pkt["result"] = peer_res
@@ -3365,30 +3505,44 @@ async def ws_handler(websocket):
             match = ACTIVE_MATCHES[match_id]
             is_p1 = (match.get("p1") == websocket)
             is_p2 = (match.get("p2") == websocket)
-            if is_p1:
-                match["p1"] = None
-            elif is_p2:
-                match["p2"] = None
+            slot_key = "p1" if is_p1 else ("p2" if is_p2 else None)
+            if slot_key:
+                match[slot_key] = None
+                peer_key = "p2" if slot_key == "p1" else "p1"
+                token_key = f"{slot_key}_reconnect_token"
+                current_token = match.get(token_key, 0) + 1
+                match[token_key] = current_token
 
-            async def delayed_peer_left(m_id, slot_key):
-                await asyncio.sleep(15.0)
-                m = ACTIVE_MATCHES.get(m_id)
-                if m and m.get(slot_key) is None:
+                peer_ws = match.get(peer_key)
+                if peer_ws:
                     try:
-                        p_ws = m.get("p2" if slot_key == "p1" else "p1")
-                        if p_ws:
-                            await p_ws.send(make_pvp_frame({"t": "peer_left"}))
-                    except:
+                        asyncio.create_task(peer_ws.send(make_pvp_frame({
+                            "t": "peer_dropped",
+                            "match_id": match_id,
+                            "msg": "Đối thủ mất kết nối, đang chờ kết nối lại..."
+                        })))
+                    except Exception:
                         pass
-                    if m.get("p1") is None or m.get("p2") is None:
-                        ACTIVE_MATCHES.pop(m_id, None)
 
-            if is_p1 and match.get("p2"):
-                asyncio.create_task(delayed_peer_left(match_id, "p1"))
-            elif is_p2 and match.get("p1"):
-                asyncio.create_task(delayed_peer_left(match_id, "p2"))
-            elif match.get("p1") is None and match.get("p2") is None:
-                ACTIVE_MATCHES.pop(match_id, None)
+                async def delayed_peer_left(m_id, s_key, expected_token):
+                    # Grace period 60s to allow player reconnect
+                    await asyncio.sleep(60.0)
+                    m = ACTIVE_MATCHES.get(m_id)
+                    if m and m.get(s_key) is None and m.get(f"{s_key}_reconnect_token") == expected_token:
+                        try:
+                            p_ws = m.get("p2" if s_key == "p1" else "p1")
+                            if p_ws:
+                                await p_ws.send(make_pvp_frame({"t": "peer_left", "match_id": m_id}))
+                                print(f"[PVP TIMEOUT] Match {m_id}: {s_key} failed to reconnect after 60s, declared peer_left")
+                        except Exception:
+                            pass
+                        if m.get("p1") is None or m.get("p2") is None:
+                            ACTIVE_MATCHES.pop(m_id, None)
+
+                if peer_ws:
+                    asyncio.create_task(delayed_peer_left(match_id, slot_key, current_token))
+                elif match.get("p1") is None and match.get("p2") is None:
+                    ACTIVE_MATCHES.pop(match_id, None)
         WS_CLIENT_META.pop(websocket, None)
         WS_CONNECTED_CLIENTS.discard(websocket)
         print(f"[WS] Client disconnected: {client_ip}")
@@ -3428,6 +3582,7 @@ def distribute_daily_leaderboard_rewards(force_reset_rank=False):
                 cur.execute("""
                     SELECT id, character_name, trophy, level 
                     FROM accounts 
+                    WHERE status = 1
                     ORDER BY trophy DESC, level DESC, id ASC 
                     LIMIT 10
                 """)
@@ -3480,7 +3635,7 @@ def distribute_daily_leaderboard_rewards(force_reset_rank=False):
                 cur.execute("""
                     SELECT id, character_name, trophy, gold 
                     FROM accounts 
-                    WHERE trophy IS NOT NULL AND trophy > 0
+                    WHERE status = 1 AND trophy IS NOT NULL AND trophy > 0
                 """)
                 rank_players = cur.fetchall()
                 rewarded_count = 0
@@ -3506,10 +3661,10 @@ def distribute_daily_leaderboard_rewards(force_reset_rank=False):
                 # BƯỚC 3: RESET RANK NẾU LÀ CHỦ NHẬT (Sunday 00:00)
                 # ---------------------------------------------------------
                 if is_sunday:
-                    cur.execute("UPDATE accounts SET trophy = 800 WHERE trophy IS NULL OR trophy != 800")
+                    cur.execute("UPDATE accounts SET trophy = 800 WHERE status = 1 AND (trophy IS NULL OR trophy != 800)")
                     print(f"[WEEKLY RANK RESET (SUNDAY)] Đã reset toàn bộ mức Rank về 800 cho mùa giải mới!")
                 else:
-                    cur.execute("UPDATE accounts SET trophy = 800 WHERE trophy IS NULL")
+                    cur.execute("UPDATE accounts SET trophy = 800 WHERE status = 1 AND trophy IS NULL")
                     print(f"[DAILY RANK MAINTAINED] Hôm nay không phải Chủ Nhật -> Giữ nguyên điểm Rank của tất cả người chơi!")
 
                 conn.commit()
@@ -3568,7 +3723,7 @@ def start_ws():
     async def run_server():
         global WS_LOOP
         WS_LOOP = asyncio.get_running_loop()
-        async with websockets.serve(ws_handler, "0.0.0.0", WS_PORT):
+        async with websockets.serve(ws_handler, "0.0.0.0", WS_PORT, ping_interval=30, ping_timeout=60, max_size=10*1024*1024):
             print(f"[WS Server] Listening on ws://0.0.0.0:{WS_PORT}")
             await asyncio.Future()
     try:

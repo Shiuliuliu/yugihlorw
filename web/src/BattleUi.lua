@@ -1816,6 +1816,11 @@ function var_0_0.operateBegin(arg_66_0)
 		return
 	end
 
+	arg_66_0._isPvpTimeout = false
+	if arg_66_0._btnAuto then
+		arg_66_0._btnAuto:setTouchEnabled(true)
+	end
+
 	local var_66_0 = arg_66_0._player
 	local var_66_1 = arg_66_0._playerUi
 
@@ -1870,13 +1875,13 @@ function var_0_0.resetWhenRoundEnd(arg_67_0)
 end
 
 function var_0_0.useRoundEnd(arg_68_0)
-	if arg_68_0._isAuto then
-		return arg_68_0:tryUseCard(arg_68_0._player)
-	elseif arg_68_0._isPvpTimeout then
+	if arg_68_0._isPvpTimeout then
 		if arg_68_0._isOnlinePvp or (arg_68_0._needSendRound and arg_68_0._needSendEvent) then
 			ClientData.sendBattleUseCard(arg_68_0._player, BattleData.UseCardId.round, arg_68_0._player._round, -1)
 		end
 		return arg_68_0._player:doUseCard()
+	elseif arg_68_0._isAuto then
+		return arg_68_0:tryUseCard(arg_68_0._player)
 	elseif arg_68_0._isOnlinePvp or (arg_68_0._needSendRound and arg_68_0._needSendEvent) then
 		ClientData.sendBattleUseCard(arg_68_0._player, BattleData.UseCardId.round, arg_68_0._player._round, BattleData.UseCardId.none)
 		return arg_68_0._player:doUseCard()
@@ -1896,6 +1901,10 @@ function var_0_0.operateEnd(arg_69_0, arg_69_1)
 end
 
 function var_0_0.autoOperate(arg_70_0, arg_70_1)
+	if arg_70_0._isPvpTimeout or arg_70_0._isEndOperating or not arg_70_0._isOperating then
+		return
+	end
+
 	arg_70_0._isAuto = arg_70_1
 
 	if arg_70_1 then
@@ -2015,6 +2024,10 @@ function var_0_0.onButtonEvent(arg_75_0, arg_75_1)
 			arg_75_0._btnReplay._icon:setSpriteFrame("bat_btn_icon_pause")
 		end
 	elseif arg_75_1 == arg_75_0._btnAuto then
+		if arg_75_0._isPvpTimeout or arg_75_0._isEndOperating or not arg_75_0._isOperating then
+			return
+		end
+
 		local var_75_6 = P._id ~= 0 and P:getMaxCharacterLevel() or arg_75_0._player._level
 		local var_75_7 = ClientData._isAutoBattle and 0 or 0
 
@@ -3196,7 +3209,7 @@ function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
 end
 
 function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
-	local delta = tonumber(arg_108_1) or 5
+	local delta = tonumber(arg_108_1) or 2
 	local maxTime = tonumber(arg_108_2) or 120
 	if arg_108_0._roundRealStartTime then
 		local curNow = os.time()
@@ -3369,6 +3382,9 @@ function var_0_0.pvpTimeout(arg_115_0)
 		arg_115_0._isAddingBoardCard = false
 		if arg_115_0._btnEndRound then
 			arg_115_0._btnEndRound:setTouchEnabled(false)
+		end
+		if arg_115_0._btnAuto then
+			arg_115_0._btnAuto:setTouchEnabled(false)
 		end
 		arg_115_0:useRoundEnd()
 	elseif not arg_115_0._isObserver then
