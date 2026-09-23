@@ -3810,96 +3810,106 @@ def main():
     print(f"      MySQL Database : {DB_CONFIG['database']} @ 127.0.0.1:3306   ")
     print("==================================================================")
     
-    try:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS `user_levels` (
-                        `account_id` INT NOT NULL,
-                        `difficulty` INT NOT NULL,
-                        `cur_level` INT NOT NULL DEFAULT 10101,
-                        `max_level` INT NOT NULL DEFAULT 10101,
-                        PRIMARY KEY (`account_id`, `difficulty`),
-                        FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON DELETE CASCADE
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-                """)
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS `user_checkin` (
-                        `account_id` INT NOT NULL,
-                        `checkin_type` INT NOT NULL DEFAULT 1,
-                        `day_index` INT NOT NULL DEFAULT 1,
-                        `claim_date` DATE NOT NULL,
-                        PRIMARY KEY (`account_id`, `checkin_type`, `day_index`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-                """)
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS `user_achievements` (
-                        `account_id` INT NOT NULL,
-                        `achieve_id` INT NOT NULL,
-                        `progress` INT NOT NULL DEFAULT 0,
-                        `is_claimed` TINYINT NOT NULL DEFAULT 0,
-                        `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                        PRIMARY KEY (`account_id`, `achieve_id`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-                """)
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS `match_replays` (
-                        `id` INT NOT NULL AUTO_INCREMENT,
-                        `replay_id` VARCHAR(64) NOT NULL UNIQUE,
-                        `account_id` INT NOT NULL,
-                        `opponent_name` VARCHAR(64) NOT NULL DEFAULT '',
-                        `opponent_level` INT NOT NULL DEFAULT 1,
-                        `opponent_avatar` INT NOT NULL DEFAULT 201,
-                        `result` TINYINT NOT NULL DEFAULT 1,
-                        `battle_type` INT NOT NULL DEFAULT 17,
-                        `trophy_change` INT NOT NULL DEFAULT 0,
-                        `replay_data` LONGTEXT NOT NULL,
-                        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        PRIMARY KEY (`id`),
-                        KEY `acc_idx` (`account_id`),
-                        KEY `rep_idx` (`replay_id`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-                """)
-                # Trophy column migration
-                cur.execute("""
-                    SELECT count(*) as cnt FROM information_schema.columns
-                    WHERE table_schema = %s AND table_name = 'accounts' AND column_name = 'trophy'
-                """, (DB_CONFIG['database'],))
-                if cur.fetchone()['cnt'] == 0:
-                    cur.execute("ALTER TABLE `accounts` ADD COLUMN `trophy` INT NOT NULL DEFAULT 800")
-                # Pity count column migration
-                cur.execute("""
-                    SELECT count(*) as cnt FROM information_schema.columns
-                    WHERE table_schema = %s AND table_name = 'accounts' AND column_name = 'pity_count'
-                """, (DB_CONFIG['database'],))
-                if cur.fetchone()['cnt'] == 0:
-                    cur.execute("ALTER TABLE `accounts` ADD COLUMN `pity_count` INT NOT NULL DEFAULT 0")
-                
-                for col_name, col_def in [
-                    ('character_id', 'INT NOT NULL DEFAULT 3'),
-                    ('avatar', 'INT NOT NULL DEFAULT 301'),
-                    ('gold_cup', 'INT NOT NULL DEFAULT 0'),
-                    ('silver_cup', 'INT NOT NULL DEFAULT 0'),
-                    ('bronze_cup', 'INT NOT NULL DEFAULT 0'),
-                    ('daily_rank', 'INT NOT NULL DEFAULT 0')
-                ]:
+    db_initialized = False
+    for attempt in range(1, 6):
+        try:
+            with get_db() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        CREATE TABLE IF NOT EXISTS `user_levels` (
+                            `account_id` INT NOT NULL,
+                            `difficulty` INT NOT NULL,
+                            `cur_level` INT NOT NULL DEFAULT 10101,
+                            `max_level` INT NOT NULL DEFAULT 10101,
+                            PRIMARY KEY (`account_id`, `difficulty`),
+                            FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON DELETE CASCADE
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                    """)
+                    cur.execute("""
+                        CREATE TABLE IF NOT EXISTS `user_checkin` (
+                            `account_id` INT NOT NULL,
+                            `checkin_type` INT NOT NULL DEFAULT 1,
+                            `day_index` INT NOT NULL DEFAULT 1,
+                            `claim_date` DATE NOT NULL,
+                            PRIMARY KEY (`account_id`, `checkin_type`, `day_index`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                    """)
+                    cur.execute("""
+                        CREATE TABLE IF NOT EXISTS `user_achievements` (
+                            `account_id` INT NOT NULL,
+                            `achieve_id` INT NOT NULL,
+                            `progress` INT NOT NULL DEFAULT 0,
+                            `is_claimed` TINYINT NOT NULL DEFAULT 0,
+                            `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                            PRIMARY KEY (`account_id`, `achieve_id`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                    """)
+                    cur.execute("""
+                        CREATE TABLE IF NOT EXISTS `match_replays` (
+                            `id` INT NOT NULL AUTO_INCREMENT,
+                            `replay_id` VARCHAR(64) NOT NULL UNIQUE,
+                            `account_id` INT NOT NULL,
+                            `opponent_name` VARCHAR(64) NOT NULL DEFAULT '',
+                            `opponent_level` INT NOT NULL DEFAULT 1,
+                            `opponent_avatar` INT NOT NULL DEFAULT 201,
+                            `result` TINYINT NOT NULL DEFAULT 1,
+                            `battle_type` INT NOT NULL DEFAULT 17,
+                            `trophy_change` INT NOT NULL DEFAULT 0,
+                            `replay_data` LONGTEXT NOT NULL,
+                            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            PRIMARY KEY (`id`),
+                            KEY `acc_idx` (`account_id`),
+                            KEY `rep_idx` (`replay_id`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                    """)
+                    # Trophy column migration
                     cur.execute("""
                         SELECT count(*) as cnt FROM information_schema.columns
-                        WHERE table_schema = %s AND table_name = 'accounts' AND column_name = %s
-                    """, (DB_CONFIG['database'], col_name))
+                        WHERE table_schema = %s AND table_name = 'accounts' AND column_name = 'trophy'
+                    """, (DB_CONFIG['database'],))
                     if cur.fetchone()['cnt'] == 0:
-                        cur.execute(f"ALTER TABLE `accounts` ADD COLUMN `{col_name}` {col_def}")
-                        print(f"[DB MIGRATION] Added column accounts.{col_name}")
-                # Fix level 10105 bug in DB
-                cur.execute("UPDATE `user_levels` SET cur_level = 10201 WHERE cur_level = 10105")
-                cur.execute("UPDATE `user_levels` SET max_level = 10201 WHERE max_level = 10105")
-                # Rebrand server name in DB
-                cur.execute("UPDATE `accounts` SET server = 'S1 - Yugihlor - trading \"Nạp\" game' WHERE server LIKE '%Quyết Chiến%'")
-                cur.execute("SELECT count(*) as cnt FROM accounts")
-                print(f"[DB] Connected successfully! Found {cur.fetchone()['cnt']} accounts in MySQL.")
-    except Exception as e:
-        print(f"[DB ERROR] Cannot connect to MySQL: {e}")
-        return
+                        cur.execute("ALTER TABLE `accounts` ADD COLUMN `trophy` INT NOT NULL DEFAULT 800")
+                    # Pity count column migration
+                    cur.execute("""
+                        SELECT count(*) as cnt FROM information_schema.columns
+                        WHERE table_schema = %s AND table_name = 'accounts' AND column_name = 'pity_count'
+                    """, (DB_CONFIG['database'],))
+                    if cur.fetchone()['cnt'] == 0:
+                        cur.execute("ALTER TABLE `accounts` ADD COLUMN `pity_count` INT NOT NULL DEFAULT 0")
+                    
+                    for col_name, col_def in [
+                        ('character_id', 'INT NOT NULL DEFAULT 3'),
+                        ('avatar', 'INT NOT NULL DEFAULT 301'),
+                        ('gold_cup', 'INT NOT NULL DEFAULT 0'),
+                        ('silver_cup', 'INT NOT NULL DEFAULT 0'),
+                        ('bronze_cup', 'INT NOT NULL DEFAULT 0'),
+                        ('daily_rank', 'INT NOT NULL DEFAULT 0')
+                    ]:
+                        cur.execute("""
+                            SELECT count(*) as cnt FROM information_schema.columns
+                            WHERE table_schema = %s AND table_name = 'accounts' AND column_name = %s
+                        """, (DB_CONFIG['database'], col_name))
+                        if cur.fetchone()['cnt'] == 0:
+                            cur.execute(f"ALTER TABLE `accounts` ADD COLUMN `{col_name}` {col_def}")
+                            print(f"[DB MIGRATION] Added column accounts.{col_name}")
+                    # Fix level 10105 bug in DB
+                    cur.execute("UPDATE `user_levels` SET cur_level = 10201 WHERE cur_level = 10105")
+                    cur.execute("UPDATE `user_levels` SET max_level = 10201 WHERE max_level = 10105")
+                    # Rebrand server name in DB
+                    cur.execute("UPDATE `accounts` SET server = 'S1 - Yugihlor - trading \"Nạp\" game' WHERE server LIKE '%Quyết Chiến%'")
+                    cur.execute("SELECT count(*) as cnt FROM accounts")
+                    print(f"[DB] Connected successfully! Found {cur.fetchone()['cnt']} accounts in MySQL.")
+                    db_initialized = True
+                    break
+        except Exception as e:
+            if attempt < 5:
+                print(f"[DB WARN] Đang kết nối lại MySQL (lần {attempt}/5)... Lỗi: {e}")
+                time.sleep(2)
+            else:
+                print(f"[DB ERROR] Cannot connect to MySQL: {e}")
+                print("[HƯỚNG DẪN] Vui lòng bật MySQL trong XAMPP Control Panel rồi khởi động lại server!")
+                return
+
 
     class FastThreadingHTTPServer(ThreadingHTTPServer):
         request_queue_size = 256
