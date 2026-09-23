@@ -268,13 +268,17 @@ function var_0_1.generateCardPackageData(arg_5_0)
 		return Data.getRecruiteInfo(val) or (Data._recruitInfo and Data._recruitInfo[val]) or (Data._dropInfo and Data._dropInfo[val])
 	end
 
+	if ClientData and ClientData.injectPacks then
+		pcall(ClientData.injectPacks)
+	end
+
 	-- Populate exactly 20 Character Theme Packs
 	for i = 1, 20 do
 		local baseVal = 10100 + i * 100
 		local p1 = getValidPackInfo(baseVal + 1)
-		local p10 = getValidPackInfo(baseVal + 10)
-		local p50 = getValidPackInfo(baseVal + 50)
-		if p1 and p10 and p50 then
+		local p10 = getValidPackInfo(baseVal + 10) or p1
+		local p50 = getValidPackInfo(baseVal + 50) or p1
+		if p1 then
 			table.insert(var_5_3, var_5_9(p1, p10, p50))
 		end
 	end
@@ -283,9 +287,9 @@ function var_0_1.generateCardPackageData(arg_5_0)
 	for i = 1, 20 do
 		local prefix = 100000 + i * 1000
 		local p1 = getValidPackInfo(prefix + 1)
-		local p10 = getValidPackInfo(prefix + 10)
-		local p50 = getValidPackInfo(prefix + 50)
-		if p1 and p10 and p50 then
+		local p10 = getValidPackInfo(prefix + 10) or p1
+		local p50 = getValidPackInfo(prefix + 50) or p1
+		if p1 then
 			table.insert(var_5_4, var_5_9(p1, p10, p50))
 		end
 	end
@@ -294,9 +298,9 @@ function var_0_1.generateCardPackageData(arg_5_0)
 	for i = 1, 20 do
 		local prefix = 120000 + i * 1000
 		local p1 = getValidPackInfo(prefix + 1)
-		local p10 = getValidPackInfo(prefix + 10)
-		local p50 = getValidPackInfo(prefix + 50)
-		if p1 and p10 and p50 then
+		local p10 = getValidPackInfo(prefix + 10) or p1
+		local p50 = getValidPackInfo(prefix + 50) or p1
+		if p1 then
 			table.insert(var_5_extra, var_5_9(p1, p10, p50))
 		end
 	end

@@ -2679,6 +2679,7 @@ function patchClientData()
 			end
 		end
 	end
+	ClientData.injectPacks = injectPacks
 	pcall(injectPacks)
 
 	-- Universal Pack Card Pool Helper

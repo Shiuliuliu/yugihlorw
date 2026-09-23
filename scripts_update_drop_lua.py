@@ -1,7 +1,7 @@
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
-import json
 import re
+import json
 
 with open('all_60_packs_summary.json', 'r', encoding='utf-8') as f:
     summary = json.load(f)
@@ -15,9 +15,9 @@ for p in summary['char_packs']:
     name = p['name']
     cards = p['cards']
     sid = (14202 + (num - 1) * 6) if num <= 12 else (56684 + (num - 13))
-    pack_defs[val] = {'type': 1002, 'cost': 500, 'nameSid': sid, 'cards': cards, 'group': 'char', 'num': num}
-    pack_defs[val + 9] = {'type': 1002, 'cost': 4500, 'nameSid': sid, 'cards': cards, 'group': 'char', 'num': num}
-    pack_defs[val + 49] = {'type': 1002, 'cost': 22500, 'nameSid': sid, 'cards': cards, 'group': 'char', 'num': num}
+    pack_defs[val] = {'type': 1002, 'cost': 500, 'nameSid': sid, 'cards': cards, 'group': 'char', 'num': num, 'name': name}
+    pack_defs[val + 9] = {'type': 1002, 'cost': 4500, 'nameSid': sid, 'cards': cards, 'group': 'char', 'num': num, 'name': name}
+    pack_defs[val + 49] = {'type': 1002, 'cost': 22500, 'nameSid': sid, 'cards': cards, 'group': 'char', 'num': num, 'name': name}
 
 # 2. Liya packs
 for p in summary['liya_packs']:
@@ -26,9 +26,9 @@ for p in summary['liya_packs']:
     cards = p['cards']
     sid = 15224 + (num - 1) * 6
     prefix = (val // 1000) * 1000
-    pack_defs[prefix + 1] = {'type': 1001, 'cost': 600, 'nameSid': sid, 'cards': cards, 'group': 'liya', 'num': num}
-    pack_defs[prefix + 10] = {'type': 1001, 'cost': 6000, 'nameSid': sid, 'cards': cards, 'group': 'liya', 'num': num}
-    pack_defs[prefix + 50] = {'type': 1001, 'cost': 28500, 'nameSid': sid, 'cards': cards, 'group': 'liya', 'num': num}
+    pack_defs[prefix + 1] = {'type': 1001, 'cost': 600, 'nameSid': sid, 'cards': cards, 'group': 'liya', 'num': num, 'name': name}
+    pack_defs[prefix + 10] = {'type': 1001, 'cost': 6000, 'nameSid': sid, 'cards': cards, 'group': 'liya', 'num': num, 'name': name}
+    pack_defs[prefix + 50] = {'type': 1001, 'cost': 28500, 'nameSid': sid, 'cards': cards, 'group': 'liya', 'num': num, 'name': name}
 
 # 3. Extra packs
 for p in summary['extra_packs']:
@@ -37,87 +37,74 @@ for p in summary['extra_packs']:
     cards = p['cards']
     sid = (15344 + (num - 1) * 6) if num <= 16 else (56692 + (num - 17))
     prefix = (val // 1000) * 1000
-    pack_defs[prefix + 1] = {'type': 1001, 'cost': 600, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num}
-    pack_defs[prefix + 10] = {'type': 1001, 'cost': 6000, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num}
-    pack_defs[prefix + 50] = {'type': 1001, 'cost': 28500, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num}
+    pack_defs[prefix + 1] = {'type': 1001, 'cost': 600, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num, 'name': name}
+    pack_defs[prefix + 10] = {'type': 1001, 'cost': 6000, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num, 'name': name}
+    pack_defs[prefix + 50] = {'type': 1001, 'cost': 28500, 'nameSid': sid, 'cards': cards, 'group': 'extra', 'num': num, 'name': name}
 
-print(f"Total target pack variants: {len(pack_defs)}")
+with open('web/data/drop.lua.orig', 'r', encoding='utf-8') as f:
+    orig_content = f.read()
 
-with open('web/data/drop.lua', 'r', encoding='utf-8') as f:
-    lines = f.readlines()
+pattern = re.compile(r'\n  \[(\d+)\]=\{(.*?)\n  \[\"_type\"\]=(\d+),\[\"_value\"\]=(\d+),\},', re.DOTALL)
+orig_entries = {}
+for m in pattern.finditer(orig_content):
+    did = int(m.group(1))
+    body = m.group(2)
+    t = int(m.group(3))
+    val = int(m.group(4))
+    # Capture the exact chunk text
+    orig_entries[did] = {
+        'did': did,
+        'val': val,
+        'type': t,
+        'raw': m.group(0)
+    }
 
-top_entries = []
-for idx, l in enumerate(lines):
-    m = re.match(r'^\s*\[(\d+)\]=\{\["_descSid"\]=', l)
-    if m:
-        top_entries.append((int(m.group(1)), idx))
+val_to_did = {e['val']: did for did, e in orig_entries.items()}
 
-print(f"Parsed {len(top_entries)} top-level entries from drop.lua")
+def generate_entry_lua(did, val, pinfo):
+    lines = []
+    lines.append(f'  [{did}]={{\n')
+    lines.append(f'  ["_descSid"]={pinfo["nameSid"]},["_id"]={did},["_isHide"]=0,["_nameSid"]={pinfo["nameSid"]},["_param"]={{[1]=1,[2]={pinfo["cost"]},[3]=0,[4]=0,[5]=0,}},\n')
+    lines.append('  ["_pid"]={\n')
+    for idx, cid in enumerate(pinfo['cards'], 1):
+        lines.append(f'  [{idx}]={{\n  [1]={cid},\n}},\n')
+    lines.append('  },\n')
+    lines.append('  ["_showRes"]={[1]=0,},\n')
+    lines.append(f'  ["_type"]={pinfo["type"]},["_value"]={val},}},\n')
+    return "".join(lines)
 
-# Map of entry text
-entry_chunks = {}
-for i in range(len(top_entries)):
-    did, start_line = top_entries[i]
-    if i + 1 < len(top_entries):
-        end_line = top_entries[i+1][1]
-    else:
-        end_line = len(lines) - 1 # exclude closing '}'
-    entry_chunks[did] = "".join(lines[start_line:end_line])
+final_entries = {}
+# 1. First, populate all original entries as-is
+for did, e in orig_entries.items():
+    final_entries[did] = e['raw']
 
-def build_pid_str(card_list):
-    res = ['\n  ["_pid"]={']
-    for idx, cid in enumerate(card_list, 1):
-        res.append(f'\n  [{idx}]={{\n  [1]={cid},\n}},')
-    res.append('},\n')
-    return "".join(res)
-
-val_to_did = {}
-for did, text in entry_chunks.items():
-    vm = re.search(r'\["_value"\]=(\d+),', text)
-    if vm:
-        val = int(vm.group(1))
-        val_to_did[val] = did
-
-updated_count = 0
-added_count = 0
-max_did = max(entry_chunks.keys())
+# 2. For pack_defs: if exists in orig, replace cleanly. If not, allocate new did
+max_did = max(orig_entries.keys())
+added = 0
+updated = 0
 
 for val, pinfo in pack_defs.items():
-    pid_str = build_pid_str(pinfo['cards'])
     if val in val_to_did:
         did = val_to_did[val]
-        content = entry_chunks[did]
-        # Replace _pid
-        content = re.sub(r'\n  \["_pid"\]=\{.*?\},', pid_str, content, flags=re.DOTALL)
-        content = re.sub(r'\["_nameSid"\]=\d+,', f'["_nameSid"]={pinfo["nameSid"]},', content)
-        content = re.sub(r'\["_descSid"\]=\d+,', f'["_descSid"]={pinfo["nameSid"]},', content)
-        content = re.sub(r'\["_param"\]=\{\[1\]=1,\[2\]=\d+,', f'["_param"]={{[1]=1,[2]={pinfo["cost"]},', content)
-        entry_chunks[did] = content
-        updated_count += 1
+        final_entries[did] = "\n" + generate_entry_lua(did, val, pinfo)
+        updated += 1
     else:
         max_did += 1
         did = max_did
-        new_content = (
-            f'  [{did}]={{\n'
-            f'  ["_descSid"]={pinfo["nameSid"]},["_id"]={did},["_isHide"]=0,["_nameSid"]={pinfo["nameSid"]},["_param"]={{[1]=1,[2]={pinfo["cost"]},[3]=0,[4]=0,[5]=0,}},'
-            f'{pid_str}'
-            f'  ["_showRes"]={{[1]=0,}},\n'
-            f'  ["_type"]={pinfo["type"]},["_value"]={val},}},\n'
-        )
-        entry_chunks[did] = new_content
+        final_entries[did] = "\n" + generate_entry_lua(did, val, pinfo)
         val_to_did[val] = did
-        added_count += 1
+        added += 1
 
-print(f"Updated {updated_count} existing entries, Added {added_count} new entries. Total entries: {len(entry_chunks)}")
+print(f"Updated {updated} pack entries, Added {added} new pack entries. Total entries: {len(final_entries)}")
 
-out_text = ["return {\n"]
-for did in sorted(entry_chunks.keys()):
-    out_text.append(entry_chunks[did])
-    if not entry_chunks[did].endswith('\n'):
-        out_text.append('\n')
-out_text.append("}\n")
+# Construct output
+out_lines = ["return {\n"]
+for did in sorted(final_entries.keys()):
+    entry_str = final_entries[did].strip('\n')
+    out_lines.append("  " + entry_str.strip() + "\n")
+out_lines.append("}\n")
 
 with open('web/data/drop.lua', 'w', encoding='utf-8') as f:
-    f.writelines(out_text)
+    f.writelines(out_lines)
 
-print("Successfully wrote web/data/drop.lua!")
+print("Generated web/data/drop.lua successfully!")
