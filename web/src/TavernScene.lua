@@ -302,8 +302,8 @@ function var_0_1.generateCardPackageData(arg_5_0)
 		end
 	end
 
-	-- Populate 22 Extra Theme Packs (20 existing + ES/CS + TrickStar)
-	for i = 1, 22 do
+	-- Populate 54 Extra Theme Packs (20 existing + ES/CS + TrickStar + 32 new archetypes)
+	for i = 1, 54 do
 		local prefix = 120000 + i * 1000
 		local p1 = getValidPackInfo(prefix + 1)
 		local p10 = getValidPackInfo(prefix + 10) or p1
@@ -313,9 +313,9 @@ function var_0_1.generateCardPackageData(arg_5_0)
 		end
 	end
 
-	-- Populate 5 Expansion Packs (Gói bài mở rộng)
-	for i = 1, 5 do
-		local prefix = 150000 + i * 1000
+	-- Populate 30 Expansion Packs (Gói bài mở rộng)
+	for i = 1, 30 do
+		local prefix = 180000 + i * 1000
 		local p1 = getValidPackInfo(prefix + 1)
 		local p10 = getValidPackInfo(prefix + 10) or p1
 		local p50 = getValidPackInfo(prefix + 50) or p1

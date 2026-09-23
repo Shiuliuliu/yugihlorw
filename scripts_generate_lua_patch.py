@@ -183,8 +183,8 @@ out.append("""\t-- Card Box Info & Reset (Tavern / draw)
 \t\t\tregisterPack(i, cList, 1001, 600)
 \t\tend
 
-\t\t-- Inject 22 Extra theme packs (1, 10, 50)
-\t\tfor i = 1, 22 do
+\t\t-- Inject 54 Extra theme packs (1, 10, 50)
+\t\tfor i = 1, 54 do
 \t\t\tlocal prefix = 120000 + i * 1000
 \t\t\tlocal cList = EXTRA_CARDS_MAP[i] or EXTRA_CARDS_MAP[prefix + 10] or {}
 \t\t\tregisterPack(prefix + 1, cList, 1001, 600)
@@ -192,9 +192,9 @@ out.append("""\t-- Card Box Info & Reset (Tavern / draw)
 \t\t\tregisterPack(prefix + 50, cList, 1001, 28500)
 \t\tend
 
-\t\t-- Inject 5 Expansion theme packs (1, 10, 50)
-\t\tfor i = 1, 5 do
-\t\t\tlocal prefix = 150000 + i * 1000
+\t\t-- Inject 30 Expansion theme packs (1, 10, 50)
+\t\tfor i = 1, 30 do
+\t\t\tlocal prefix = 180000 + i * 1000
 \t\t\tlocal cList = EXPANSION_CARDS_MAP[i] or EXPANSION_CARDS_MAP[prefix + 10] or {}
 \t\t\tregisterPack(prefix + 1, cList, 1001, 600)
 \t\t\tregisterPack(prefix + 10, cList, 1001, 6000)
@@ -223,11 +223,11 @@ out.append("""\t-- Card Box Info & Reset (Tavern / draw)
 \t\tlocal cList = nil
 
 \t\tif boxId then
-\t\t\tif boxId >= 151001 and boxId <= 155050 then
-\t\t\t\tlocal expIdx = math.floor((boxId - 150000) / 1000)
+\t\t\tif boxId >= 181001 and boxId <= 210050 then
+\t\t\t\tlocal expIdx = math.floor((boxId - 180000) / 1000)
 \t\t\t\tlocal xpm = ClientData._expansionCardsMap or EXPANSION_CARDS_MAP
 \t\t\t\tcList = xpm and (xpm[boxId] or xpm[expIdx])
-\t\t\telseif boxId >= 121001 and boxId <= 145000 then
+\t\t\telseif boxId >= 121001 and boxId <= 174050 then
 \t\t\t\tlocal eIdx = math.floor((boxId - 120000) / 1000)
 \t\t\t\tlocal em = ClientData._extraCardsMap or EXTRA_CARDS_MAP
 \t\t\t\tcList = em and (em[boxId] or em[eIdx])

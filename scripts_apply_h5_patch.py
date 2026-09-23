@@ -24,15 +24,15 @@ part2 = end_marker + sub_parts[1]
 new_h5 = part1 + replacement_pack_section + part2
 
 # Update cost calculation block in doBuyPackage
-new_cost_block = """\t\t\tlocal isLiyaOrExtra = (boxId and boxId >= 101001 and boxId <= 155050)
+new_cost_block = """\t\t\tlocal isLiyaOrExtra = (boxId and boxId >= 101001 and boxId <= 210050)
 \t\t\tlocal packIdx = nil
 \t\t\tif isLiyaOrExtra then
 \t\t\t\tif boxId <= 120050 then
 \t\t\t\t\tpackIdx = math.floor((boxId - 100000) / 1000)
-\t\t\t\telseif boxId <= 145000 then
+\t\t\t\telseif boxId <= 174050 then
 \t\t\t\t\tpackIdx = math.floor((boxId - 120000) / 1000)
 \t\t\t\telse
-\t\t\t\t\tpackIdx = math.floor((boxId - 150000) / 1000)
+\t\t\t\t\tpackIdx = math.floor((boxId - 180000) / 1000)
 \t\t\t\tend
 \t\t\telseif boxId and boxId >= 1 and boxId <= 20 and LIYA_CARDS_MAP and LIYA_CARDS_MAP[boxId] then
 \t\t\t\tisLiyaOrExtra = true

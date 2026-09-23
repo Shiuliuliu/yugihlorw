@@ -328,17 +328,17 @@ def resolve_pack_cards(pkg_num, req_pool=None):
     elif pkg_num in SERVER_EXPANSION_CARDS_MAP:
         cards = SERVER_EXPANSION_CARDS_MAP[pkg_num]
     elif 10201 <= pkg_num <= 12150:
-        base_val = ((pkg_num - 10000) // 100) * 100 + 1
+        base_val = ((pkg_num - 10000) // 100) * 100 + 10001
         cards = SERVER_CHAR_CARDS_MAP.get(pkg_num) or SERVER_CHAR_CARDS_MAP.get(base_val) or []
     elif 101001 <= pkg_num <= 120050:
         prefix = (pkg_num // 1000) * 1000
         base_val = prefix + 10
         cards = SERVER_LIYA_CARDS_MAP.get(pkg_num) or SERVER_LIYA_CARDS_MAP.get(base_val) or []
-    elif 121001 <= pkg_num <= 145050:
+    elif 121001 <= pkg_num <= 174050:
         prefix = (pkg_num // 1000) * 1000
         base_val = prefix + 10
         cards = SERVER_EXTRA_CARDS_MAP.get(pkg_num) or SERVER_EXTRA_CARDS_MAP.get(base_val) or []
-    elif 151001 <= pkg_num <= 155050:
+    elif 181001 <= pkg_num <= 210050:
         prefix = (pkg_num // 1000) * 1000
         base_val = prefix + 10
         cards = SERVER_EXPANSION_CARDS_MAP.get(pkg_num) or SERVER_EXPANSION_CARDS_MAP.get(base_val) or []
@@ -355,17 +355,17 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
     if pkg_num in PACK_QUALITY_DISTRIBUTION:
         base_pkg_val = pkg_num
     elif 10201 <= pkg_num <= 12150:
-        c_base = ((pkg_num - 10000) // 100) * 100 + 1
+        c_base = ((pkg_num - 10000) // 100) * 100 + 10001
         if c_base in PACK_QUALITY_DISTRIBUTION: base_pkg_val = c_base
-    elif 101001 <= pkg_num <= 155050:
+    elif 101001 <= pkg_num <= 210050:
         prefix = (pkg_num // 1000) * 1000
         l_base = prefix + 10
         if l_base in PACK_QUALITY_DISTRIBUTION: base_pkg_val = l_base
-    elif 1 <= pkg_num <= 25:
-        c_val = 10000 + pkg_num * 100 + 1
+    elif 1 <= pkg_num <= 54:
+        c_val = 10100 + pkg_num * 100 + 1
         l_val = 100000 + pkg_num * 1000 + 10
         e_val = 120000 + pkg_num * 1000 + 10
-        ex_val = 150000 + pkg_num * 1000 + 10
+        ex_val = 180000 + pkg_num * 1000 + 10
         if c_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = c_val
         elif l_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = l_val
         elif e_val in PACK_QUALITY_DISTRIBUTION: base_pkg_val = e_val
@@ -574,7 +574,7 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
             if total_cards <= 0:
                 total_cards = 3
 
-            is_rare_or_extra = (101001 <= pkg_num <= 155050) or (pkg_num in SERVER_LIYA_CARDS_MAP) or (pkg_num in SERVER_EXTRA_CARDS_MAP) or (pkg_num in SERVER_EXPANSION_CARDS_MAP)
+            is_rare_or_extra = (101001 <= pkg_num <= 210050) or (pkg_num in SERVER_LIYA_CARDS_MAP) or (pkg_num in SERVER_EXTRA_CARDS_MAP) or (pkg_num in SERVER_EXPANSION_CARDS_MAP)
             cost_val = int(req.get('cost_val', 0))
             if is_rare_or_extra:
                 expected_gold_cost = (28500 if packs >= 50 else (6000 if packs >= 10 else 600 * packs))
