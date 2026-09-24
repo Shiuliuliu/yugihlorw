@@ -3490,14 +3490,14 @@ async def ws_handler(websocket):
                                 print(f"[PVP TURN] Match {match_id}: round ended, turn switched to peer")
                             elif card_id not in (1, 2) and card_id != 0:
                                 match["turn_ws"] = websocket
-                                pkt["add_time"] = 2
+                                pkt["add_time"] = 4
                                 pkt["max_time"] = 120
                                 if "time_left" in pkt:
                                     try:
-                                        pkt["time_left"] = min(120.0, float(pkt["time_left"]) + 2.0)
+                                        pkt["time_left"] = min(120.0, float(pkt["time_left"]) + 4.0)
                                     except:
                                         pass
-                                print(f"[PVP TIME] Match {match_id}: +2s round time added on server for action card {card_id} (time_left={pkt.get('time_left')})")
+                                print(f"[PVP TIME] Match {match_id}: +4s round time added on server for action card {card_id} (time_left={pkt.get('time_left')})")
                             await peer_ws.send(make_pvp_frame(pkt))
                             print(f"[PVP ACTION] Match {match_id}: relayed ints len={len(ints)} {ints[:4] if len(ints)>=4 else ints} seq={pkt.get('seq')}")
                         except Exception as e:

@@ -298,15 +298,15 @@ function var_0_0.getShieldTypeBySkillId(arg_18_0, arg_18_1)
 end
 
 function var_0_0.getSkillIdByShieldType(arg_19_0)
-	if arg_19_0 == BattleData.PositiveType.shieldDestroy or shiledType == BattleData.PositiveType.shieldHaloDestroy then
+	if arg_19_0 == BattleData.PositiveType.shieldDestroy or arg_19_0 == BattleData.PositiveType.shieldHaloDestroy then
 		return 12006
-	elseif arg_19_0 == BattleData.PositiveType.shieldEffectDestroy or shiledType == BattleData.PositiveType.shieldHaloEffectDestroy then
+	elseif arg_19_0 == BattleData.PositiveType.shieldEffectDestroy or arg_19_0 == BattleData.PositiveType.shieldHaloEffectDestroy then
 		return 12007
-	elseif arg_19_0 == BattleData.PositiveType.shieldOppoMonster or shiledType == BattleData.PositiveType.shieldHaloOppoMonster then
+	elseif arg_19_0 == BattleData.PositiveType.shieldOppoMonster or arg_19_0 == BattleData.PositiveType.shieldHaloOppoMonster then
 		return 12008
-	elseif arg_19_0 == BattleData.PositiveType.shieldOppoMagic or shiledType == BattleData.PositiveType.shieldHaloOppoMagic then
+	elseif arg_19_0 == BattleData.PositiveType.shieldOppoMagic or arg_19_0 == BattleData.PositiveType.shieldHaloOppoMagic then
 		return 12009
-	elseif arg_19_0 == BattleData.PositiveType.shieldOppoTrap or shiledType == BattleData.PositiveType.shieldHaloOppoTrap then
+	elseif arg_19_0 == BattleData.PositiveType.shieldOppoTrap or arg_19_0 == BattleData.PositiveType.shieldHaloOppoTrap then
 		return 12010
 	elseif arg_19_0 >= BattleData.PositiveType.shieldBegin and arg_19_0 <= BattleData.PositiveType.shieldEnd then
 		return 11001 + arg_19_0 - BattleData.PositiveType.shieldBegin

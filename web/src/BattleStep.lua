@@ -1673,17 +1673,18 @@ function var_0_0.finish(arg_24_0)
 		local var_24_0 = Data.BattleResult.draw
 		local var_24_1 = arg_24_0:getIsLose()
 
+		local isRealOnlinePvp = (arg_24_0._isOnlinePvp == true) or (ClientData and ClientData._currentMatchId and ClientData._currentMatchId ~= "")
 		if var_24_1 ~= arg_24_0._opponent:getIsLose() then
 			var_24_0 = var_24_1 and Data.BattleResult.lose or Data.BattleResult.win
 		elseif var_24_1 then
-			if arg_24_0._isOnlinePvp ~= true then
+			if not isRealOnlinePvp then
 				if arg_24_0._fortress._hp <= 0 and arg_24_0._opponent._fortress._hp <= 0 then
 					var_24_0 = Data.BattleResult.win
 				else
 					var_24_0 = arg_24_0._isAttacker and Data.BattleResult.lose or Data.BattleResult.win
 				end
 			end
-		elseif arg_24_0._isOnlinePvp ~= true then
+		elseif not isRealOnlinePvp then
 			var_24_0 = arg_24_0._isAttacker and Data.BattleResult.win or Data.BattleResult.lose
 		end
 

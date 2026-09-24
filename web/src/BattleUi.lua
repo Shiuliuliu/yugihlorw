@@ -548,7 +548,10 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 		_isNewRound = arg_22_1._player._isNewRound,
 		_roundTimeInit = arg_22_1._player._roundTimeInit,
 		_roundTimeMax = arg_22_1._player._roundTimeMax,
-		_roundTimeDelta = arg_22_1._player._roundTimeDelta
+		_roundTimeDelta = arg_22_1._player._roundTimeDelta,
+		_isOnlinePvp = arg_22_0._isOnlinePvp or (arg_22_1 and (arg_22_1._isOppoOnline or arg_22_1._pvpMatch)) or (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= ""),
+		_isOppoOnline = (arg_22_1 and arg_22_1._isOppoOnline),
+		_pvpMatch = (arg_22_1 and arg_22_1._pvpMatch)
 	}
 	local var_22_8 = {
 		_isClient = true,
@@ -577,7 +580,10 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 		_isNewRound = arg_22_1._opponent._isNewRound,
 		_roundTimeInit = arg_22_1._opponent._roundTimeInit,
 		_roundTimeMax = arg_22_1._opponent._roundTimeMax,
-		_roundTimeDelta = arg_22_1._opponent._roundTimeDelta
+		_roundTimeDelta = arg_22_1._opponent._roundTimeDelta,
+		_isOnlinePvp = arg_22_0._isOnlinePvp or (arg_22_1 and (arg_22_1._isOppoOnline or arg_22_1._pvpMatch)) or (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= ""),
+		_isOppoOnline = (arg_22_1 and arg_22_1._isOppoOnline),
+		_pvpMatch = (arg_22_1 and arg_22_1._pvpMatch)
 	}
 
 	ClientData._battleRoundStartInfo = nil
@@ -625,7 +631,7 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 		ClientData.addBattleDebugLog("\n\n")
 	end
 
-	arg_22_0._isOnlinePvp = arg_22_0._battleType == Data.BattleType.PVP_clash or arg_22_0._battleType == Data.BattleType.PVP_clash_ex or arg_22_0._battleType == Data.BattleType.PVP_ladder or arg_22_0._battleType == Data.BattleType.PVP_room or arg_22_0._battleType == Data.BattleType.PVP_group or arg_22_0._battleType == Data.BattleType.PVP_dark or arg_22_0._battleType == Data.BattleType.PVP_survival or arg_22_0._battleType == Data.BattleType.PVP_survival_ex or arg_22_0._battleType == Data.BattleType.PVP_friend or (arg_22_1 and (arg_22_1._isOppoOnline or arg_22_1._pvpMatch))
+	arg_22_0._isOnlinePvp = arg_22_0._battleType == Data.BattleType.PVP_clash or arg_22_0._battleType == Data.BattleType.PVP_clash_npc or arg_22_0._battleType == Data.BattleType.PVP_clash_ex or arg_22_0._battleType == Data.BattleType.PVP_ladder or arg_22_0._battleType == Data.BattleType.PVP_ladder_npc or arg_22_0._battleType == Data.BattleType.PVP_room or arg_22_0._battleType == Data.BattleType.PVP_group or arg_22_0._battleType == Data.BattleType.PVP_dark or arg_22_0._battleType == Data.BattleType.PVP_survival or arg_22_0._battleType == Data.BattleType.PVP_survival_ex or arg_22_0._battleType == Data.BattleType.PVP_friend or (arg_22_1 and (arg_22_1._isOppoOnline or arg_22_1._pvpMatch)) or (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= "")
 	arg_22_0._needSendRound = arg_22_0._isOnlinePvp or arg_22_0._battleType == Data.BattleType.PVP_friend
 
 	if arg_22_0._isOnlinePvp or arg_22_0._baseBattleType == Data.BattleType.base_PVP then
@@ -3210,13 +3216,13 @@ function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
 end
 
 function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
-	local delta = tonumber(arg_108_1) or 2
+	local delta = tonumber(arg_108_1) or 4
 	local maxTime = tonumber(arg_108_2) or 120
 	if arg_108_0._roundRealStartTime then
 		local curNow = os.time()
 		local totalDur = arg_108_0._roundDuration or 90
 		local curRemaining = totalDur - (curNow - arg_108_0._roundRealStartTime)
-		local newRemaining = math.min(maxTime, curRemaining + delta)
+		local newRemaining = math.min(maxTime, math.max(curRemaining + delta, 15))
 		arg_108_0._roundRealStartTime = curNow - (totalDur - newRemaining)
 		if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._beginTime then
 			ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + newRemaining
@@ -3226,7 +3232,7 @@ function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
 end
 
 function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
-	local newRemaining = math.min(120, math.max(0, tonumber(arg_108_1) or 0))
+	local newRemaining = math.min(120, math.max(15, tonumber(arg_108_1) or 0))
 	if arg_108_0._roundRealStartTime and newRemaining > 0 then
 		local curNow = os.time()
 		local totalDur = arg_108_0._roundDuration or 90
@@ -3389,18 +3395,21 @@ function var_0_0.pvpTimeout(arg_115_0)
 		end
 		arg_115_0:useRoundEnd()
 	elseif not arg_115_0._isObserver then
-		if arg_115_0._opponent then
-			local roundOp = {
-				_card = BattleData.UseCardId.round,
-				_target = 0,
-				_choice = -1,
-				_round = arg_115_0._opponent._round or 1,
-				_time = math.floor(ClientData.getCurrentTime() or os.time())
-			}
-			table.insert(arg_115_0._opponent._ops, roundOp)
-			arg_115_0._isWaitting = false
-			arg_115_0:hideThinking()
-			arg_115_0._opponent:use()
+		local isRealOnlinePvp = arg_115_0._isOnlinePvp or (ClientData and ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= "")
+		if not isRealOnlinePvp then
+			if arg_115_0._opponent then
+				local roundOp = {
+					_card = BattleData.UseCardId.round,
+					_target = 0,
+					_choice = -1,
+					_round = arg_115_0._opponent._round or 1,
+					_time = math.floor(ClientData.getCurrentTime() or os.time())
+				}
+				table.insert(arg_115_0._opponent._ops, roundOp)
+				arg_115_0._isWaitting = false
+				arg_115_0:hideThinking()
+				arg_115_0._opponent:use()
+			end
 		end
 	end
 end

@@ -15,7 +15,7 @@ function var_0_0.ctor(arg_1_0, arg_1_1)
 	arg_1_0._troopSkins = arg_1_1._troopSkins
 	arg_1_0._battleType = arg_1_1._battleType
 	arg_1_0._baseBattleType = math.floor(arg_1_0._battleType / 100)
-	arg_1_0._isOnlinePvp = arg_1_0._battleType == Data.BattleType.PVP_clash or arg_1_0._battleType == Data.BattleType.PVP_clash_ex or arg_1_0._battleType == Data.BattleType.PVP_ladder or arg_1_0._battleType == Data.BattleType.PVP_room or arg_1_0._battleType == Data.BattleType.PVP_group or arg_1_0._battleType == Data.BattleType.PVP_dark or arg_1_0._battleType == Data.BattleType.PVP_survival or arg_1_0._battleType == Data.BattleType.PVP_survival_ex or arg_1_0._battleType == Data.BattleType.PVP_friend or (arg_1_1 and (arg_1_1._isOppoOnline or arg_1_1._pvpMatch)) or ClientData._isOppoOnline
+	arg_1_0._isOnlinePvp = arg_1_0._battleType == Data.BattleType.PVP_clash or arg_1_0._battleType == Data.BattleType.PVP_clash_npc or arg_1_0._battleType == Data.BattleType.PVP_clash_ex or arg_1_0._battleType == Data.BattleType.PVP_ladder or arg_1_0._battleType == Data.BattleType.PVP_ladder_npc or arg_1_0._battleType == Data.BattleType.PVP_room or arg_1_0._battleType == Data.BattleType.PVP_group or arg_1_0._battleType == Data.BattleType.PVP_dark or arg_1_0._battleType == Data.BattleType.PVP_survival or arg_1_0._battleType == Data.BattleType.PVP_survival_ex or arg_1_0._battleType == Data.BattleType.PVP_friend or (arg_1_1 and (arg_1_1._isOnlinePvp or arg_1_1._isOppoOnline or arg_1_1._pvpMatch)) or ClientData._isOppoOnline or (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= "")
 	arg_1_0._maxRound = arg_1_0._isOnlinePvp and 30 or arg_1_0:getMaxRound(arg_1_1._atkLevel)
 	arg_1_0._isNpc = arg_1_1._isNpc
 	arg_1_0._reviewType = arg_1_1._reviewType
