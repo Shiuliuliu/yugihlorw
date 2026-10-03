@@ -54047,8 +54047,26 @@ function var_0_0.castMagicHaloSkill(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 			end
 		end
 	elseif var_12_4 == 7131 then
-		local var_12_harpie_board = B.filterInTypeCards(arg_12_0:getBattleCardsByKeyword("B", 7), Data.CardType.monster)
-		local var_12_harpie_grave = B.filterInTypeCards(arg_12_0:getBattleCardsByKeyword("G", 7), Data.CardType.monster)
+		local var_12_wb = B.mergeTable({
+			arg_12_0:getBattleCardsByCategoryGroup("B", var_12_6._refCards),
+			var_12_8:getBattleCardsByCategoryGroup("B", var_12_6._refCards)
+		})
+
+		for iter_12_wb = 1, #var_12_wb do
+			arg_12_0:incAtk(var_12_wb[iter_12_wb], var_12_7, true, var_12_5, var_12_4, arg_12_3)
+			arg_12_0:incHp(var_12_wb[iter_12_wb], var_12_7, true, var_12_5, var_12_4, arg_12_3)
+
+			var_12_13 = true
+		end
+
+		local var_12_harpie_board = B.filterInTypeGroupCards(arg_12_0:getBattleCardsByKeyword("B", 7), {
+			Data.CardType.monster,
+			Data.CardType.rare
+		})
+		local var_12_harpie_grave = B.filterInTypeGroupCards(arg_12_0:getBattleCardsByKeyword("G", 7), {
+			Data.CardType.monster,
+			Data.CardType.rare
+		})
 		local var_12_harpie_boost = (#var_12_harpie_board + #var_12_harpie_grave) * 100
 
 		if var_12_harpie_boost > 0 then
