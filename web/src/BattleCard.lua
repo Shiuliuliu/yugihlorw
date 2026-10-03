@@ -504,6 +504,7 @@ function var_0_0.resetCardWhenRoundBegin(arg_24_0)
 	arg_24_0._mark14527 = nil
 	arg_24_0._mark14531 = nil
 	arg_24_0._mark14579 = nil
+	arg_24_0._mark7835 = nil
 	arg_24_0._castedTargets = {}
 
 	if arg_24_0._mark9226 == arg_24_0._owner then
@@ -1020,24 +1021,32 @@ function var_0_0.hasShield(arg_39_0)
 end
 
 function var_0_0.hasShieldInType(arg_40_0, arg_40_1, arg_40_2)
-	if arg_40_0:hasBuff(true, arg_40_1) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
+	if arg_40_0:hasBuff(true, arg_40_1) then
 		return true
 	end
 
-	if not arg_40_2 and arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap and (arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldOppoMonster) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldHaloOppoMonster)) then
-		return true
+	if not arg_40_2 then
+		if arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
+			return true
+		end
+
+		if arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap and (arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldOppoMonster) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldHaloOppoMonster)) then
+			return true
+		end
 	end
 
 	return false
 end
 
 function var_0_0.hasShieldExInType(arg_41_0, arg_41_1, arg_41_2)
-	if arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
-		return true
-	end
+	if not arg_41_2 then
+		if arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
+			return true
+		end
 
-	if not arg_41_2 and arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap and (arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldOppoMonster) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldHaloOppoMonster)) then
-		return true
+		if arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap and (arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldOppoMonster) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldHaloOppoMonster)) then
+			return true
+		end
 	end
 
 	return false

@@ -400,7 +400,10 @@ function var_0_0.enterFilmMode(arg_18_0, arg_18_1, arg_18_2)
 	end
 
 	var_18_7(arg_18_0._btnSetting)
-	var_18_7(arg_18_0._btnAuto)
+	if arg_18_0._btnAuto then
+		arg_18_0._btnAuto:setVisible(false)
+		arg_18_0._btnAuto:setTouchEnabled(false)
+	end
 	var_18_7(arg_18_0._btnSpeed)
 end
 
@@ -424,7 +427,10 @@ function var_0_0.leaveFilmMode(arg_20_0)
 		end
 
 		var_20_3(arg_20_0._btnSetting)
-		var_20_3(arg_20_0._btnAuto)
+		if arg_20_0._btnAuto then
+			arg_20_0._btnAuto:setVisible(false)
+			arg_20_0._btnAuto:setTouchEnabled(false)
+		end
 		if not arg_20_0._isOnlinePvp and arg_20_0._baseBattleType ~= Data.BattleType.base_PVP then
 			var_20_3(arg_20_0._btnSpeed)
 		else
@@ -981,7 +987,10 @@ function var_0_0.showDropHand(arg_53_0)
 	arg_53_0._scene:seenByCamera3D(var_53_2)
 	arg_53_0._btnSetting:setTouchEnabled(false)
 	arg_53_0._btnReplay:setTouchEnabled(false)
-	arg_53_0._btnAuto:setTouchEnabled(false)
+	if arg_53_0._btnAuto then
+		arg_53_0._btnAuto:setVisible(false)
+		arg_53_0._btnAuto:setTouchEnabled(false)
+	end
 	arg_53_0._btnSpeed:setTouchEnabled(false)
 	arg_53_0:updateRoundButton()
 	var_53_1:updateBoardCardsInitialSkills()
@@ -1058,7 +1067,10 @@ function var_0_0.hideDropHand(arg_58_0)
 		var_58_0:updateCardsActive()
 		arg_58_0._btnSetting:setTouchEnabled(true)
 		arg_58_0._btnReplay:setTouchEnabled(true)
-		arg_58_0._btnAuto:setTouchEnabled(true)
+		if arg_58_0._btnAuto then
+			arg_58_0._btnAuto:setVisible(false)
+			arg_58_0._btnAuto:setTouchEnabled(false)
+		end
 		if not arg_58_0._isOnlinePvp and arg_58_0._baseBattleType ~= Data.BattleType.base_PVP then
 			arg_58_0._btnSpeed:setTouchEnabled(true)
 		else

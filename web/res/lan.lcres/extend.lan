@@ -22530,7 +22530,7 @@ Sinh sống lâu năm trong bộ lạc Amazon, thân mật với từng cá nhâ
 0
 Hổ Rừng Amazon
 Ka men rai đơ Amazon
-Có thể Triệu hồi Đặc biệt từ tay khi trong mộ có quái thú 'Amazon'. Khi lên sân, ngẫu nhiên tiêu diệt bài Phép/Bẫy trên sân đối phương bằng số quái thú 'Amazon' trên sân phe ta. Quái thú này tăng 100 ATK với mỗi quái thú 'Amazon' trên sân phe ta.
+Chiến sĩ chuyên chiến đấu, đồng đội càng nhiều thì chiến đấu càng hăng.
 |Giải thích|\nBản thân Thánh chiến Amazon cũng có từ khóa “Amazon”, nên khi chỉ có 1 Thánh chiến binh Amazon trên sân thì ATK là 1800, còn khi có 1 Thánh chiến binh Amazon và 1 Quái Vật Amazon khác trên sân thì ATK là 1900, v. v.
 Ka men rai đơ Amazon
 Người Huấn Luyện Amazon
@@ -56762,3 +56762,29 @@ Gói Mở Rộng: Extra Deck Tổng Hợp II
 Gói Mở Rộng: Extra Deck Tổng Hợp III
 Gói Mở Rộng: Extra Deck Tổng Hợp IV
 Gói Mở Rộng: Extra Deck Tổng Hợp V
+Amazon-Đột Kích
+Khi lên sân, ngẫu nhiên tiêu diệt bài Phép/Bẫy trên sân đối phương bằng số quái thú 'Amazon' trên sân phe ta.
+Amazon-Triệu Hồi
+Có thể Triệu hồi Đặc biệt từ tay khi trong mộ có quái thú 'Amazon'.
+Chu tước tử
+quái Tộc thú có cánh x5
+|Mô tả|\nChỉ những quái vật chưa hành động mới có thể được sử dụng làm nguyên liệu liên kết. Không thể sử dụng quái vật dung hợp, đồng bộ và siêu quái vật làm nguyên liệu liên kết.
+Chu tước tử
+Chu Tước-Thiêu Tẫn
+Khi lên sân, Loại bỏ tất cả bài phép/bẫy trên sân và trên tay đối phương.
+Chu Tước-Hộ Thể
+Khi lên sân, nhận "Khiên chắn quái , bẫy".
+Chu Tước-Đoạt Hồn
+Khi lá bài này bị phá hủy sẽ kích hoạt lấy tối đa 2 lá bài phép/bẫy trên tay đối phương vào tay phe ta.
+Chu Tước-Niết Bàn
+Kĩ năng chủ động mộ (chỉ có thể kích hoạt 1 lần): chọn 1 quái tộc "thú có cánh" trên sân phe ta và 1 quái trên sân đối phương để hiến tế (xuyên qua tường chắn quái) để triệu hồi đặc biệt lá bài này lên sân.
+Luyện hồn tông
+①: Quái tộc Phù Thủy thuộc tính Ám trên sân phe ta tăng ATK bằng số quái trong mộ 2 bên x 100.\n②: Chủ động: 1 lượt 1 lần, chọn 1 quái trên tay hoặc trên sân phe ta đưa vào mộ, sau đó lấy ngẫu nhiên 1 quái tộc Phù Thủy thuộc tính Ám từ bộ bài lên tay.\n③: Khi lá bài này bị phá hủy từ trên sân: Loại bỏ tất cả quái thú trong mộ 2 bên, phe ta và phe địch chịu thiệt hại bằng số quái bị loại bỏ x 100.
+Bài phép môi trường.
+Luyện hồn tông
+Hồn Lực Cường Hóa
+Quái tộc Phù Thủy thuộc tính Ám trên sân phe ta tăng ATK bằng số quái trong mộ 2 bên x 100.
+Luyện Hồn Thu Nạp
+Chủ động: 1 lượt 1 lần, chọn 1 quái trên tay hoặc trên sân phe ta đưa vào mộ, sau đó lấy ngẫu nhiên 1 quái tộc Phù Thủy thuộc tính Ám từ bộ bài lên tay.
+Luyện Hồn Bộc Phá
+Khi lá bài này bị phá hủy từ trên sân: Loại bỏ tất cả quái thú trong mộ 2 bên, phe ta và phe địch chịu thiệt hại bằng số quái bị loại bỏ x 100.

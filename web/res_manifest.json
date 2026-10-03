@@ -17528,6 +17528,27 @@
     ],
     "res/thumb_rare/40718_3.lcres": [
       "40718_3.jpm"
+    ],
+    "res/thumb_monster/10001_3.lcres": [
+      "10001_3.jpm"
+    ],
+    "res/thumb_monster/40725.lcres": [
+      "40725.jpm"
+    ],
+    "res/thumb_monster/40725_3.lcres": [
+      "40725_3.jpm"
+    ],
+    "res/thumb_rare/40725.lcres": [
+      "40725.jpm"
+    ],
+    "res/thumb_rare/40725_3.lcres": [
+      "40725_3.jpm"
+    ],
+    "res/thumb_magic/21134.lcres": [
+      "21134.jpg"
+    ],
+    "res/thumb_magic/21134_3.lcres": [
+      "21134_3.jpg"
     ]
   },
   "files": [
@@ -19128,7 +19149,25 @@
     "res/new/thumb/40718.png",
     "res/new/thumb/card_ico_40718.png",
     "res/new/thumb/card_ico_30244.png",
-    "res/new/thumb/cuu-thien-huyen-sat.png"
+    "res/new/thumb/cuu-thien-huyen-sat.png",
+    "res/new/thumb/card_ico_21134.png",
+    "res/new/thumb/card_ico_21134_3.png",
+    "res/new/thumb/card_ico_10001.png",
+    "res/new/thumb/card_ico_10001_3.png",
+    "res/new/thumb/card_ico_10004.png",
+    "res/new/thumb/card_ico_10004_3.png",
+    "res/new/thumb/card_ico_10006.png",
+    "res/new/thumb/card_ico_10006_3.png",
+    "res/new/thumb/card_ico_10120.png",
+    "res/new/thumb/card_ico_10120_3.png",
+    "res/new/thumb/card_ico_20566.png",
+    "res/new/thumb/card_ico_20566_3.png",
+    "res/new/thumb/card_ico_30074.png",
+    "res/new/thumb/card_ico_30074_3.png",
+    "res/new/thumb/card_ico_30244_3.png",
+    "res/new/thumb/card_ico_40718_3.png",
+    "res/new/thumb/card_ico_40725.png",
+    "res/new/thumb/card_ico_40725_3.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [
@@ -25904,6 +25943,174 @@
     "res/thumb_trap/30244_3.jpg": [
       242,
       242
+    ],
+    "21134.jpg": [
+      242,
+      242
+    ],
+    "21134_3.jpg": [
+      242,
+      242
+    ],
+    "res/thumb_magic/21134.lcres/21134.jpg": [
+      242,
+      242
+    ],
+    "res/thumb_magic/21134_3.lcres/21134_3.jpg": [
+      242,
+      242
+    ],
+    "res/new/thumb/card_ico_21134.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_21134_3.png": [
+      82,
+      82
+    ],
+    "card_ico_21134.png": [
+      82,
+      82
+    ],
+    "card_ico_21134_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_10001.png": [
+      82,
+      82
+    ],
+    "card_ico_10001.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_10001_3.png": [
+      82,
+      82
+    ],
+    "card_ico_10001_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_10004.png": [
+      82,
+      82
+    ],
+    "card_ico_10004.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_10004_3.png": [
+      82,
+      82
+    ],
+    "card_ico_10004_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_10006.png": [
+      82,
+      82
+    ],
+    "card_ico_10006.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_10006_3.png": [
+      82,
+      82
+    ],
+    "card_ico_10006_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_10120.png": [
+      82,
+      82
+    ],
+    "card_ico_10120.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_10120_3.png": [
+      82,
+      82
+    ],
+    "card_ico_10120_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_20566.png": [
+      82,
+      82
+    ],
+    "card_ico_20566.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_20566_3.png": [
+      82,
+      82
+    ],
+    "card_ico_20566_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_30074.png": [
+      82,
+      82
+    ],
+    "card_ico_30074.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_30074_3.png": [
+      82,
+      82
+    ],
+    "card_ico_30074_3.png": [
+      82,
+      82
+    ],
+    "card_ico_30244.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_30244_3.png": [
+      82,
+      82
+    ],
+    "card_ico_30244_3.png": [
+      82,
+      82
+    ],
+    "card_ico_40718.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40718_3.png": [
+      82,
+      82
+    ],
+    "card_ico_40718_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40725.png": [
+      82,
+      82
+    ],
+    "card_ico_40725.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40725_3.png": [
+      82,
+      82
+    ],
+    "card_ico_40725_3.png": [
+      82,
+      82
     ]
   },
   "thumbs": {
@@ -27067,7 +27274,9 @@
       "21131",
       "21132",
       "21133",
-      "20566_3"
+      "20566_3",
+      "21134",
+      "21134_3"
     ],
     "thumb_trap": [
       "30001",

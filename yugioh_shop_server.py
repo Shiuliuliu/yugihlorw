@@ -536,6 +536,28 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+
+        if self.path in ('/api/reload_cache', '/api/reload', '/reload'):
+            try:
+                load_pack_mappings()
+                load_all_shop_data()
+                init_global_cards()
+                resp = {
+                    "code": 200,
+                    "msg": "Shop server cache reloaded successfully",
+                    "loaded_cards": len(ALL_CARDS_MAP),
+                    "privilege_products": len(ALL_SHOP_PRODUCTS.get('privilege', {}))
+                }
+            except Exception as e:
+                resp = {"code": 500, "msg": str(e)}
+            body = json.dumps(resp, ensure_ascii=False).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(body)))
+            self.send_cors_headers()
+            self.end_headers()
+            self.wfile.write(body)
+            return
         
         self.send_response(404)
         self.send_cors_headers()

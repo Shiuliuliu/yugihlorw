@@ -489,14 +489,123 @@
 
 	cc.spriteFrameCache.addSpriteFramesWithData = function () {};
 
+	var CUSTOM_FRAME_IMAGE_MAP = {
+		'img_icon_res1_s': 'res/new/linh_thach_34.png',
+		'res_ico_1': 'res/new/linh_thach_76.png',
+		'img_icon_res3_s': 'res/new/linh_thach_vip_36.png',
+		'res_ico_3': 'res/new/linh_thach_vip_76.png',
+		'card_ico_10001': 'res/new/thumb/card_ico_10001.png',
+		'card_ico_10001_3': 'res/new/thumb/card_ico_10001_3.png',
+		'card_ico_10004': 'res/new/thumb/card_ico_10004.png',
+		'card_ico_10004_3': 'res/new/thumb/card_ico_10004_3.png',
+		'card_ico_10006': 'res/new/thumb/card_ico_10006.png',
+		'card_ico_10006_3': 'res/new/thumb/card_ico_10006_3.png',
+		'card_ico_10120': 'res/new/thumb/card_ico_10120.png',
+		'card_ico_10120_3': 'res/new/thumb/card_ico_10120_3.png',
+		'card_ico_20566': 'res/new/thumb/card_ico_20566.png',
+		'card_ico_20566_3': 'res/new/thumb/card_ico_20566_3.png',
+		'card_ico_21134': 'res/new/thumb/card_ico_21134.png',
+		'card_ico_21134_3': 'res/new/thumb/card_ico_21134_3.png',
+		'card_ico_30074': 'res/new/thumb/card_ico_30074.png',
+		'card_ico_30074_3': 'res/new/thumb/card_ico_30074_3.png',
+		'card_ico_30244': 'res/new/thumb/card_ico_30244.png',
+		'card_ico_30244_3': 'res/new/thumb/card_ico_30244_3.png',
+		'card_ico_40718': 'res/new/thumb/card_ico_40718.png',
+		'card_ico_40718_3': 'res/new/thumb/card_ico_40718_3.png',
+		'card_ico_40725': 'res/new/thumb/card_ico_40725.png',
+		'card_ico_40725_3': 'res/new/thumb/card_ico_40725_3.png'
+	};
+	global.CUSTOM_FRAME_IMAGE_MAP = CUSTOM_FRAME_IMAGE_MAP;
+
 	/* Keep the public cache native: game code uses a missing frame as an
 	 * existence test for optional skins and channel variants. The asynchronous
 	 * construction paths below wait for late atlas frames themselves. */
 	var lookupFrame = cc.spriteFrameCache.getSpriteFrame.bind(cc.spriteFrameCache);
 
+	function getCustomSpriteFrame(name) {
+		var custom = (global.jdzcRes && global.jdzcRes.CUSTOM_ICON_REPLACEMENTS) || global.CUSTOM_ICON_REPLACEMENTS;
+		if (!custom || !custom[name]) {
+			if (CUSTOM_FRAME_IMAGE_MAP && CUSTOM_FRAME_IMAGE_MAP[name]) {
+				var mapPath = CUSTOM_FRAME_IMAGE_MAP[name];
+				var info = { path: mapPath, w: 82, h: 82 };
+				if (!custom) custom = {};
+				custom[name] = info;
+			} else {
+				var match = /^card_ico_(\d+)(_3)?$/.exec(name);
+				if (match) {
+					var cardId = match[1];
+					var candidatePath = 'res/new/thumb/card_ico_' + cardId + '.png';
+					if (res && res.exists && res.exists(candidatePath)) {
+						if (!custom) custom = {};
+						custom[name] = { path: candidatePath, w: 82, h: 82 };
+					} else {
+						return null;
+					}
+				} else {
+					return null;
+				}
+			}
+		}
+		var item = custom[name];
+		var versioned = (global.jdzcRes && global.jdzcRes.versionedUrl) ? global.jdzcRes.versionedUrl(item.path) : item.path;
+		var tex = cc.textureCache.getTextureForKey(item.path) || cc.textureCache.getTextureForKey(versioned);
+		if (!tex) {
+			tex = cc.textureCache.addImage(versioned);
+			if (tex && !(tex instanceof Error)) {
+				cc.textureCache._textures[item.path] = tex;
+			}
+		}
+		if (tex && !(tex instanceof Error)) {
+			var existing = lookupFrame(name);
+			if (existing) {
+				if (typeof tex.isLoaded === 'function' && tex.isLoaded()) {
+					existing._textureLoaded = true;
+				}
+				return existing;
+			}
+			var w = item.w || 82;
+			var h = item.h || 82;
+			var frame = new cc.SpriteFrame(tex, cc.rect(0, 0, w, h), false, cc.p(0, 0), cc.size(w, h));
+			frame._textureLoaded = (typeof tex.isLoaded === 'function') ? tex.isLoaded() : true;
+			cc.spriteFrameCache.addSpriteFrame(frame, name);
+			if (typeof tex.isLoaded === 'function' && !tex.isLoaded()) {
+				tex.addEventListener('load', function () {
+					frame._textureLoaded = true;
+					if (global.jdzcRes && global.jdzcRes.resolveFrame) {
+						global.jdzcRes.resolveFrame(name, frame);
+					}
+				});
+			} else {
+				frame._textureLoaded = true;
+				if (global.jdzcRes && global.jdzcRes.resolveFrame) {
+					global.jdzcRes.resolveFrame(name, frame);
+				}
+			}
+			return frame;
+		}
+		return null;
+	}
+
 	cc.spriteFrameCache.getSpriteFrame = function (name) {
-		return lookupFrame(name) || null;
+		var f = lookupFrame(name);
+		if (f && !isBlankFrame(f)) return f;
+		var customFrame = getCustomSpriteFrame(name);
+		if (customFrame) return customFrame;
+		return f || null;
 	};
+
+	var baseRemoveSpriteFrames = cc.spriteFrameCache.removeSpriteFrames ? cc.spriteFrameCache.removeSpriteFrames.bind(cc.spriteFrameCache) : null;
+	if (baseRemoveSpriteFrames) {
+		cc.spriteFrameCache.removeSpriteFrames = function () {
+			baseRemoveSpriteFrames.apply(cc.spriteFrameCache, arguments);
+			var custom = (global.jdzcRes && global.jdzcRes.CUSTOM_ICON_REPLACEMENTS) || global.CUSTOM_ICON_REPLACEMENTS;
+			if (custom) {
+				Object.keys(custom).forEach(function (k) {
+					getCustomSpriteFrame(k);
+				});
+			}
+		};
+	}
 
 	/* ------------------------------------------------------------------ *
 	 * cc.FileUtils -- there is no filesystem, only URLs
@@ -2344,6 +2453,16 @@
 			return this;
 		},
 
+		onExit: function () {
+			this.stop();
+			this._super();
+		},
+
+		cleanup: function () {
+			this.stop();
+			this._super();
+		},
+
 		/* in seconds: the game schedules its removal off this */
 		getAnimationDuration: function (name) {
 			if (!this._data) return 0;
@@ -2897,24 +3016,16 @@
 		if (!pos.x && !pos.y) sprite.setPosition(cc.p(size.width / 2, size.height / 2));
 	}
 
-	var CUSTOM_FRAME_IMAGE_MAP = {
-		'img_icon_res1_s': 'res/new/linh_thach_34.png',
-		'res_ico_1': 'res/new/linh_thach_76.png',
-		'img_icon_res3_s': 'res/new/linh_thach_vip_36.png',
-		'res_ico_3': 'res/new/linh_thach_vip_76.png'
-	};
-
 	/* Cocos keeps a reference to the SpriteFrame rather than looking it up
 	 * again. Register an empty node with res.js and replace its frame when the
 	 * .sfb index arrives. */
 	function createFromFrameName(Cls, name) {
-		if (CUSTOM_FRAME_IMAGE_MAP[name]) {
-			var customTex = cc.textureCache.getTextureForKey(CUSTOM_FRAME_IMAGE_MAP[name]) || cc.textureCache.addImage(CUSTOM_FRAME_IMAGE_MAP[name]);
-			if (customTex) return new Cls(customTex);
-			return new Cls(CUSTOM_FRAME_IMAGE_MAP[name]);
+		var frame = cc.spriteFrameCache.getSpriteFrame(name);
+		if (!isBlankFrame(frame)) {
+			var sprite = new Cls('#' + name);
+			adoptLateSize(sprite);
+			return sprite;
 		}
-		var frame = lookupFrame(name);
-		if (!isBlankFrame(frame)) return new Cls('#' + name);
 
 		var sprite = new Cls();
 		res.awaitFrame(name, function (loadedFrame) {
@@ -2946,13 +3057,7 @@
 	var baseInitWithSpriteFrameName = cc.Sprite.prototype.initWithSpriteFrameName;
 	cc.Sprite.prototype.initWithSpriteFrameName = function (name) {
 		if (!name) return false;
-		if (CUSTOM_FRAME_IMAGE_MAP[name]) {
-			var customTex = cc.textureCache.getTextureForKey(CUSTOM_FRAME_IMAGE_MAP[name]) || cc.textureCache.addImage(CUSTOM_FRAME_IMAGE_MAP[name]);
-			if (customTex && this.initWithTexture) {
-				return this.initWithTexture(customTex, cc.rect(0, 0, customTex.width, customTex.height));
-			}
-		}
-		if (!isBlankFrame(lookupFrame(name)))
+		if (!isBlankFrame(cc.spriteFrameCache.getSpriteFrame(name)))
 			return baseInitWithSpriteFrameName.apply(this, arguments);
 
 		var sprite = this;
@@ -2973,24 +3078,21 @@
 	 * null-on-miss behavior while making late atlas assignment safe. */
 	var baseSpriteSetSpriteFrame = cc.Sprite.prototype.setSpriteFrame;
 	cc.Sprite.prototype.setSpriteFrame = function (frame) {
-		if (typeof frame === 'string' && CUSTOM_FRAME_IMAGE_MAP[frame]) {
-			var customTex = cc.textureCache.getTextureForKey(CUSTOM_FRAME_IMAGE_MAP[frame]) || cc.textureCache.addImage(CUSTOM_FRAME_IMAGE_MAP[frame]);
-			if (customTex && this.setTexture) {
-				this.setTexture(customTex);
-				if (this.setTextureRect) this.setTextureRect(cc.rect(0, 0, customTex.width, customTex.height));
-				return;
-			}
+		var frameObj = (typeof frame === 'string') ? cc.spriteFrameCache.getSpriteFrame(frame) : frame;
+		if (frameObj && !isBlankFrame(frameObj)) {
+			return baseSpriteSetSpriteFrame.call(this, frameObj);
 		}
 		if (typeof frame !== 'string') {
 			return baseSpriteSetSpriteFrame.apply(this, arguments);
 		}
-		var loadedFrame = lookupFrame(frame);
-		if (!isBlankFrame(loadedFrame))
-			return baseSpriteSetSpriteFrame.call(this, loadedFrame);
-
 		var sprite = this;
 		res.awaitFrame(frame, function (resolvedFrame) {
+			if (!resolvedFrame) return;
 			baseSpriteSetSpriteFrame.call(sprite, resolvedFrame);
+			if (sprite._renderCmd && sprite._renderCmd.setDirtyFlag) {
+				sprite._renderCmd.setDirtyFlag(cc.Node._dirtyFlags.transformDirty);
+			}
+			if (cc.renderer) cc.renderer.childrenOrderDirty = true;
 		});
 	};
 	cc.ShaderSprite.createWithSpriteFrameName = function (name) {

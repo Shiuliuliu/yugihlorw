@@ -5504,7 +5504,7 @@ function var_0_0.getXYZCandidates(arg_254_0, arg_254_1, arg_254_2, arg_254_3, ar
 	end
 
 	if arg_254_1:hasSkillFast(2414) then
-		B.appendTable(var_254_4, B.filterCanBeXYZedCards(B.filterOppoCards(arg_254_0:getBoardCards())), arg_254_1)
+		B.appendTable(var_254_4, B.filterCanBeXYZedCards(B.filterOppoCards(arg_254_0:getBoardCards()), arg_254_1))
 	end
 
 	if arg_254_1:hasSkillFast(9540) then
@@ -7278,7 +7278,13 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 	local var_304_1 = Data._skillInfo[arg_304_1._id]
 	local var_304_2 = var_304_1._val[math.min(arg_304_1._level, #var_304_1._val)] or 0
 
-	if arg_304_1._id == 14610 then
+	if arg_304_1._id == 14618 then
+		local var_our_wb = B.sortCardsByBoardPos(B.filterInCategoryCards(arg_304_0:getBoardCards(), 13))
+		local var_oppo_m = B.sortCardsByBoardPos(var_304_0:getBoardCards())
+		if #var_our_wb > 0 and #var_oppo_m > 0 then
+			return true, B.mergeTable({ var_our_wb, var_oppo_m }), 2
+		end
+	elseif arg_304_1._id == 14610 then
 		return true, B.sortCardsByBoardPos(arg_304_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_304_0:getBattleCardsByType("P", Data.CardType.monster), 6))), 1
 	elseif arg_304_1._id == 14611 then
 		return true, arg_304_0:filterCanChangeToHandCards(arg_304_0:getBattleCardsByInfoId("P", 20301)), 1
@@ -13226,6 +13232,8 @@ function var_0_0.isGraveSkill3(arg_306_0, arg_306_1, arg_306_2, arg_306_3)
 		return true, B.sortCardsByBoardPos(arg_306_0:filterCanChangeToHandCards(B.filterInCategoryGroupCards(arg_306_0:getBattleCardsByMaxStar("P", var_306_2), var_306_1._refCards))), 1
 	elseif arg_306_1._id == 7833 then
 		return true, B.sortCardsByBoardPos(arg_306_0:filterCanChangeToHandCards(arg_306_0:getBattleCardsByInfoIdGroup("P", var_306_1._refCards))), 1
+	elseif arg_306_1._id == 7835 then
+		return true, B.sortCardsByBoardPos(arg_306_0:getBattleCardsByType("HB", Data.CardType.monster)), 1
 	end
 end
 

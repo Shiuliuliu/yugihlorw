@@ -92,7 +92,7 @@ def register_account(username, password, character_name=None):
             spell_ids = [r['id'] if isinstance(r, dict) else r[0] for r in cur.fetchall()]
             cur.execute("SELECT id FROM card_traps WHERE quality != 'GR' ORDER BY RAND() LIMIT 10")
             trap_ids = [r['id'] if isinstance(r, dict) else r[0] for r in cur.fetchall()]
-            cur.execute("SELECT id FROM card_extra WHERE quality != 'GR' ORDER BY RAND() LIMIT 15")
+            cur.execute("SELECT id FROM card_extra WHERE quality != 'GR' ORDER BY RAND() LIMIT 20")
             extra_ids = [r['id'] if isinstance(r, dict) else r[0] for r in cur.fetchall()]
 
             main_deck = monster_ids + spell_ids + trap_ids

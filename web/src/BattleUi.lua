@@ -505,6 +505,17 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 	arg_22_0._isRankLadder = arg_22_1._isRankLadder == true
 	arg_22_0._speedFactor = arg_22_1._speedFactor or 1
 
+	local isOppNpc = (arg_22_1 and arg_22_1._opponent and (arg_22_1._opponent._isNpc == true or arg_22_1._opponent._isNpc == 1))
+	local isOffline = (arg_22_1 and (arg_22_1._offlineMode == true or arg_22_1._isOppoOnline == false))
+	local hasMatchId = (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= "" and not string.find(tostring(ClientData._currentMatchId), "bot_"))
+	local isRealOnlinePvp = false
+	if not isOffline and not isOppNpc and ClientData._isOppoOnline and hasMatchId then
+		if arg_22_0._battleType == Data.BattleType.PVP_clash or arg_22_0._battleType == Data.BattleType.PVP_clash_ex or arg_22_0._battleType == Data.BattleType.PVP_ladder or arg_22_0._battleType == Data.BattleType.PVP_room or arg_22_0._battleType == Data.BattleType.PVP_group or arg_22_0._battleType == Data.BattleType.PVP_dark or arg_22_0._battleType == Data.BattleType.PVP_survival or arg_22_0._battleType == Data.BattleType.PVP_survival_ex or arg_22_0._battleType == Data.BattleType.PVP_friend or (arg_22_1 and arg_22_1._pvpMatch) then
+			isRealOnlinePvp = true
+		end
+	end
+	arg_22_0._isOnlinePvp = isRealOnlinePvp
+
 	if (arg_22_0._isTesting and not arg_22_0._isOnlinePvp) or arg_22_0._isObserver then
 		arg_22_0._needSendEvent = false
 	end
@@ -545,13 +556,13 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 		_survivalTimeStamp = arg_22_1._player._survivalTimeStamp,
 		_reviewType = ClientData._cfg and ClientData._cfg.battleReview or 0,
 		_monthCardType = arg_22_1._player._monthCardType,
-		_isNewRound = arg_22_1._player._isNewRound,
-		_roundTimeInit = arg_22_1._player._roundTimeInit,
-		_roundTimeMax = arg_22_1._player._roundTimeMax,
-		_roundTimeDelta = arg_22_1._player._roundTimeDelta,
-		_isOnlinePvp = arg_22_0._isOnlinePvp or (arg_22_1 and (arg_22_1._isOppoOnline or arg_22_1._pvpMatch)) or (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= ""),
-		_isOppoOnline = (arg_22_1 and arg_22_1._isOppoOnline),
-		_pvpMatch = (arg_22_1 and arg_22_1._pvpMatch)
+		_isNewRound = isRealOnlinePvp and arg_22_1._player._isNewRound or false,
+		_roundTimeInit = isRealOnlinePvp and (arg_22_1._player._roundTimeInit or 90) or 0,
+		_roundTimeMax = isRealOnlinePvp and (arg_22_1._player._roundTimeMax or 120) or 0,
+		_roundTimeDelta = isRealOnlinePvp and (arg_22_1._player._roundTimeDelta or 0) or 0,
+		_isOnlinePvp = isRealOnlinePvp,
+		_isOppoOnline = isRealOnlinePvp,
+		_pvpMatch = isRealOnlinePvp
 	}
 	local var_22_8 = {
 		_isClient = true,
@@ -572,18 +583,18 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 		_fortressSkill = arg_22_1._opponent._fortressSkill,
 		_assistantHp = arg_22_1._opponent._assistantHp,
 		_battleType = arg_22_0._replayType or arg_22_0._battleType,
-		_isNpc = arg_22_1._opponent._isNpc,
+		_isNpc = isOppNpc or (not isRealOnlinePvp),
 		_idInRoom = arg_22_1._opponent._idInRoom,
 		_survivalTimeStamp = arg_22_1._opponent._survivalTimeStamp,
 		_reviewType = ClientData._cfg and ClientData._cfg.battleReview or 0,
 		_monthCardType = arg_22_1._opponent._monthCardType,
-		_isNewRound = arg_22_1._opponent._isNewRound,
-		_roundTimeInit = arg_22_1._opponent._roundTimeInit,
-		_roundTimeMax = arg_22_1._opponent._roundTimeMax,
-		_roundTimeDelta = arg_22_1._opponent._roundTimeDelta,
-		_isOnlinePvp = arg_22_0._isOnlinePvp or (arg_22_1 and (arg_22_1._isOppoOnline or arg_22_1._pvpMatch)) or (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= ""),
-		_isOppoOnline = (arg_22_1 and arg_22_1._isOppoOnline),
-		_pvpMatch = (arg_22_1 and arg_22_1._pvpMatch)
+		_isNewRound = isRealOnlinePvp and arg_22_1._opponent._isNewRound or false,
+		_roundTimeInit = isRealOnlinePvp and (arg_22_1._opponent._roundTimeInit or 90) or 0,
+		_roundTimeMax = isRealOnlinePvp and (arg_22_1._opponent._roundTimeMax or 120) or 0,
+		_roundTimeDelta = isRealOnlinePvp and (arg_22_1._opponent._roundTimeDelta or 0) or 0,
+		_isOnlinePvp = isRealOnlinePvp,
+		_isOppoOnline = isRealOnlinePvp,
+		_pvpMatch = isRealOnlinePvp
 	}
 
 	ClientData._battleRoundStartInfo = nil
@@ -631,8 +642,8 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 		ClientData.addBattleDebugLog("\n\n")
 	end
 
-	arg_22_0._isOnlinePvp = arg_22_0._battleType == Data.BattleType.PVP_clash or arg_22_0._battleType == Data.BattleType.PVP_clash_npc or arg_22_0._battleType == Data.BattleType.PVP_clash_ex or arg_22_0._battleType == Data.BattleType.PVP_ladder or arg_22_0._battleType == Data.BattleType.PVP_ladder_npc or arg_22_0._battleType == Data.BattleType.PVP_room or arg_22_0._battleType == Data.BattleType.PVP_group or arg_22_0._battleType == Data.BattleType.PVP_dark or arg_22_0._battleType == Data.BattleType.PVP_survival or arg_22_0._battleType == Data.BattleType.PVP_survival_ex or arg_22_0._battleType == Data.BattleType.PVP_friend or (arg_22_1 and (arg_22_1._isOppoOnline or arg_22_1._pvpMatch)) or (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= "")
-	arg_22_0._needSendRound = arg_22_0._isOnlinePvp or arg_22_0._battleType == Data.BattleType.PVP_friend
+	arg_22_0._isOnlinePvp = isRealOnlinePvp
+	arg_22_0._needSendRound = isRealOnlinePvp
 
 	if arg_22_0._isOnlinePvp or arg_22_0._baseBattleType == Data.BattleType.base_PVP then
 		arg_22_0._battleSpeed = 3
@@ -652,15 +663,9 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 			arg_22_0._player._playerType = BattleData.PlayerType.player
 		end
 
-		if arg_22_0._isOnlinePvp then
-			arg_22_0._opponent._playerType = BattleData.PlayerType.opponent
-		elseif arg_22_0._battleType == Data.BattleType.PVP_friend then
+		if isRealOnlinePvp and not isOppNpc then
 			arg_22_0._opponent._playerType = BattleData.PlayerType.opponent
 		else
-			arg_22_0._opponent._playerType = BattleData.PlayerType.enviroment
-		end
-
-		if arg_22_0._battleType == Data.BattleType.PVP_survival_ex and arg_22_0._opponent._isNpc then
 			arg_22_0._opponent._playerType = BattleData.PlayerType.enviroment
 		end
 	elseif arg_22_0._baseBattleType == Data.BattleType.base_PVE then
@@ -920,8 +925,11 @@ function var_0_0.initUiControl(arg_29_0)
 	lc.offset(var_29_6._title, 0, 16)
 
 	arg_29_0._btnAuto = var_29_6
+	arg_29_0._btnAuto:setVisible(false)
+	arg_29_0._btnAuto:setTouchEnabled(false)
+	arg_29_0._btnAuto:setEnabled(false)
 
-	arg_29_0:setBtnAuto(arg_29_0._autoConfig)
+	arg_29_0:setBtnAuto(false)
 
 	local var_29_7 = var_29_2("bat_btn_2", nil, string.format("x%d", arg_29_0._battleSpeed))
 
@@ -1617,8 +1625,7 @@ function var_0_0.onBattleEvent(arg_60_0, arg_60_1)
 		var_60_3:updateBoardCardsInitialSkills()
 	elseif var_60_1 == BattleData.Status.account_halo then
 		var_60_5 = var_60_3:accountHalo(var_60_5, var_60_1, var_60_2)
-		var_60_5 = arg_60_0._playerUi:accountAction(var_60_5, var_60_1, var_60_2)
-		var_60_5 = arg_60_0._opponentUi:accountAction(var_60_5, var_60_1, var_60_2)
+		var_60_5 = var_60_3:accountAction(var_60_5, var_60_1, var_60_2)
 	elseif var_60_1 == BattleData.Status.account_event then
 		var_60_5 = var_60_3:accountEvent(var_60_5)
 
@@ -1748,21 +1755,9 @@ function var_0_0.tryUseCard(arg_63_0, arg_63_1)
 	if not arg_63_0._isEndAllOperation then
 		arg_63_0._isEndAllOperation = arg_63_0._nameTag == "normal" and arg_63_0._playerUi:getIsEndAllOperation() or false
 
-		if arg_63_0._isEndAllOperation and not arg_63_0._isAuto and arg_63_0._baseBattleType ~= Data.BattleType.base_replay then
-			arg_63_0._isAuto = true
-			arg_63_0._isAutoAuto = true
-
-			arg_63_0:setBtnAuto(arg_63_0._isAuto)
-		end
-	elseif arg_63_0._isAutoAuto then
-		arg_63_0._isEndAllOperation = arg_63_0._playerUi:getIsEndAllOperation()
-
-		if not arg_63_0._isEndAllOperation then
-			arg_63_0._isAuto = false
-			arg_63_0._isAutoAuto = false
-
-			arg_63_0:setBtnAuto(arg_63_0._isAuto)
-		end
+		-- Auto mode completely disabled per user requirement
+		arg_63_0._isAuto = false
+		arg_63_0._isAutoAuto = false
 	end
 
 	if arg_63_0._isAuto then
@@ -1825,7 +1820,9 @@ function var_0_0.operateBegin(arg_66_0)
 
 	arg_66_0._isPvpTimeout = false
 	if arg_66_0._btnAuto then
-		arg_66_0._btnAuto:setTouchEnabled(true)
+		arg_66_0._btnAuto:setVisible(false)
+		arg_66_0._btnAuto:setTouchEnabled(false)
+		arg_66_0._btnAuto:setEnabled(false)
 	end
 
 	local var_66_0 = arg_66_0._player
@@ -1835,6 +1832,7 @@ function var_0_0.operateBegin(arg_66_0)
 	arg_66_0._isAddingBoardCard = false
 
 	var_66_1:updateCardsActive()
+	var_66_1:updateBoardCardsInitialSkills()
 	arg_66_0:updateRoundButton()
 
 	if arg_66_0._needSoftGuide then
@@ -1873,11 +1871,8 @@ function var_0_0.resetWhenRoundEnd(arg_67_0)
 	arg_67_0:removeExchangeArrow()
 	arg_67_0:removeSoftGuide()
 
-	if arg_67_0._timeOutTimes >= 3 and not arg_67_0._isAuto then
+	if arg_67_0._timeOutTimes >= 3 then
 		arg_67_0._timeOutTimes = 0
-		arg_67_0._isAuto = true
-
-		arg_67_0:setBtnAuto(arg_67_0._isAuto)
 	end
 end
 
@@ -1953,6 +1948,7 @@ function var_0_0.addBoardCardEnded(arg_72_0, arg_72_1)
 	arg_72_0._isAddingBoardCard = false
 
 	var_72_0:updateCardsActive()
+	var_72_0:updateBoardCardsInitialSkills()
 	arg_72_0:updateRoundButton()
 
 	if arg_72_0._isOperating and arg_72_0._needSoftGuide then
@@ -2031,29 +2027,7 @@ function var_0_0.onButtonEvent(arg_75_0, arg_75_1)
 			arg_75_0._btnReplay._icon:setSpriteFrame("bat_btn_icon_pause")
 		end
 	elseif arg_75_1 == arg_75_0._btnAuto then
-		if arg_75_0._isPvpTimeout or arg_75_0._isEndOperating or not arg_75_0._isOperating then
-			return
-		end
-
-		local var_75_6 = P._id ~= 0 and P:getMaxCharacterLevel() or arg_75_0._player._level
-		local var_75_7 = ClientData._isAutoBattle and 0 or 0
-
-		if var_75_6 < var_75_7 then
-			local var_75_8 = string.format(Str(STR.LORD_UNLOCK_LEVEL), var_75_7) .. Str(STR.BATTLE_AUTO)
-
-			ToastManager.push(var_75_8)
-		else
-			arg_75_0._autoConfig = not arg_75_0._autoConfig
-
-			arg_75_0:autoOperate(not arg_75_0._isAuto)
-
-			if arg_75_0._autoConfig == false and ClientData._isAutoBattle then
-				require("Dialog").showDialog(Str(STR.STOP_AUTO_BATTLE_TIP), function()
-					ClientData._isAutoBattle = false
-					ClientData._autoReloadCount = 0
-				end)
-			end
-		end
+		return
 	elseif arg_75_1 == arg_75_0._btnSetting then
 		if ClientData.getCurrentTime() - arg_75_0._timestamp < 4 then
 			return
@@ -3178,6 +3152,9 @@ function var_0_0.setBtnAuto(arg_106_0, arg_106_1)
 end
 
 function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
+	if not arg_107_0._isOnlinePvp then
+		return
+	end
 
 	arg_107_0:stopPvpTiming()
 	arg_107_0:removePvpTimingRope()
@@ -3216,6 +3193,9 @@ function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
 end
 
 function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
+	if not arg_108_0._isOnlinePvp then
+		return
+	end
 	local delta = tonumber(arg_108_1) or 4
 	local maxTime = tonumber(arg_108_2) or 120
 	if arg_108_0._roundRealStartTime then
@@ -3232,6 +3212,9 @@ function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
 end
 
 function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
+	if not arg_108_0._isOnlinePvp then
+		return
+	end
 	local newRemaining = math.min(120, math.max(15, tonumber(arg_108_1) or 0))
 	if arg_108_0._roundRealStartTime and newRemaining > 0 then
 		local curNow = os.time()
@@ -3245,6 +3228,9 @@ function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
 end
 
 function var_0_0.startPvpTiming(arg_108_0)
+	if not arg_108_0._isOnlinePvp then
+		return
+	end
 	if arg_108_0._roundRealStartTime == nil then
 		arg_108_0._roundRealStartTime = os.time()
 	end
@@ -3334,6 +3320,9 @@ function var_0_0.removePvpTimingRope(arg_113_0)
 end
 
 function var_0_0.updateRoundTimer(arg_114_0, arg_114_1)
+	if not arg_114_0._isOnlinePvp then
+		return
+	end
 	local var_114_0 = arg_114_0._player:getActionPlayer()
 	local var_114_1 = arg_114_0._playerUi._player == var_114_0 and arg_114_0._playerUi or arg_114_0._opponentUi
 
@@ -3377,6 +3366,9 @@ function var_0_0.updateRoundTimer(arg_114_0, arg_114_1)
 end
 
 function var_0_0.pvpTimeout(arg_115_0)
+	if not arg_115_0._isOnlinePvp then
+		return
+	end
 	arg_115_0:removePvpTimingRope()
 	arg_115_0:stopPvpTiming()
 
@@ -3395,21 +3387,18 @@ function var_0_0.pvpTimeout(arg_115_0)
 		end
 		arg_115_0:useRoundEnd()
 	elseif not arg_115_0._isObserver then
-		local isRealOnlinePvp = arg_115_0._isOnlinePvp or (ClientData and ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= "")
-		if not isRealOnlinePvp then
-			if arg_115_0._opponent then
-				local roundOp = {
-					_card = BattleData.UseCardId.round,
-					_target = 0,
-					_choice = -1,
-					_round = arg_115_0._opponent._round or 1,
-					_time = math.floor(ClientData.getCurrentTime() or os.time())
-				}
-				table.insert(arg_115_0._opponent._ops, roundOp)
-				arg_115_0._isWaitting = false
-				arg_115_0:hideThinking()
-				arg_115_0._opponent:use()
-			end
+		if arg_115_0._opponent then
+			local roundOp = {
+				_card = BattleData.UseCardId.round,
+				_target = 0,
+				_choice = -1,
+				_round = arg_115_0._opponent._round or 1,
+				_time = math.floor(ClientData.getCurrentTime() or os.time())
+			}
+			table.insert(arg_115_0._opponent._ops, roundOp)
+			arg_115_0._isWaitting = false
+			arg_115_0:hideThinking()
+			arg_115_0._opponent:use()
 		end
 	end
 end

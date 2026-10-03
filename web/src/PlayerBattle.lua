@@ -15,7 +15,14 @@ function var_0_0.ctor(arg_1_0, arg_1_1)
 	arg_1_0._troopSkins = arg_1_1._troopSkins
 	arg_1_0._battleType = arg_1_1._battleType
 	arg_1_0._baseBattleType = math.floor(arg_1_0._battleType / 100)
-	arg_1_0._isOnlinePvp = arg_1_0._battleType == Data.BattleType.PVP_clash or arg_1_0._battleType == Data.BattleType.PVP_clash_npc or arg_1_0._battleType == Data.BattleType.PVP_clash_ex or arg_1_0._battleType == Data.BattleType.PVP_ladder or arg_1_0._battleType == Data.BattleType.PVP_ladder_npc or arg_1_0._battleType == Data.BattleType.PVP_room or arg_1_0._battleType == Data.BattleType.PVP_group or arg_1_0._battleType == Data.BattleType.PVP_dark or arg_1_0._battleType == Data.BattleType.PVP_survival or arg_1_0._battleType == Data.BattleType.PVP_survival_ex or arg_1_0._battleType == Data.BattleType.PVP_friend or (arg_1_1 and (arg_1_1._isOnlinePvp or arg_1_1._isOppoOnline or arg_1_1._pvpMatch)) or ClientData._isOppoOnline or (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= "")
+	local isOppNpc = (arg_1_1 and (arg_1_1._isNpc or (arg_1_1._opponent and arg_1_1._opponent._isNpc)))
+	local isOffline = (arg_1_1 and (arg_1_1._offlineMode == true or arg_1_1._isOppoOnline == false))
+	local hasMatchId = (ClientData._currentMatchId ~= nil and ClientData._currentMatchId ~= "" and not string.find(tostring(ClientData._currentMatchId), "bot_"))
+	if isOffline or isOppNpc or not ClientData._isOppoOnline or not hasMatchId then
+		arg_1_0._isOnlinePvp = false
+	else
+		arg_1_0._isOnlinePvp = (arg_1_1 and arg_1_1._isOnlinePvp == true) or false
+	end
 	arg_1_0._maxRound = arg_1_0._isOnlinePvp and 30 or arg_1_0:getMaxRound(arg_1_1._atkLevel)
 	arg_1_0._isNpc = arg_1_1._isNpc
 	arg_1_0._reviewType = arg_1_1._reviewType
@@ -83,7 +90,7 @@ function var_0_0.ctor(arg_1_0, arg_1_1)
 	end
 
 	arg_1_0._idInRoom = arg_1_1._idInRoom
-	arg_1_0._isNewRound = arg_1_1._isNewRound and arg_1_0._battleType ~= Data.BattleType.PVP_clash_ex and arg_1_0._battleType ~= Data.BattleType.PVP_survival and arg_1_0._battleType ~= Data.BattleType.PVP_survival_ex
+	arg_1_0._isNewRound = arg_1_0._isOnlinePvp and arg_1_1._isNewRound and arg_1_0._battleType ~= Data.BattleType.PVP_clash_ex and arg_1_0._battleType ~= Data.BattleType.PVP_survival and arg_1_0._battleType ~= Data.BattleType.PVP_survival_ex
 
 	if arg_1_0._isNewRound then
 		arg_1_0._roundTimeInit = arg_1_1._roundTimeInit
@@ -143,9 +150,7 @@ end
 function var_0_0.skillCasted(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 	arg_2_0:battleLog("[BATTLE] %s\t%s", Str(arg_2_1._type ~= Data.CardType.fortress and arg_2_1._info._nameSid or STR.FORTRESS), Str(Data._skillInfo[arg_2_2._id]._nameSid))
 
-	if arg_2_3 ~= Data.SkillMode.halo then
-		arg_2_0:getActionCard()._needAccount = true
-	end
+	arg_2_0:getActionCard()._needAccount = true
 
 	if arg_2_3 ~= Data.SkillMode.halo then
 		table.insert(arg_2_1._castedSkills, arg_2_2)
@@ -633,7 +638,7 @@ function var_0_0.decShield(arg_26_0, arg_26_1, arg_26_2, arg_26_3, arg_26_4, arg
 	local var_26_0 = {}
 
 	for iter_26_0 = 1, #arg_26_2 do
-		local var_26_1 = arg_26_2[iter_26_0] < 12000 and BattleData.PositiveType.shieldBegin + arg_26_2[iter_26_0] - 11001 or (arg_26_3 and BattleData.PositiveType.shieldHaloBegin or BattleData.PositiveType.shieldExBegin) + arg_26_2[iter_26_0] - 12001
+		local var_26_1 = B.getShieldTypeBySkillId(arg_26_2[iter_26_0], arg_26_3)
 
 		var_26_0[#var_26_0 + 1] = var_26_1
 	end
@@ -878,7 +883,7 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 	local var_38_17 = 0
 
 	local function var_38_18(arg_39_0)
-		return arg_39_0 >= BattleData.PositiveType.shieldHaloBegin and arg_39_0 <= BattleData.PositiveType.shieldExEnd and arg_39_0 ~= BattleData.PositiveType.shieldHaloAttack and arg_39_0 ~= BattleData.PositiveType.shieldAttack and arg_39_0 ~= BattleData.PositiveType.shieldExAttack or arg_39_0 >= BattleData.PositiveType.shieldOppoMonster and arg_39_0 <= BattleData.PositiveType.shieldHaloOppoTrap
+		return arg_39_0 >= BattleData.PositiveType.shieldHaloBegin and arg_39_0 <= BattleData.PositiveType.shieldExEnd and arg_39_0 ~= BattleData.PositiveType.shieldHaloAttack and arg_39_0 ~= BattleData.PositiveType.shieldAttack and arg_39_0 ~= BattleData.PositiveType.shieldExAttack or arg_39_0 >= BattleData.PositiveType.shieldDestroy and arg_39_0 <= BattleData.PositiveType.shieldHaloOppoTrap
 	end
 
 	for iter_38_5 = 1, #arg_38_1._underSkills do
@@ -1681,29 +1686,49 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 		return false
 	end
 
+	local isFromOppo = (arg_51_1._owner ~= var_51_0._owner)
+
 	if var_51_0._type == Data.CardType.monster or var_51_0._type == Data.CardType.rare then
-		if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldExMonster) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloMonster) then
+		if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldMonster) then
 			return true
 		end
 
-		if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and arg_51_1._owner ~= var_51_0._owner and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMonster) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoMonster)) then
-			return true
+		if isFromOppo then
+			if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldExMonster) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloMonster) then
+				return true
+			end
+
+			if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMonster) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoMonster)) then
+				return true
+			end
 		end
 	elseif var_51_0._type == Data.CardType.magic then
-		if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldExMagic) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloMagic) then
+		if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldMagic) then
 			return true
 		end
 
-		if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and arg_51_1._owner ~= var_51_0._owner and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMagic) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoMagic)) then
-			return true
+		if isFromOppo then
+			if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldExMagic) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloMagic) then
+				return true
+			end
+
+			if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMagic) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoMagic)) then
+				return true
+			end
 		end
 	elseif var_51_0._type == Data.CardType.trap then
-		if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldExTrap) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloTrap) then
+		if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldTrap) then
 			return true
 		end
 
-		if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and arg_51_1._owner ~= var_51_0._owner and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoTrap) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoTrap)) then
-			return true
+		if isFromOppo then
+			if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldExTrap) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloTrap) then
+				return true
+			end
+
+			if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoTrap) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoTrap)) then
+				return true
+			end
 		end
 	end
 
@@ -1717,7 +1742,7 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 end
 
 function var_0_0.addRoundDuration(arg_52_0)
-	if not arg_52_0._isNewRound then
+	if not arg_52_0._isOnlinePvp or not arg_52_0._isNewRound then
 		return
 	end
 
@@ -1739,7 +1764,7 @@ function var_0_0.addRoundDuration(arg_52_0)
 
 	local scene = lc._runningScene
 	local battleUi = scene and (scene._battleUi or (scene._scene and scene._scene._battleUi))
-	if battleUi and type(battleUi.addPvpRoundSeconds) == "function" then
+	if battleUi and battleUi._isOnlinePvp and type(battleUi.addPvpRoundSeconds) == "function" then
 		battleUi:addPvpRoundSeconds(var_52_0, var_52_1)
 	end
 end

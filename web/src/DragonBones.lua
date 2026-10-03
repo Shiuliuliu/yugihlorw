@@ -29,6 +29,10 @@ function var_0_0.onCleanup(arg_4_0)
 	end
 
 	if ClientData._dragonBonesTexture[arg_4_0._name] == 0 then
+		if string.find(arg_4_0._name, "chaoliang") then
+			return
+		end
+
 		local var_4_0 = arg_4_0._name .. ".png"
 
 		if lc.TextureCache:getTextureForKey(var_4_0) ~= nil then

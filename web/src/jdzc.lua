@@ -714,7 +714,7 @@ local function var_0_9()
 			return false
 		end
 
-		if var_25_1 > (tonumber(Data.MAX_RARE_TROOP_CARD_COUNT) or 15) then
+		if var_25_1 > (tonumber(Data.MAX_RARE_TROOP_CARD_COUNT) or 20) then
 			return false
 		end
 
@@ -7293,6 +7293,20 @@ local function var_0_9()
 		end
 
 		local function var_232_17(arg_250_0, arg_250_1, arg_250_2, arg_250_3)
+			local raw_cards = arg_250_2 and arg_250_2.cards or {}
+			local norm_cards = {}
+			local norm_levels = {}
+			for iter_c = 1, #raw_cards do
+				local c = raw_cards[iter_c]
+				if type(c) == "number" then
+					norm_cards[#norm_cards + 1] = {info_id = c, num = 1}
+					norm_levels[#norm_levels + 1] = {info_id = c, level = 1}
+				elseif type(c) == "table" then
+					local cid = tonumber(c.info_id or c._infoId or c.infoId) or 0
+					norm_cards[#norm_cards + 1] = {info_id = cid, num = tonumber(c.num or c._num) or 1}
+					norm_levels[#norm_levels + 1] = {info_id = cid, level = tonumber(c.level or c._level) or 1}
+				end
+			end
 			return var_8_1({
 				round_extra_timeout = 0,
 				init_round_timeout = 0,
@@ -7300,8 +7314,8 @@ local function var_0_9()
 				round_optimization = false,
 				id = arg_250_0,
 				info = arg_250_1,
-				cards = arg_250_2 and arg_250_2.cards or {},
-				levels = arg_250_2 and arg_250_2.levels or {},
+				cards = norm_cards,
+				levels = #norm_levels > 0 and norm_levels or (arg_250_2 and arg_250_2.levels or {}),
 				skins = arg_250_2 and arg_250_2.skins or {},
 				hp = arg_250_3 or 8000
 			})

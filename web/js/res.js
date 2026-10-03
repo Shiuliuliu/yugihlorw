@@ -206,11 +206,29 @@
 		'res_ico_1': { path: 'res/new/linh_thach_76.png', w: 76, h: 76 },
 		'img_icon_res3_s': { path: 'res/new/linh_thach_vip_36.png', w: 32, h: 36 },
 		'res_ico_3': { path: 'res/new/linh_thach_vip_76.png', w: 76, h: 76 },
-		'card_ico_40718': { path: 'res/new/thumb/card_ico_40718.png', w: 82, h: 82 },
-		'card_ico_40718_3': { path: 'res/new/thumb/card_ico_40718.png', w: 82, h: 82 },
+		'card_ico_10001': { path: 'res/new/thumb/card_ico_10001.png', w: 82, h: 82 },
+		'card_ico_10001_3': { path: 'res/new/thumb/card_ico_10001_3.png', w: 82, h: 82 },
+		'card_ico_10004': { path: 'res/new/thumb/card_ico_10004.png', w: 82, h: 82 },
+		'card_ico_10004_3': { path: 'res/new/thumb/card_ico_10004_3.png', w: 82, h: 82 },
+		'card_ico_10006': { path: 'res/new/thumb/card_ico_10006.png', w: 82, h: 82 },
+		'card_ico_10006_3': { path: 'res/new/thumb/card_ico_10006_3.png', w: 82, h: 82 },
+		'card_ico_10120': { path: 'res/new/thumb/card_ico_10120.png', w: 82, h: 82 },
+		'card_ico_10120_3': { path: 'res/new/thumb/card_ico_10120_3.png', w: 82, h: 82 },
+		'card_ico_20566': { path: 'res/new/thumb/card_ico_20566.png', w: 82, h: 82 },
+		'card_ico_20566_3': { path: 'res/new/thumb/card_ico_20566_3.png', w: 82, h: 82 },
+		'card_ico_21134': { path: 'res/new/thumb/card_ico_21134.png', w: 82, h: 82 },
+		'card_ico_21134_3': { path: 'res/new/thumb/card_ico_21134_3.png', w: 82, h: 82 },
+		'card_ico_30074': { path: 'res/new/thumb/card_ico_30074.png', w: 82, h: 82 },
+		'card_ico_30074_3': { path: 'res/new/thumb/card_ico_30074_3.png', w: 82, h: 82 },
 		'card_ico_30244': { path: 'res/new/thumb/card_ico_30244.png', w: 82, h: 82 },
-		'card_ico_30244_3': { path: 'res/new/thumb/card_ico_30244.png', w: 82, h: 82 }
+		'card_ico_30244_3': { path: 'res/new/thumb/card_ico_30244_3.png', w: 82, h: 82 },
+		'card_ico_40718': { path: 'res/new/thumb/card_ico_40718.png', w: 82, h: 82 },
+		'card_ico_40718_3': { path: 'res/new/thumb/card_ico_40718_3.png', w: 82, h: 82 },
+		'card_ico_40725': { path: 'res/new/thumb/card_ico_40725.png', w: 82, h: 82 },
+		'card_ico_40725_3': { path: 'res/new/thumb/card_ico_40725_3.png', w: 82, h: 82 }
 	};
+	global.CUSTOM_ICON_REPLACEMENTS = CUSTOM_ICON_REPLACEMENTS;
+	R.CUSTOM_ICON_REPLACEMENTS = CUSTOM_ICON_REPLACEMENTS;
 
 	function addFrames(frames, texture, owner) {
 		for (var i = 0; i < frames.length; i++) {
@@ -471,7 +489,7 @@
 	 * ------------------------------------------------------------------ */
 
 	function versionedUrl(url) {
-		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20260924v6';
+		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261004v1';
 		if (!url || typeof url !== 'string') return url;
 		return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
 	}
@@ -730,8 +748,15 @@
 	};
 
 	R.exists = function (path) {
-		if (!R.manifest || !path) return false;
+		if (!path) return false;
 		if (typeof path === 'string') path = path.split('?')[0];
+		if (CUSTOM_ICON_REPLACEMENTS && CUSTOM_ICON_REPLACEMENTS[path]) return true;
+		if (CUSTOM_ICON_REPLACEMENTS) {
+			for (var k in CUSTOM_ICON_REPLACEMENTS) {
+				if (CUSTOM_ICON_REPLACEMENTS[k].path === path) return true;
+			}
+		}
+		if (!R.manifest) return false;
 		if (R.manifest.files.indexOf(path) >= 0) return true;
 		var jpgPath = path.replace(/\.jpm$/, '.jpg');
 		if (jpgPath !== path && R.manifest.files.indexOf(jpgPath) >= 0) return true;
@@ -833,10 +858,12 @@
 			'res/new/buttons/red_180x78.png',
 			'res/new/buttons/red_200x78.png',
 			'res/new/buttons/red_220x78.png',
-			'res/new/buttons/red_240x78.png',
-			'res/new/thumb/card_ico_40718.png',
-			'res/new/thumb/card_ico_30244.png'
+			'res/new/buttons/red_240x78.png'
 		];
+		Object.keys(CUSTOM_ICON_REPLACEMENTS).forEach(function (k) {
+			var p = CUSTOM_ICON_REPLACEMENTS[k].path;
+			if (assets.indexOf(p) < 0) assets.push(p);
+		});
 		var promises = assets.map(function (path) {
 			return new Promise(function (resolve) {
 				var timer = setTimeout(function () { resolve(null); }, 5000);
@@ -855,6 +882,7 @@
 				var tex = cc.textureCache.getTextureForKey(info.path) || cc.textureCache.getTextureForKey(versionedUrl(info.path));
 				if (tex) {
 					var frame = new cc.SpriteFrame(tex, cc.rect(0, 0, info.w, info.h), false, cc.p(0, 0), cc.size(info.w, info.h));
+					frame._textureLoaded = (typeof tex.isLoaded === 'function') ? tex.isLoaded() : true;
 					cc.spriteFrameCache.addSpriteFrame(frame, name);
 					R.resolveFrame(name, frame);
 				}

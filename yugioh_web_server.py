@@ -652,7 +652,7 @@ def register_account(username, password, character_name=None):
             """, (username, hashed, character_name))
             acc_id = cur.lastrowid
             
-            # Grant starter package: 20 monsters, 10 spells, 10 traps, 15 extra deck cards (non-GR)
+            # Grant starter package: 20 monsters, 10 spells, 10 traps, 20 extra deck cards (non-GR)
             cur.execute("SELECT id FROM card_monsters WHERE quality != 'GR' ORDER BY RAND() LIMIT 20")
             monster_ids = [r['id'] if isinstance(r, dict) else r[0] for r in cur.fetchall()]
 
@@ -662,7 +662,7 @@ def register_account(username, password, character_name=None):
             cur.execute("SELECT id FROM card_traps WHERE quality != 'GR' ORDER BY RAND() LIMIT 10")
             trap_ids = [r['id'] if isinstance(r, dict) else r[0] for r in cur.fetchall()]
 
-            cur.execute("SELECT id FROM card_extra WHERE quality != 'GR' ORDER BY RAND() LIMIT 15")
+            cur.execute("SELECT id FROM card_extra WHERE quality != 'GR' ORDER BY RAND() LIMIT 20")
             extra_ids = [r['id'] if isinstance(r, dict) else r[0] for r in cur.fetchall()]
 
             main_deck = monster_ids + spell_ids + trap_ids
@@ -1117,23 +1117,37 @@ def proxy_to_chat_server(handler, path, post_data=None):
 def proxy_to_shop_server(handler, path, post_data=None):
     try:
         import urllib.request
+        import urllib.error
         url = f"http://127.0.0.1:{SHOP_HTTP_PORT}{path}"
         headers = {'Content-Type': 'application/json'}
         if post_data is not None:
-            if isinstance(post_data, str):
+            if isinstance(post_data, dict):
+                post_data = json.dumps(post_data, ensure_ascii=False).encode('utf-8')
+            elif isinstance(post_data, str):
                 post_data = post_data.encode('utf-8')
             req = urllib.request.Request(url, data=post_data, headers=headers, method='POST')
         else:
             req = urllib.request.Request(url, headers=headers, method='GET')
-        with urllib.request.urlopen(req, timeout=5) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:
             res_body = resp.read()
             handler.send_response(resp.status)
             handler.send_header('Content-Type', 'application/json; charset=utf-8')
             handler.send_header('Content-Length', str(len(res_body)))
             handler.end_headers()
             handler.wfile.write(res_body)
+            print(f"[SHOP PROXY] {path} -> Shop Server ({SHOP_HTTP_PORT}) [Status {resp.status}]")
             return True
+    except urllib.error.HTTPError as he:
+        res_body = he.read()
+        handler.send_response(he.code)
+        handler.send_header('Content-Type', 'application/json; charset=utf-8')
+        handler.send_header('Content-Length', str(len(res_body)))
+        handler.end_headers()
+        handler.wfile.write(res_body)
+        print(f"[SHOP PROXY] {path} -> Shop Server ({SHOP_HTTP_PORT}) [HTTP {he.code}]")
+        return True
     except Exception as e:
+        print(f"[SHOP PROXY WARN] Cannot forward {path} to Shop Server ({SHOP_HTTP_PORT}): {e}. Fallback to main server.")
         return False
 
 def proxy_to_survival_server(handler, path, post_data=None):
@@ -1225,6 +1239,11 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             client_sock = self.connection
             backend.settimeout(None)
             client_sock.settimeout(None)
+            try:
+                client_sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                backend.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+            except Exception:
+                pass
 
             def pipe(src, dst):
                 try:
@@ -1281,6 +1300,21 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             acc_id = params.get('account_id', [None])[0]
             mails = get_player_mails(acc_id)
             self._send_json({"code": 200, "msg": "OK", "mails": mails})
+            return
+
+        if self.path.startswith('/api/reload_cache') or self.path.startswith('/api/reload'):
+            try:
+                load_all_shop_data()
+                init_global_cards_cache()
+                load_pack_mappings()
+                self._send_json({
+                    "code": 200,
+                    "msg": "Web server cache reloaded successfully",
+                    "loaded_cards": len(ALL_CARDS_MAP),
+                    "privilege_products": len(ALL_SHOP_PRODUCTS.get('privilege', {}))
+                })
+            except Exception as ex:
+                self._send_json({"code": 500, "msg": str(ex)})
             return
 
         if self.path.startswith('/init.php'):
@@ -1363,6 +1397,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
                     elif is_versioned:
                         self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
+                    elif is_static_res:
+                        self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
                     else:
                         self.send_header('Cache-Control', 'no-cache, must-revalidate')
                         self.send_header('Pragma', 'no-cache')
@@ -1428,6 +1464,23 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             if self.path.startswith('/api/survival/'):
                 proxy_to_survival_server(self, self.path, body)
                 return
+
+            SHOP_ENDPOINTS = (
+                '/api/buy_package',
+                '/api/buy_gold',
+                '/api/buy_depot',
+                '/api/buy_card',
+                '/api/decompose_card',
+                '/api/decompose_all',
+                '/api/redeem_gift_code',
+                '/api/gift_code',
+                '/api/claim_gift',
+                '/api/checkin',
+                '/api/sync_currency',
+            )
+            if self.path in SHOP_ENDPOINTS:
+                if proxy_to_shop_server(self, self.path, body):
+                    return
 
             resp = {}
             if self.path == '/api/auth/login':
@@ -1564,6 +1617,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 clean_extra.append(cid)
                                 remaining_counts[cid] -= 1
                                 deck_counts[cid] = deck_counts.get(cid, 0) + 1
+
+                        clean_extra = clean_extra[:20]
 
                         cur.execute("""
                             INSERT INTO user_decks (account_id, deck_slot, deck_name, cards, extra_cards, is_active)
@@ -2672,7 +2727,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     "gold_cup": int(real_row.get('gold_cup', 0) or 0),
                                     "silver_cup": int(real_row.get('silver_cup', 0) or 0),
                                     "bronze_cup": int(real_row.get('bronze_cup', 0) or 0),
-                                    "is_real_player": True
+                                    "is_real_player": False
                                 }
                             else:
                                 oppo_data = {
@@ -3447,12 +3502,12 @@ async def ws_handler(websocket):
                             ws, my_deck, my_info = target_entry
                             match_id = f"m_ai_{int(time.time()*1000)}"
                             seed = random.randint(1, 65535)
-                            first = random.choice([True, False])
+                            bot_raw_cards = [10001, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10011, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019, 10020, 20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 30001, 30002, 30003, 30004, 30005]
                             bot_deck = {
                                 "name": "Duelist_Kaiba",
                                 "avatar": random.choice([101, 102, 103, 104, 105]),
-                                "cards": [10001, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10011, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019, 10020, 20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 30001, 30002, 30003, 30004, 30005],
-                                "levels": [1]*34,
+                                "cards": [{"info_id": c, "num": 1} for c in bot_raw_cards],
+                                "levels": [{"info_id": c, "level": 1} for c in bot_raw_cards],
                                 "skins": {}
                             }
                             try:
@@ -3528,7 +3583,8 @@ async def ws_handler(websocket):
                             # If a player claims victory (sender_won is True), verify they are not the waiting player while the turn player is actively playing!
                             turn_ws = match.get("turn_ws")
                             last_action = match.get("last_action_time", 0)
-                            if sender_won and turn_ws and websocket != turn_ws and (time.time() - last_action < 60.0):
+                            reason = str(pkt.get("reason", "")).lower()
+                            if sender_won and turn_ws and websocket != turn_ws and reason != "timeout" and (time.time() - last_action < 30.0):
                                 print(f"[PVP END BLOCKED] Match {match_id}: non-turn player claimed victory while turn player is actively playing ({time.time()-last_action:.1f}s ago). Blocked!")
                                 return
 

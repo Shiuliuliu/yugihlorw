@@ -43631,6 +43631,21 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 			var_8_1._mark14531 = true
 			var_8_13 = true
 		end
+	elseif var_8_4 == 14618 then
+		if arg_8_3 == Data.SkillMode.initiative_grave then
+			local var_c1_id = var_8_15 % BattleData.UseCardId.id_group
+			local var_c2_id = math.floor(var_8_15 / BattleData.UseCardId.id_group) % BattleData.UseCardId.id_group
+			local var_c1 = arg_8_0:getCardById(var_c1_id) or arg_8_0._opponent:getCardById(var_c1_id)
+			local var_c2 = arg_8_0:getCardById(var_c2_id) or arg_8_0._opponent:getCardById(var_c2_id)
+			if var_c1 ~= nil and var_c2 ~= nil then
+				local var_our_c = (var_c1._owner == arg_8_0) and var_c1 or var_c2
+				local var_oppo_c = (var_c1._owner == arg_8_0) and var_c2 or var_c1
+				var_our_c._owner:setCardStatus(var_our_c, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3)
+				var_oppo_c._owner:setCardStatus(var_oppo_c, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3)
+				arg_8_0:setCardStatus(arg_8_1, BattleData.CardStatus.board, var_8_5, var_8_4, arg_8_3)
+				var_8_13 = true
+			end
+		end
 	elseif var_8_4 == 14534 then
 		var_8_13 = arg_8_0:setTwoCardsStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.board, BattleData.CardStatus.leave, BattleData.CardStatusVal.b2b_oppo_once)
 		arg_8_0._isSpecialSummonDisabledBy14534 = true
@@ -59290,6 +59305,59 @@ function var_0_0.castMagicHaloSkill(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 		var_12_13 = arg_12_0:setCardStatusByChoice(var_12_15, var_12_5, var_12_4, arg_12_3, BattleData.CardStatus.hand)
 
 		arg_12_0:setCardStatus(arg_12_1, BattleData.CardStatus.leave, var_12_5, var_12_4, arg_12_3)
+	elseif var_12_4 == 7834 then
+		local var_casters = arg_12_0:getBattleCardsByCategoryAndNature("B", var_12_6._refCards[1], var_12_6._refCards[2])
+		local var_myMonsters = arg_12_0:getBattleCardsByType("G", Data.CardType.monster)
+		local var_oppoMonsters = var_12_8:getBattleCardsByType("G", Data.CardType.monster)
+		local var_boostAtk = (#var_myMonsters + #var_oppoMonsters) * 100
+
+		if var_boostAtk > 0 then
+			for iter_c = 1, #var_casters do
+				arg_12_0:incAtk(var_casters[iter_c], var_boostAtk, true, var_12_5, var_12_4, arg_12_3)
+				var_12_13 = true
+			end
+		end
+	elseif var_12_4 == 7835 then
+		local var_chosen = arg_12_0:getCardById(var_12_15)
+
+		if var_chosen ~= nil then
+			arg_12_0:setCardStatus(var_chosen, BattleData.CardStatus.grave, var_12_5, var_12_4, arg_12_3)
+
+			local var_candidates = arg_12_0:filterCanChangeToHandCards(arg_12_0:getBattleCardsByCategoryAndNature("P", var_12_6._refCards[1], var_12_6._refCards[2]))
+			local var_picked = arg_12_0:randomOne(var_candidates)
+
+			if var_picked ~= nil then
+				arg_12_0:setCardStatus(var_picked, BattleData.CardStatus.hand, var_12_5, var_12_4, arg_12_3)
+			end
+
+			var_12_1._mark7835 = true
+			var_12_13 = true
+		end
+	elseif var_12_4 == 7836 then
+		if not arg_12_1._mark7836_triggered then
+			arg_12_1._mark7836_triggered = true
+
+			local var_myMonsters = arg_12_0:getBattleCardsByType("G", Data.CardType.monster)
+			local var_oppoMonsters = var_12_8:getBattleCardsByType("G", Data.CardType.monster)
+			local var_banishedCount = #var_myMonsters + #var_oppoMonsters
+
+			for iter_my = 1, #var_myMonsters do
+				arg_12_0:setCardStatus(var_myMonsters[iter_my], BattleData.CardStatus.leave, var_12_5, var_12_4, arg_12_3)
+			end
+
+			for iter_oppo = 1, #var_oppoMonsters do
+				var_12_8:setCardStatus(var_oppoMonsters[iter_oppo], BattleData.CardStatus.leave, var_12_5, var_12_4, arg_12_3)
+			end
+
+			if var_banishedCount > 0 then
+				local var_damage = var_banishedCount * 100
+
+				arg_12_0:addDamage(arg_12_0._fortress, arg_12_0:calcFortressDamage(var_damage), var_12_5, var_12_4, arg_12_3)
+				var_12_8:addDamage(var_12_8._fortress, var_12_8:calcFortressDamage(var_damage), var_12_5, var_12_4, arg_12_3)
+			end
+
+			var_12_13 = true
+		end
 	end
 
 	return var_12_13
@@ -67923,7 +67991,8 @@ function var_0_0.canUseMonsterSpecial(arg_19_0, arg_19_1, arg_19_2)
 	end
 
 	if arg_19_1._infoId == 10120 and #B.filterInTypeCards(arg_19_0:getBattleCardsByKeyword("G", 6), Data.CardType.monster) > 0 then
-		return true, nil, var_19_0, arg_19_1._skills[1]
+		local var_s10120 = (arg_19_1.getSkill and arg_19_1:getSkill(14614)) or arg_19_1._skills[3] or arg_19_1._skills[1]
+		return true, nil, var_19_0, var_s10120
 	end
 
 	local var_19_1 = {
@@ -100873,6 +100942,16 @@ function var_0_0.canUseInitiativeSkill3(arg_39_0, arg_39_1, arg_39_2)
 		})) > 0
 	elseif var_39_0 == 13999 then
 		return true
+	elseif var_39_0 == 7835 then
+		if arg_39_1._mark7835 ~= nil then
+			return false
+		end
+
+		if #arg_39_0:getBattleCardsByType("HB", Data.CardType.monster) == 0 then
+			return false
+		end
+
+		return #arg_39_0:filterCanChangeToHandCards(arg_39_0:getBattleCardsByCategoryAndNature("P", var_39_1._refCards[1], var_39_1._refCards[2])) > 0
 	end
 
 	return false
@@ -100936,7 +101015,20 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		return false
 	end
 
-	if var_40_0 == 14001 then
+	if var_40_0 == 14618 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil then
+			return false
+		end
+		local var_our_wb = B.filterInCategoryCards(arg_40_0:getBoardCards(), 13)
+		if #var_our_wb == 0 then
+			return false
+		end
+		local var_oppo_m = var_40_4:getBoardCards()
+		if #var_oppo_m == 0 then
+			return false
+		end
+		return true
+	elseif var_40_0 == 14001 then
 		return #B.filterLinkCards(var_40_4:getBattleCardsByType("G", Data.CardType.monster), false) > 0
 	elseif var_40_0 == 14002 then
 		return #B.mergeTable({

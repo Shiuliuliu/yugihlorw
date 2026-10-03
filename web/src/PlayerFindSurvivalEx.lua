@@ -1,7 +1,7 @@
 local var_0_0 = class("PlayerFindSurvivalEx")
 
 var_0_0.MAX_TROOP_COUNT = 40
-var_0_0.MAX_TROOP_COUNT_EX = 15
+var_0_0.MAX_TROOP_COUNT_EX = 20
 var_0_0.MAX_BATTLE_COUNT = 12
 var_0_0.MAX_LOSE_COUNT = 3
 var_0_0.TOTAL_CARD_COUNT = 5

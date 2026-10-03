@@ -2644,6 +2644,10 @@ function var_0_0.filterSyncCards(arg_168_0, arg_168_1)
 end
 
 function var_0_0.filterXYZCards(arg_169_0, arg_169_1)
+	if arg_169_1 == nil then
+		arg_169_1 = true
+	end
+
 	local var_169_0 = {}
 
 	for iter_169_0 = 1, #arg_169_0 do

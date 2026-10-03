@@ -6722,4 +6722,13 @@ return {
   ["_linkAllCandidates"]="0.0",["_linkCandidate"]="0.0",["_linkCount"]="0.0",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=36407,["_nature"]=3,["_option"]=6,["_originId"]=0,["_packageId"]={[1]=0,},
   ["_picId"]=0,["_py"]="xxyxhaqs",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14605,[2]=3191,[3]=14606,},
   ["_skin"]={[1]=0,},
-  ["_star"]=8,["_syncComponent"]={[1]={[1]=0,},},},}
+  ["_star"]=8,["_syncComponent"]={[1]={[1]=0,},},},  [40725]={["_atk"]={[1]=4500,},
+  ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=56772,["_category"]=1,["_cost"]=0,["_descSid"]=56770,["_guideSid"]=56771,["_hp"]={[1]=0,},
+  ["_id"]=40725,["_isHide"]=0,["_joinComponent"]={[1]=0,},
+  ["_joinResult"]={[1]=0,},
+  ["_keyword"]=0,["_link"]={[1]=1,[2]=2,[3]=3,[4]=4,[5]=6,},
+  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="C==13",["_linkCount"]="#>=2",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=56769,["_nature"]=4,["_option"]=8194,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="ctt",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14615,[2]=14616,[3]=14617,[4]=14618,},
+  ["_skin"]={[1]=0,},
+  ["_star"]=0,["_syncComponent"]={[1]={[1]=0,},},},
+}

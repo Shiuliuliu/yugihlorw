@@ -1753,7 +1753,8 @@ function patchClientData()
 				end
 			end
 
-			local isOnlinePvp = (isRealHuman == true and isOppoOnline == true and matchId ~= nil)
+			local isBotMatch = (not isRealHuman) or (not isOppoOnline) or (matchId == nil) or (string.find(tostring(matchId), "bot_") ~= nil)
+			local isOnlinePvp = (isRealHuman == true and isOppoOnline == true and matchId ~= nil and not isBotMatch)
 			local myIsAttacker = (isAttacker == true)
 			if not isOnlinePvp then
 				myIsAttacker = true
@@ -1771,7 +1772,7 @@ function patchClientData()
 				_offlineMode = not isOnlinePvp,
 				_isOppoOnline = isOnlinePvp,
 				_pvpMatch = isOnlinePvp,
-				_matchId = matchId,
+				_matchId = isOnlinePvp and matchId or nil,
 				_isAttacker = myIsAttacker,
 				_isWatcher = false,
 				_speedFactor = 1,
@@ -1789,12 +1790,12 @@ function patchClientData()
 					_region = 1,
 					_level = (P and P._level) or 50,
 					_monthCardType = 0,
-					_roundTimeInit = 90,
-					_roundTimeMax = 120,
-					_roundTimeDelta = (P and P._isNewRound and 5) or 0,
+					_roundTimeInit = isOnlinePvp and 90 or 0,
+					_roundTimeMax = isOnlinePvp and 120 or 0,
+					_roundTimeDelta = isOnlinePvp and ((P and P._isNewRound and 5) or 0) or 0,
 					_fortressHp = 8000,
 					_avatarFrameId = 0,
-					_isNewRound = (P and P._isNewRound) or false,
+					_isNewRound = isOnlinePvp and ((P and P._isNewRound) or false) or false,
 					_idInRoom = 0,
 					_bossId = 0,
 					_privilege = 0,
@@ -1835,12 +1836,12 @@ function patchClientData()
 					_region = 1,
 					_level = oppoLevel or 50,
 					_monthCardType = 0,
-					_roundTimeInit = 90,
-					_roundTimeMax = 120,
-					_roundTimeDelta = (P and P._isNewRound and 5) or 0,
+					_roundTimeInit = isOnlinePvp and 90 or 0,
+					_roundTimeMax = isOnlinePvp and 120 or 0,
+					_roundTimeDelta = isOnlinePvp and ((P and P._isNewRound and 5) or 0) or 0,
 					_fortressHp = 8000,
 					_avatarFrameId = 0,
-					_isNewRound = (P and P._isNewRound) or false,
+					_isNewRound = isOnlinePvp and ((P and P._isNewRound) or false) or false,
 					_idInRoom = 0,
 					_bossId = 0,
 					_privilege = 0,
@@ -1853,7 +1854,7 @@ function patchClientData()
 					_avatar = oppoAvatar or (math.random(1, 4) * 100 + 1),
 					_crown = oppoCrown,
 					_cardBackId = 7600,
-					_isNpc = not isRealHuman,
+					_isNpc = not isOnlinePvp,
 					_troopCards = oppoCards,
 					_troopLevels = oppoLevels,
 					_troopSkins = oppoSkins,
@@ -2168,9 +2169,9 @@ function patchClientData()
 		if card_id ~= BattleData.UseCardId.round and card_id ~= BattleData.UseCardId.retreat then
 			local scene = lc._runningScene or ClientView._scene
 			local bUi = scene and scene._battleUi
-			if bUi and type(bUi.addPvpRoundSeconds) == "function" then
+			if bUi and bUi._isOnlinePvp and type(bUi.addPvpRoundSeconds) == "function" then
 				bUi:addPvpRoundSeconds(2, 120)
-			elseif player and type(player.addRoundDuration) == "function" then
+			elseif player and player._isOnlinePvp and type(player.addRoundDuration) == "function" then
 				player:addRoundDuration()
 			end
 		end
@@ -5498,90 +5499,9 @@ local function patchBattleUiTouch(mod)
 			return oldTouchEnded(self, touch)
 		end
 	end
-
-	-- Handle the initiative skill buttons (_btnInitiative and _btnRare2)
-	-- so they always open BattleInitiativeSkillsDialog to display monster skills/effects.
-	local oldOnButtonEvent = BattleUi.onButtonEvent
-	if oldOnButtonEvent then
-		BattleUi.onButtonEvent = function(self, btn)
-			if btn == self._btnInitiative or btn == self._btnRare or btn == self._btnRare2 then
-				if not self._playerUi or not self._playerUi._isController or self._isObserver then
-					return true
-				end
-				if self._isAddingBoardCard then
-					self._playerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
-					return true
-				end
-
-				local mode = (btn == self._btnInitiative) and "BSDGHL" or "R"
-				local _, skillList = self._playerUi._player:getBattleCardsByCanCastInitiativeSkill(mode)
-				skillList = skillList or {}
-
-				-- If no skills can be cast right now, collect all initiative skills from cards
-				-- in those zones so the dialog still displays them for the player to inspect!
-				if #skillList == 0 then
-					local allCards = self._playerUi._player:getBattleCards(mode)
-					for _, c in ipairs(allCards) do
-						local skills = c:getInitiativeSkill(Data.SkillMode.initiative_bcs)
-							or c:getInitiativeSkill(Data.SkillMode.initiative_grave)
-							or c:getInitiativeSkill(Data.SkillMode.initiative_rare)
-							or c:getInitiativeSkill(Data.SkillMode.initiative_hand)
-							or c:getInitiativeSkill(Data.SkillMode.initiative_leave)
-						if skills then
-							for _, s in ipairs(skills) do
-								table.insert(skillList, s)
-							end
-						end
-					end
-				end
-
-				local title = (btn == self._btnInitiative) and Str(STR.INITIATIVE_SKILL) or Str(STR.RARE_INITIATIVE_SKILL)
-				local dlg = require("BattleInitiativeSkillsDialog").create(skillList, title, 6)
-
-				dlg:registerItemTouchHandles(function()
-					self._isMoved = false
-				end, function(touch)
-					if cc.pGetDistance(touch:getTouchMovePosition(), touch:getTouchBeganPosition()) > lc.Gesture.BUDGE_LIMIT then
-						self._isMoved = true
-					end
-				end, function(item, sender)
-					if dlg._isHiding then return end
-					if self._skillArea then
-						self._skillArea:removeFromParent()
-						self._skillArea = nil
-						self._isMoved = false
-						return
-					end
-					if self._isMoved then
-						self._isMoved = false
-						return
-					end
-					dlg:hide()
-					local skill = item and item._skill
-					if skill and skill._owner then
-						self._playerUi:castInitiativeSkill(skill._owner, skill)
-					end
-				end, function(item, sender)
-					self:showSkill(item, sender)
-				end)
-				dlg:show()
-				return true
-			end
-			return oldOnButtonEvent(self, btn)
-		end
-	end
 end
 
 local function patchPlayerUi(PlayerUi)
-	local oldUpdateSkills = PlayerUi.updateBoardCardsInitialSkills
-	if oldUpdateSkills then
-		PlayerUi.updateBoardCardsInitialSkills = function(self)
-			oldUpdateSkills(self)
-			-- During player's turn, always keep the initiative buttons enabled
-			-- so the player can click them to view monster skills and effects.
-			-- Native condition check in PlayerUi.lua determines enabled state and particle glow
-		end
-	end
 	local oldCalBoardCardPos = PlayerUi.calBoardCardPos
 	PlayerUi.calBoardCardPos = function(self, cardSprite)
 		if not cardSprite or not cardSprite._card then

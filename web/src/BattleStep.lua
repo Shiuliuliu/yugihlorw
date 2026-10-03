@@ -1228,6 +1228,10 @@ function var_0_0.checkFinish(arg_13_0)
 		return false
 	end
 
+	if arg_13_0._round <= 0 or not arg_13_0._isInitialDealed then
+		return false
+	end
+
 	if arg_13_0._isFinished or arg_13_0._opponent._isFinished then
 		return true
 	end
@@ -1250,6 +1254,9 @@ function var_0_0.getIsWin(arg_14_0)
 end
 
 function var_0_0.getIsLose(arg_15_0)
+	if arg_15_0._round <= 0 or not arg_15_0._isInitialDealed then
+		return false
+	end
 	if arg_15_0._fortress._type == Data.CardType.boss then
 		if arg_15_0._fortress._info._isDeamon == 1 then
 			return not B.isAlive(arg_15_0._fortress)
@@ -1347,6 +1354,9 @@ function var_0_0.getIsLose(arg_15_0)
 end
 
 function var_0_0.getIsPileEmpty(arg_16_0)
+	if arg_16_0._round <= 0 or not arg_16_0._isInitialDealed then
+		return false
+	end
 	return #arg_16_0._pileCards == 0 and (arg_16_0._baseBattleType ~= Data.BattleType.base_PVE or not not arg_16_0._isAttacker) and (not arg_16_0._isClient or not ClientData._isTesting and not (P._guideID < 100))
 end
 
@@ -1365,6 +1375,9 @@ function var_0_0.getIsFortressDied(arg_18_0)
 end
 
 function var_0_0.getIsAllCardsDied(arg_19_0)
+	if arg_19_0._round <= 0 or not arg_19_0._isInitialDealed then
+		return false
+	end
 	-- In online PvP, the remote opponent's defeat cannot be unilaterally assumed by local client heuristics
 	if arg_19_0._isOnlinePvp and (arg_19_0._playerType == BattleData.PlayerType.opponent or arg_19_0._playerType == BattleData.PlayerType.observe) then
 		return false
@@ -4027,8 +4040,6 @@ function var_0_0.accountHalo(arg_58_0)
 	B.appendTable(var_58_1, arg_58_0:getBattleCardsBySkillFast("G", 13558))
 	B.appendTable(var_58_1, arg_58_0._opponent:getBattleCardsBySkillFast("G", 13558))
 
-	local var_halo_changed = false
-
 	for iter_58_0 = 1, #var_58_1 do
 		local var_58_2 = var_58_1[iter_58_0]
 		local var_58_3 = 1
@@ -4038,7 +4049,6 @@ function var_0_0.accountHalo(arg_58_0)
 				table.remove(var_58_2._underSkills, var_58_3)
 
 				var_58_0._needAccount = true
-				var_halo_changed = true
 			else
 				var_58_3 = var_58_3 + 1
 			end
@@ -4053,7 +4063,6 @@ function var_0_0.accountHalo(arg_58_0)
 						table.remove(var_58_2._positiveSkills[iter_58_1], var_58_4)
 
 						var_58_0._needAccount = true
-						var_halo_changed = true
 					else
 						var_58_4 = var_58_4 + 1
 					end
@@ -4070,7 +4079,6 @@ function var_0_0.accountHalo(arg_58_0)
 						table.remove(var_58_2._negativeSkills[iter_58_2], var_58_5)
 
 						var_58_0._needAccount = true
-						var_halo_changed = true
 					else
 						var_58_5 = var_58_5 + 1
 					end
@@ -4115,7 +4123,6 @@ function var_0_0.accountHalo(arg_58_0)
 
 				if var_58_12._priority == var_58_9 then
 					var_58_11._owner:castSkill(var_58_11, var_58_12, Data.SkillMode.halo)
-					var_halo_changed = true
 				end
 
 				var_58_11._accountHaloIndex = var_58_11._accountHaloIndex + 1
@@ -4130,27 +4137,13 @@ function var_0_0.accountHalo(arg_58_0)
 		var_58_10 = 255
 	end
 
-	if var_halo_changed or var_58_0._needAccount then
+	if var_58_0._needAccount then
 		arg_58_0:account()
-	end
-
-	local var_has_changes = false
-	local var_check_cards = B.mergeTable({
-		arg_58_0:getBoardCards(),
-		arg_58_0._opponent:getBoardCards(),
-		{ arg_58_0._fortress, arg_58_0._opponent._fortress }
-	})
-	for iter_chk = 1, #var_check_cards do
-		local c = var_check_cards[iter_chk]
-		if c and c._changed and next(c._changed) ~= nil then
-			var_has_changes = true
-			break
-		end
 	end
 
 	arg_58_0._stepStatus = BattleData.Status.after_account_halo
 
-	if (var_has_changes or var_58_0._needAccount) and not arg_58_0._isReviewing then
+	if var_58_0._needAccount and not arg_58_0._isReviewing then
 		return arg_58_0:sendEvent(BattleData.Status.account_halo)
 	else
 		return arg_58_0:step()
