@@ -7270,7 +7270,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -7278,7 +7278,29 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 	local var_304_1 = Data._skillInfo[arg_304_1._id]
 	local var_304_2 = var_304_1._val[math.min(arg_304_1._level, #var_304_1._val)] or 0
 
-	if arg_304_1._id == 14618 then
+	if arg_304_1._id == 14619 then
+		local var_cands_14619 = arg_304_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_304_0:getBattleCardsByType("P", Data.CardType.monster), 7))
+		if #var_cands_14619 > 0 then
+			return true, var_cands_14619, 1
+		end
+	elseif arg_304_1._id == 14620 then
+		local var_h = B.filterInKeywordCards(arg_304_0:getBattleCardsByType("H", Data.CardType.monster), 7)
+		local var_g = B.filterInKeywordCards(arg_304_0:getBattleCardsByType("G", Data.CardType.monster), 7)
+		local var_cands_14620 = arg_304_0:filterCanChangeToBoardCards(B.mergeTable({ var_h, var_g }))
+		if #var_cands_14620 > 0 then
+			return true, var_cands_14620, 1
+		end
+	elseif arg_304_1._id == 14622 then
+		local var_cands_14622 = B.filterInTypeCards(arg_304_0:getBattleCardsByKeyword("P", 7), Data.CardType.monster)
+		if #var_cands_14622 > 0 then
+			return true, var_cands_14622, 1
+		end
+	elseif arg_304_1._id == 14623 then
+		local var_cands_14623 = arg_304_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_304_0:getBattleCardsByType("P", Data.CardType.magic), 7))
+		if #var_cands_14623 > 0 then
+			return true, var_cands_14623, 1
+		end
+	elseif arg_304_1._id == 14618 then
 		local var_our_wb = B.sortCardsByBoardPos(B.filterInCategoryCards(arg_304_0:getBoardCards(), 13))
 		local var_oppo_m = B.sortCardsByBoardPos(var_304_0:getBoardCards())
 		if #var_our_wb > 0 and #var_oppo_m > 0 then

@@ -5418,11 +5418,19 @@ local function patchBattleUiTouch(mod)
 	local oldTouchBegan = BattleUi.onTouchBegan
 	BattleUi.onTouchBegan = function(self, touch)
 
-		-- Check active skill icon touches beneath board cards
-		if touch and self._playerUi and self._playerUi._pBoardCards then
+		-- Check active skill icon touches beneath board cards and field card
+		if touch and self._playerUi then
 			local touchLoc = touch:getLocation()
-			for iter = 1, Data.MAX_CARD_COUNT_ON_BOARD do
-				local pCard = self._playerUi._pBoardCards[iter]
+			local cardsToCheck = {}
+			if self._playerUi._pBoardCards then
+				for iter = 1, Data.MAX_CARD_COUNT_ON_BOARD do
+					table.insert(cardsToCheck, self._playerUi._pBoardCards[iter])
+				end
+			end
+			if self._playerUi._pFieldCard then
+				table.insert(cardsToCheck, self._playerUi._pFieldCard)
+			end
+			for _, pCard in ipairs(cardsToCheck) do
 				if pCard and pCard._initiativeSkillIcons and #pCard._initiativeSkillIcons > 0 then
 					for iconIdx, iconBtn in ipairs(pCard._initiativeSkillIcons) do
 						if iconBtn and iconBtn:isVisible() then

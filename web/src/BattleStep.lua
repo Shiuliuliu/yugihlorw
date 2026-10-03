@@ -762,6 +762,12 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14594] = nil
 	arg_2_0._opponent._castedSkillCounts[14600] = nil
 	arg_2_0._opponent._castedSkillCounts[14601] = nil
+	arg_2_0._opponent._castedSkillCounts[14527] = nil
+	arg_2_0._opponent._castedSkillCounts[14619] = nil
+	arg_2_0._opponent._castedSkillCounts[14620] = nil
+	arg_2_0._opponent._castedSkillCounts[14621] = nil
+	arg_2_0._opponent._castedSkillCounts[14622] = nil
+	arg_2_0._opponent._castedSkillCounts[14623] = nil
 	arg_2_0._opponent._castedSkillCounts[3] = nil
 	arg_2_0._summonedMonsterCounts = {}
 	arg_2_0._isSummonDisabledByInfoId = nil
@@ -3667,6 +3673,22 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 					arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.board, BattleData.CardStatusVal.h2b_normal)
 				else
 					arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.board)
+				end
+
+				if arg_52_1:hasSkillFast(14622) or arg_52_1._infoId == 10084 then
+					local var_52_c_id = arg_52_1._choice and math.floor(arg_52_1._choice / BattleData.ChoiceId.stage_2) % BattleData.ChoiceId.stage_size_2
+					local var_52_target = arg_52_0:getCardById(var_52_c_id)
+					if var_52_target == nil or var_52_target._status ~= BattleData.CardStatus.pile then
+						var_52_target = arg_52_0:randomOne(B.filterInTypeCards(arg_52_0:getBattleCardsByKeyword("P", 7), Data.CardType.monster))
+					end
+					if var_52_target ~= nil and var_52_target._status == BattleData.CardStatus.pile then
+						arg_52_0:changeCardStatus(var_52_target, BattleData.CardStatus.pile, BattleData.CardStatus.grave)
+					end
+					arg_52_0._castedSkillCounts[14622] = (arg_52_0._castedSkillCounts[14622] or 0) + 1
+				end
+
+				if arg_52_1:hasSkillFast(14621) or arg_52_1._infoId == 11364 then
+					arg_52_0._castedSkillCounts[14621] = (arg_52_0._castedSkillCounts[14621] or 0) + 1
 				end
 			else
 				if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and (var_52_7 == 1 and not arg_52_0:canUseMonsterNormal(arg_52_1) or var_52_7 == 4 and not arg_52_0:canUseMonsterNormalToOppo(arg_52_1)) then

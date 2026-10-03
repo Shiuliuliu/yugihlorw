@@ -6214,10 +6214,6 @@ function var_0_0.canCastMonsterSkill(arg_156_0, arg_156_1, arg_156_2)
 		return false
 	end
 
-	if arg_156_0._owner._opponent._mark2819 and arg_156_0._status == BattleData.CardStatus.board and arg_156_0._onBoardFrom == BattleData.CardStatus.rare and (arg_156_1 ~= Data.SkillMode.cost or arg_156_2 == 9003) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldMonster) then
-		return false
-	end
-
 	if arg_156_0._status == BattleData.CardStatus.board and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldMonster) and arg_156_1 ~= Data.SkillMode.cost and not arg_156_0:isInfoId(Data._skillInfo[6464]._refCards[1]) and (arg_156_0._owner:hasBattleCardsBySkillFast("B", 6464, Data.CARD_MAX_LEVEL, arg_156_0) or arg_156_0._owner._opponent:hasBattleCardsBySkillFast("B", 6464)) then
 		return false
 	end

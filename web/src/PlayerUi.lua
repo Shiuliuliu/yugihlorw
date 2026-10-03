@@ -1636,10 +1636,10 @@ function var_0_0.onChoiceSummon(arg_70_0, arg_70_1, arg_70_2)
 						_choice = var_70_0
 					})
 				else
-					local var_72_6 = var_72_0._card:hasSkills({
+					local var_72_6 = (var_72_0._card:hasSkills({
 						3492,
 						3537
-					}) and 2 or 1
+					}) or var_72_0._card._infoId == 10084) and 2 or 1
 					local var_72_7, var_72_8, var_72_9, var_72_10 = var_72_0._card._owner:isGraveSkill(var_72_0._card._skills[var_72_6], nil, false)
 
 					if var_72_7 then
@@ -1647,7 +1647,7 @@ function var_0_0.onChoiceSummon(arg_70_0, arg_70_1, arg_70_2)
 					elseif var_72_0._card:hasSkills({
 						3491,
 						3651
-					}) then
+					}) or var_72_0._card._infoId == 11364 then
 						return arg_70_0:sendEvent(var_0_0.EventType.send_use_card, {
 							_card = var_72_0._card,
 							_target = var_72_1 ~= nil and var_72_1._card or nil,
@@ -5497,6 +5497,8 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		if #arg_89_1._cardInfos > 1 then
 			return arg_89_0:showChoiceGrave(arg_89_2, arg_89_3, B.sortCardsByBoardPos(B.filterExcludeCards(arg_89_1._cardInfos, var_89_0)), 1, arg_89_1._choiceBase, var_89_1)
 		end
+	elseif arg_89_2._card:hasSkills({ 14619, 14620, 14622, 14623 }) then
+		var_89_1 = var_89_0[1]._id
 	elseif arg_89_2._card:isSkillAtIndex(13054, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) and arg_89_1._choiceParam == nil then
 		var_89_1 = var_89_0[1]._id
 

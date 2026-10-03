@@ -291,7 +291,11 @@ function var_0_0.getShieldTypeBySkillId(arg_18_0, arg_18_1)
 	elseif arg_18_0 >= 12008 then
 		var_18_0 = (arg_18_1 and BattleData.PositiveType.shieldHaloOppoMonster or BattleData.PositiveType.shieldOppoMonster) + arg_18_0 - 12008
 	else
-		var_18_0 = arg_18_0 < 12000 and BattleData.PositiveType.shieldBegin + arg_18_0 - 11001 or (arg_18_1 and BattleData.PositiveType.shieldHaloBegin or BattleData.PositiveType.shieldExBegin) + arg_18_0 - 12001
+		if arg_18_1 then
+			var_18_0 = (arg_18_0 < 12000 and (BattleData.PositiveType.shieldHaloBegin + arg_18_0 - 11001) or (BattleData.PositiveType.shieldHaloBegin + arg_18_0 - 12001))
+		else
+			var_18_0 = (arg_18_0 < 12000 and (BattleData.PositiveType.shieldBegin + arg_18_0 - 11001) or (BattleData.PositiveType.shieldExBegin + arg_18_0 - 12001))
+		end
 	end
 
 	return var_18_0

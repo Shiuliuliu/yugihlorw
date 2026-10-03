@@ -43579,9 +43579,10 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 			arg_8_1._saved._addSkills = var_8_6._refSkills
 
 			arg_8_0:setCardStatus(arg_8_1, BattleData.CardStatus.board, var_8_5, var_8_4, arg_8_3)
+			arg_8_0:incCastedSkillCounts(var_8_4)
 
 			var_8_13 = true
-		elseif var_8_1._status == BattleData.CardStatus.grave and B.isSummon(arg_8_1) and arg_8_1:isNature(var_8_6._refCards[1]) and arg_8_1._info._category == var_8_6._refCards[2] then
+		elseif (arg_8_0._castedSkillCounts[var_8_4] == nil or arg_8_0._castedSkillCounts[var_8_4] == 0) and var_8_1._status == BattleData.CardStatus.grave and B.isSummon(arg_8_1) and arg_8_1:isNature(var_8_6._refCards[1]) and arg_8_1._info._category == var_8_6._refCards[2] then
 			var_8_1._mark14527 = true
 			var_8_13 = true
 		end
@@ -43643,6 +43644,35 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 				var_our_c._owner:setCardStatus(var_our_c, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3)
 				var_oppo_c._owner:setCardStatus(var_oppo_c, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3)
 				arg_8_0:setCardStatus(arg_8_1, BattleData.CardStatus.board, var_8_5, var_8_4, arg_8_3)
+				var_8_13 = true
+			end
+		end
+	elseif var_8_4 == 14619 then
+		var_8_13 = arg_8_0:setCardStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.hand)
+		if not var_8_13 then
+			local var_cands = arg_8_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_8_0:getBattleCardsByType("P", Data.CardType.monster), 7))
+			if #var_cands > 0 then
+				arg_8_0:setCardStatus(arg_8_0:randomOne(var_cands), BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3)
+				var_8_13 = true
+			end
+		end
+	elseif var_8_4 == 14620 then
+		var_8_13 = arg_8_0:setCardStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.board)
+		if not var_8_13 then
+			local var_h = B.filterInKeywordCards(arg_8_0:getBattleCardsByType("H", Data.CardType.monster), 7)
+			local var_g = B.filterInKeywordCards(arg_8_0:getBattleCardsByType("G", Data.CardType.monster), 7)
+			local var_cands = arg_8_0:filterCanChangeToBoardCards(B.mergeTable({ var_h, var_g }))
+			if #var_cands > 0 then
+				arg_8_0:setCardStatus(arg_8_0:randomOne(var_cands), BattleData.CardStatus.board, var_8_5, var_8_4, arg_8_3)
+				var_8_13 = true
+			end
+		end
+	elseif var_8_4 == 14623 then
+		var_8_13 = arg_8_0:setCardStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.hand)
+		if not var_8_13 then
+			local var_cands = arg_8_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_8_0:getBattleCardsByType("P", Data.CardType.magic), 7))
+			if #var_cands > 0 then
+				arg_8_0:setCardStatus(arg_8_0:randomOne(var_cands), BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3)
 				var_8_13 = true
 			end
 		end
@@ -54016,7 +54046,20 @@ function var_0_0.castMagicHaloSkill(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 				var_12_13 = true
 			end
 		end
-	elseif var_12_4 == 7123 or var_12_4 == 7124 or var_12_4 == 7125 or var_12_4 == 7126 or var_12_4 == 7129 or var_12_4 == 7131 or var_12_4 == 7132 then
+	elseif var_12_4 == 7131 then
+		local var_12_harpie_board = B.filterInTypeCards(arg_12_0:getBattleCardsByKeyword("B", 7), Data.CardType.monster)
+		local var_12_harpie_grave = B.filterInTypeCards(arg_12_0:getBattleCardsByKeyword("G", 7), Data.CardType.monster)
+		local var_12_harpie_boost = (#var_12_harpie_board + #var_12_harpie_grave) * 100
+
+		if var_12_harpie_boost > 0 then
+			for iter_12_h = 1, #var_12_harpie_board do
+				arg_12_0:incAtk(var_12_harpie_board[iter_12_h], var_12_harpie_boost, true, var_12_5, var_12_4, arg_12_3)
+				arg_12_0:incHp(var_12_harpie_board[iter_12_h], var_12_harpie_boost, true, var_12_5, var_12_4, arg_12_3)
+
+				var_12_13 = true
+			end
+		end
+	elseif var_12_4 == 7123 or var_12_4 == 7124 or var_12_4 == 7125 or var_12_4 == 7126 or var_12_4 == 7129 or var_12_4 == 7132 then
 		local var_12_97 = B.mergeTable({
 			arg_12_0:getBattleCardsByCategoryGroup("B", var_12_6._refCards),
 			var_12_8:getBattleCardsByCategoryGroup("B", var_12_6._refCards)
@@ -60775,7 +60818,7 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 		local var_13_149 = B.filterCanActionCards(arg_13_0:getBattleCardsByKeyword("B", var_13_6._refCards[1]))
 
 		if var_13_7 <= #var_13_149 then
-			local var_13_150 = arg_13_0:randomTable(var_13_8:getBoardCards(), #var_13_149)
+			local var_13_150 = var_13_8:getBoardCards()
 			local var_13_151 = 0
 
 			for iter_13_55 = 1, #var_13_150 do
@@ -67993,6 +68036,16 @@ function var_0_0.canUseMonsterSpecial(arg_19_0, arg_19_1, arg_19_2)
 	if arg_19_1._infoId == 10120 and #B.filterInTypeCards(arg_19_0:getBattleCardsByKeyword("G", 6), Data.CardType.monster) > 0 then
 		local var_s10120 = (arg_19_1.getSkill and arg_19_1:getSkill(14614)) or arg_19_1._skills[3] or arg_19_1._skills[1]
 		return true, nil, var_19_0, var_s10120
+	end
+
+	if arg_19_1._infoId == 11364 and #B.filterInTypeCards(arg_19_0:getBattleCardsByKeyword("B", 7), Data.CardType.monster) > 0 and (arg_19_0._castedSkillCounts[14621] == nil or arg_19_0._castedSkillCounts[14621] == 0) then
+		local var_s11364 = (arg_19_1.getSkill and arg_19_1:getSkill(14621)) or arg_19_1._skills[4] or arg_19_1._skills[1]
+		return true, nil, var_19_0, var_s11364
+	end
+
+	if arg_19_1._infoId == 10084 and #B.filterInTypeCards(arg_19_0:getBattleCardsByKeyword("P", 7), Data.CardType.monster) > 0 and (arg_19_0._castedSkillCounts[14622] == nil or arg_19_0._castedSkillCounts[14622] == 0) then
+		local var_s10084 = (arg_19_1.getSkill and arg_19_1:getSkill(14622)) or arg_19_1._skills[2] or arg_19_1._skills[1]
+		return true, nil, var_19_0, var_s10084
 	end
 
 	local var_19_1 = {
@@ -102726,6 +102779,10 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 	elseif var_40_0 == 14526 then
 		return #arg_40_0:filterCanChangeToBoardCards(B.filterNotEqualInfoIdCards(B.filterInCategoryCards(arg_40_0:getBattleCardsByStar("P", var_40_2), var_40_1._refCards[2]), var_40_1._refCards[1])) > 0
 	elseif var_40_0 == 14527 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil and arg_40_0._castedSkillCounts[var_40_0] > 0 then
+			return false
+		end
+
 		if arg_40_1._mark14527 == nil then
 			return false
 		end
@@ -103056,6 +103113,39 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		return #arg_40_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_40_0:getBattleCardsByType("P", Data.CardType.monster), 6)) > 0
 	elseif var_40_0 == 14611 then
 		return #arg_40_0:filterCanChangeToHandCards(arg_40_0:getBattleCardsByInfoId("P", 20301)) > 0
+	elseif var_40_0 == 14619 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil and arg_40_0._castedSkillCounts[var_40_0] > 0 then
+			return false
+		end
+		return #arg_40_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_40_0:getBattleCardsByType("P", Data.CardType.monster), 7)) > 0
+	elseif var_40_0 == 14620 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil and arg_40_0._castedSkillCounts[var_40_0] > 0 then
+			return false
+		end
+		local var_h = B.filterInKeywordCards(arg_40_0:getBattleCardsByType("H", Data.CardType.monster), 7)
+		local var_g = B.filterInKeywordCards(arg_40_0:getBattleCardsByType("G", Data.CardType.monster), 7)
+		return #arg_40_0:filterCanChangeToBoardCards(B.mergeTable({ var_h, var_g })) > 0
+	elseif var_40_0 == 14621 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil and arg_40_0._castedSkillCounts[var_40_0] > 0 then
+			return false
+		end
+		if #B.filterInTypeCards(arg_40_0:getBattleCardsByKeyword("B", 7), Data.CardType.monster) == 0 then
+			return false
+		end
+		return #arg_40_0:filterCanChangeToBoardCards({ arg_40_1 }) > 0
+	elseif var_40_0 == 14622 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil and arg_40_0._castedSkillCounts[var_40_0] > 0 then
+			return false
+		end
+		if #B.filterInTypeCards(arg_40_0:getBattleCardsByKeyword("P", 7), Data.CardType.monster) == 0 then
+			return false
+		end
+		return #arg_40_0:filterCanChangeToBoardCards({ arg_40_1 }) > 0
+	elseif var_40_0 == 14623 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil and arg_40_0._castedSkillCounts[var_40_0] > 0 then
+			return false
+		end
+		return #arg_40_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_40_0:getBattleCardsByType("P", Data.CardType.magic), 7)) > 0
 	end
 
 	return false

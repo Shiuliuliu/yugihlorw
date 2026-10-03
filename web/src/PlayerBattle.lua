@@ -888,8 +888,15 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 
 	for iter_38_5 = 1, #arg_38_1._underSkills do
 		local var_38_19 = arg_38_1._underSkills[iter_38_5]
+		local var_is_halo_dead_19 = false
+		if var_38_19._mode == Data.SkillMode.halo and var_38_19._cid ~= nil then
+			local var_caster_19 = arg_38_0:getCardById(var_38_19._cid)
+			if var_caster_19 == nil or (var_caster_19._status ~= BattleData.CardStatus.board and var_caster_19._status ~= BattleData.CardStatus.field) then
+				var_is_halo_dead_19 = true
+			end
+		end
 
-		if var_38_19._disabled ~= true then
+		if var_38_19._disabled ~= true and not var_is_halo_dead_19 then
 			for iter_38_6, iter_38_7 in pairs(var_38_19) do
 				if iter_38_6 == "_incPositive" then
 					for iter_38_8, iter_38_9 in ipairs(iter_38_7) do
@@ -928,8 +935,15 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 
 	for iter_38_13 = 1, #arg_38_1._underSkills do
 		local var_38_20 = arg_38_1._underSkills[iter_38_13]
+		local var_is_halo_dead_20 = false
+		if var_38_20._mode == Data.SkillMode.halo and var_38_20._cid ~= nil then
+			local var_caster_20 = arg_38_0:getCardById(var_38_20._cid)
+			if var_caster_20 == nil or (var_caster_20._status ~= BattleData.CardStatus.board and var_caster_20._status ~= BattleData.CardStatus.field) then
+				var_is_halo_dead_20 = true
+			end
+		end
 
-		if var_38_20._disabled ~= true and not arg_38_0:isHaloUnderSkillDisabledByShield(arg_38_1, var_38_20) then
+		if var_38_20._disabled ~= true and not var_is_halo_dead_20 and not arg_38_0:isHaloUnderSkillDisabledByShield(arg_38_1, var_38_20) then
 			for iter_38_14, iter_38_15 in pairs(var_38_20) do
 				if iter_38_14 == "_incNegative" then
 					for iter_38_16, iter_38_17 in ipairs(iter_38_15) do
@@ -1091,7 +1105,15 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 			break
 		end
 
-		if not var_38_22._removable then
+		local var_is_halo_dead_22 = false
+		if var_38_22._mode == Data.SkillMode.halo and var_38_22._cid ~= nil then
+			local var_caster_22 = arg_38_0:getCardById(var_38_22._cid)
+			if var_caster_22 == nil or (var_caster_22._status ~= BattleData.CardStatus.board and var_caster_22._status ~= BattleData.CardStatus.field) then
+				var_is_halo_dead_22 = true
+			end
+		end
+
+		if not var_38_22._removable or var_is_halo_dead_22 then
 			if var_38_22._disabled ~= true and var_38_22._follower ~= nil and var_38_22._follower._disabled ~= true then
 				var_38_22._follower._ignoreDisable = true
 			end

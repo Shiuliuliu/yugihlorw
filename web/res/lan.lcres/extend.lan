@@ -38442,7 +38442,7 @@ Kỹ năng chủ động tay: Trả tiền cho bản thân để thêm phép thu
 Nekroz-Loại Trừ
 Bài này không thể triệu hồi thường. Cần dùng Phép Nghi Thức có từ khóa “Nekroz” để Triệu Hồi Nghi Thức từ bài trên tay.
 Nekroz-Lãnh Địa
-Kỹ năng kích hoạt tay: Trả cho bản thân và tay bạn một bùa phép với từ khóa “Quần áo bóng tối”. Cho đến hết lượt tiếp theo của đối thủ; các lá bài được đối thủ triệu tập đặc biệt từ bộ bài phụ không thể tấn công và hiệu ứng của chúng chỉ bị vô hiệu trên sân.
+Kỹ năng kích hoạt tay: Trả cho bản thân và tay bạn một bùa phép với từ khóa “Quần áo bóng tối”. Cho đến hết lượt tiếp theo của đối thủ; các lá bài được đối thủ triệu tập đặc biệt từ bộ bài phụ không thể tấn công.
 Nekroz-Hư Vô
 Kỹ năng chủ động: Lá bài này có thể được kích hoạt trong vòng đấu khi lá bài này được triệu hồi theo nghi thức và không có sự triệu hồi thông thường hay Triệu Hồi Đặc Biệt nào ngoài lá bài này ở vòng này. Di chuyển nghĩa địa của cả hai bên và tất cả các lá bài trên sân ngoại trừ chính nó đến Khu Trục Xuất. Sau đó; nó không thể được triệu hồi thông thường hoặc Triệu Hồi Đặc Biệt chỉ trong vòng này. Kỹ năng này chỉ có thể được kích hoạt một lần.
 Cổ Vũ của Rồng
@@ -40930,7 +40930,7 @@ Phá hủy 1 Quái đang phòng thủ trên Sân đối phương
 Tổ Yến
 Phá hủy 1 Quái tộc Thú Có Cánh trên Sân phe ta; Triệu Hồi Đặc Biệt 1 Quái tộc Thú Có Cánh cùng cấp Sao từ Bộ bài
 Trận Phụng Hoàng
-Trên Sân phe ta có [1] Quái chứa từ khóa “Harpie Lady” trở lên và chưa hành động có thể kích hoạt; phá hủy số quái tương ứng trên Sân đối phương; đối phương mất điểm LP bằng tấn công của Quái mạnh nhất bị phá hủy; Quái phe ta bị “Khóa” trong lượt này
+Trên Sân phe ta có [1] Quái chứa từ khóa “Harpie Lady” trở lên và chưa hành động có thể kích hoạt; phá hủy toàn bộ quái trên Sân đối phương; đối phương mất điểm LP bằng tấn công của Quái mạnh nhất bị phá hủy; Quái phe ta bị “Khóa” trong lượt này.
 O·Ngoài tâm hồn
 Chọn và Triệu Hồi Đặc Biệt 1 quái thường có từ khóa `Anh Hùng Nguyên Tố` từ mộ phe ta
 Bài Số 7
@@ -46348,7 +46348,7 @@ Tất cả quái Tộc Khủng Long trên sân tăng [1] công và thủ.
 Súng Điện
 <Anh hùng nguyên tố·Người điện>Trang bị độc quyền
 Bãi Săn Harpie
-Tất cả quái Tộc Thú Có Cánh trên sân tăng [1] công và thủ.
+Tất cả quái có từ khóa “Harpie” trên sân phe ta tăng 100 công và thủ cho mỗi quái thú “Harpie” trên sân và trong mộ phe ta.
 Lò Nung Máy Móc
 Tăng khả năng tấn công và phòng thủ của bộ tộc Máy và Lửa ở cả hai bên thêm [1] điểm.
 Phố Ma Thuật
@@ -53138,7 +53138,7 @@ Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần; kích hoạt đượ
 Mắt Xanh-Truyền Tống
 Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Hi sinh bản thân; chọn và Triệu Hồi Đặc Biệt 1 quái Tộc Rồng [1] sao không phải <Rồng Rực Mắt Xanh> trong bộ bài phe ta.
 Mắt Xanh-Đồng Tần
-Kỹ năng mộ chủ động: Khi phe ta triệu hồi thường·Triệu Hồi Đặc Biệt quái Tộc Rồng thuộc tính Quang sẽ có thể dùng. Triệu Hồi Đặc Biệt bài này từ mộ và nhận được “Quá Tải”.
+Kỹ năng mộ chủ động: Mỗi lượt tối đa 1 lần. Khi phe ta triệu hồi thường·Triệu Hồi Đặc Biệt quái Tộc Rồng thuộc tính Quang sẽ có thể dùng. Triệu Hồi Đặc Biệt bài này từ mộ và nhận được “Quá Tải”.
 Hoa Hồng-Phá Nổ
 Chủ động: Mỗi lượt chỉ 1 lần; chọn tối đa [1] lá bài trên sân đối thủ chuyển vào mộ bài Loại Bỏ（xuyên “Tường Chắn Quái”）
 Hoa Hồng-Trị Liệu
@@ -56788,3 +56788,13 @@ Luyện Hồn Thu Nạp
 Chủ động: 1 lượt 1 lần, chọn 1 quái trên tay hoặc trên sân phe ta đưa vào mộ, sau đó lấy ngẫu nhiên 1 quái tộc Phù Thủy thuộc tính Ám từ bộ bài lên tay.
 Luyện Hồn Bộc Phá
 Khi lá bài này bị phá hủy từ trên sân: Loại bỏ tất cả quái thú trong mộ 2 bên, phe ta và phe địch chịu thiệt hại bằng số quái bị loại bỏ x 100.
+Bãi Săn-Tìm Kiếm
+Chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy 1 quái có từ khóa “Harpie” từ bộ bài phe ta lên tay.
+Harpy-Hiệu Triệu
+Chủ động: Mỗi lượt chỉ 1 lần. Triệu hồi đặc biệt 1 quái có từ khóa “Harpie” trên tay hoặc trong mộ phe ta lên sân.
+Rồng Con-Xuất Hiện
+Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Khi trên sân phe ta có quái có từ khóa “Harpie”; Triệu Hồi Đặc Biệt lá bài này lên sân.
+Rồng Bay-Đột Kích
+Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Đưa 1 quái có từ khóa “Harpie” từ bộ bài vào mộ; Triệu Hồi Đặc Biệt lá bài này lên sân.
+Harpy-Tìm Kiếm Phép
+Chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy 1 lá bài phép có từ khóa “Harpie” từ bộ bài phe ta lên tay.
