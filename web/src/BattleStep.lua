@@ -3679,7 +3679,7 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 					local var_52_c_id = arg_52_1._choice and math.floor(arg_52_1._choice / BattleData.ChoiceId.stage_2) % BattleData.ChoiceId.stage_size_2
 					local var_52_target = arg_52_0:getCardById(var_52_c_id)
 					if var_52_target == nil or var_52_target._status ~= BattleData.CardStatus.pile then
-						var_52_target = arg_52_0:randomOne(B.filterInTypeCards(arg_52_0:getBattleCardsByKeyword("P", 7), Data.CardType.monster))
+						var_52_target = arg_52_0:randomOne(B.filterInTypeGroupCards(arg_52_0:getBattleCardsByKeyword("P", 7), { Data.CardType.monster, Data.CardType.rare }))
 					end
 					if var_52_target ~= nil and var_52_target._status == BattleData.CardStatus.pile then
 						arg_52_0:changeCardStatus(var_52_target, BattleData.CardStatus.pile, BattleData.CardStatus.grave)

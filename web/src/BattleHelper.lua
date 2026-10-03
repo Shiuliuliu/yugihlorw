@@ -7291,7 +7291,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 			return true, var_cands_14620, 1
 		end
 	elseif arg_304_1._id == 14622 then
-		local var_cands_14622 = B.filterInTypeCards(arg_304_0:getBattleCardsByKeyword("P", 7), Data.CardType.monster)
+		local var_cands_14622 = B.filterInTypeGroupCards(arg_304_0:getBattleCardsByKeyword("P", 7), { Data.CardType.monster, Data.CardType.rare })
 		if #var_cands_14622 > 0 then
 			return true, var_cands_14622, 1
 		end
