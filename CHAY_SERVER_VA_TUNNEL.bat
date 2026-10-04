@@ -7,15 +7,16 @@ cls
 cd /d "%~dp0"
 
 echo ===================================================================
-echo     YU-GI-OH ONLINE - KHOI DONG 5 SERVERS + 1 TUNNEL (APK + WEB)
+echo     YU-GI-OH ONLINE - KHOI DONG 6 SERVERS + 1 TUNNEL (APK + WEB)
 echo ===================================================================
 echo   1. Database MySQL (XAMPP)       : Port 3306 (DB: yugioh_game)
-echo   2. Sinh Tu Chien Server         : Port 8085
-echo   3. Chat Server                  : Port 8084 ^& WS 9193
-echo   4. Shop Server                  : Port 8082
-echo   5. APK Native TCP Proto Server  : Port 9191
-echo   6. Cloudflare Tunnel            : https://yugihlor.online
-echo   7. Game ^& Battle Web Server     : Port 8080 ^& WS 9192
+echo   2. Battle Server Chinh (PvP)    : WS Port 9192 (Chuyen biet tran dau)
+echo   3. Sinh Tu Chien Server         : Port 8085 (Server rieng biet)
+echo   4. Chat Server                  : Port 8084 ^& WS 9193
+echo   5. Shop Server                  : Port 8082
+echo   6. APK Native TCP Proto Server  : Port 9191
+echo   7. Cloudflare Tunnel            : https://yugihlor.online
+echo   8. Gateway / Lobby / API Server : Port 8080 (Mo pack, Rank, Deck)
 echo ===================================================================
 echo   * Domain Online (Web) : https://yugihlor.online
 echo   * Local Game (Web)    : http://localhost:8080
@@ -72,24 +73,27 @@ for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":9191 "') do (
 )
 taskkill /IM cloudflared.exe /F >nul 2>&1
 
-echo [3/7] Dang khoi chay Sinh Tu Chien Server tren Port 8085...
+echo [3/8] Dang khoi chay Battle Server Chinh tren Port 9192...
+start "Yu-Gi-Oh Battle Server [Port 9192]" cmd /k "title BATTLE SERVER [Port 9192] && color 0C && python yugioh_battle_server.py"
+
+echo [4/8] Dang khoi chay Sinh Tu Chien Server tren Port 8085...
 start "Yu-Gi-Oh Survival Server [Port 8085]" cmd /k "title SURVIVAL SERVER [Port 8085] && color 0D && python yugioh_survival_server.py"
 
-echo [4/7] Dang khoi chay Chat Server tren Port 8084 ^& 9193...
+echo [5/8] Dang khoi chay Chat Server tren Port 8084 ^& 9193...
 start "Yu-Gi-Oh Chat Server [Port 8084/9193]" cmd /k "title CHAT SERVER [Port 8084/9193] && color 0E && python yugioh_chat_server.py"
 
-echo [5/7] Dang khoi chay Dedicated Shop Server tren Port 8082...
+echo [6/8] Dang khoi chay Dedicated Shop Server tren Port 8082...
 start "Yu-Gi-Oh Shop Server [Port 8082]" cmd /k "title SHOP SERVER [Port 8082] && color 0B && python yugioh_shop_server.py"
 
-echo [6/7] Dang khoi chay APK Native Protobuf Server tren Port 9191...
+echo [7/8] Dang khoi chay APK Native Protobuf Server tren Port 9191...
 start "Yu-Gi-Oh APK Native Server [Port 9191]" cmd /k "title APK PROTO SERVER [Port 9191] && color 0A && python yugioh_proto_server.py"
 
-echo [7/7] Dang khoi chay Cloudflare Tunnel (yugihlor.online)...
+echo [8/8] Dang khoi chay Cloudflare Tunnel (yugihlor.online)...
 start "Yu-Gi-Oh Cloudflare Tunnel [yugihlor.online]" cmd /k "title CLOUDFLARE TUNNEL [yugihlor.online] && color 09 && cloudflared.exe tunnel --config config.yml --protocol http2 run"
 
 echo.
 echo ===================================================================
-echo   Dang khoi chay Game ^& Battle Server tren Port 8080/9192...
+echo   Dang khoi chay Gateway / Lobby / API Web Server tren Port 8080...
 echo ===================================================================
 echo.
 python yugioh_web_server.py

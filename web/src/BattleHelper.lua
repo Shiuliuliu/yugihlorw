@@ -5493,7 +5493,7 @@ function var_0_0.getXYZCandidates(arg_254_0, arg_254_1, arg_254_2, arg_254_3, ar
 				local var_254_7 = var_254_4
 
 				for iter_254_2 = 1, #arg_254_1._info._syncComponent[iter_254_1] do
-					var_254_7 = B.filterInSuperIdCards(var_254_4, arg_254_1._info._syncComponent[iter_254_1][iter_254_2])
+					var_254_7 = B.filterInSuperIdCards(var_254_7, arg_254_1._info._syncComponent[iter_254_1][iter_254_2])
 				end
 
 				B.appendTable(var_254_6, var_254_7)

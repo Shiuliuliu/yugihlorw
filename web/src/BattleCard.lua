@@ -8115,7 +8115,7 @@ function var_0_0.canBeSynced(arg_260_0, arg_260_1)
 end
 
 function var_0_0.canBeXYZed(arg_261_0, arg_261_1)
-	if arg_261_0:isToken() then
+	if arg_261_0:isToken() or arg_261_0:isXYZ() or arg_261_0:isLink() then
 		return false
 	end
 

@@ -3860,10 +3860,16 @@ def start_ws():
 
 def main():
     print("==================================================================")
-    print("      YU-GI-OH ONLINE WEB H5 (Yugihlor - trading \"Nạp\" game)      ")
-    print(f"      Web Client URL : http://localhost:{HTTP_PORT}                ")
-    print(f"      WebSocket Port : ws://localhost:{WS_PORT}                    ")
+    print("      YU-GI-OH GATEWAY / LOBBY / API SERVER (PORT 8080)           ")
+    print("==================================================================")
+    print(f"      Gateway HTTP   : http://localhost:{HTTP_PORT}                ")
+    print(f"      Battle Server  : ws://localhost:{WS_PORT} (Dedicated Process)")
+    print(f"      Survival Server: http://localhost:{SURVIVAL_HTTP_PORT} (Port 8085)       ")
+    print(f"      Shop Server    : http://localhost:{SHOP_HTTP_PORT} (Port 8082)       ")
+    print(f"      Chat Server    : http://localhost:{CHAT_HTTP_PORT} (Port 8084/9193)  ")
     print(f"      MySQL Database : {DB_CONFIG['database']} @ 127.0.0.1:3306   ")
+    print("      Chuc nang      : Auth, Shop, Mo Pack, Deck, Rank, Friends,  ")
+    print("                       Missions, Mail, Matchmaking Lobby          ")
     print("==================================================================")
     
     db_initialized = False
@@ -3971,8 +3977,7 @@ def main():
         request_queue_size = 256
         daemon_threads = True
 
-    ws_thread = threading.Thread(target=start_ws, daemon=True)
-    ws_thread.start()
+    print(f"[GATEWAY] WebSocket /ws requests will proxy to Dedicated Battle Server (Port {WS_PORT}).")
     scheduler_thread = threading.Thread(target=daily_scheduler_loop, daemon=True)
     scheduler_thread.start()
     print("[SCHEDULER] Daily leaderboard 0h midnight reward scheduler started.")
