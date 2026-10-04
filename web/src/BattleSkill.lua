@@ -43579,7 +43579,6 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 			arg_8_1._saved._addSkills = var_8_6._refSkills
 
 			arg_8_0:setCardStatus(arg_8_1, BattleData.CardStatus.board, var_8_5, var_8_4, arg_8_3)
-			arg_8_0:incCastedSkillCounts(var_8_4)
 
 			var_8_13 = true
 		elseif (arg_8_0._castedSkillCounts[var_8_4] == nil or arg_8_0._castedSkillCounts[var_8_4] == 0) and var_8_1._status == BattleData.CardStatus.grave and B.isSummon(arg_8_1) and arg_8_1:isNature(var_8_6._refCards[1]) and arg_8_1._info._category == var_8_6._refCards[2] then
