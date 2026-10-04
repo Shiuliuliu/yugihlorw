@@ -1001,50 +1001,6 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 		end
 	end
 
-	if arg_15_1._infoId == 40725 then
-		local var_oppo = var_owner._opponent
-		if var_oppo ~= nil then
-			-- 1. Banish all Spell/Trap cards on opponent's field
-			local var_oppo_field = var_oppo:getBattleCards("CSD")
-			for iter_i = 1, #var_oppo_field do
-				local var_c = var_oppo_field[iter_i]
-				if var_c ~= nil and (var_c._type == Data.CardType.magic or var_c._type == Data.CardType.trap) then
-					var_oppo:changeCardStatus(var_c, var_c._status, BattleData.CardStatus.leave, nil, arg_15_1)
-				end
-			end
-			-- 2. Banish all Spell/Trap cards in opponent's hand
-			local var_oppo_hand = var_oppo:getBattleCards("H")
-			for iter_i = 1, #var_oppo_hand do
-				local var_c = var_oppo_hand[iter_i]
-				if var_c ~= nil and (var_c._type == Data.CardType.magic or var_c._type == Data.CardType.trap) then
-					var_oppo:changeCardStatus(var_c, var_c._status, BattleData.CardStatus.leave, nil, arg_15_1)
-				end
-			end
-		end
-
-		-- 3. Gain "Khiên chắn quái , bẫy" (Monster and Trap Shields)
-		local function addCardShield(target_card, shield_type)
-			target_card._positiveStatus[shield_type] = true
-			target_card._underSkills[#target_card._underSkills + 1] = {
-				_sid = 0,
-				_value = 0,
-				_removable = false,
-				_cid = target_card._id,
-				_mode = Data.SkillMode.once,
-				_positiveType = shield_type,
-				_aggregateType = Data.AggregateType.table
-			}
-			target_card:accountBuffValue(true, shield_type)
-		end
-		addCardShield(arg_15_1, BattleData.PositiveType.shieldMonster)
-		addCardShield(arg_15_1, BattleData.PositiveType.shieldTrap)
-
-		var_owner:account()
-		if var_oppo ~= nil then
-			var_oppo:account()
-		end
-	end
-
 	if arg_15_1._type == Data.CardType.monster and arg_15_1:isKeyword(8) then
 		local var_mdkh_cards = var_owner:getBattleCardsByInfoId("S", 30124)
 		if #var_mdkh_cards > 0 then
@@ -1173,26 +1129,6 @@ function var_0_0.addCardToGrave(arg_16_0, arg_16_1)
 	if arg_16_1._statusVal ~= BattleData.CardStatusVal.g2g_oppo then
 		arg_16_1:setDieStat()
 	end
-
-	if arg_16_1._infoId == 40725 and arg_16_1._sourceStatus == BattleData.CardStatus.board then
-		local var_oppo = arg_16_0._opponent
-		if var_oppo ~= nil then
-			local var_st_in_hand = {}
-			for iter_h = 1, #var_oppo._handCards do
-				local var_hc = var_oppo._handCards[iter_h]
-				if var_hc ~= nil and (var_hc._type == Data.CardType.magic or var_hc._type == Data.CardType.trap) then
-					var_st_in_hand[#var_st_in_hand + 1] = var_hc
-				end
-			end
-			local var_steal_count = math.min(2, #var_st_in_hand)
-			for iter_s = 1, var_steal_count do
-				local var_steal_card = var_st_in_hand[iter_s]
-				arg_16_0:changeCardStatus(var_steal_card, BattleData.CardStatus.hand, BattleData.CardStatus.hand, BattleData.CardStatusVal.h2h_oppo, arg_16_1)
-			end
-			arg_16_0:account()
-			var_oppo:account()
-		end
-	end
 end
 
 function var_0_0.addCardToLeave(arg_17_0, arg_17_1)
@@ -1224,26 +1160,6 @@ function var_0_0.addCardToLeave(arg_17_0, arg_17_1)
 
 	if arg_17_1._statusVal ~= BattleData.CardStatusVal.l2l_oppo then
 		arg_17_1:setDieStat()
-	end
-
-	if arg_17_1._infoId == 40725 and arg_17_1._sourceStatus == BattleData.CardStatus.board then
-		local var_oppo = arg_17_0._opponent
-		if var_oppo ~= nil then
-			local var_st_in_hand = {}
-			for iter_h = 1, #var_oppo._handCards do
-				local var_hc = var_oppo._handCards[iter_h]
-				if var_hc ~= nil and (var_hc._type == Data.CardType.magic or var_hc._type == Data.CardType.trap) then
-					var_st_in_hand[#var_st_in_hand + 1] = var_hc
-				end
-			end
-			local var_steal_count = math.min(2, #var_st_in_hand)
-			for iter_s = 1, var_steal_count do
-				local var_steal_card = var_st_in_hand[iter_s]
-				arg_17_0:changeCardStatus(var_steal_card, BattleData.CardStatus.hand, BattleData.CardStatus.hand, BattleData.CardStatusVal.h2h_oppo, arg_17_1)
-			end
-			arg_17_0:account()
-			var_oppo:account()
-		end
 	end
 end
 

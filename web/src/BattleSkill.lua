@@ -43631,6 +43631,57 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 			var_8_1._mark14531 = true
 			var_8_13 = true
 		end
+	elseif var_8_4 == 14615 then
+		local var_oppo_st = {}
+		for iter_c = 1, Data.MAX_CARD_COUNT_ON_COVER do
+			local var_c = var_8_8._coverCards[iter_c]
+			if var_c ~= nil and (var_c._type == Data.CardType.magic or var_c._type == Data.CardType.trap) then
+				var_oppo_st[#var_oppo_st + 1] = var_c
+			end
+		end
+		for iter_s = 1, Data.MAX_CARD_COUNT_ON_COVER do
+			local var_c = var_8_8._showCards[iter_s]
+			if var_c ~= nil and (var_c._type == Data.CardType.magic or var_c._type == Data.CardType.trap) then
+				var_oppo_st[#var_oppo_st + 1] = var_c
+			end
+		end
+		if var_8_8._fieldCard ~= nil and (var_8_8._fieldCard._type == Data.CardType.magic or var_8_8._fieldCard._type == Data.CardType.trap) then
+			var_oppo_st[#var_oppo_st + 1] = var_8_8._fieldCard
+		end
+		for iter_b = 1, Data.MAX_CARD_COUNT_ON_BOARD + 1 do
+			local var_c = var_8_8._boardCards[iter_b]
+			if var_c ~= nil and (var_c._type == Data.CardType.magic or var_c._type == Data.CardType.trap) then
+				var_oppo_st[#var_oppo_st + 1] = var_c
+			end
+		end
+		for iter_h = 1, math.max(Data.MAX_CARD_COUNT_IN_HAND, #var_8_8._handCards) do
+			local var_c = var_8_8._handCards[iter_h]
+			if var_c ~= nil and (var_c._type == Data.CardType.magic or var_c._type == Data.CardType.trap) then
+				var_oppo_st[#var_oppo_st + 1] = var_c
+			end
+		end
+		for iter_banish = 1, #var_oppo_st do
+			arg_8_0:setCardStatus(var_oppo_st[iter_banish], BattleData.CardStatus.leave, var_8_5, var_8_4, arg_8_3)
+		end
+		var_8_13 = true
+	elseif var_8_4 == 14616 then
+		arg_8_0:incShield(arg_8_1, { 11002, 11004 }, false, false, var_8_5, var_8_4, arg_8_3)
+		var_8_13 = true
+	elseif var_8_4 == 14617 then
+		local var_oppo_hand_st = {}
+		for iter_h = 1, math.max(Data.MAX_CARD_COUNT_IN_HAND, #var_8_8._handCards) do
+			local var_hc = var_8_8._handCards[iter_h]
+			if var_hc ~= nil and (var_hc._type == Data.CardType.magic or var_hc._type == Data.CardType.trap) then
+				var_oppo_hand_st[#var_oppo_hand_st + 1] = var_hc
+			end
+		end
+		local var_steal_count = math.min(2, #var_oppo_hand_st)
+		for iter_s = 1, var_steal_count do
+			arg_8_0:setCardStatus(var_oppo_hand_st[iter_s], BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.h2h_oppo)
+		end
+		if var_steal_count > 0 then
+			var_8_13 = true
+		end
 	elseif var_8_4 == 14618 then
 		if arg_8_3 == Data.SkillMode.initiative_grave then
 			local var_c1_id = var_8_15 % BattleData.UseCardId.id_group
