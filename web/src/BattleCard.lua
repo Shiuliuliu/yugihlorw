@@ -6830,7 +6830,8 @@ end
 
 function var_0_0.isBinded(arg_186_0, arg_186_1)
 	for iter_186_0 = 1, #arg_186_0._binds do
-		if arg_186_0._binds[iter_186_0]:isInfoId(arg_186_1) then
+		local var_b = arg_186_0._binds[iter_186_0]
+		if var_b == arg_186_1 or var_b:isInfoId(arg_186_1) then
 			return true
 		end
 	end
@@ -7695,6 +7696,10 @@ end
 
 function var_0_0.isSustainableTrap(arg_252_0)
 	return arg_252_0._type == Data.CardType.trap and band(arg_252_0._info._option, Data.TrapOption.is_sustainable) > 0
+end
+
+function var_0_0.isEquipTrap(arg_252_1)
+	return arg_252_1._type == Data.CardType.trap and band(arg_252_1._info._option, Data.TrapOption.is_equipment) > 0
 end
 
 function var_0_0.isNewLive1(arg_253_0)

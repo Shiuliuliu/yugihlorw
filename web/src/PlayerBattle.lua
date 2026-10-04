@@ -733,6 +733,8 @@ end
 
 function var_0_0.bindCard(arg_34_0, arg_34_1, arg_34_2, arg_34_3, arg_34_4, arg_34_5)
 	if B.isAlive(arg_34_2) then
+		arg_34_1:addBind(arg_34_2)
+		arg_34_2:addBind(arg_34_1)
 		table.insert(arg_34_1._underSkills, {
 			_cid = arg_34_3,
 			_sid = arg_34_4,
@@ -886,15 +888,46 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 		return arg_39_0 >= BattleData.PositiveType.shieldHaloBegin and arg_39_0 <= BattleData.PositiveType.shieldExEnd and arg_39_0 ~= BattleData.PositiveType.shieldHaloAttack and arg_39_0 ~= BattleData.PositiveType.shieldAttack and arg_39_0 ~= BattleData.PositiveType.shieldExAttack or arg_39_0 >= BattleData.PositiveType.shieldDestroy and arg_39_0 <= BattleData.PositiveType.shieldHaloOppoTrap
 	end
 
+	local function var_is_halo_under_skill_dead(arg_under_skill)
+		if arg_under_skill._mode ~= Data.SkillMode.halo or arg_under_skill._cid == nil then
+			return false
+		end
+
+		local var_caster = arg_38_0:getCardById(arg_under_skill._cid)
+		if var_caster == nil then
+			return true
+		end
+
+		if arg_under_skill._sid == 3979 or arg_under_skill._sid == 13558 then
+			return var_caster._status ~= BattleData.CardStatus.grave
+		end
+
+		if arg_under_skill._sid == 14624 then
+			return var_caster._status ~= BattleData.CardStatus.leave
+		end
+
+		if var_caster._status == BattleData.CardStatus.board or var_caster._status == BattleData.CardStatus.field or var_caster._status == BattleData.CardStatus.fortress then
+			return false
+		end
+
+		if var_caster._status == BattleData.CardStatus.show then
+			if var_caster:isEquipMagic() or (var_caster.isEquipTrap and var_caster:isEquipTrap()) or #var_caster._binds > 0 then
+				if #var_caster._binds == 0 then
+					return true
+				end
+				if not var_caster:isBinded(arg_38_1) and var_caster._binds[1] ~= arg_38_1 and not arg_38_1:isBinded(var_caster) then
+					return true
+				end
+			end
+			return false
+		end
+
+		return true
+	end
+
 	for iter_38_5 = 1, #arg_38_1._underSkills do
 		local var_38_19 = arg_38_1._underSkills[iter_38_5]
-		local var_is_halo_dead_19 = false
-		if var_38_19._mode == Data.SkillMode.halo and var_38_19._cid ~= nil then
-			local var_caster_19 = arg_38_0:getCardById(var_38_19._cid)
-			if var_caster_19 == nil or (var_caster_19._status ~= BattleData.CardStatus.board and var_caster_19._status ~= BattleData.CardStatus.field) then
-				var_is_halo_dead_19 = true
-			end
-		end
+		local var_is_halo_dead_19 = var_is_halo_under_skill_dead(var_38_19)
 
 		if var_38_19._disabled ~= true and not var_is_halo_dead_19 then
 			for iter_38_6, iter_38_7 in pairs(var_38_19) do
@@ -935,13 +968,7 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 
 	for iter_38_13 = 1, #arg_38_1._underSkills do
 		local var_38_20 = arg_38_1._underSkills[iter_38_13]
-		local var_is_halo_dead_20 = false
-		if var_38_20._mode == Data.SkillMode.halo and var_38_20._cid ~= nil then
-			local var_caster_20 = arg_38_0:getCardById(var_38_20._cid)
-			if var_caster_20 == nil or (var_caster_20._status ~= BattleData.CardStatus.board and var_caster_20._status ~= BattleData.CardStatus.field) then
-				var_is_halo_dead_20 = true
-			end
-		end
+		local var_is_halo_dead_20 = var_is_halo_under_skill_dead(var_38_20)
 
 		if var_38_20._disabled ~= true and not var_is_halo_dead_20 and not arg_38_0:isHaloUnderSkillDisabledByShield(arg_38_1, var_38_20) then
 			for iter_38_14, iter_38_15 in pairs(var_38_20) do
@@ -1105,13 +1132,7 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 			break
 		end
 
-		local var_is_halo_dead_22 = false
-		if var_38_22._mode == Data.SkillMode.halo and var_38_22._cid ~= nil then
-			local var_caster_22 = arg_38_0:getCardById(var_38_22._cid)
-			if var_caster_22 == nil or (var_caster_22._status ~= BattleData.CardStatus.board and var_caster_22._status ~= BattleData.CardStatus.field) then
-				var_is_halo_dead_22 = true
-			end
-		end
+		local var_is_halo_dead_22 = var_is_halo_under_skill_dead(var_38_22)
 
 		if not var_38_22._removable or var_is_halo_dead_22 then
 			if var_38_22._disabled ~= true and var_38_22._follower ~= nil and var_38_22._follower._disabled ~= true then
