@@ -40930,7 +40930,7 @@ Phá hủy 1 Quái đang phòng thủ trên Sân đối phương
 Tổ Yến
 Phá hủy 1 Quái tộc Thú Có Cánh trên Sân phe ta; Triệu Hồi Đặc Biệt 1 Quái tộc Thú Có Cánh cùng cấp Sao từ Bộ bài
 Trận Phụng Hoàng
-Trên Sân phe ta có [1] Quái chứa từ khóa “Harpie Lady” trở lên và chưa hành động có thể kích hoạt; phá hủy toàn bộ quái trên Sân đối phương; đối phương mất điểm LP bằng tấn công của Quái mạnh nhất bị phá hủy; Quái phe ta bị “Khóa” trong lượt này.
+Trên Sân phe ta có [1] Quái chứa từ khóa “Harpie Lady” trở lên và chưa hành động có thể kích hoạt; phá hủy toàn bộ quái trên Sân đối phương (Xuyên qua tường chắn/khiên chắn); đối phương mất điểm LP bằng tấn công của Quái mạnh nhất bị phá hủy; Quái phe ta bị “Khóa” trong lượt này.
 O·Ngoài tâm hồn
 Chọn và Triệu Hồi Đặc Biệt 1 quái thường có từ khóa `Anh Hùng Nguyên Tố` từ mộ phe ta
 Bài Số 7
@@ -56767,8 +56767,8 @@ Khi lên sân, ngẫu nhiên tiêu diệt bài Phép/Bẫy trên sân đối ph�
 Amazon-Triệu Hồi
 Có thể Triệu hồi Đặc biệt từ tay khi trong mộ có quái thú 'Amazon'.
 Chu tước tử
-quái Tộc thú có cánh x5
-|Mô tả|\nChỉ những quái vật chưa hành động mới có thể được sử dụng làm nguyên liệu liên kết. Không thể sử dụng quái vật dung hợp, đồng bộ và siêu quái vật làm nguyên liệu liên kết.
+quái Tộc thú có cánh hoặc quái Harpie x5
+|Mô tả|\nChỉ những quái vật chưa hành động mới có thể được sử dụng làm nguyên liệu liên kết. Có thể sử dụng quái vật mang từ khóa "Harpie" từ Bộ Bài Thêm làm nguyên liệu liên kết.
 Chu tước tử
 Chu Tước-Thiêu Tẫn
 Khi lên sân, Loại bỏ tất cả bài phép/bẫy trên sân và trên tay đối phương.

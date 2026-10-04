@@ -5680,7 +5680,7 @@ function var_0_0.getLinkCandidatesByTriggerCard(arg_259_0, arg_259_1, arg_259_2)
 end
 
 function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, arg_260_4)
-	local var_260_0 = arg_260_1._infoId == 40712
+	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725
 	local var_260_1 = B.filterCanBeLinkedCards(arg_260_0:getBattleCards(arg_260_2), arg_260_1, var_260_0)
 
 	if arg_260_1._infoId == 40709 then
@@ -5714,6 +5714,8 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		end
 	elseif arg_260_1._infoId == 40713 then
 		B.appendTable(var_260_1, B.filterCanBeLinkedCards(B.filterLinkCardsByMaxLink(arg_260_0._opponent:getBoardCards(), 3), arg_260_1, true))
+	elseif arg_260_1._infoId == 40725 then
+		B.appendTable(var_260_1, B.filterCanBeLinkedCards(B.filterNotActionedCards(B.filterInKeywordCards(arg_260_0:getBattleCardsByType("B", Data.CardType.rare), 7)), arg_260_1, true))
 	end
 
 	if #var_260_1 < arg_260_1._linkCountNode._subNodes[2]:value() then

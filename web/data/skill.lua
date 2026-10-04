@@ -20036,7 +20036,7 @@ return {
   [4079]={["_against"]={[1]=0,},
   ["_avoidP2B"]=0,["_count"]=1,["_decrease"]={[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,},
   ["_descSid"]=40933,["_effectVal"]={[1]=0,},
-  ["_id"]=4079,["_isIgnoreDefend"]=0,["_modes"]={[1]=61,},
+  ["_id"]=4079,["_isIgnoreDefend"]=9,["_modes"]={[1]=61,},
   ["_nameSid"]=40932,["_needExtraGem"]=0,["_needNoGem"]=0,["_option"]={[1]=0,},
   ["_priority"]=0,["_quality"]=1,["_refCards"]={[1]=15,},
   ["_refSkills"]={[1]=2,},

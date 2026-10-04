@@ -6727,7 +6727,7 @@ return {
   ["_id"]=40725,["_isHide"]=0,["_joinComponent"]={[1]=0,},
   ["_joinResult"]={[1]=0,},
   ["_keyword"]=0,["_link"]={[1]=1,[2]=2,[3]=3,[4]=4,[5]=6,},
-  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="C==13",["_linkCount"]="#>=2",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=56769,["_nature"]=4,["_option"]=8194,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="C==13||K==7||K==15",["_linkCount"]="#>=2",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=56769,["_nature"]=4,["_option"]=8194,["_originId"]=0,["_packageId"]={[1]=0,},
   ["_picId"]=0,["_py"]="ctt",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14615,[2]=14616,[3]=14617,[4]=14618,},
   ["_skin"]={[1]=0,},
   ["_star"]=0,["_syncComponent"]={[1]={[1]=0,},},},

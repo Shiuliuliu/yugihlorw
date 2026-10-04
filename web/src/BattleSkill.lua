@@ -60914,6 +60914,9 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 				local var_13_152 = var_13_150[iter_13_55]
 
 				arg_13_0:setCardStatus(var_13_152, BattleData.CardStatus.grave, var_13_5, var_13_4, arg_13_3)
+				if var_13_152._underSkills and #var_13_152._underSkills > 0 then
+					var_13_152._underSkills[#var_13_152._underSkills]._ignoreDisable = true
+				end
 
 				if var_13_151 < var_13_152._atk then
 					var_13_151 = var_13_152._atk
