@@ -225,7 +225,9 @@
 		'card_ico_40718': { path: 'res/new/thumb/card_ico_40718.png', w: 82, h: 82 },
 		'card_ico_40718_3': { path: 'res/new/thumb/card_ico_40718_3.png', w: 82, h: 82 },
 		'card_ico_40725': { path: 'res/new/thumb/card_ico_40725.png', w: 82, h: 82 },
-		'card_ico_40725_3': { path: 'res/new/thumb/card_ico_40725_3.png', w: 82, h: 82 }
+		'card_ico_40725_3': { path: 'res/new/thumb/card_ico_40725_3.png', w: 82, h: 82 },
+		'card_ico_40726': { path: 'res/new/thumb/card_ico_40726.png', w: 82, h: 82 },
+		'card_ico_40726_3': { path: 'res/new/thumb/card_ico_40726_3.png', w: 82, h: 82 }
 	};
 	global.CUSTOM_ICON_REPLACEMENTS = CUSTOM_ICON_REPLACEMENTS;
 	R.CUSTOM_ICON_REPLACEMENTS = CUSTOM_ICON_REPLACEMENTS;

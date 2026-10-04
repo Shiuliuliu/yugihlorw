@@ -768,6 +768,9 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14621] = nil
 	arg_2_0._opponent._castedSkillCounts[14622] = nil
 	arg_2_0._opponent._castedSkillCounts[14623] = nil
+	arg_2_0._opponent._castedSkillCounts[14624] = nil
+	arg_2_0._opponent._castedSkillCounts[14625] = nil
+	arg_2_0._opponent._castedSkillCounts[14626] = nil
 	arg_2_0._opponent._castedSkillCounts[3] = nil
 	arg_2_0._summonedMonsterCounts = {}
 	arg_2_0._isSummonDisabledByInfoId = nil
@@ -4061,6 +4064,8 @@ function var_0_0.accountHalo(arg_58_0)
 	B.appendTable(var_58_1, arg_58_0._opponent:getBattleCardsBySkillFast("G", 3979))
 	B.appendTable(var_58_1, arg_58_0:getBattleCardsBySkillFast("G", 13558))
 	B.appendTable(var_58_1, arg_58_0._opponent:getBattleCardsBySkillFast("G", 13558))
+	B.appendTable(var_58_1, arg_58_0:getBattleCardsBySkillFast("L", 14624))
+	B.appendTable(var_58_1, arg_58_0._opponent:getBattleCardsBySkillFast("L", 14624))
 
 	for iter_58_0 = 1, #var_58_1 do
 		local var_58_2 = var_58_1[iter_58_0]

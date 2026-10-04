@@ -3671,7 +3671,8 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	}) and 3 or arg_85_1._card:hasSkills({
 		3492,
 		3606,
-		3892
+		3892,
+		14625
 	}) and 2 or 1
 	var_85_15._choiceParam = arg_85_6
 	var_85_15._alreadySatisfied = var_85_2
@@ -7097,7 +7098,8 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 		return var_91_0 > 0
 	elseif arg_91_2._card:hasSkills({
 		4095,
-		4318
+		4318,
+		14625
 	}) then
 		return var_91_0 > 0
 	elseif arg_91_2._card:hasSkills({

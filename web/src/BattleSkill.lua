@@ -43747,6 +43747,55 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 				var_8_13 = true
 			end
 		end
+	elseif var_8_4 == 14624 then
+		if (var_8_1._owner._castedSkillCounts[var_8_4] == nil or var_8_1._owner._castedSkillCounts[var_8_4] == 0) and var_8_1._status == BattleData.CardStatus.leave and B.isOppoSummon(var_8_1, var_8_3) then
+			var_8_1._owner._castedSkillCounts[var_8_4] = (var_8_1._owner._castedSkillCounts[var_8_4] or 0) + 1
+			local var_has_shield = var_8_3:hasBuff(true, BattleData.PositiveType.shieldHaloMonster) or var_8_3:hasBuff(true, BattleData.PositiveType.shieldMonster) or var_8_3:hasBuff(true, BattleData.PositiveType.shieldExMonster)
+			if not var_has_shield then
+				arg_8_0:setCardStatus(var_8_3, BattleData.CardStatus.leave, var_8_5, var_8_4, arg_8_3)
+				if var_8_3._underSkills and #var_8_3._underSkills > 0 then
+					var_8_3._underSkills[#var_8_3._underSkills]._ignoreDisable = true
+				end
+			end
+			local var_cands = arg_8_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_8_0:getBattleCards("P"), 7))
+			if #var_cands > 0 then
+				arg_8_0:setCardStatus(arg_8_0:randomOne(var_cands), BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3)
+			end
+			var_8_13 = true
+		end
+	elseif var_8_4 == 14625 then
+		if arg_8_3 == Data.SkillMode.initiative_bcs then
+			local var_c1_id = var_8_15 % BattleData.UseCardId.id_group
+			local var_c2_id = math.floor(var_8_15 / BattleData.UseCardId.id_group) % BattleData.UseCardId.id_group
+			local var_c1 = (var_c1_id > 0) and arg_8_0:getCardById(var_c1_id) or nil
+			local var_c2 = (var_c2_id > 0) and arg_8_0:getCardById(var_c2_id) or nil
+			if var_c1 ~= nil and #arg_8_0:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD then
+				arg_8_0:setCardStatus(var_c1, BattleData.CardStatus.board, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.g2b_def_disable_posture)
+				var_8_13 = true
+			end
+			if var_c2 ~= nil and #arg_8_0:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD then
+				arg_8_0:setCardStatus(var_c2, BattleData.CardStatus.board, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.g2b_def_disable_posture)
+				var_8_13 = true
+			end
+			if not var_8_13 then
+				local var_g_harpie = B.filterInTypeGroupCards(arg_8_0:getBattleCardsByKeyword("G", 7), { Data.CardType.monster, Data.CardType.rare })
+				local var_cands = arg_8_0:filterCanChangeToBoardCards(var_g_harpie)
+				local var_max_summon = math.min(2, Data.MAX_CARD_COUNT_ON_BOARD - #arg_8_0:getBoardCards())
+				for iter_i = 1, math.min(var_max_summon, #var_cands) do
+					arg_8_0:setCardStatus(var_cands[iter_i], BattleData.CardStatus.board, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.g2b_def_disable_posture)
+					var_8_13 = true
+				end
+			end
+		end
+	elseif var_8_4 == 14626 then
+		if arg_8_3 == Data.SkillMode.initiative_grave then
+			arg_8_0:setCardStatus(arg_8_1, BattleData.CardStatus.leave, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.x2gl_cost)
+			local var_winged_beasts = B.filterInCategoryCards(arg_8_0:getBoardCards(), 13)
+			for iter_wb = 1, #var_winged_beasts do
+				arg_8_0:incShield(var_winged_beasts[iter_wb], { 12002, 12003, 12004 }, true, true, var_8_5, var_8_4, arg_8_3)
+			end
+			var_8_13 = true
+		end
 	elseif var_8_4 == 14534 then
 		var_8_13 = arg_8_0:setTwoCardsStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.board, BattleData.CardStatus.leave, BattleData.CardStatusVal.b2b_oppo_once)
 		arg_8_0._isSpecialSummonDisabledBy14534 = true
@@ -103238,6 +103287,23 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 			return false
 		end
 		return #arg_40_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_40_0:getBattleCardsByType("P", Data.CardType.magic), 7)) > 0
+	elseif var_40_0 == 14625 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil and arg_40_0._castedSkillCounts[var_40_0] > 0 then
+			return false
+		end
+		if #arg_40_0:getBoardCards() >= Data.MAX_CARD_COUNT_ON_BOARD then
+			return false
+		end
+		local var_g_harpie = B.filterInTypeGroupCards(arg_40_0:getBattleCardsByKeyword("G", 7), { Data.CardType.monster, Data.CardType.rare })
+		return #arg_40_0:filterCanChangeToBoardCards(var_g_harpie) > 0
+	elseif var_40_0 == 14626 then
+		if arg_40_0._castedSkillCounts[var_40_0] ~= nil and arg_40_0._castedSkillCounts[var_40_0] > 0 then
+			return false
+		end
+		if arg_40_1._status ~= BattleData.CardStatus.grave then
+			return false
+		end
+		return #B.filterInCategoryCards(arg_40_0:getBoardCards(), 13) > 0
 	end
 
 	return false

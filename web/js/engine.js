@@ -513,7 +513,9 @@
 		'card_ico_40718': 'res/new/thumb/card_ico_40718.png',
 		'card_ico_40718_3': 'res/new/thumb/card_ico_40718_3.png',
 		'card_ico_40725': 'res/new/thumb/card_ico_40725.png',
-		'card_ico_40725_3': 'res/new/thumb/card_ico_40725_3.png'
+		'card_ico_40725_3': 'res/new/thumb/card_ico_40725_3.png',
+		'card_ico_40726': 'res/new/thumb/card_ico_40726.png',
+		'card_ico_40726_3': 'res/new/thumb/card_ico_40726_3.png'
 	};
 	global.CUSTOM_FRAME_IMAGE_MAP = CUSTOM_FRAME_IMAGE_MAP;
 

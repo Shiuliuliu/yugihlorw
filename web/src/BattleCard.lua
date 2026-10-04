@@ -8170,8 +8170,8 @@ function var_0_0.canBeLinked(arg_262_0, arg_262_1, arg_262_2)
 		return false
 	end
 
-	if arg_262_1 and arg_262_1._infoId == 40725 and (arg_262_0:isKeyword(7) or (arg_262_0._info and arg_262_0._info._category == 13)) then
-		-- Allowed for Chu Tuoc Tu if it has keyword Harpie or Winged-Beast
+	if arg_262_1 and (arg_262_1._infoId == 40725 or arg_262_1._infoId == 40726) and (arg_262_0:isKeyword(7) or (arg_262_0._info and arg_262_0._info._category == 13)) then
+		-- Allowed for Chu Tuoc Tu and 5 chi em Harpie if it has keyword Harpie or Winged-Beast
 	elseif not arg_262_2 and (arg_262_0:isMerge() and not arg_262_0:hasSkillFast(14389) or arg_262_0:isSync() or arg_262_0:isXYZ()) then
 		return false
 	end

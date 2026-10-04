@@ -5714,7 +5714,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		end
 	elseif arg_260_1._infoId == 40713 then
 		B.appendTable(var_260_1, B.filterCanBeLinkedCards(B.filterLinkCardsByMaxLink(arg_260_0._opponent:getBoardCards(), 3), arg_260_1, true))
-	elseif arg_260_1._infoId == 40725 then
+	elseif arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 then
 		B.appendTable(var_260_1, B.filterCanBeLinkedCards(B.filterNotActionedCards(B.filterInKeywordCards(arg_260_0:getBattleCardsByType("B", Data.CardType.rare), 7)), arg_260_1, true))
 	end
 
@@ -7301,6 +7301,12 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		local var_cands_14623 = arg_304_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_304_0:getBattleCardsByType("P", Data.CardType.magic), 7))
 		if #var_cands_14623 > 0 then
 			return true, var_cands_14623, 1
+		end
+	elseif arg_304_1._id == 14625 then
+		local var_g_harpie = B.filterInTypeGroupCards(arg_304_0:getBattleCardsByKeyword("G", 7), { Data.CardType.monster, Data.CardType.rare })
+		local var_cands_14625 = arg_304_0:filterCanChangeToBoardCards(var_g_harpie)
+		if #var_cands_14625 > 0 and #arg_304_0:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD then
+			return true, var_cands_14625, 2
 		end
 	elseif arg_304_1._id == 14618 then
 		local var_our_wb = B.sortCardsByBoardPos(B.filterInCategoryCards(arg_304_0:getBoardCards(), 13))
