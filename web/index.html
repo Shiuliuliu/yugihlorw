@@ -767,6 +767,10 @@
 				clearTimeout(self._reconnectTimer);
 				self._reconnectTimer = null;
 			}
+			if (self.ws) {
+				try { self.ws.close(); } catch(e) {}
+				self.ws = null;
+			}
 
 			console.log('[PVP JS] Connecting match=' + self.matchId + ' user=' + self.userId);
 			self._doConnect();
@@ -842,11 +846,21 @@
 					} else if (pkt.t === "end") {
 						console.log('[PVP JS] Received match end:', pkt.result);
 						self._matchEnded = true;
+						if (self._reconnectTimer) {
+							clearTimeout(self._reconnectTimer);
+							self._reconnectTimer = null;
+						}
 						if (self.onEndCallback) {
 							self.onEndCallback(String(pkt.result || '1'));
 						} else if (self.onPeerLeftCallback) {
 							self.onPeerLeftCallback();
 						}
+						setTimeout(function () {
+							if (self._matchEnded && self.ws) {
+								try { self.ws.close(); } catch(e) {}
+								self.ws = null;
+							}
+						}, 800);
 					} else if (pkt.t === "chat" && pkt.msg) {
 						console.log('[PVP JS] Received quick chat: ' + pkt.msg);
 						try {
@@ -948,6 +962,13 @@
 				match_id: String(matchId || this.matchId),
 				result: String(result)
 			});
+			var self = this;
+			setTimeout(function () {
+				if (self._matchEnded && self.ws) {
+					try { self.ws.close(); } catch(e) {}
+					self.ws = null;
+				}
+			}, 800);
 		},
 
 		sendChat: function () {
@@ -967,17 +988,20 @@
 		leave: function () {
 			var args = Array.prototype.slice.call(arguments);
 			if (typeof args[0] === 'object' && args.length >= 2) args.shift();
-			var matchId = args[0];
+			var matchId = args[0] || this.matchId;
 			this._userLeft = true;
 			this._matchEnded = true;
+			this.matchId = null;
 			if (this._reconnectTimer) {
 				clearTimeout(this._reconnectTimer);
 				this._reconnectTimer = null;
 			}
-			this._sendPacket({
-				t: "leave",
-				match_id: String(matchId || this.matchId)
-			});
+			if (matchId) {
+				this._sendPacket({
+					t: "leave",
+					match_id: String(matchId)
+				});
+			}
 			if (this.ws) {
 				try { this.ws.close(); } catch(e) {}
 				this.ws = null;

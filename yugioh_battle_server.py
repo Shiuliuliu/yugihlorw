@@ -308,6 +308,22 @@ async def battle_ws_handler(websocket):
                         except Exception as e:
                             print(f"[BATTLE END ERR] {e}")
 
+                    # Đã phân thắng bại: HỦY PHÒNG VÀ DỌN DẸP SẠCH SẼ TRẬN ĐẤU NGAY LẬP TỨC
+                    match["ended"] = True
+                    ACTIVE_MATCHES.pop(match_id, None)
+
+                    # Dọn dẹp phòng PVP tương ứng nếu có
+                    for r_code, r_data in list(PVP_ROOMS.items()):
+                        if r_data.get("match_id") == match_id:
+                            PVP_ROOMS.pop(r_code, None)
+
+                    # Xóa match_id khỏi metadata cả 2 người chơi để khi ngắt kết nối không bị gửi peer_dropped nhầm
+                    if websocket in WS_CLIENT_META:
+                        WS_CLIENT_META[websocket].pop("match_id", None)
+                    if peer_ws and peer_ws in WS_CLIENT_META:
+                        WS_CLIENT_META[peer_ws].pop("match_id", None)
+                    print(f"[BATTLE END CLEANUP] Match {match_id} & room destroyed cleanly after duel finished.")
+
             # -------------------------------------------------------------
             # 5. LEAVE: Người chơi rời trận / đầu hàng
             # -------------------------------------------------------------
@@ -326,11 +342,16 @@ async def battle_ws_handler(websocket):
 
                     if peer_ws:
                         try:
-                            await peer_ws.send(make_pvp_frame({"t": "peer_left"}))
+                            await peer_ws.send(make_pvp_frame({"t": "peer_left", "match_id": match_id}))
                         except Exception:
                             pass
-                    if match.get("p1") is None and match.get("p2") is None:
-                        ACTIVE_MATCHES.pop(match_id, None)
+                    match["ended"] = True
+                    ACTIVE_MATCHES.pop(match_id, None)
+                    for r_code, r_data in list(PVP_ROOMS.items()):
+                        if r_data.get("match_id") == match_id:
+                            PVP_ROOMS.pop(r_code, None)
+                if websocket in WS_CLIENT_META:
+                    WS_CLIENT_META[websocket].pop("match_id", None)
 
             # -------------------------------------------------------------
             # 6. WS MATCHMAKING & CUSTOM ROOM (Nếu client gọi trực tiếp qua WS)
@@ -494,46 +515,49 @@ async def battle_ws_handler(websocket):
         match_id = WS_CLIENT_META.get(websocket, {}).get("match_id")
         if match_id and match_id in ACTIVE_MATCHES:
             match = ACTIVE_MATCHES[match_id]
-            is_p1 = (match.get("p1") == websocket)
-            is_p2 = (match.get("p2") == websocket)
-            slot_key = "p1" if is_p1 else ("p2" if is_p2 else None)
-            if slot_key:
-                match[slot_key] = None
-                peer_key = "p2" if slot_key == "p1" else "p1"
-                token_key = f"{slot_key}_reconnect_token"
-                current_token = match.get(token_key, 0) + 1
-                match[token_key] = current_token
+            if match.get("ended"):
+                ACTIVE_MATCHES.pop(match_id, None)
+            else:
+                is_p1 = (match.get("p1") == websocket)
+                is_p2 = (match.get("p2") == websocket)
+                slot_key = "p1" if is_p1 else ("p2" if is_p2 else None)
+                if slot_key:
+                    match[slot_key] = None
+                    peer_key = "p2" if slot_key == "p1" else "p1"
+                    token_key = f"{slot_key}_reconnect_token"
+                    current_token = match.get(token_key, 0) + 1
+                    match[token_key] = current_token
 
-                peer_ws = match.get(peer_key)
-                if peer_ws:
-                    try:
-                        asyncio.create_task(safe_send(peer_ws, make_pvp_frame({
-                            "t": "peer_dropped",
-                            "match_id": match_id,
-                            "msg": "Đối thủ mất kết nối, đang chờ kết nối lại..."
-                        })))
-                    except Exception:
-                        pass
-
-                async def delayed_peer_left(m_id, s_key, expected_token):
-                    # 60 giây chờ đối thủ kết nối lại
-                    await asyncio.sleep(60.0)
-                    m = ACTIVE_MATCHES.get(m_id)
-                    if m and m.get(s_key) is None and m.get(f"{s_key}_reconnect_token") == expected_token:
+                    peer_ws = match.get(peer_key)
+                    if peer_ws:
                         try:
-                            p_ws = m.get("p2" if s_key == "p1" else "p1")
-                            if p_ws:
-                                await safe_send(p_ws, make_pvp_frame({"t": "peer_left", "match_id": m_id}))
-                                print(f"[BATTLE TIMEOUT] Match {m_id}: {s_key} failed to reconnect after 60s, declared peer_left")
+                            asyncio.create_task(safe_send(peer_ws, make_pvp_frame({
+                                "t": "peer_dropped",
+                                "match_id": match_id,
+                                "msg": "Đối thủ mất kết nối, đang chờ kết nối lại..."
+                            })))
                         except Exception:
                             pass
-                        if m.get("p1") is None or m.get("p2") is None:
-                            ACTIVE_MATCHES.pop(m_id, None)
 
-                if peer_ws:
-                    asyncio.create_task(delayed_peer_left(match_id, slot_key, current_token))
-                elif match.get("p1") is None and match.get("p2") is None:
-                    ACTIVE_MATCHES.pop(match_id, None)
+                    async def delayed_peer_left(m_id, s_key, expected_token):
+                        # 60 giây chờ đối thủ kết nối lại
+                        await asyncio.sleep(60.0)
+                        m = ACTIVE_MATCHES.get(m_id)
+                        if m and m.get(s_key) is None and m.get(f"{s_key}_reconnect_token") == expected_token:
+                            try:
+                                p_ws = m.get("p2" if s_key == "p1" else "p1")
+                                if p_ws:
+                                    await safe_send(p_ws, make_pvp_frame({"t": "peer_left", "match_id": m_id}))
+                                    print(f"[BATTLE TIMEOUT] Match {m_id}: {s_key} failed to reconnect after 60s, declared peer_left")
+                            except Exception:
+                                pass
+                            if m.get("p1") is None or m.get("p2") is None:
+                                ACTIVE_MATCHES.pop(m_id, None)
+
+                    if peer_ws:
+                        asyncio.create_task(delayed_peer_left(match_id, slot_key, current_token))
+                    elif match.get("p1") is None and match.get("p2") is None:
+                        ACTIVE_MATCHES.pop(match_id, None)
 
         WS_CLIENT_META.pop(websocket, None)
         WS_CONNECTED_CLIENTS.discard(websocket)

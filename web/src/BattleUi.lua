@@ -350,8 +350,16 @@ end
 function var_0_0.exitScene(arg_20_0, arg_20_1)
 	arg_20_1 = arg_20_1 or ClientData._fromSceneId
 
-	if arg_20_0._battleType == Data.BattleType.PVP_room and P._playerRoom:getMyRoom() then
-		arg_20_1 = ClientData.SceneId.in_room
+	if arg_20_0._battleType == Data.BattleType.PVP_room then
+		arg_20_1 = ClientData.SceneId.find
+		ClientData._battleFromFindIndex = Data.FindMatchType.clash
+		if P and P._playerRoom then
+			pcall(function() P._playerRoom:clear() end)
+		end
+		P._roomId = nil
+		P._roomJob = nil
+		ClientData._currentMatchId = nil
+		ClientData._isOppoOnline = false
 	end
 
 	if P._playerFindDark:isInDarkBattle() then

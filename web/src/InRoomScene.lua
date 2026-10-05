@@ -720,7 +720,13 @@ function var_0_0.onEnter(arg_35_0)
 		arg_35_0._roomPollSchedule = nil
 	end
 	arg_35_0._roomPollSchedule = lc.Scheduler:scheduleScriptFunc(function()
-		if not P or not P._roomId then return end
+		if not P or not P._roomId then
+			if arg_35_0._roomPollSchedule then
+				lc.Scheduler:unscheduleScriptEntry(arg_35_0._roomPollSchedule)
+				arg_35_0._roomPollSchedule = nil
+			end
+			return
+		end
 		local api = jsbridge and jsbridge.object("jdzcApi")
 		if api and api.post then
 			api:post("get_room_status", { room_id = tostring(P._roomId) }, function(rawRes)

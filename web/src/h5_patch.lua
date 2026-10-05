@@ -5892,17 +5892,47 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 				local res = self._forceResult or (self._player and self._player:getResult()) or Data.BattleResult.win
 				local levelId = input and (input._levelId or input._copyId) or 0
 
-				if isPvp then
+				local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+				local api = jsbridge and jsbridge.object("jdzcApi")
+				local rId = P and P._roomId
+				local mId = ClientData._currentMatchId
+
+				if isPvp or rId or mId or self._battleType == Data.BattleType.PVP_room or (input and input._offlineKind == "room") then
 					pcall(function()
 						local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
 						if pvpNet then
 							if pvpNet.sendEnd then
-								pvpNet:sendEnd(ClientData._currentMatchId or "", tostring(res))
+								pvpNet:sendEnd(mId or "", tostring(res))
 							elseif pvpNet.sendAction then
-								pvpNet:sendAction(ClientData._currentMatchId or "", { 999999, tonumber(res) or 1 })
+								pvpNet:sendAction(mId or "", { 999999, tonumber(res) or 1 })
+							end
+							if pvpNet.leave then
+								pvpNet:leave(mId or "")
 							end
 						end
 					end)
+
+					-- HỦY PHÒNG TRÊN GATEWAY SERVER NGAY KHI ĐÃ PHÂN THẮNG BẠI
+					pcall(function()
+						if api and api.post then
+							api:post("destroy_room", {
+								room_id = tostring(rId or ""),
+								match_id = tostring(mId or ""),
+								account_id = accId
+							})
+						end
+					end)
+
+					-- Dọn dẹp sạch sẽ phòng & đối phương online
+					if P then
+						P._roomId = nil
+						P._roomJob = nil
+						if P._playerRoom then
+							pcall(function() P._playerRoom:clear() end)
+						end
+					end
+					ClientData._currentMatchId = nil
+					ClientData._isOppoOnline = false
 				end
 
 				self:showWaiting()
@@ -5911,9 +5941,6 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 				resp.type = SglMsgType_pb.PB_TYPE_BATTLE_END
 				resp.status = SglMsg_pb.PB_STATUS_OK
 				local pb = resp.Extensions[Battle_pb.SglBattleMsg.battle_end_resp]
-
-				local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
-				local api = jsbridge and jsbridge.object("jdzcApi")
 
 				-- Pure arrays of used card operations for replay
 				local pRecOps = {}
@@ -6280,6 +6307,24 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 			pcall(function() self:tryExitScene() end)
 		end
 		return ret
+	end
+
+	local oldExitScene = BattleUi.exitScene
+	if oldExitScene then
+		BattleUi.exitScene = function(self, toSceneId)
+			if self._battleType == Data.BattleType.PVP_room or (self._input and self._input._offlineKind == "room") then
+				toSceneId = ClientData.SceneId.find
+				ClientData._battleFromFindIndex = Data.FindMatchType.clash
+				if P and P._playerRoom then
+					pcall(function() P._playerRoom:clear() end)
+				end
+				P._roomId = nil
+				P._roomJob = nil
+				ClientData._currentMatchId = nil
+				ClientData._isOppoOnline = false
+			end
+			return oldExitScene(self, toSceneId)
+		end
 	end
 
 	local oldBattleUiInit = BattleUi.init

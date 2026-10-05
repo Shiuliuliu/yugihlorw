@@ -2945,19 +2945,37 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         resp = {"code": 200, "room": room, "match_id": match_id, "seed": seed}
 
             elif self.path == '/api/leave_room':
-                code = str(req.get('room_id', ''))
+                code = str(req.get('room_id', '')).strip()
                 acc_id = req.get('account_id')
                 room = CUSTOM_PVP_ROOMS.get(code)
                 if room:
-                    if room['creator_id'] == acc_id:
+                    if room.get('creator_id') == acc_id or room.get('status') == 'battle':
                         CUSTOM_PVP_ROOMS.pop(code, None)
-                        print(f"[CUSTOM ROOM] Host left, closed room {code}")
+                        print(f"[CUSTOM ROOM] Room {code} closed/destroyed on leave")
                     else:
                         if room.get('playerB') and room['playerB']['id'] == acc_id:
                             room['playerB'] = None
                         elif room.get('playerA') and room['playerA']['id'] == acc_id:
                             room['playerA'] = None
+                        if room.get('playerA') is None and room.get('playerB') is None:
+                            CUSTOM_PVP_ROOMS.pop(code, None)
                 resp = {"code": 200, "msg": "OK"}
+
+            elif self.path == '/api/destroy_room':
+                code = str(req.get('room_id', '')).strip()
+                match_id = str(req.get('match_id', '')).strip()
+                acc_id = req.get('account_id')
+                removed = []
+                for c, r in list(CUSTOM_PVP_ROOMS.items()):
+                    pA = r.get('playerA') or {}
+                    pB = r.get('playerB') or {}
+                    pA_id = pA.get('id') if isinstance(pA, dict) else None
+                    pB_id = pB.get('id') if isinstance(pB, dict) else None
+                    if str(c) == code or (match_id and r.get('match_id') == match_id) or (acc_id and (r.get('creator_id') == acc_id or pA_id == acc_id or pB_id == acc_id)):
+                        CUSTOM_PVP_ROOMS.pop(c, None)
+                        removed.append(str(c))
+                print(f"[CUSTOM ROOM] Destroyed room(s) {removed} on duel finish / destroy request")
+                resp = {"code": 200, "msg": "Room destroyed", "removed": removed}
 
             elif self.path == '/api/save_replay':
                 acc_id = req.get('account_id')
@@ -2969,6 +2987,17 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 btype = int(req.get('battle_type', 17))
                 trophy_chg = int(req.get('trophy_change', 0))
                 rep_data = json.dumps(req.get('replay_data', {}), ensure_ascii=False)
+
+                # Tự động hủy phòng PVP nếu trận đấu này xuất phát từ phòng
+                for c, r in list(CUSTOM_PVP_ROOMS.items()):
+                    pA = r.get('playerA') or {}
+                    pB = r.get('playerB') or {}
+                    pA_id = pA.get('id') if isinstance(pA, dict) else None
+                    pB_id = pB.get('id') if isinstance(pB, dict) else None
+                    if r.get('creator_id') == acc_id or pA_id == acc_id or pB_id == acc_id or r.get('match_id') == rep_id:
+                        CUSTOM_PVP_ROOMS.pop(c, None)
+                        print(f"[CUSTOM ROOM] Auto-destroyed room {c} upon match completion (save_replay for acc {acc_id})")
+
                 with get_db() as conn:
                     with conn.cursor() as cur:
                         cur.execute("""
@@ -3597,6 +3626,12 @@ async def ws_handler(websocket):
                             print(f"[PVP END] Match {match_id}: sender_res={raw_res} (sender_won={sender_won}) -> peer_res={peer_res} (peer_won={not sender_won})")
                         except Exception as e:
                             print(f"[PVP END ERR] {e}")
+                        match["ended"] = True
+                        ACTIVE_MATCHES.pop(match_id, None)
+                        if websocket in WS_CLIENT_META:
+                            WS_CLIENT_META[websocket].pop("match_id", None)
+                        if peer_ws and peer_ws in WS_CLIENT_META:
+                            WS_CLIENT_META[peer_ws].pop("match_id", None)
 
             elif t == "leave":
                 match_id = WS_CLIENT_META.get(websocket, {}).get("match_id")
