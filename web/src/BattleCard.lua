@@ -8897,6 +8897,8 @@ function var_0_0.canBeLinked(arg_262_0, arg_262_1, arg_262_2)
 		-- Allowed for Chu Tuoc Tu and 5 chi em Harpie if it has keyword Harpie or Winged-Beast
 	elseif arg_262_1 and arg_262_1._infoId == 40729 and B.isThanhKyMonster(arg_262_0) then
 		-- Allowed for Lăng Thiên Hậu if it has keyword Thánh Kỵ
+	elseif arg_262_1 and arg_262_1._infoId == 40738 and (arg_262_0:isKeyword(302) or (arg_262_0._info and arg_262_0._info._keyword == 302)) then
+		-- Allowed for KMR-Decade if it has keyword Hiệp sĩ mặt nạ
 	elseif not arg_262_2 and (arg_262_0:isMerge() and not arg_262_0:hasSkillFast(14389) or arg_262_0:isSync() or arg_262_0:isXYZ()) then
 		return false
 	end

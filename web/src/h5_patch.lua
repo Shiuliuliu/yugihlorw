@@ -318,6 +318,15 @@ local function patchData()
 				Data._skillInfo[14750]._nameSid = 57220
 				Data._skillInfo[14750]._descSid = 57221
 			end
+			if Data._rareInfo and Data._rareInfo[40738] then
+				Data._rareInfo[40738]._nameSid = 57222
+				Data._rareInfo[40738]._descSid = 57223
+				Data._rareInfo[40738]._briefNameSid = 57224
+			end
+			if Data._skillInfo and Data._skillInfo[14763] then
+				Data._skillInfo[14763]._nameSid = 57225
+				Data._skillInfo[14763]._descSid = 57226
+			end
 		end
 
 		current = nil
@@ -5312,6 +5321,11 @@ function patchClientData()
 		[57213] = "Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; thêm 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ Mộ hoặc đang bị trục xuất lên tay.",
 		[57220] = "Tam Giác Mê Hoặc",
 		[57221] = "Tăng 500 Công cho mỗi \"Harpie Lady\" trong Mộ của bạn.",
+		[57222] = "KMR-Decade",
+		[57223] = "[Chiến Binh - Link - Hiệu Ứng]\n1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\"\n(1) Kỹ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.",
+		[57224] = "KMR-Decade",
+		[57225] = "KMR-Decade - Thông Đạo Kỵ Sĩ",
+		[57226] = "1 lượt 1 lần, đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 

@@ -5891,7 +5891,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		return {}
 	end
 
-	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729
+	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738
 	local var_260_1 = B.filterCanBeLinkedCards(arg_260_0:getBattleCards(arg_260_2), arg_260_1, var_260_0)
 
 	if arg_260_1._infoId == 40709 then
@@ -5935,6 +5935,14 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 			end
 		end
 		B.appendTable(var_260_1, B.filterCanBeLinkedCards(tkCards, arg_260_1, true))
+	elseif arg_260_1._infoId == 40738 then
+		local kmrCards = {}
+		for _, rc in ipairs(arg_260_0:getBattleCardsByType("B", Data.CardType.rare)) do
+			if rc and rc ~= arg_260_1 and (rc:isKeyword(302) or (rc._info and rc._info._keyword == 302)) then
+				kmrCards[#kmrCards + 1] = rc
+			end
+		end
+		B.appendTable(var_260_1, B.filterCanBeLinkedCards(kmrCards, arg_260_1, true))
 	end
 
 	if #var_260_1 < arg_260_1._linkCountNode._subNodes[2]:value() then
@@ -7733,7 +7741,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -7741,7 +7749,38 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 	local var_304_1 = Data._skillInfo[arg_304_1._id]
 	local var_304_2 = var_304_1._val[math.min(arg_304_1._level, #var_304_1._val)] or 0
 
-	if arg_304_1._id == 14752 then
+	if arg_304_1._id == 14763 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards40738 = arg_304_0:getBattleCardsByInfoId("B", 40738)
+			if #cards40738 > 0 then ownerCard = cards40738[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		local turnId = (arg_304_0._round or 0) * 1000 + (pOwner._round or arg_304_0._round or 0)
+		if (ownerCard and ownerCard._kmrDecadeActiveTurn == turnId) or (pOwner and pOwner._kmrDecadeActiveTurn == turnId) or (arg_304_0._castedSkillCounts[14763] and arg_304_0._castedSkillCounts[14763] > 0) then
+			return false
+		end
+		if ownerCard and (ownerCard._status ~= BattleData.CardStatus.board and ownerCard._status ~= BattleData.CardStatus.field and ownerCard._status ~= BattleData.CardStatus.show) then
+			return false
+		end
+		if arg_304_0._isSummonDisabled or arg_304_0._isSpecialSummonDisabled then
+			return false
+		end
+		local candidates = {}
+		for _, c in ipairs(B.mergeTable({arg_304_0:getBattleCards("H"), arg_304_0:getBattleCards("P")})) do
+			if c and (c:isMonsterRare() or c._type == Data.CardType.monster) then
+				if c:isKeyword(302) or (c._info and c._info._keyword == 302) then
+					if arg_304_0:canSpecialSummon(c) then
+						table.insert(candidates, c)
+					end
+				end
+			end
+		end
+		if #candidates > 0 then
+			return true, candidates, 1
+		end
+		return false
+	elseif arg_304_1._id == 14752 then
 		if arg_304_3 then return false end
 		local candidates = {}
 		for _, c in ipairs(arg_304_0:getBattleCards("P")) do
