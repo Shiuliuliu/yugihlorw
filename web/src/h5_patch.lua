@@ -330,6 +330,10 @@ local function patchData()
 				Data._skillInfo[14763]._nameSid = 57225
 				Data._skillInfo[14763]._descSid = 57226
 			end
+			if Data._skillInfo and Data._skillInfo[14677] then
+				Data._skillInfo[14677]._nameSid = 56946
+				Data._skillInfo[14677]._descSid = 56947
+			end
 			if Data._rareInfo and Data._rareInfo[40739] then
 				Data._rareInfo[40739]._quality = 5
 				Data._rareInfo[40739]._nameSid = 57227
@@ -5048,8 +5052,8 @@ function patchClientData()
 		[56943] = "Kỳ - Phàm",
 		[56944] = "[Quái vật Dung Hợp]\n<Quỷ Lệ> + <Kỳ Baby>\n[Kỹ năng chủ động bộ bài thêm]: Chọn nguyên liệu dung hợp từ bài trên tay/trên sân đưa vào Mộ -> Triệu hồi Dung Hợp lá bài này.\n[Kỹ năng chủ động trên sân - 1 lần/lượt]: Lấy 1 lá bài quái thú có từ khóa \"Tru tiên\" từ Bộ bài lên tay.\nKhi lên sân: Nhận 1 tầng Tường chắn Năng lượng Quái, Phép, Bẫy.\nKhi trên sân: Quái thú đối phương được Triệu Hồi/Triệu Hồi Đặc Biệt sẽ bị khóa trong thế phòng thủ 1 lượt; đồng thời phe ta hồi LP bằng [Số sao quái đó x 100].\nNếu LP phe ta < 8000: Lá bài này nhận Công bằng [8000 - LP hiện tại].\nQuỷ Lệ-Kim Cương Bất Hoại: Không thể bị phá hủy bởi chiến đấu, 1 lượt 1 lần bỏ qua 1 lần phá hủy bởi hiệu ứng thẻ bài.\nQuỷ Lệ-Hấp Huyết Vô Tình: Khi tiêu diệt quái thú hoặc gây sát thương chiến đấu, phe ta hồi LP tương ứng.\nKhi lá bài này bị đối phương phá hủy: Triệu Hồi Đặc Biệt <Quỷ Lệ> và <Kỳ Baby> từ Mộ lên sân.",
 		[56945] = "Kỳ - Phàm",
-		[56946] = "Kỳ Phàm-Dung Hợp Kỳ Linh",
-		[56947] = "Kỹ năng chủ động bộ bài thêm: Chọn nguyên liệu dung hợp (<Quỷ Lệ> + <Kỳ Baby>) từ bài trên tay hoặc trên sân đưa vào Mộ để Triệu Hồi Dung Hợp lá bài này.",
+		[56946] = "Dung Hợp Kỳ Linh",
+		[56947] = "Kỹ năng chủ động từ Extra Deck chọn nguyên liệu từ tay/sân đưa vào Mộ để Triệu Hồi Dung Hợp.",
 		[56948] = "Kỳ Phàm-Triệu Tập Tru Tiên",
 		[56949] = "1 lượt 1 lần: Chọn và lấy 1 lá bài quái thú có từ khóa \"Tru tiên\" từ Bộ bài lên tay.",
 		[56950] = "Kỳ Phàm-Nghịch Cảnh Huyết Nộ",
