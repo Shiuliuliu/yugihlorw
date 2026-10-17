@@ -18017,6 +18017,30 @@
     ],
     "res/thumb_monster/40740_3.lcres": [
       "40740_3.jpm"
+    ],
+    "res/thumb_rare/12335.lcres": [
+      "12335.jpm"
+    ],
+    "res/thumb_monster/12335.lcres": [
+      "12335.jpm"
+    ],
+    "res/thumb_rare/12335_3.lcres": [
+      "12335_3.jpm"
+    ],
+    "res/thumb_monster/12335_3.lcres": [
+      "12335_3.jpm"
+    ],
+    "res/thumb_rare/40741.lcres": [
+      "40741.jpm"
+    ],
+    "res/thumb_monster/40741.lcres": [
+      "40741.jpm"
+    ],
+    "res/thumb_rare/40741_3.lcres": [
+      "40741_3.jpm"
+    ],
+    "res/thumb_monster/40741_3.lcres": [
+      "40741_3.jpm"
     ]
   },
   "files": [
@@ -19871,7 +19895,19 @@
     "res/new/thumb/card_ico_40740.png",
     "res/40740_3.jpg",
     "res/40740_3_mask.png",
-    "res/new/thumb/card_ico_40740_3.png"
+    "res/new/thumb/card_ico_40740_3.png",
+    "res/12335.jpg",
+    "res/12335_mask.png",
+    "res/new/thumb/card_ico_12335.png",
+    "res/12335_3.jpg",
+    "res/12335_3_mask.png",
+    "res/new/thumb/card_ico_12335_3.png",
+    "res/40741.jpg",
+    "res/40741_mask.png",
+    "res/new/thumb/card_ico_40741.png",
+    "res/40741_3.jpg",
+    "res/40741_3_mask.png",
+    "res/new/thumb/card_ico_40741_3.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [
@@ -28131,6 +28167,70 @@
     "40740_3.jpg": [
       256,
       256
+    ],
+    "res/new/thumb/card_ico_12335.png": [
+      82,
+      82
+    ],
+    "card_ico_12335.png": [
+      82,
+      82
+    ],
+    "res/12335.jpg": [
+      256,
+      256
+    ],
+    "12335.jpg": [
+      256,
+      256
+    ],
+    "res/new/thumb/card_ico_12335_3.png": [
+      82,
+      82
+    ],
+    "card_ico_12335_3.png": [
+      82,
+      82
+    ],
+    "res/12335_3.jpg": [
+      256,
+      256
+    ],
+    "12335_3.jpg": [
+      256,
+      256
+    ],
+    "res/new/thumb/card_ico_40741.png": [
+      82,
+      82
+    ],
+    "card_ico_40741.png": [
+      82,
+      82
+    ],
+    "res/40741.jpg": [
+      256,
+      256
+    ],
+    "40741.jpg": [
+      256,
+      256
+    ],
+    "res/new/thumb/card_ico_40741_3.png": [
+      82,
+      82
+    ],
+    "card_ico_40741_3.png": [
+      82,
+      82
+    ],
+    "res/40741_3.jpg": [
+      256,
+      256
+    ],
+    "40741_3.jpg": [
+      256,
+      256
     ]
   },
   "thumbs": {
@@ -30019,7 +30119,11 @@
       "40739",
       "40739_3",
       "40740",
-      "40740_3"
+      "40740_3",
+      "12335",
+      "12335_3",
+      "40741",
+      "40741_3"
     ],
     "thumb_rare": [
       "40727",
@@ -30067,7 +30171,11 @@
       "40739",
       "40739_3",
       "40740",
-      "40740_3"
+      "40740_3",
+      "12335",
+      "12335_3",
+      "40741",
+      "40741_3"
     ]
   }
 }

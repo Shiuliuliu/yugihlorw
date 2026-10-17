@@ -57236,3 +57236,17 @@ KMR-Zio-Ozu - Đoạt Thủ Bài
 1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.
 KMR-Zio-Ozu - Đoạt Trường Bài
 1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.
+KMR-Ghost
+[Chiến Binh - Hiệu Ứng]\n(1) 1 lượt tối đa 2 lần, khi lá bài này nằm trên tay, đối phương rút được quái thú sẽ kích hoạt: đưa lá bài này vào Mộ, loại bỏ lá bài đối phương vừa rút được.\n(2) Kỹ năng chủ động Mộ (1 lượt 1 lần): Triệu hồi Đặc biệt bản thân lên sân và nhận được "quá tải" (khi rời sân sẽ bị "loại bỏ").
+KMR-Ghost
+KMR-Ghost - Đoạt Hồn Rút Bài
+1 lượt tối đa 2 lần, khi lá bài này nằm trên tay, đối phương rút được quái thú sẽ kích hoạt: đưa lá bài này vào Mộ, loại bỏ lá bài đối phương vừa rút được.
+KMR-Ghost - Quá Tải Hồi Sinh
+Kỹ năng chủ động Mộ (1 lượt 1 lần): Triệu hồi Đặc biệt bản thân lên sân và nhận được "quá tải" (khi rời sân sẽ bị "loại bỏ").
+KMR-Zio-Ghost
+[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + "KMR-Ghost"\n(1) Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).\n(2) Kỹ năng chủ động (1 lượt 1 lần): Chọn 1 quái trên sân đối phương, loại bỏ bản thân và quái mục tiêu (xuyên qua tường chắn quái).
+KMR-Zio-Ghost
+KMR-Zio-Ghost - Linh Hồn Chặn Đứng
+Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).
+KMR-Zio-Ghost - Đồng Quy Loại Bỏ
+Kỹ năng chủ động (1 lượt 1 lần): Chọn 1 quái trên sân đối phương, loại bỏ bản thân và quái mục tiêu (xuyên qua tường chắn quái).

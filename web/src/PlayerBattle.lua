@@ -275,6 +275,25 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 	if arg_7_1 == nil then
 		return
 	end
+
+	-- Xuyên qua tường chắn quái cho KMR-Zio-Ghost (14769 & 14770)
+	if arg_7_4 == 14769 or arg_7_4 == 14770 then
+		table.insert(arg_7_1._underSkills, {
+			_cid = arg_7_3,
+			_sid = arg_7_4,
+			_mode = arg_7_5,
+			_status = arg_7_2,
+			_statusVal = arg_7_6,
+			_futureSourceStatus = arg_7_7
+		})
+		return
+	end
+
+	-- Overload ("quá tải") check: khi rời sân bị loại bỏ
+	if arg_7_1._overload and (arg_7_1._status == BattleData.CardStatus.board or arg_7_1._status == BattleData.CardStatus.show) and arg_7_2 ~= BattleData.CardStatus.board and arg_7_2 ~= BattleData.CardStatus.show then
+		arg_7_2 = BattleData.CardStatus.leave
+		arg_7_1._overload = nil
+	end
 	if (arg_7_1._type == Data.CardType.magic or arg_7_1._type == Data.CardType.trap) and arg_7_1._status == BattleData.CardStatus.board and arg_7_2 == BattleData.CardStatus.grave and (arg_7_6 == BattleData.CardStatusVal.b2g_destroy or arg_7_6 == BattleData.CardStatusVal.b2g_cost) then
 		if arg_7_1._owner and (arg_7_1._owner:hasBattleCardsBySkillFast("B", 7488) or #arg_7_1._owner:getBattleCardsByInfoId("B", 40737) > 0) then
 			if arg_7_4 ~= 0 and arg_7_4 ~= nil and arg_7_1._owner ~= arg_7_0 then
@@ -454,6 +473,19 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		end
 	elseif arg_7_6 == BattleData.CardStatusVal.h2b_ceremony or arg_7_6 == BattleData.CardStatusVal.h2b_ceremony_frozen then
 		arg_7_1._hasBeenCeremonySummoned = true
+	end
+
+	-- KMR-Zio-Ghost (40741): khi đối phương triệu hồi quái từ Bộ bài thêm -> loại bỏ bản thân và quái đối phương vừa triệu hồi
+	if arg_7_2 == BattleData.CardStatus.board and (arg_7_1:isMonsterRare() or arg_7_1._status == BattleData.CardStatus.rare or (arg_7_6 and arg_7_6 >= 101 and arg_7_6 <= 109)) then
+		local oppo = arg_7_0._opponent
+		if oppo then
+			local zioGhosts = oppo:getBattleCardsByInfoId("B", 40741)
+			if zioGhosts and #zioGhosts > 0 then
+				local zg = zioGhosts[1]
+				oppo:setCardStatus(zg, BattleData.CardStatus.leave, zg._id, 14769, Data.SkillMode.board)
+				arg_7_2 = BattleData.CardStatus.leave
+			end
+		end
 	end
 
 	if (arg_7_1:isInfoId(12331) or arg_7_1:hasSkillFast(14741)) and arg_7_2 == BattleData.CardStatus.board then

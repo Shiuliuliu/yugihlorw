@@ -10952,6 +10952,51 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 			end
 		end
 		var_4_13 = true
+	elseif var_4_4 == 14768 then
+		local pOwner = arg_4_1._owner or arg_4_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		arg_4_1._ghostGraveTurn = turnId
+		pOwner._ghostGraveTurn = turnId
+		pOwner._castedSkillCounts[14768] = (pOwner._castedSkillCounts[14768] or 0) + 1
+		arg_4_0._castedSkillCounts[14768] = (arg_4_0._castedSkillCounts[14768] or 0) + 1
+
+		if pOwner:getEmptyBoardPos(arg_4_1) ~= nil and pOwner:canSpecialSummon(arg_4_1) then
+			arg_4_1._overload = true
+			pOwner:setCardStatus(arg_4_1, BattleData.CardStatus.board, var_4_5, var_4_4, arg_4_3)
+		end
+		var_4_13 = true
+	elseif var_4_4 == 14770 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if ownerCard then
+			ownerCard._zioGhostActiveTurn = turnId
+		end
+		arg_4_1._zioGhostActiveTurn = turnId
+		pOwner._zioGhostActiveTurn = turnId
+		pOwner._castedSkillCounts[14770] = (pOwner._castedSkillCounts[14770] or 0) + 1
+		arg_4_0._castedSkillCounts[14770] = (arg_4_0._castedSkillCounts[14770] or 0) + 1
+
+		local oppo = pOwner._opponent or arg_4_0._opponent
+		local targetCard = nil
+		if var_4_15 > 0 and oppo then
+			local cid = var_4_15 % BattleData.UseCardId.id_group
+			targetCard = oppo:getCardById(cid)
+		end
+		if (targetCard == nil or targetCard._status ~= BattleData.CardStatus.board) and oppo then
+			local bCards = oppo:getBoardCards()
+			if #bCards > 0 then
+				targetCard = bCards[1]
+			end
+		end
+
+		-- Loại bỏ bản thân (KMR-Zio-Ghost)
+		arg_4_0:setCardStatus(arg_4_1, BattleData.CardStatus.leave, arg_4_1._id, 14770, arg_4_3)
+		-- Loại bỏ quái mục tiêu (xuyên qua tường chắn quái)
+		if targetCard and oppo then
+			oppo:setCardStatus(targetCard, BattleData.CardStatus.leave, arg_4_1._id, 14770, arg_4_3)
+		end
+		var_4_13 = true
 	elseif var_4_4 == 14747 then
 		local pOwner = arg_4_1._owner or arg_4_0
 		if pOwner:getEmptyBoardPos(arg_4_1) ~= nil and pOwner:canSpecialSummon(arg_4_1) then
@@ -106873,6 +106918,39 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		end
 		local var_40_8 = pOwner._opponent or arg_40_0._opponent
 		if not var_40_8 or #var_40_8:getBattleCards("BCSD") == 0 then
+			return false
+		end
+		return true
+	elseif var_40_0 == 14768 then
+		if arg_40_1._status ~= BattleData.CardStatus.grave then
+			return false
+		end
+		local pOwner = arg_40_1._owner or arg_40_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if arg_40_1._ghostGraveTurn == turnId or pOwner._ghostGraveTurn == turnId then
+			return false
+		end
+		if pOwner._castedSkillCounts and pOwner._castedSkillCounts[14768] and pOwner._castedSkillCounts[14768] >= 1 then
+			return false
+		end
+		if pOwner:getEmptyBoardPos(arg_40_1) == nil or not pOwner:canSpecialSummon(arg_40_1) then
+			return false
+		end
+		return true
+	elseif var_40_0 == 14770 then
+		if arg_40_1._status ~= BattleData.CardStatus.board and arg_40_1._status ~= BattleData.CardStatus.show then
+			return false
+		end
+		local pOwner = arg_40_1._owner or arg_40_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if arg_40_1._zioGhostActiveTurn == turnId or pOwner._zioGhostActiveTurn == turnId then
+			return false
+		end
+		if pOwner._castedSkillCounts and pOwner._castedSkillCounts[14770] and pOwner._castedSkillCounts[14770] >= 1 then
+			return false
+		end
+		local oppo = pOwner._opponent or arg_40_0._opponent
+		if not oppo or #oppo:getBoardCards() == 0 then
 			return false
 		end
 		return true

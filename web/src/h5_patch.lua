@@ -359,6 +359,34 @@ local function patchData()
 				Data._skillInfo[14766]._nameSid = 57237
 				Data._skillInfo[14766]._descSid = 57238
 			end
+			if Data._monsterInfo and Data._monsterInfo[12335] then
+				Data._monsterInfo[12335]._quality = 4
+				Data._monsterInfo[12335]._nameSid = 57239
+				Data._monsterInfo[12335]._descSid = 57240
+				Data._monsterInfo[12335]._briefNameSid = 57241
+			end
+			if Data._rareInfo and Data._rareInfo[40741] then
+				Data._rareInfo[40741]._quality = 4
+				Data._rareInfo[40741]._nameSid = 57246
+				Data._rareInfo[40741]._descSid = 57247
+				Data._rareInfo[40741]._briefNameSid = 57248
+			end
+			if Data._skillInfo and Data._skillInfo[14767] then
+				Data._skillInfo[14767]._nameSid = 57242
+				Data._skillInfo[14767]._descSid = 57243
+			end
+			if Data._skillInfo and Data._skillInfo[14768] then
+				Data._skillInfo[14768]._nameSid = 57244
+				Data._skillInfo[14768]._descSid = 57245
+			end
+			if Data._skillInfo and Data._skillInfo[14769] then
+				Data._skillInfo[14769]._nameSid = 57249
+				Data._skillInfo[14769]._descSid = 57250
+			end
+			if Data._skillInfo and Data._skillInfo[14770] then
+				Data._skillInfo[14770]._nameSid = 57251
+				Data._skillInfo[14770]._descSid = 57252
+			end
 		end
 
 		current = nil
@@ -5388,6 +5416,20 @@ function patchClientData()
 		[57236] = "1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.",
 		[57237] = "KMR-Zio-Ozu - Đoạt Trường Bài",
 		[57238] = "1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.",
+		[57239] = "KMR-Ghost",
+		[57240] = "[Chiến Binh - Hiệu Ứng]\n(1) 1 lượt tối đa 2 lần, khi lá bài này nằm trên tay, đối phương rút được quái thú sẽ kích hoạt: đưa lá bài này vào Mộ, loại bỏ lá bài đối phương vừa rút được.\n(2) Kỹ năng chủ động Mộ (1 lượt 1 lần): Triệu hồi Đặc biệt bản thân lên sân và nhận được \"quá tải\" (khi rời sân sẽ bị \"loại bỏ\").",
+		[57241] = "KMR-Ghost",
+		[57242] = "KMR-Ghost - Đoạt Hồn Rút Bài",
+		[57243] = "1 lượt tối đa 2 lần, khi lá bài này nằm trên tay, đối phương rút được quái thú sẽ kích hoạt: đưa lá bài này vào Mộ, loại bỏ lá bài đối phương vừa rút được.",
+		[57244] = "KMR-Ghost - Quá Tải Hồi Sinh",
+		[57245] = "Kỹ năng chủ động Mộ (1 lượt 1 lần): Triệu hồi Đặc biệt bản thân lên sân và nhận được \"quá tải\" (khi rời sân sẽ bị \"loại bỏ\").",
+		[57246] = "KMR-Zio-Ghost",
+		[57247] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + \"KMR-Ghost\"\n(1) Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).\n(2) Kỹ năng chủ động (1 lượt 1 lần): Chọn 1 quái trên sân đối phương, loại bỏ bản thân và quái mục tiêu (xuyên qua tường chắn quái).",
+		[57248] = "KMR-Zio-Ghost",
+		[57249] = "KMR-Zio-Ghost - Linh Hồn Chặn Đứng",
+		[57250] = "Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).",
+		[57251] = "KMR-Zio-Ghost - Đồng Quy Loại Bỏ",
+		[57252] = "Kỹ năng chủ động (1 lượt 1 lần): Chọn 1 quái trên sân đối phương, loại bỏ bản thân và quái mục tiêu (xuyên qua tường chắn quái).",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
