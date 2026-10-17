@@ -8269,6 +8269,13 @@ function var_0_0.canChangeToDefend(arg_218_0)
 end
 
 function var_0_0.isDisablePosture(arg_219_0)
+	if arg_219_0._cannotChangePostureTurn and arg_219_0._owner then
+		local turnId = (arg_219_0._owner._round or 0) * 1000 + (arg_219_0._owner._opponent and arg_219_0._owner._opponent._round or 0)
+		if arg_219_0._cannotChangePostureTurn == turnId then
+			return true
+		end
+	end
+
 	return arg_219_0:hasBuff(false, BattleData.NegativeType.disablePosture) or arg_219_0:hasBuff(false, BattleData.NegativeType.disablePostureEx) or arg_219_0:hasBuff(false, BattleData.NegativeType.disablePostureHalo) or arg_219_0:isLink()
 end
 

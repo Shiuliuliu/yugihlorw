@@ -4760,6 +4760,8 @@ function var_0_0.getMergeCandidates(arg_239_0, arg_239_1, arg_239_2, arg_239_3, 
 				var_239_6 = B.filterMergeCards(var_239_6)
 			elseif var_239_5 == 3906 and arg_239_1:isInfoId(40662) then
 				var_239_6 = B.filterMergeCards(B.filterInSuperIdCards(arg_239_0:getBattleCards(arg_239_2), var_239_5 - 900))
+			elseif var_239_5 == 3902 and arg_239_1:isInfoId(40739) then
+				var_239_6 = B.filterMergeCards(B.filterInSuperIdCards(arg_239_0:getBattleCards(arg_239_2), 3302))
 			end
 		end
 
@@ -7741,7 +7743,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -7772,6 +7774,52 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 				if c:isKeyword(302) or (c._info and c._info._keyword == 302) then
 					if arg_304_0:canSpecialSummon(c) then
 						table.insert(candidates, c)
+					end
+				end
+			end
+		end
+		if #candidates > 0 then
+			return true, candidates, 1
+		end
+		return false
+	elseif arg_304_1._id == 14764 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards40739 = arg_304_0:getBattleCardsByInfoId("B", 40739)
+			if #cards40739 > 0 then ownerCard = cards40739[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		local turnId = (arg_304_0._round or 0) * 1000 + (pOwner._round or arg_304_0._round or 0)
+		if ownerCard then
+			if ownerCard._omazioTurn ~= turnId then
+				ownerCard._omazioTurn = turnId
+				ownerCard._omazioCount = 0
+			end
+			if (ownerCard._omazioCount or 0) >= 3 then
+				return false
+			end
+		end
+		if (arg_304_0._castedSkillCounts[14764] and arg_304_0._castedSkillCounts[14764] >= 3) then
+			return false
+		end
+		if ownerCard and (ownerCard._status ~= BattleData.CardStatus.board and ownerCard._status ~= BattleData.CardStatus.field and ownerCard._status ~= BattleData.CardStatus.show) then
+			return false
+		end
+		if arg_304_0._isSummonDisabled or arg_304_0._isSpecialSummonDisabled then
+			return false
+		end
+		if #arg_304_0:getBoardCards() >= Data.MAX_CARD_COUNT_ON_BOARD then
+			return false
+		end
+		local candidates = {}
+		local allPool = B.mergeTable({arg_304_0:getBattleCards("G"), arg_304_0:getBattleCards("H"), arg_304_0:getBattleCards("P")})
+		for _, c in ipairs(allPool) do
+			if c and (c:isMonsterRare() or c._type == Data.CardType.monster) then
+				if not c:isMerge() and not (c._info and c._info._option and band(c._info._option, Data.MonsterOption.is_merge) > 0) then
+					if c:isKeyword(302) or (c._info and c._info._keyword == 302) then
+						if arg_304_0:canSpecialSummon(c) then
+							table.insert(candidates, c)
+						end
 					end
 				end
 			end

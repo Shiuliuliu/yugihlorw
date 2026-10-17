@@ -3727,8 +3727,8 @@ function var_0_0.isValidMergeComponent(arg_260_0, arg_260_1, arg_260_2)
 			return arg_260_1:isKeyword(var_260_1) or arg_260_1:isKeyword(Data._skillInfo[13046]._refCards[1])
 		elseif arg_260_0 == 3104 and arg_260_2._infoId == 40658 then
 			return arg_260_1:isKeyword(var_260_1) and arg_260_1:canMergeFrom()
-		elseif arg_260_0 == 3906 and arg_260_2._infoId == 40662 then
-			return arg_260_1:isKeyword(var_260_1 - 900) and arg_260_1:isMerge()
+		elseif (arg_260_0 == 3906 and arg_260_2._infoId == 40662) or (arg_260_0 == 3902 and arg_260_2._infoId == 40739) then
+			return arg_260_1:isKeyword(arg_260_0 == 3902 and 302 or (var_260_1 - 900)) and arg_260_1:isMerge()
 		else
 			return arg_260_1:isKeyword(var_260_1)
 		end

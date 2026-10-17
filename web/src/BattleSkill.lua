@@ -361,7 +361,7 @@ function var_0_0.castSkill(arg_1_0, arg_1_1, arg_1_2, arg_1_3)
 		var_1_2 = arg_1_0:castAttackSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif (var_1_0 == Data.SkillType.defend or arg_1_2._id == 9008 or arg_1_2._id == 9771 or arg_1_2._id == 9417 or arg_1_2._id == 13761 or arg_1_2._id == 14682 or arg_1_2._id == 14683 or arg_1_2._id == 14717 or arg_1_2._id == 14730 or arg_1_2._id == 14737) and arg_1_2._id ~= 2081 and arg_1_2._id ~= 2243 and arg_1_2._id ~= 2318 and arg_1_2._id ~= 2324 and arg_1_2._id ~= 2369 and arg_1_2._id ~= 2375 and arg_1_2._id ~= 2383 and arg_1_2._id ~= 2384 and arg_1_2._id ~= 2390 and arg_1_2._id ~= 2437 and arg_1_2._id ~= 2488 and arg_1_2._id ~= 2560 and arg_1_2._id ~= 2611 and arg_1_2._id ~= 2664 and arg_1_2._id ~= 2781 and arg_1_2._id ~= 2913 and arg_1_2._id ~= 2982 and arg_1_2._id ~= 2985 then
 		var_1_2 = arg_1_0:castDefendSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif (var_1_0 == Data.SkillType.monsterSpell or arg_1_2._id == 6349 or arg_1_2._id == 6593 or arg_1_2._id == 6868 or arg_1_2._id == 2369 or arg_1_2._id == 2375 or arg_1_2._id == 14677 or arg_1_2._id == 14714 or arg_1_2._id == 14718 or arg_1_2._id == 14721 or arg_1_2._id == 14723 or arg_1_2._id == 14724 or arg_1_2._id == 14725 or arg_1_2._id == 14728 or arg_1_2._id == 14729 or arg_1_2._id == 14731 or arg_1_2._id == 14732 or arg_1_2._id == 14736 or arg_1_2._id == 14738 or arg_1_2._id == 14741 or arg_1_2._id == 14742 or arg_1_2._id == 14745 or arg_1_2._id == 14747 or arg_1_2._id == 14748 or arg_1_2._id == 14751 or arg_1_2._id == 14763 or arg_1_2._id == 2383 or arg_1_2._id == 2384 or arg_1_2._id == 2390 or arg_1_2._id == 2437 or arg_1_2._id == 2488 or arg_1_2._id == 2560 or arg_1_2._id == 2611 or arg_1_2._id == 2664 or arg_1_2._id == 2781 or arg_1_2._id == 9251 or arg_1_2._id == 9253 or arg_1_2._id == 9254 or arg_1_2._id == 9257 or arg_1_2._id == 9259 or arg_1_2._id == 9261 or arg_1_2._id == 9265 or arg_1_2._id == 9403 or arg_1_2._id == 9414 or arg_1_2._id == 9453 or arg_1_2._id == 9462 or arg_1_2._id == 9507 or arg_1_2._id == 9685 or arg_1_2._id == 13007 or arg_1_2._id == 13975 or arg_1_2._id == 7824) and arg_1_2._id ~= 3705 and arg_1_2._id ~= 3850 then
+	elseif (var_1_0 == Data.SkillType.monsterSpell or arg_1_2._id == 6349 or arg_1_2._id == 6593 or arg_1_2._id == 6868 or arg_1_2._id == 2369 or arg_1_2._id == 2375 or arg_1_2._id == 14677 or arg_1_2._id == 14714 or arg_1_2._id == 14718 or arg_1_2._id == 14721 or arg_1_2._id == 14723 or arg_1_2._id == 14724 or arg_1_2._id == 14725 or arg_1_2._id == 14728 or arg_1_2._id == 14729 or arg_1_2._id == 14731 or arg_1_2._id == 14732 or arg_1_2._id == 14736 or arg_1_2._id == 14738 or arg_1_2._id == 14741 or arg_1_2._id == 14742 or arg_1_2._id == 14745 or arg_1_2._id == 14747 or arg_1_2._id == 14748 or arg_1_2._id == 14751 or arg_1_2._id == 14763 or arg_1_2._id == 14764 or arg_1_2._id == 2383 or arg_1_2._id == 2384 or arg_1_2._id == 2390 or arg_1_2._id == 2437 or arg_1_2._id == 2488 or arg_1_2._id == 2560 or arg_1_2._id == 2611 or arg_1_2._id == 2664 or arg_1_2._id == 2781 or arg_1_2._id == 9251 or arg_1_2._id == 9253 or arg_1_2._id == 9254 or arg_1_2._id == 9257 or arg_1_2._id == 9259 or arg_1_2._id == 9261 or arg_1_2._id == 9265 or arg_1_2._id == 9403 or arg_1_2._id == 9414 or arg_1_2._id == 9453 or arg_1_2._id == 9462 or arg_1_2._id == 9507 or arg_1_2._id == 9685 or arg_1_2._id == 13007 or arg_1_2._id == 13975 or arg_1_2._id == 7824) and arg_1_2._id ~= 3705 and arg_1_2._id ~= 3850 then
 		var_1_2 = arg_1_0:castMonsterSpellSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif var_1_0 == Data.SkillType.monsterHalo or arg_1_2._id == 2081 or arg_1_2._id == 2913 or arg_1_2._id == 9512 or arg_1_2._id == 13471 or arg_1_2._id == 13779 then
 		var_1_2 = arg_1_0:castMonsterHaloSkill(arg_1_1, arg_1_2, arg_1_3)
@@ -369,7 +369,7 @@ function var_0_0.castSkill(arg_1_0, arg_1_1, arg_1_2, arg_1_3)
 		var_1_2 = arg_1_0:castMonster2HaloSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif var_1_0 == Data.SkillType.monster3Halo and arg_1_2._id ~= 13119 and arg_1_2._id ~= 13259 and arg_1_2._id ~= 13264 and arg_1_2._id ~= 13292 and arg_1_2._id ~= 13348 and arg_1_2._id ~= 13718 and arg_1_2._id ~= 13736 and arg_1_2._id ~= 13850 and arg_1_2._id ~= 13920 and arg_1_2._id ~= 13989 then
 		var_1_2 = arg_1_0:castMonster3HaloSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif var_1_0 == Data.SkillType.monster4Halo and arg_1_2._id ~= 14390 and arg_1_2._id ~= 14487 and arg_1_2._id ~= 14519 and arg_1_2._id ~= 14541 and arg_1_2._id ~= 14555 and arg_1_2._id ~= 14644 and arg_1_2._id ~= 14652 and arg_1_2._id ~= 14670 and arg_1_2._id ~= 14677 and arg_1_2._id ~= 14714 and arg_1_2._id ~= 14716 and arg_1_2._id ~= 14717 and arg_1_2._id ~= 14718 and arg_1_2._id ~= 14721 and arg_1_2._id ~= 14723 and arg_1_2._id ~= 14724 and arg_1_2._id ~= 14725 and arg_1_2._id ~= 14728 and arg_1_2._id ~= 14729 and arg_1_2._id ~= 14731 and arg_1_2._id ~= 14732 and arg_1_2._id ~= 14733 and arg_1_2._id ~= 14734 and arg_1_2._id ~= 14735 and arg_1_2._id ~= 14736 and arg_1_2._id ~= 14737 and arg_1_2._id ~= 14738 and arg_1_2._id ~= 14741 and arg_1_2._id ~= 14742 and arg_1_2._id ~= 14743 and arg_1_2._id ~= 14749 and arg_1_2._id ~= 14744 and arg_1_2._id ~= 14745 and arg_1_2._id ~= 14746 and arg_1_2._id ~= 14747 and arg_1_2._id ~= 14748 and arg_1_2._id ~= 14749 and arg_1_2._id ~= 14752 and arg_1_2._id ~= 14753 and arg_1_2._id ~= 14756 and arg_1_2._id ~= 14757 and arg_1_2._id ~= 14758 and arg_1_2._id ~= 14759 and arg_1_2._id ~= 14760 and arg_1_2._id ~= 14761 and arg_1_2._id ~= 14762 and arg_1_2._id ~= 14763 then
+	elseif var_1_0 == Data.SkillType.monster4Halo and arg_1_2._id ~= 14390 and arg_1_2._id ~= 14487 and arg_1_2._id ~= 14519 and arg_1_2._id ~= 14541 and arg_1_2._id ~= 14555 and arg_1_2._id ~= 14644 and arg_1_2._id ~= 14652 and arg_1_2._id ~= 14670 and arg_1_2._id ~= 14677 and arg_1_2._id ~= 14714 and arg_1_2._id ~= 14716 and arg_1_2._id ~= 14717 and arg_1_2._id ~= 14718 and arg_1_2._id ~= 14721 and arg_1_2._id ~= 14723 and arg_1_2._id ~= 14724 and arg_1_2._id ~= 14725 and arg_1_2._id ~= 14728 and arg_1_2._id ~= 14729 and arg_1_2._id ~= 14731 and arg_1_2._id ~= 14732 and arg_1_2._id ~= 14733 and arg_1_2._id ~= 14734 and arg_1_2._id ~= 14735 and arg_1_2._id ~= 14736 and arg_1_2._id ~= 14737 and arg_1_2._id ~= 14738 and arg_1_2._id ~= 14741 and arg_1_2._id ~= 14742 and arg_1_2._id ~= 14743 and arg_1_2._id ~= 14749 and arg_1_2._id ~= 14744 and arg_1_2._id ~= 14745 and arg_1_2._id ~= 14746 and arg_1_2._id ~= 14747 and arg_1_2._id ~= 14748 and arg_1_2._id ~= 14749 and arg_1_2._id ~= 14752 and arg_1_2._id ~= 14753 and arg_1_2._id ~= 14756 and arg_1_2._id ~= 14757 and arg_1_2._id ~= 14758 and arg_1_2._id ~= 14759 and arg_1_2._id ~= 14760 and arg_1_2._id ~= 14761 and arg_1_2._id ~= 14762 and arg_1_2._id ~= 14763 and arg_1_2._id ~= 14764 then
 		var_1_2 = arg_1_0:castMonster4HaloSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif (var_1_0 == Data.SkillType.trapSpell or var_1_0 == Data.SkillType.trapHalo) and arg_1_2._id ~= 5004 and arg_1_2._id ~= 5080 and arg_1_2._id ~= 5081 and arg_1_2._id ~= 5095 and arg_1_2._id ~= 5244 and arg_1_2._id ~= 5280 and arg_1_2._id ~= 5298 and arg_1_2._id ~= 5430 and arg_1_2._id ~= 5431 and arg_1_2._id ~= 5452 and arg_1_2._id ~= 5470 and arg_1_2._id ~= 5485 and arg_1_2._id ~= 5544 and arg_1_2._id ~= 5549 and arg_1_2._id ~= 14755 and arg_1_2._id ~= 14756 and arg_1_2._id ~= 14758 and arg_1_2._id ~= 14759 or arg_1_2._id == 4181 or arg_1_2._id == 4190 or arg_1_2._id == 7096 then
 		var_1_2 = arg_1_0:castTrapSkill(arg_1_1, arg_1_2, arg_1_3)
@@ -10838,6 +10838,50 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		-- 3. Special Summon target to board
 		if target ~= nil and arg_4_0:canSpecialSummon(target) and #arg_4_0:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD then
 			arg_4_0:setCardStatus(target, BattleData.CardStatus.board, var_4_5, var_4_4, arg_4_3)
+		end
+		var_4_13 = true
+	elseif var_4_4 == 14764 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if ownerCard then
+			if ownerCard._omazioTurn ~= turnId then
+				ownerCard._omazioTurn = turnId
+				ownerCard._omazioCount = 0
+			end
+			ownerCard._omazioCount = (ownerCard._omazioCount or 0) + 1
+		end
+		arg_4_0._castedSkillCounts[14764] = (arg_4_0._castedSkillCounts[14764] or 0) + 1
+
+		-- Find target card selected by user
+		local target = arg_4_0:getCardById(var_4_15)
+		if target == nil or (target._status ~= BattleData.CardStatus.grave and target._status ~= BattleData.CardStatus.hand and target._status ~= BattleData.CardStatus.pile) or target:isMerge() or (target._info and target._info._option and band(target._info._option, Data.MonsterOption.is_merge) > 0) or not ((target:isMonsterRare() or target._type == Data.CardType.monster) and (target:isKeyword(302) or (target._info and target._info._keyword == 302))) then
+			local candidates = {}
+			local pool = B.mergeTable({arg_4_0:getBattleCards("G"), arg_4_0:getBattleCards("H"), arg_4_0:getBattleCards("P")})
+			for _, c in ipairs(pool) do
+				if c and (c:isMonsterRare() or c._type == Data.CardType.monster) then
+					if not c:isMerge() and not (c._info and c._info._option and band(c._info._option, Data.MonsterOption.is_merge) > 0) then
+						if c:isKeyword(302) or (c._info and c._info._keyword == 302) then
+							if arg_4_0:canSpecialSummon(c) then
+								table.insert(candidates, c)
+							end
+						end
+					end
+				end
+			end
+			if #candidates > 0 then
+				target = candidates[1]
+			end
+		end
+
+		-- Special Summon target to board in Defense position, cannot change posture this turn
+		if target ~= nil and arg_4_0:canSpecialSummon(target) and #arg_4_0:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD then
+			arg_4_0:setCardStatus(target, BattleData.CardStatus.board, var_4_5, var_4_4, arg_4_3, BattleData.CardStatusVal.g2b_def_disable_posture)
+			target._actionCount = 0
+			target._actionIndex = 999
+			target._cannotChangePostureTurn = turnId
+			arg_4_0:incNegativeStatus(target, { BattleData.NegativeType.disablePosture }, false, arg_4_1._id, var_4_4, arg_4_3)
+			arg_4_0:incNegativeValue(target, BattleData.NegativeType.disablePosture, 1, Data.AggregateType.max, arg_4_1._id, var_4_4, arg_4_3)
 		end
 		var_4_13 = true
 	elseif var_4_4 == 14747 then
@@ -106690,6 +106734,37 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 				if c:isKeyword(302) or (c._info and c._info._keyword == 302) then
 					if arg_40_0:canSpecialSummon(c) then
 						return true
+					end
+				end
+			end
+		end
+		return false
+	elseif var_40_0 == 14764 then
+		if arg_40_1._status ~= BattleData.CardStatus.board and arg_40_1._status ~= BattleData.CardStatus.show then
+			return false
+		end
+		if arg_40_0._isSummonDisabled or arg_40_0._isSpecialSummonDisabled then
+			return false
+		end
+		if #arg_40_0:getBoardCards() >= Data.MAX_CARD_COUNT_ON_BOARD then
+			return false
+		end
+		local pOwner = arg_40_1._owner or arg_40_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if arg_40_1._omazioTurn == turnId and (arg_40_1._omazioCount or 0) >= 3 then
+			return false
+		end
+		if pOwner._castedSkillCounts[14764] and pOwner._castedSkillCounts[14764] >= 3 then
+			return false
+		end
+		local pool = B.mergeTable({arg_40_0:getBattleCards("G"), arg_40_0:getBattleCards("H"), arg_40_0:getBattleCards("P")})
+		for _, c in ipairs(pool) do
+			if c and (c:isMonsterRare() or c._type == Data.CardType.monster) then
+				if not c:isMerge() and not (c._info and c._info._option and band(c._info._option, Data.MonsterOption.is_merge) > 0) then
+					if c:isKeyword(302) or (c._info and c._info._keyword == 302) then
+						if arg_40_0:canSpecialSummon(c) then
+							return true
+						end
 					end
 				end
 			end
