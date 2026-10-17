@@ -6864,7 +6864,7 @@ return {
   ["_joinResult"]={[1]=0,},
   ["_keyword"]=302,["_link"]={[1]=0,},
   ["_linkAllCandidates"]="0.0",["_linkCandidate"]="0.0",["_linkCount"]="0.0",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=57232,["_nature"]=1,["_option"]=6,["_originId"]=0,["_packageId"]={[1]=0,},
-  ["_picId"]=0,["_py"]="kmrzioozu",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14765,[2]=14766,},
+  ["_picId"]=0,["_py"]="kmrzioozu",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14677,[2]=14765,[3]=14766,},
   ["_skin"]={[1]=0,},
   ["_star"]=8,["_syncComponent"]={[1]={[1]=0,},},},
 }

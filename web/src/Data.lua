@@ -1843,7 +1843,7 @@ function var_0_0.getType(arg_12_0)
 end
 
 function var_0_0.getSkillType(arg_13_0)
-	if arg_13_0 == 14677 or arg_13_0 == 14714 or arg_13_0 == 14718 or arg_13_0 == 14721 or arg_13_0 == 14723 or arg_13_0 == 14724 or arg_13_0 == 14725 or arg_13_0 == 14728 or arg_13_0 == 14729 or arg_13_0 == 14731 or arg_13_0 == 14732 or arg_13_0 == 14738 or arg_13_0 == 14741 or arg_13_0 == 14742 or arg_13_0 == 14745 or arg_13_0 == 14747 or arg_13_0 == 14748 then
+	if arg_13_0 == 14677 or arg_13_0 == 14714 or arg_13_0 == 14718 or arg_13_0 == 14721 or arg_13_0 == 14723 or arg_13_0 == 14724 or arg_13_0 == 14725 or arg_13_0 == 14728 or arg_13_0 == 14729 or arg_13_0 == 14731 or arg_13_0 == 14732 or arg_13_0 == 14738 or arg_13_0 == 14741 or arg_13_0 == 14742 or arg_13_0 == 14745 or arg_13_0 == 14747 or arg_13_0 == 14748 or arg_13_0 == 14763 or arg_13_0 == 14764 or arg_13_0 == 14765 or arg_13_0 == 14766 then
 		return var_0_0.SkillType.monsterSpell
 	end
 
