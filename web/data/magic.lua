@@ -3417,7 +3417,7 @@ return {
   [21144]={["_available"]=1,["_briefNameSid"]=57175,["_descSid"]=57174,["_guideSid"]=0,["_id"]=21144,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=302,["_maxCount"]=3,["_nameSid"]=57173,["_option"]=1,["_originId"]=0,["_packageId"]={[1]=0,},
   ["_picId"]=0,["_py"]="riderkick",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14749,},
   ["_targetType"]=0,["_type"]=11,},
-  [21145]={["_available"]=1,["_briefNameSid"]=57185,["_descSid"]=57184,["_guideSid"]=0,["_id"]=21145,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=6,["_maxCount"]=3,["_nameSid"]=57183,["_option"]=1,["_originId"]=0,["_packageId"]={[1]=319001,},
+  [21145]={["_available"]=1,["_briefNameSid"]=57185,["_descSid"]=57184,["_guideSid"]=0,["_id"]=21145,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=7,["_maxCount"]=3,["_nameSid"]=57183,["_option"]=1,["_originId"]=0,["_packageId"]={[1]=319001,},
   ["_picId"]=0,["_py"]="tamkinhkieudiem",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14752,[2]=14753,},
   ["_targetType"]=0,["_type"]=11,},
   [21146]={["_available"]=1,["_briefNameSid"]=57204,["_descSid"]=57203,["_guideSid"]=0,["_id"]=21146,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=6,["_maxCount"]=3,["_nameSid"]=57202,["_option"]=64,["_originId"]=0,["_packageId"]={[1]=319001,[2]=311001,},
