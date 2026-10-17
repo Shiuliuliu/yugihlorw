@@ -794,16 +794,16 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14750, Data.SkillMode.using)
 			end
 			if arg_15_1._infoId == 40737 or arg_15_1:hasSkillFast(14754) then
-				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = true
-				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = true
-				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
-				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14754, Data.SkillMode.using)
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
+				arg_15_0:incShield(arg_15_1, { 12002, 12003, 12004 }, false, false, arg_15_1._id, 14754, Data.SkillMode.using)
 			end
 			if arg_15_1._infoId == 40739 or arg_15_1:hasSkillFast(14764) then
-				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = true
-				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = true
-				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
-				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14764, Data.SkillMode.using)
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
+				arg_15_0:incShield(arg_15_1, { 12002, 12003, 12004 }, false, false, arg_15_1._id, 14764, Data.SkillMode.using)
 			end
 			if (arg_15_1:hasSkillFast(12008) or (arg_15_1._info and B.tableContain(arg_15_1._info._skillId, 12008))) and not arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMonster] then
 				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = true

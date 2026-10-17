@@ -319,7 +319,7 @@ local function patchData()
 				Data._skillInfo[14750]._descSid = 57221
 			end
 			if Data._rareInfo and Data._rareInfo[40737] then
-				Data._rareInfo[40737]._skillId = { 3454, 12008, 12009, 12010, 7488, 14754 }
+				Data._rareInfo[40737]._skillId = { 3454, 12002, 12003, 12004, 7488, 14754 }
 			end
 			if Data._rareInfo and Data._rareInfo[40738] then
 				Data._rareInfo[40738]._nameSid = 57222
@@ -339,7 +339,7 @@ local function patchData()
 				Data._rareInfo[40739]._nameSid = 57227
 				Data._rareInfo[40739]._descSid = 57228
 				Data._rareInfo[40739]._briefNameSid = 57229
-				Data._rareInfo[40739]._skillId = { 14677, 3106, 12008, 12009, 12010, 14764 }
+				Data._rareInfo[40739]._skillId = { 14677, 3106, 12002, 12003, 12004, 14764 }
 			end
 			if Data._skillInfo and Data._skillInfo[14764] then
 				Data._skillInfo[14764]._nameSid = 57230
@@ -8219,13 +8219,13 @@ local function patchCardSprite(CardSprite)
 		local ret = oldGetPositiveStatus and oldGetPositiveStatus(self) or {}
 		local card = self._card
 		if card and (card._status == BattleData.CardStatus.board or card._status == nil) then
-			local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12008)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
-			local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12009)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
-			local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12010)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
+			local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12008)) or card._infoId == 40734 or card._infoId == 40736
+			local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12009)) or card._infoId == 40734 or card._infoId == 40736
+			local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12010)) or card._infoId == 40734 or card._infoId == 40736
 
-			local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12002))
-			local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12003))
-			local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12004))
+			local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12002)) or card._infoId == 40737 or card._infoId == 40739
+			local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12003)) or card._infoId == 40737 or card._infoId == 40739
+			local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12004)) or card._infoId == 40737 or card._infoId == 40739
 
 			local pStatus = CardSprite.PositiveStatus or {}
 			for idx = 1, #pStatus do
@@ -8253,17 +8253,23 @@ local function patchCardSprite(CardSprite)
 		local ret = oldGetCardStatusStrs and oldGetCardStatusStrs(self) or { {}, {} }
 		local card = self._card
 		if card and (card._status == BattleData.CardStatus.board or card._status == nil) then
-			local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12008)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
-			local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12009)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
-			local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12010)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
+			local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12008)) or card._infoId == 40734 or card._infoId == 40736
+			local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12009)) or card._infoId == 40734 or card._infoId == 40736
+			local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12010)) or card._infoId == 40734 or card._infoId == 40736
 
 			local posList = ret[1] or {}
 			ret[1] = posList
 
+			local function normStr(s)
+				if not s then return "" end
+				return string.gsub(s, "%s+", "")
+			end
+
 			local function ensureStatusStr(targetStr)
 				if not targetStr or targetStr == "" then return end
+				local targetNorm = normStr(targetStr)
 				for _, s in ipairs(posList) do
-					if s == targetStr then return end
+					if normStr(s) == targetNorm then return end
 				end
 				table.insert(posList, targetStr)
 			end
@@ -8278,9 +8284,9 @@ local function patchCardSprite(CardSprite)
 				ensureStatusStr(Str(1779))
 			end
 
-			local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12002))
-			local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12003))
-			local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12004))
+			local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12002)) or card._infoId == 40737 or card._infoId == 40739
+			local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12003)) or card._infoId == 40737 or card._infoId == 40739
+			local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12004)) or card._infoId == 40737 or card._infoId == 40739
 
 			if has12002 then
 				ensureStatusStr(string.gsub(string.format(Str(1771), ""), "%s+$", ""))
@@ -8291,6 +8297,17 @@ local function patchCardSprite(CardSprite)
 			if has12004 then
 				ensureStatusStr(string.gsub(string.format(Str(1773), ""), "%s+$", ""))
 			end
+
+			local seen = {}
+			local uniquePosList = {}
+			for _, s in ipairs(posList) do
+				local n = normStr(s)
+				if n ~= "" and not seen[n] then
+					seen[n] = true
+					table.insert(uniquePosList, s)
+				end
+			end
+			ret[1] = uniquePosList
 		end
 		return ret
 	end
