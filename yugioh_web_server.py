@@ -514,12 +514,17 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
     curr_gr_pity = int(user_gr_pity if user_gr_pity is not None else (user_tru_tien_pity or 0))
     is_tru_tien = (221001 <= pkg_num <= 221050) or (pkg_num == 1)
     is_tien_nghich = (222001 <= pkg_num <= 222050) or (pkg_num == 2)
-    is_fairy_hero = is_tru_tien or is_tien_nghich or (pkg_num in SERVER_FAIRY_HERO_CARDS_MAP)
+    is_kmr = (223001 <= pkg_num <= 223050) or (pkg_num == 3)
+    is_fairy_hero = is_tru_tien or is_tien_nghich or is_kmr or (pkg_num in SERVER_FAIRY_HERO_CARDS_MAP)
     if is_fairy_hero:
-        if is_tien_nghich or (pkg_num in (2, 222001, 222010, 222050)):
+        if is_kmr or (pkg_num in (3, 223001, 223010, 223050)):
+            series_name = "Hiệp sĩ mặt nạ"
+            gr_pool = [40739]
+            ur_pool = [12331, 12332, 12333, 12334, 12335, 21143, 21144, 40734, 40735, 40737, 40738, 40740, 40741]
+        elif is_tien_nghich or (pkg_num in (2, 222001, 222010, 222050)):
             series_name = "Tiên Nghịch"
             gr_pool = [40730]
-            ur_pool = [12322, 12323, 12324, 12325, 12326, 12327, 12328, 12329, 21141, 21134, 40732]
+            ur_pool = [12322, 12323, 12324, 12325, 12326, 12327, 12328, 12329, 21141, 21134, 40732, 21142, 40733]
         else:
             series_name = "Tru Tiên"
             gr_pool = [12316, 12320, 21139]
@@ -574,7 +579,10 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     if cquality == 'GR':
                         curr_gr_pity = 0
                         char_name = user_acc.get('character_name', '') if user_acc else ''
-                        announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
+                        if series_name == "Hiệp sĩ mặt nạ":
+                            announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được {series_name} cấp GR [{cname}]!"
+                        else:
+                            announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
                         if broadcast_fn:
                             broadcast_msg = {
                                 "id": int(time.time()*1000) + card_idx,
@@ -643,7 +651,10 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     if cquality == 'GR':
                         curr_gr_pity = 0
                         char_name = user_acc.get('character_name', '') if user_acc else ''
-                        announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
+                        if series_name == "Hiệp sĩ mặt nạ":
+                            announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được {series_name} cấp GR [{cname}]!"
+                        else:
+                            announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
                         if broadcast_fn:
                             broadcast_msg = {
                                 "id": int(time.time()*1000) + card_idx,
