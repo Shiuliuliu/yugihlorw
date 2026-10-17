@@ -2267,4 +2267,8 @@ function var_0_0.getCardFromPile(arg_53_0)
 	return arg_53_0._pileCards and arg_53_0._pileCards[1]
 end
 
+function var_0_0.getGraveCards(arg_54_0)
+	return arg_54_0._graveCards or {}
+end
+
 return var_0_0

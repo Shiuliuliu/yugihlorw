@@ -905,9 +905,9 @@ function var_0_0.resetAtk(arg_29_0)
 		local owner = arg_29_0._owner
 		if owner then
 			local count = 0
-			local graveCards = owner:getGraveCards()
+			local graveCards = owner._graveCards or (owner.getGraveCards and owner:getGraveCards()) or {}
 			for _, gc in ipairs(graveCards) do
-				if gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736 then
+				if gc and (gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736) then
 					count = count + 1
 				end
 			end
@@ -9856,19 +9856,22 @@ end
 
 function var_0_0.getAtk(arg_282_0)
 	if (arg_282_0._infoId == 40736 or arg_282_0:hasSkillFast(14750)) and arg_282_0._status == BattleData.CardStatus.board then
-		local baseAtk = arg_282_0._atk or 3000
 		local owner = arg_282_0._owner
 		if owner then
 			local count = 0
-			local graveCards = owner:getGraveCards()
+			local graveCards = owner._graveCards or (owner.getGraveCards and owner:getGraveCards()) or {}
 			for _, gc in ipairs(graveCards) do
-				if gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736 then
+				if gc and (gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736) then
 					count = count + 1
 				end
 			end
-			return baseAtk + count * 500
+			local bonus = count * 500
+			local extra = arg_282_0._atkInc or 0
+			local totalAtk = 3000 + bonus + extra
+			arg_282_0._atk = totalAtk
+			return totalAtk
 		end
-		return baseAtk
+		return arg_282_0._atk or 3000
 	end
 	if (arg_282_0._infoId == 12324 or arg_282_0:hasSkillFast(14700)) and arg_282_0._status == BattleData.CardStatus.board then
 		return arg_282_0._atk or (arg_282_0._htAtk or 0)

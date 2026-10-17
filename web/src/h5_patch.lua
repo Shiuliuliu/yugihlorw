@@ -9848,4 +9848,10 @@ end
 
 pcall(M.patchAudio)
 
+if _G.PlayerBattle and not _G.PlayerBattle.getGraveCards then
+	_G.PlayerBattle.getGraveCards = function(self)
+		return self._graveCards or {}
+	end
+end
+
 return M
