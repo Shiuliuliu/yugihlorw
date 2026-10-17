@@ -314,6 +314,10 @@ local function patchData()
 				Data._skillInfo[14749]._modes = { [1] = 61, [2] = 2 }
 				Data._skillInfo[14749]._isIgnoreDefend = 0
 			end
+			if Data._skillInfo[14750] then
+				Data._skillInfo[14750]._nameSid = 57220
+				Data._skillInfo[14750]._descSid = 57221
+			end
 		end
 
 		current = nil
@@ -5306,6 +5310,8 @@ function patchClientData()
 		[57211] = "Chọn 1 quái thú trên sân; Triệu hồi Đặc biệt 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ tay hoặc Bộ bài, sau đó đưa quái thú mục tiêu về tay.",
 		[57212] = "Giải Cứu Kịch Tính - Chiêu Mộ Tái Sinh",
 		[57213] = "Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; thêm 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ Mộ hoặc đang bị trục xuất lên tay.",
+		[57220] = "Tam Giác Mê Hoặc",
+		[57221] = "Tăng 500 Công cho mỗi \"Harpie Lady\" trong Mộ của bạn.",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 

@@ -57217,3 +57217,5 @@ Trận Hình Rakshasa - Đoạt Hồn Nhiễm Tâm
 Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 2 quái thú "Harpie" hoặc "Amazoness" trở lên: Trục xuất lá này khỏi Mộ, sau đó chọn 1 quái thú đối thủ điều khiển; giành quyền điều khiển quái thú đó. Kỹ năng này và các kỹ năng Mộ khác của lá bài này chỉ có thể kích hoạt 1 loại 1 lần mỗi lượt.
 Trận Hình Rakshasa - Vạn Trận Tận Diệt
 Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 3 quái thú "Harpie" hoặc "Amazoness" trở lên: Trục xuất lá này khỏi Mộ; phá hủy tất cả quái thú trên sân đối phương. Kỹ năng này và các kỹ năng Mộ khác của lá bài này chỉ có thể kích hoạt 1 loại 1 lần mỗi lượt.
+Tam Giác Mê Hoặc
+Tăng 500 Công cho mỗi "Harpie Lady" trong Mộ của bạn.
