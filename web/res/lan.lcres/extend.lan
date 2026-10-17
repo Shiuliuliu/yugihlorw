@@ -57171,12 +57171,12 @@ KMR-Wizard
 KMR-Wizard - Nhẫn Thuật Ma Pháp
 Kỹ năng chủ động (1 lượt 1 lần): Chọn lấy 1 lá bài Phép có từ khóa "Hiệp sĩ mặt nạ" từ Bộ bài hoặc Mộ lên tay.
 Rider kick
-[Ma Pháp Thông Thường]\nKhi trên sân phe ta có quái thú có từ khóa "Hiệp sĩ mặt nạ": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường chắn Quái (12008)). Sau đó trong lượt này, quái thú có từ khóa "Hiệp sĩ mặt nạ" phe ta không thể tấn công.
+[Ma Pháp Thông Thường]\nKhi trên sân phe ta có quái thú có từ khóa "Hiệp sĩ mặt nạ": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường Chắn Quái). Sau đó trong lượt này, quái thú có từ khóa "Hiệp sĩ mặt nạ" phe ta không thể tấn công.
 Rider kick
 Rider kick - Toàn Lực Tất Sát
-Khi trên sân phe ta có quái thú có từ khóa "Hiệp sĩ mặt nạ": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường chắn Quái (12008)). Sau đó trong lượt này, quái thú có từ khóa "Hiệp sĩ mặt nạ" phe ta không thể tấn công.
+Khi trên sân phe ta có quái thú có từ khóa "Hiệp sĩ mặt nạ": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường Chắn Quái). Sau đó trong lượt này, quái thú có từ khóa "Hiệp sĩ mặt nạ" phe ta không thể tấn công.
 Chị Em Harpie Lady - Tam Giác Mê Hoặc
-[Thú Có Cánh - Dung Hợp - Hiệu Ứng]\n3 quái thú "Harpie Lady"\nPhải được Triệu hồi Dung hợp trước tiên.\n(1) Tên lá bài này được coi là "Harpie Lady" khi ở trên sân hoặc trong Mộ.\n(2) Tăng 500 Công cho mỗi "Harpie Lady" trong Mộ của bạn. Nhận Lá chắn quái vật (12008), Khiên ma thuật (12009), Lá chắn bẫy (12010).\n(3) Mỗi lượt 1 lần (Hiệu ứng Nhanh): Bạn có thể phá hủy toàn bộ Ma pháp và Cạm bẫy đối thủ điều khiển.
+[Thú Có Cánh - Dung Hợp - Hiệu Ứng]\n3 quái thú "Harpie Lady"\nPhải được Triệu hồi Dung hợp trước tiên.\n(1) Tên lá bài này được coi là "Harpie Lady" khi ở trên sân hoặc trong Mộ.\n(2) Tăng 500 Công cho mỗi "Harpie Lady" trong Mộ của bạn. Nhận Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Mỗi lượt 1 lần (Hiệu ứng Nhanh): Bạn có thể phá hủy toàn bộ Ma pháp và Cạm bẫy đối thủ điều khiển.
 Chị Em Harpie Lady - Tam Giác Mê Hoặc
 Tam Giác Mê Hoặc - Phong Bão Quét Sạch
 Mỗi lượt một lần: Phá hủy toàn bộ Ma pháp và Cạm bẫy mà đối thủ điều khiển.
@@ -57188,7 +57188,7 @@ Thêm 1 quái thú "Harpie" từ Bộ bài lên tay, sau đó nếu chỉ có đ
 Tam Kính Kiều Diễm - Dung Hợp Kính Soi
 Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; Triệu hồi Dung hợp 1 quái thú Dung hợp thuộc tính ĐẤT hoặc GIÓ từ Bộ bài Phụ, sử dụng quái thú trên tay hoặc trên sân làm nguyên liệu.
 KMR-Zio-Wizard
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + "KMR-Wizard"\n(1) Đối phương không thể sử dụng bài Phép.\n(2) Nhận Tường Chắn Quái (12002), Tường Chắn Phép (12003), Tường Chắn Bẫy (12004).\n(3) Tất cả bài Phép/Bẫy trên sân phe ta không thể bị phá hủy.
+[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + "KMR-Wizard"\n(1) Đối phương không thể sử dụng bài Phép.\n(2) Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Tất cả bài Phép/Bẫy trên sân phe ta không thể bị phá hủy.
 KMR-Zio-Wizard
 KMR-Zio-Wizard - Phong Tỏa Ma Thuật
 Khi có mặt: Đối phương không thể sử dụng bài Phép.
@@ -57225,7 +57225,7 @@ KMR-Decade
 KMR-Decade - Thông Đạo Kỵ Sĩ
 1 lượt 1 lần, đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa "Hiệp sĩ mặt nạ" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.
 KMR-Omazio
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + 1 quái thú Dung hợp có từ khóa "Hiệp sĩ mặt nạ" + 1 quái thú có từ khóa "Hiệp sĩ mặt nạ"\n(1) Mỗi lượt nhận 1 lần Khiên Chiến Đấu (3106).\n(2) Nhận Tường Chắn Quái (12002), Tường Chắn Phép (12003), Tường Chắn Bẫy (12004).\n(3) Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa "Hiệp sĩ mặt nạ" trong Mộ, trên tay hoặc trong Bộ bài của bạn; Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ, và quái thú đó không thể đổi tư thế trong lượt này.
+[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + 1 quái thú Dung hợp có từ khóa "Hiệp sĩ mặt nạ" + 1 quái thú có từ khóa "Hiệp sĩ mặt nạ"\n(1) Mỗi lượt nhận 1 lần Khiên Chiến Đấu.\n(2) Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa "Hiệp sĩ mặt nạ" trong Mộ, trên tay hoặc trong Bộ bài của bạn; Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ, và quái thú đó không thể đổi tư thế trong lượt này.
 KMR-Omazio
 KMR-Omazio - Ma Vương Khởi Động
 1 lượt 1 lần: Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa "Hiệp sĩ mặt nạ" trong Mộ, trên tay hoặc trong Bộ bài để Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ (không thể đổi tư thế trong lượt này).

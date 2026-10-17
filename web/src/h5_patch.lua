@@ -4813,6 +4813,10 @@ function patchClientData()
 		[50085] = "Bị bài phép đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",
 		[50086] = "Tường Chắn Bẫy",
 		[50087] = "Bị bài bẫy đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",
+		-- Battle status popups (CardInfoPanel)
+		[1777] = "Bị bài quái đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",
+		[1778] = "Bị bài phép đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",
+		[1779] = "Bị bài bẫy đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",
 		-- shieldEx (12002, 12003, 12004)
 		[50070] = "Tường Chắn Quái",
 		[50071] = "Khi bị ảnh hưởng bởi bài quái đối thủ; hiệu ứng sẽ bị bỏ qua.",
@@ -5325,12 +5329,12 @@ function patchClientData()
 		[57171] = "KMR-Wizard - Nhẫn Thuật Ma Pháp",
 		[57172] = "Kỹ năng chủ động (1 lượt 1 lần): Chọn lấy 1 lá bài Phép có từ khóa \"Hiệp sĩ mặt nạ\" từ Bộ bài hoặc Mộ lên tay.",
 		[57173] = "Rider kick",
-		[57174] = "[Ma Pháp Thông Thường]\nKhi trên sân phe ta có quái thú có từ khóa \"Hiệp sĩ mặt nạ\": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường chắn Quái (12008)). Sau đó trong lượt này, quái thú có từ khóa \"Hiệp sĩ mặt nạ\" phe ta không thể tấn công.",
+		[57174] = "[Ma Pháp Thông Thường]\nKhi trên sân phe ta có quái thú có từ khóa \"Hiệp sĩ mặt nạ\": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường Chắn Quái). Sau đó trong lượt này, quái thú có từ khóa \"Hiệp sĩ mặt nạ\" phe ta không thể tấn công.",
 		[57175] = "Rider kick",
 		[57176] = "Rider kick - Toàn Lực Tất Sát",
-		[57177] = "Khi trên sân phe ta có quái thú có từ khóa \"Hiệp sĩ mặt nạ\": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường chắn Quái (12008)). Sau đó trong lượt này, quái thú có từ khóa \"Hiệp sĩ mặt nạ\" phe ta không thể tấn công.",
+		[57177] = "Khi trên sân phe ta có quái thú có từ khóa \"Hiệp sĩ mặt nạ\": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường Chắn Quái). Sau đó trong lượt này, quái thú có từ khóa \"Hiệp sĩ mặt nạ\" phe ta không thể tấn công.",
 		[57178] = "Chị Em Harpie Lady - Tam Giác Mê Hoặc",
-		[57179] = "[Thú Có Cánh - Dung Hợp - Hiệu Ứng]\n3 quái thú \"Harpie Lady\"\nPhải được Triệu hồi Dung hợp trước tiên.\n(1) Tên lá bài này được coi là \"Harpie Lady\" khi ở trên sân hoặc trong Mộ.\n(2) Tăng 500 Công cho mỗi \"Harpie Lady\" trong Mộ của bạn. Nhận Lá chắn quái vật (12008), Khiên ma thuật (12009), Lá chắn bẫy (12010).\n(3) Mỗi lượt 1 lần (Hiệu ứng Nhanh): Bạn có thể phá hủy toàn bộ Ma pháp và Cạm bẫy đối thủ điều khiển.",
+		[57179] = "[Thú Có Cánh - Dung Hợp - Hiệu Ứng]\n3 quái thú \"Harpie Lady\"\nPhải được Triệu hồi Dung hợp trước tiên.\n(1) Tên lá bài này được coi là \"Harpie Lady\" khi ở trên sân hoặc trong Mộ.\n(2) Tăng 500 Công cho mỗi \"Harpie Lady\" trong Mộ của bạn. Nhận Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Mỗi lượt 1 lần (Hiệu ứng Nhanh): Bạn có thể phá hủy toàn bộ Ma pháp và Cạm bẫy đối thủ điều khiển.",
 		[57180] = "Chị Em Harpie Lady - Tam Giác Mê Hoặc",
 		[57181] = "Tam Giác Mê Hoặc - Phong Bão Quét Sạch",
 		[57182] = "Mỗi lượt một lần: Phá hủy toàn bộ Ma pháp và Cạm bẫy mà đối thủ điều khiển.",
@@ -8163,6 +8167,87 @@ local function patchCardSprite(CardSprite)
 				if CardSprite.NegativeStatus[idx]._name == "manacle" then
 					ret[idx] = not card._tsAwakened
 				end
+			end
+		end
+		return ret
+	end
+
+	local oldGetPositiveStatus = CardSprite.getPositiveStatus
+	CardSprite.getPositiveStatus = function(self)
+		local ret = oldGetPositiveStatus and oldGetPositiveStatus(self) or {}
+		local card = self._card
+		if card and (card._status == BattleData.CardStatus.board or card._status == nil) then
+			local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12008)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
+			local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12009)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
+			local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12010)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
+
+			local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12002))
+			local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12003))
+			local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12004))
+
+			local pStatus = CardSprite.PositiveStatus or {}
+			for idx = 1, #pStatus do
+				local s = pStatus[idx]
+				if s._name == "shieldOppoMonster" and has12008 then
+					ret[idx] = true
+				elseif s._name == "shieldOppoMagic" and has12009 then
+					ret[idx] = true
+				elseif s._name == "shieldOppoTrap" and has12010 then
+					ret[idx] = true
+				elseif s._name == "shieldExMonster" and has12002 then
+					ret[idx] = true
+				elseif s._name == "shieldExMagic" and has12003 then
+					ret[idx] = true
+				elseif s._name == "shieldExTrap" and has12004 then
+					ret[idx] = true
+				end
+			end
+		end
+		return ret
+	end
+
+	local oldGetCardStatusStrs = CardSprite.getCardStatusStrs
+	CardSprite.getCardStatusStrs = function(self)
+		local ret = oldGetCardStatusStrs and oldGetCardStatusStrs(self) or { {}, {} }
+		local card = self._card
+		if card and (card._status == BattleData.CardStatus.board or card._status == nil) then
+			local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12008)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
+			local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12009)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
+			local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12010)) or card._infoId == 40734 or card._infoId == 40736 or card._infoId == 40737 or card._infoId == 40739
+
+			local posList = ret[1] or {}
+			ret[1] = posList
+
+			local function ensureStatusStr(targetStr)
+				if not targetStr or targetStr == "" then return end
+				for _, s in ipairs(posList) do
+					if s == targetStr then return end
+				end
+				table.insert(posList, targetStr)
+			end
+
+			if has12008 then
+				ensureStatusStr(Str(1777))
+			end
+			if has12009 then
+				ensureStatusStr(Str(1778))
+			end
+			if has12010 then
+				ensureStatusStr(Str(1779))
+			end
+
+			local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12002))
+			local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12003))
+			local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12004))
+
+			if has12002 then
+				ensureStatusStr(string.gsub(string.format(Str(1771), ""), "%s+$", ""))
+			end
+			if has12003 then
+				ensureStatusStr(string.gsub(string.format(Str(1772), ""), "%s+$", ""))
+			end
+			if has12004 then
+				ensureStatusStr(string.gsub(string.format(Str(1773), ""), "%s+$", ""))
 			end
 		end
 		return ret

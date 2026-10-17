@@ -278,21 +278,21 @@ function var_0_0.resetMonster(arg_17_0)
 		end
 	end
 
-	if (arg_17_0:isInfoId(40736) or arg_17_0._infoId == 40736) and arg_17_0._status == BattleData.CardStatus.board then
+	if (arg_17_0:hasSkillFast(12008) or (arg_17_0._info and B.tableContain(arg_17_0._info._skillId, 12008)) or arg_17_0:isInfoId(40734) or arg_17_0:isInfoId(40736) or arg_17_0:isInfoId(40737) or arg_17_0:isInfoId(40739)) and arg_17_0._status == BattleData.CardStatus.board then
+		arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = true
+		arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = true
+		arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
 		if arg_17_0._owner then
-			arg_17_0._owner:incShield(arg_17_0, { 12008, 12009, 12010 }, false, false, arg_17_0._id, 14750, Data.SkillMode.using)
+			arg_17_0._owner:incShield(arg_17_0, { 12008, 12009, 12010 }, false, false, arg_17_0._id, 12008, Data.SkillMode.using)
 		end
 	end
 
-	if (arg_17_0:isInfoId(40737) or arg_17_0._infoId == 40737) and arg_17_0._status == BattleData.CardStatus.board then
+	if (arg_17_0:hasSkillFast(12002) or (arg_17_0._info and B.tableContain(arg_17_0._info._skillId, 12002))) and arg_17_0._status == BattleData.CardStatus.board then
+		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
+		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
+		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
 		if arg_17_0._owner then
-			arg_17_0._owner:incShield(arg_17_0, { 12008, 12009, 12010 }, false, false, arg_17_0._id, 14754, Data.SkillMode.using)
-		end
-	end
-
-	if (arg_17_0:isInfoId(40739) or arg_17_0._infoId == 40739) and arg_17_0._status == BattleData.CardStatus.board then
-		if arg_17_0._owner then
-			arg_17_0._owner:incShield(arg_17_0, { 12008, 12009, 12010 }, false, false, arg_17_0._id, 14764, Data.SkillMode.using)
+			arg_17_0._owner:incShield(arg_17_0, { 12002, 12003, 12004 }, false, false, arg_17_0._id, 12002, Data.SkillMode.using)
 		end
 	end
 
@@ -1117,6 +1117,19 @@ function var_0_0.hasBuff(arg_36_0, arg_36_1, arg_36_2)
 		end
 	end
 
+	if arg_36_1 and arg_36_0._status == BattleData.CardStatus.board then
+		if (arg_36_2 == BattleData.PositiveType.shieldOppoMonster and (arg_36_0:hasSkillFast(12008) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12008)) or arg_36_0:isInfoId(40734) or arg_36_0:isInfoId(40736) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739))) or
+		   (arg_36_2 == BattleData.PositiveType.shieldOppoMagic and (arg_36_0:hasSkillFast(12009) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12009)) or arg_36_0:isInfoId(40734) or arg_36_0:isInfoId(40736) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739))) or
+		   (arg_36_2 == BattleData.PositiveType.shieldOppoTrap and (arg_36_0:hasSkillFast(12010) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12010)) or arg_36_0:isInfoId(40734) or arg_36_0:isInfoId(40736) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739))) then
+			return true
+		end
+		if (arg_36_2 == BattleData.PositiveType.shieldExMonster and (arg_36_0:hasSkillFast(12002) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12002)))) or
+		   (arg_36_2 == BattleData.PositiveType.shieldExMagic and (arg_36_0:hasSkillFast(12003) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12003)))) or
+		   (arg_36_2 == BattleData.PositiveType.shieldExTrap and (arg_36_0:hasSkillFast(12004) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12004)))) then
+			return true
+		end
+	end
+
 	local var_36_0 = arg_36_1 and arg_36_0._positiveStatus or arg_36_0._negativeStatus
 
 	if var_36_0 == nil then
@@ -1240,6 +1253,12 @@ function var_0_0.hasShieldInType(arg_40_0, arg_40_1, arg_40_2)
 		end
 	end
 
+	if not arg_40_2 and (arg_40_0:isInfoId(40734) or arg_40_0._infoId == 40734 or arg_40_0:isInfoId(40736) or arg_40_0._infoId == 40736 or arg_40_0:isInfoId(40737) or arg_40_0._infoId == 40737 or arg_40_0:isInfoId(40739) or arg_40_0._infoId == 40739 or arg_40_0:hasSkillFast(12008)) and arg_40_0._status == BattleData.CardStatus.board then
+		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+	end
+
 	if not arg_40_2 and (arg_40_0:isInfoId(12327) or arg_40_0._infoId == 12327) and arg_40_0._status == BattleData.CardStatus.board then
 		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
 			return true
@@ -1319,6 +1338,15 @@ end
 
 function var_0_0.hasShieldExInType(arg_41_0, arg_41_1, arg_41_2)
 	if not arg_41_2 and (arg_41_0:isInfoId(40730) or arg_41_0:hasSkillFast(14719)) and arg_41_0._status == BattleData.CardStatus.board and (arg_41_0._tsAwakened or arg_41_0:hasSkillFast(12002) or (arg_41_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0) then
+		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
+			return true
+		end
+	end
+
+	if not arg_41_2 and (arg_41_0:isInfoId(40734) or arg_41_0._infoId == 40734 or arg_41_0:isInfoId(40736) or arg_41_0._infoId == 40736 or arg_41_0:isInfoId(40737) or arg_41_0._infoId == 40737 or arg_41_0:isInfoId(40739) or arg_41_0._infoId == 40739 or arg_41_0:hasSkillFast(12008) or arg_41_0:hasSkillFast(12002)) and arg_41_0._status == BattleData.CardStatus.board then
 		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
 			return true
 		end
@@ -5948,7 +5976,7 @@ function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
 		return true
 	end
 
-	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) and (arg_127_0:isInfoId(40736) or arg_127_0._infoId == 40736 or arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739) then
+	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) and (arg_127_0:isInfoId(40734) or arg_127_0._infoId == 40734 or arg_127_0:isInfoId(40736) or arg_127_0._infoId == 40736 or arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739 or (arg_127_0._info and B.tableContain(arg_127_0._info._skillId, arg_127_1))) then
 		return true
 	end
 
