@@ -88,7 +88,7 @@
 		}
 		var config = global.JDZC_CONFIG;
 
-		status('Äang táº£i dá»¯ liá»‡u cáº¥u hÃ¬nh...');
+		status('Đang tải dữ liệu cấu hình...');
 
 		/* Four bootstrap resources plus each configured preload are real work
 		 * units.  The bar advances only when a fetch/decoder promise resolves;
@@ -97,7 +97,7 @@
 		Boot.total = 9 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261018v020000';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261018v025000';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
 			done(fetchJson('lua_src.json?v=' + ver)),
@@ -127,7 +127,7 @@
 			 * line, which is safe on the device because loadRes is
 			 * synchronous there. It is fetched first here so the parser can
 			 * be handed a complete table before Lua runs. */
-			status('Äang táº£i tÃ i nguyÃªn hÃ¬nh áº£nh...');
+			status('Đang tải tài nguyên hình ảnh...');
 			var preloadList = config.preload || [];
 			function safe(tag, p, timeoutMs) {
 				if (!p || typeof p.then !== 'function') return Promise.resolve(p);
@@ -182,7 +182,7 @@
 		}).then(function (all) {
 			var sources = all[0], Module = all[2];
 
-			status('Äang khá»Ÿi Ä‘á»™ng engine game...');
+			status('Đang khởi động engine game...');
 
 			var lua = new global.JdzcLua(Module);
 			Boot.lua = lua;
@@ -227,7 +227,7 @@
 				if (pct >= 100) Boot.takeOverlayDown();
 			});
 
-			status('Äang vÃ o tháº¿ giá»›i Yu-Gi-Oh!... ');
+			status('Đang vào thế giới Yu-Gi-Oh!... ');
 			lua.run('require("h5_boot")', 'h5_boot');
 
 			/* Safety net: a boot chain that dies before 100 would leave the
