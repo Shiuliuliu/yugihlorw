@@ -2226,6 +2226,9 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	elseif arg_85_1._card:hasSkillFast(14738) or arg_85_1._card:isInfoId(21141) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14738, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 <Vương Lâm - Phân Thân> trong Mộ để triệu hồi đặc biệt"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14764, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14764) or arg_85_1._card:isInfoId(40739) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = string.format("Chọn tối đa %d quái thú [Hiệp sĩ mặt nạ] để Triệu hồi Đặc biệt", arg_85_4 or 3)
 	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14761, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or (arg_85_1._card:hasSkillFast(14761) and arg_85_1._card._status == BattleData.CardStatus.grave) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú đối phương để giành quyền điều khiển"
@@ -3854,6 +3857,25 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 	end
 
 	local var_89_1 = 0
+
+	if (arg_89_1._choiceBase and arg_89_2._card:isSkillAtIndex(14764, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) or arg_89_2._card:hasSkillFast(14764) or arg_89_2._card:isInfoId(40739) then
+		local selectedIds = {}
+		if var_89_0 and #var_89_0 > 0 then
+			for iter_c = #var_89_0, 1, -1 do
+				var_89_1 = var_89_1 * BattleData.UseCardId.id_group + var_89_0[iter_c]._id
+			end
+			for _, c in ipairs(var_89_0) do
+				table.insert(selectedIds, c._id)
+			end
+		end
+		arg_89_2._card._omazioSelectedIds = selectedIds
+
+		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_89_2._card,
+			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
+			_choice = var_89_1 * BattleData.ChoiceId.stage_2 + (arg_89_1._choiceBase or 0)
+		})
+	end
 
 	if arg_89_2._card:hasSkillFast(14716) or arg_89_2._card:isInfoId(21140) or arg_89_2._card:hasSkillFast(14723) or arg_89_2._card:hasSkillFast(14724) or arg_89_2._card:isInfoId(12328) or arg_89_2._card:isInfoId(12329) or arg_89_2._card:hasSkillFast(14731) or arg_89_2._card:hasSkillFast(14732) or arg_89_2._card:hasSkillFast(14738) or arg_89_2._card:isInfoId(21141) or arg_89_2._card:hasSkillFast(14742) or arg_89_2._card:hasSkillFast(14748) or arg_89_2._card:isInfoId(12334) or arg_89_2._card:isInfoId(21145) or arg_89_2._card:hasSkillFast(14752) or arg_89_2._card:isInfoId(21146) or arg_89_2._card:hasSkillFast(14757) or arg_89_2._card:hasSkillFast(14761) or arg_89_2._card:isInfoId(30595) or arg_89_2._card:hasSkillFast(14758) or arg_89_2._card:hasSkillFast(14759) or arg_89_2._card:hasSkillFast(14756) or arg_89_2._card:isInfoId(30594) then
 		if var_89_0 and #var_89_0 > 0 then
@@ -7319,6 +7341,10 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 
 	if arg_91_2._card:isSkillAtIndex(14701, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) then
 		return var_91_0 <= arg_91_4 and var_91_0 > 0
+	end
+
+	if arg_91_2._card:isSkillAtIndex(14764, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:hasSkillFast(14764) or arg_91_2._card:isInfoId(40739) then
+		return var_91_0 <= (arg_91_4 or 3) and var_91_0 > 0
 	end
 
 	if arg_91_2._card:isSkillAtIndex(3994, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) then

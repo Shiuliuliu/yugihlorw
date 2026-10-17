@@ -10845,43 +10845,76 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
 		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
 		if ownerCard then
-			if ownerCard._omazioTurn ~= turnId then
-				ownerCard._omazioTurn = turnId
-				ownerCard._omazioCount = 0
-			end
-			ownerCard._omazioCount = (ownerCard._omazioCount or 0) + 1
+			ownerCard._omazioTurn = turnId
+			ownerCard._omazioCount = 1
 		end
 		arg_4_0._castedSkillCounts[14764] = (arg_4_0._castedSkillCounts[14764] or 0) + 1
 
-		-- Find target card selected by user
-		local target = arg_4_0:getCardById(var_4_15)
-		if target == nil or (target._status ~= BattleData.CardStatus.grave and target._status ~= BattleData.CardStatus.hand and target._status ~= BattleData.CardStatus.pile) or target:isMerge() or (target._info and target._info._option and band(target._info._option, Data.MonsterOption.is_merge) > 0) or not ((target:isMonsterRare() or target._type == Data.CardType.monster) and (target:isKeyword(302) or (target._info and target._info._keyword == 302))) then
-			local candidates = {}
-			local pool = B.mergeTable({arg_4_0:getBattleCards("G"), arg_4_0:getBattleCards("H"), arg_4_0:getBattleCards("P")})
-			for _, c in ipairs(pool) do
-				if c and (c:isMonsterRare() or c._type == Data.CardType.monster) then
+		-- Collect selected card IDs
+		local selectedIds = {}
+		if arg_4_1 and arg_4_1._omazioSelectedIds and #arg_4_1._omazioSelectedIds > 0 then
+			selectedIds = arg_4_1._omazioSelectedIds
+			arg_4_1._omazioSelectedIds = nil
+		elseif ownerCard and ownerCard._omazioSelectedIds and #ownerCard._omazioSelectedIds > 0 then
+			selectedIds = ownerCard._omazioSelectedIds
+			ownerCard._omazioSelectedIds = nil
+		elseif var_4_15 > 0 then
+			local tempVal = var_4_15
+			while tempVal > 0 do
+				local cid = tempVal % BattleData.UseCardId.id_group
+				if cid > 0 then
+					table.insert(selectedIds, cid)
+				end
+				tempVal = math.floor(tempVal / BattleData.UseCardId.id_group)
+			end
+		end
+
+		local validTargets = {}
+		local addedIds = {}
+		for _, cid in ipairs(selectedIds) do
+			local c = arg_4_0:getCardById(cid)
+			if c ~= nil and not addedIds[cid] then
+				if c._status == BattleData.CardStatus.grave or c._status == BattleData.CardStatus.hand or c._status == BattleData.CardStatus.pile then
 					if not c:isMerge() and not (c._info and c._info._option and band(c._info._option, Data.MonsterOption.is_merge) > 0) then
-						if c:isKeyword(302) or (c._info and c._info._keyword == 302) then
+						if (c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isKeyword(302) or (c._info and c._info._keyword == 302)) then
 							if arg_4_0:canSpecialSummon(c) then
-								table.insert(candidates, c)
+								table.insert(validTargets, c)
+								addedIds[cid] = true
 							end
 						end
 					end
 				end
 			end
-			if #candidates > 0 then
-				target = candidates[1]
+		end
+
+		if #validTargets == 0 then
+			local pool = B.mergeTable({arg_4_0:getBattleCards("G"), arg_4_0:getBattleCards("H"), arg_4_0:getBattleCards("P")})
+			local maxAuto = math.min(3, Data.MAX_CARD_COUNT_ON_BOARD - #arg_4_0:getBoardCards())
+			for _, c in ipairs(pool) do
+				if #validTargets >= maxAuto then break end
+				if c and (c:isMonsterRare() or c._type == Data.CardType.monster) then
+					if not c:isMerge() and not (c._info and c._info._option and band(c._info._option, Data.MonsterOption.is_merge) > 0) then
+						if c:isKeyword(302) or (c._info and c._info._keyword == 302) then
+							if arg_4_0:canSpecialSummon(c) and not addedIds[c._id] then
+								table.insert(validTargets, c)
+								addedIds[c._id] = true
+							end
+						end
+					end
+				end
 			end
 		end
 
-		-- Special Summon target to board in Defense position, cannot change posture this turn
-		if target ~= nil and arg_4_0:canSpecialSummon(target) and #arg_4_0:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD then
-			arg_4_0:setCardStatus(target, BattleData.CardStatus.board, var_4_5, var_4_4, arg_4_3, BattleData.CardStatusVal.g2b_def_disable_posture)
-			target._actionCount = 0
-			target._actionIndex = 999
-			target._cannotChangePostureTurn = turnId
-			arg_4_0:incNegativeStatus(target, { BattleData.NegativeType.disablePosture }, false, arg_4_1._id, var_4_4, arg_4_3)
-			arg_4_0:incNegativeValue(target, BattleData.NegativeType.disablePosture, 1, Data.AggregateType.max, arg_4_1._id, var_4_4, arg_4_3)
+		-- Special Summon each target to board in Defense position, cannot change posture this turn
+		for _, target in ipairs(validTargets) do
+			if #arg_4_0:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD and arg_4_0:canSpecialSummon(target) then
+				arg_4_0:setCardStatus(target, BattleData.CardStatus.board, var_4_5, var_4_4, arg_4_3, BattleData.CardStatusVal.g2b_def_disable_posture)
+				target._actionCount = 0
+				target._actionIndex = 999
+				target._cannotChangePostureTurn = turnId
+				arg_4_0:incNegativeStatus(target, { BattleData.NegativeType.disablePosture }, false, arg_4_1._id, var_4_4, arg_4_3)
+				arg_4_0:incNegativeValue(target, BattleData.NegativeType.disablePosture, 1, Data.AggregateType.max, arg_4_1._id, var_4_4, arg_4_3)
+			end
 		end
 		var_4_13 = true
 	elseif var_4_4 == 14747 then
@@ -106751,10 +106784,10 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		end
 		local pOwner = arg_40_1._owner or arg_40_0
 		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
-		if arg_40_1._omazioTurn == turnId and (arg_40_1._omazioCount or 0) >= 3 then
+		if arg_40_1._omazioTurn == turnId and (arg_40_1._omazioCount or 0) >= 1 then
 			return false
 		end
-		if pOwner._castedSkillCounts[14764] and pOwner._castedSkillCounts[14764] >= 3 then
+		if pOwner._castedSkillCounts[14764] and pOwner._castedSkillCounts[14764] >= 1 then
 			return false
 		end
 		local pool = B.mergeTable({arg_40_0:getBattleCards("G"), arg_40_0:getBattleCards("H"), arg_40_0:getBattleCards("P")})

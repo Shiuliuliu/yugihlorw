@@ -7795,11 +7795,11 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 				ownerCard._omazioTurn = turnId
 				ownerCard._omazioCount = 0
 			end
-			if (ownerCard._omazioCount or 0) >= 3 then
+			if (ownerCard._omazioCount or 0) >= 1 then
 				return false
 			end
 		end
-		if (arg_304_0._castedSkillCounts[14764] and arg_304_0._castedSkillCounts[14764] >= 3) then
+		if (arg_304_0._castedSkillCounts[14764] and arg_304_0._castedSkillCounts[14764] >= 1) then
 			return false
 		end
 		if ownerCard and (ownerCard._status ~= BattleData.CardStatus.board and ownerCard._status ~= BattleData.CardStatus.field and ownerCard._status ~= BattleData.CardStatus.show) then
@@ -7825,7 +7825,11 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 			end
 		end
 		if #candidates > 0 then
-			return true, candidates, 1
+			local emptySlots = Data.MAX_CARD_COUNT_ON_BOARD - #arg_304_0:getBoardCards()
+			local maxSelect = math.min(3, math.min(#candidates, emptySlots))
+			if maxSelect > 0 then
+				return true, candidates, maxSelect
+			end
 		end
 		return false
 	elseif arg_304_1._id == 14752 then

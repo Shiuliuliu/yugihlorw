@@ -5336,10 +5336,10 @@ function patchClientData()
 		[57225] = "KMR-Decade - Thông Đạo Kỵ Sĩ",
 		[57226] = "1 lượt 1 lần, đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.",
 		[57227] = "KMR-Omazio",
-		[57228] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + 1 quái thú Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" + 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\"\n(1) Mỗi lượt nhận 1 lần Khiên Chiến Đấu (3106).\n(2) Nhận Tường Chắn Quái (12002), Tường Chắn Phép (12003), Tường Chắn Bẫy (12004).\n(3) Kỹ năng chủ động (1 lượt tối đa 3 lần): Chọn 1 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài của bạn; Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ, và quái thú đó không thể đổi tư thế trong lượt này.",
+		[57228] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + 1 quái thú Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" + 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\"\n(1) Mỗi lượt nhận 1 lần Khiên Chiến Đấu (3106).\n(2) Nhận Tường Chắn Quái (12002), Tường Chắn Phép (12003), Tường Chắn Bẫy (12004).\n(3) Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài của bạn; Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ, và quái thú đó không thể đổi tư thế trong lượt này.",
 		[57229] = "KMR-Omazio",
 		[57230] = "KMR-Omazio - Ma Vương Khởi Động",
-		[57231] = "1 lượt tối đa 3 lần: Chọn 1 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài để Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ (không thể đổi tư thế trong lượt này).",
+		[57231] = "1 lượt 1 lần: Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài để Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ (không thể đổi tư thế trong lượt này).",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
