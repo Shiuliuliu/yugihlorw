@@ -2664,8 +2664,9 @@ cc.game = /** @lends cc.game# */{
              = cc.create3DContext(localCanvas, {
                 'stencil': true,
                 'preserveDrawingBuffer': true,
-                'antialias': true,
-                'alpha': false
+                'antialias': !cc.sys.isMobile,
+                'alpha': false,
+                'powerPreference': 'high-performance'
             });
         }
         // WebGL context created successfully

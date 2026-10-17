@@ -130,6 +130,9 @@ function var_0_0.onEnter(arg_6_0)
 			arg_6_0:updateUi()
 		end
 	end)
+	var_6_0[#var_6_0 + 1] = lc.addEventListener(Data.Event.ingot_dirty, function(arg_8_0)
+		arg_6_0:updateUi()
+	end)
 
 	arg_6_0:updateUi()
 end
@@ -256,9 +259,9 @@ function var_0_0.createWheel(arg_12_0)
 			local var_12_15 = ""
 
 			if var_12_9 == Data.ResType.gold then
-				var_12_15 = "img_wheel_gold_" .. (var_12_10 < 30 and 1 or var_12_10 < 60 and 2 or 3)
+				var_12_15 = "res_ico_1"
 			elseif var_12_9 == Data.ResType.ingot then
-				var_12_15 = "img_wheel_gem_" .. (var_12_10 < 50 and 1 or 2)
+				var_12_15 = "res_ico_3"
 			elseif var_12_9 == Data.PropsId.lottery_token then
 				var_12_15 = "img_wheel_lottery"
 			elseif var_12_9 == Data.PropsId.dark_lottery_token then
@@ -269,6 +272,9 @@ function var_0_0.createWheel(arg_12_0)
 
 			lc.addChildToPos(var_12_6, var_12_16, var_12_13)
 			var_12_16:setRotation(var_12_11)
+			if var_12_9 == Data.ResType.gold or var_12_9 == Data.ResType.ingot then
+				var_12_16:setScale(0.85)
+			end
 		else
 			local var_12_17 = require("IconWidget").createByInfoId(var_12_9, var_12_10, 0)
 
@@ -399,7 +405,7 @@ function var_0_0.updateBar(arg_17_0)
 
 	arg_17_0._progressStage = arg_17_0._progressStages[arg_17_0._stageIndex]
 
-	if arg_17_0:getLotteryPower() == arg_17_0._progressStage then
+	if arg_17_0:getLotteryPower() >= arg_17_0._progressStage then
 		arg_17_0._rewardNode:setVisible(false)
 		arg_17_0._chestNode:setVisible(true)
 	else
@@ -522,15 +528,20 @@ end
 function var_0_0.startStopWheel(arg_25_0, arg_25_1)
 	local var_25_0 = 0
 
-	for iter_25_0 = 1, #arg_25_0._info._pid do
-		local var_25_1 = arg_25_0._info._pid[iter_25_0]
+	if arg_25_1 and arg_25_1[1] and arg_25_1[1].slot and arg_25_1[1].slot >= 1 and arg_25_1[1].slot <= var_0_1 then
+		var_25_0 = arg_25_1[1].slot
+	else
+		for iter_25_0 = 1, #arg_25_0._info._pid do
+			local var_25_1 = arg_25_0._info._pid[iter_25_0]
 
-		if arg_25_1[1].info_id == var_25_1[1] and arg_25_1[1].num == var_25_1[2] then
-			var_25_0 = iter_25_0
+			if arg_25_1[1].info_id == var_25_1[1] and arg_25_1[1].num == var_25_1[2] then
+				var_25_0 = iter_25_0
 
-			break
+				break
+			end
 		end
 	end
+	if var_25_0 == 0 then var_25_0 = 1 end
 
 	local var_25_2 = 720 - (var_25_0 - 0.5) * 360 / var_0_1 - arg_25_0._wheel:getRotation() % 360
 

@@ -86,6 +86,10 @@ function var_0_0.onCleanup(arg_5_0)
 	if ClientData._battleScene == arg_5_0 then
 		ClientData._battleScene = nil
 	end
+
+	if TextureManager and TextureManager.trim then
+		TextureManager.trim(40)
+	end
 end
 
 function var_0_0.onMsg(arg_6_0, arg_6_1)

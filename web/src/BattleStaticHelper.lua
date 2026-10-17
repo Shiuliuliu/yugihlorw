@@ -1,6 +1,9 @@
 local var_0_0 = PlayerBattle
 
 function var_0_0.createCard(arg_1_0, arg_1_1)
+	if arg_1_0 == nil then
+		arg_1_0 = 0
+	end
 	local var_1_0 = BattleCard.new(arg_1_0, arg_1_1)
 
 	var_1_0:resetOnce()
@@ -192,7 +195,7 @@ function var_0_0.isSkillSiege(arg_10_0, arg_10_1)
 end
 
 function var_0_0.isSkillCeremony(arg_11_0)
-	return arg_11_0 == 4167 or arg_11_0 == 4168 or arg_11_0 == 4195 or arg_11_0 == 4196 or arg_11_0 == 4199 or arg_11_0 == 4203 or arg_11_0 == 4204 or arg_11_0 == 4214 or arg_11_0 == 4216 or arg_11_0 == 4218 or arg_11_0 == 4230 or arg_11_0 == 4231 or arg_11_0 == 4242 or arg_11_0 == 4299 or arg_11_0 == 4363 or arg_11_0 == 4382 or arg_11_0 == 4386 or arg_11_0 == 4388 or arg_11_0 == 4392 or arg_11_0 == 4393 or arg_11_0 == 4395 or arg_11_0 == 4460 or arg_11_0 == 4494 or arg_11_0 == 4498 or arg_11_0 == 4504 or arg_11_0 == 4528 or arg_11_0 == 4573 or arg_11_0 == 4576 or arg_11_0 == 4585 or arg_11_0 == 4597 or arg_11_0 == 4646 or arg_11_0 == 4648 or arg_11_0 == 4741 or arg_11_0 == 4956 or arg_11_0 == 7576
+	return arg_11_0 == 4167 or arg_11_0 == 4168 or arg_11_0 == 4195 or arg_11_0 == 4196 or arg_11_0 == 4199 or arg_11_0 == 4203 or arg_11_0 == 4204 or arg_11_0 == 4214 or arg_11_0 == 4216 or arg_11_0 == 4218 or arg_11_0 == 4230 or arg_11_0 == 4231 or arg_11_0 == 4242 or arg_11_0 == 4299 or arg_11_0 == 4363 or arg_11_0 == 4382 or arg_11_0 == 4386 or arg_11_0 == 4388 or arg_11_0 == 4392 or arg_11_0 == 4393 or arg_11_0 == 4395 or arg_11_0 == 4460 or arg_11_0 == 4494 or arg_11_0 == 4498 or arg_11_0 == 4504 or arg_11_0 == 4528 or arg_11_0 == 4573 or arg_11_0 == 4576 or arg_11_0 == 4585 or arg_11_0 == 4597 or arg_11_0 == 4646 or arg_11_0 == 4648 or arg_11_0 == 4741 or arg_11_0 == 4956 or arg_11_0 == 7576 or arg_11_0 == 14644
 end
 
 function var_0_0.throwCoin(arg_12_0)
@@ -622,8 +625,20 @@ function var_0_0.sortCardsByBoardPos(arg_37_0)
 
 				return arg_38_0._pos < arg_38_1._pos
 			else
-				return arg_38_0._pos < arg_38_1._pos
+				if (arg_38_0._pos or 0) ~= (arg_38_1._pos or 0) then
+					return (arg_38_0._pos or 0) < (arg_38_1._pos or 0)
+				else
+					return (arg_38_0._id or 0) < (arg_38_1._id or 0)
+				end
 			end
+		elseif arg_38_0._status == BattleData.CardStatus.board then
+			return true
+		elseif arg_38_1._status == BattleData.CardStatus.board then
+			return false
+		elseif arg_38_0._status == BattleData.CardStatus.rare then
+			return true
+		elseif arg_38_1._status == BattleData.CardStatus.rare then
+			return false
 		elseif arg_38_0._status == BattleData.CardStatus.grave then
 			return true
 		elseif arg_38_1._status == BattleData.CardStatus.grave then
@@ -759,7 +774,11 @@ function var_0_0.filterInInfoIdCards(arg_42_0, arg_42_1)
 	for iter_42_0 = 1, #arg_42_0 do
 		local var_42_1 = arg_42_0[iter_42_0]
 
-		if var_42_1:isInfoId(arg_42_1) then
+		if type(arg_42_1) == "table" then
+			if var_42_1:isInInfoIdGroup(arg_42_1) then
+				var_42_0[#var_42_0 + 1] = var_42_1
+			end
+		elseif var_42_1:isInfoId(arg_42_1) then
 			var_42_0[#var_42_0 + 1] = var_42_1
 		end
 	end
@@ -1629,8 +1648,9 @@ function var_0_0.filterCanSpecialSummonCards(arg_101_0, arg_101_1, arg_101_2)
 
 	for iter_101_0 = 1, #arg_101_0 do
 		local var_101_1 = arg_101_0[iter_101_0]
+		local owner = var_101_1._owner or var_101_1._originOwner
 
-		if var_101_1._owner:canSpecialSummon(var_101_1, arg_101_1, arg_101_2) then
+		if owner and owner:canSpecialSummon(var_101_1, arg_101_1, arg_101_2) then
 			var_101_0[#var_101_0 + 1] = var_101_1
 		end
 	end
@@ -2128,7 +2148,8 @@ function var_0_0.filterNoShieldDestroyCards(arg_133_0, arg_133_1)
 	for iter_133_0 = 1, #arg_133_0 do
 		local var_133_1 = arg_133_0[iter_133_0]
 
-		if not var_133_1:hasBuff(true, BattleData.PositiveType.shieldDestroy) and not var_133_1:hasBuff(true, BattleData.PositiveType.shieldEffectDestroy) and (arg_133_1 ~= true or not var_133_1:hasBuff(true, BattleData.PositiveType.shieldHaloDestroy)) and (arg_133_1 ~= true or not var_133_1:hasBuff(true, BattleData.PositiveType.shieldHaloEffectDestroy)) then
+		local is_immune_14629 = (var_133_1:hasSkillFast(14629) or var_133_1:isInfoId(12313)) and var_133_1:canCastMonsterSkill() and var_133_1._status == BattleData.CardStatus.board
+		if not is_immune_14629 and not var_133_1:hasBuff(true, BattleData.PositiveType.shieldDestroy) and not var_133_1:hasBuff(true, BattleData.PositiveType.shieldEffectDestroy) and (arg_133_1 ~= true or not var_133_1:hasBuff(true, BattleData.PositiveType.shieldHaloDestroy)) and (arg_133_1 ~= true or not var_133_1:hasBuff(true, BattleData.PositiveType.shieldHaloEffectDestroy)) then
 			var_133_0[#var_133_0 + 1] = var_133_1
 		end
 	end
@@ -3579,15 +3600,40 @@ function var_0_0.tableCount(arg_257_0)
 end
 
 function var_0_0.combinateTable(arg_258_0, arg_258_1, arg_258_2)
-	if arg_258_1 > #arg_258_0 then
+	local n = #arg_258_0
+	local k = arg_258_1
+	if k > n or k <= 0 then
 		return
 	end
 
-	if B._combination[#arg_258_0] == nil then
-		return
+	local var_258_0
+	if B._combination[n] and B._combination[n][k] then
+		var_258_0 = B._combination[n][k][arg_258_2]
+	else
+		if B._combination[n] == nil then
+			B._combination[n] = {}
+		end
+		if B._combination[n][k] == nil then
+			local combs = {}
+			local function gen(start, cur)
+				if #cur == k then
+					local c = {}
+					for i = 1, k do c[i] = cur[i] end
+					table.insert(combs, c)
+					return
+				end
+				for i = start, n do
+					table.insert(cur, i)
+					gen(i + 1, cur)
+					table.remove(cur)
+					if #combs >= 500 then return end
+				end
+			end
+			gen(1, {})
+			B._combination[n][k] = combs
+		end
+		var_258_0 = B._combination[n][k][arg_258_2]
 	end
-
-	local var_258_0 = B._combination[#arg_258_0][arg_258_1][arg_258_2]
 
 	if var_258_0 == nil then
 		return
@@ -3618,7 +3664,9 @@ end
 
 function var_0_0.isValidMergeComponent(arg_260_0, arg_260_1, arg_260_2)
 	if arg_260_0 > Data.INFO_ID_GROUP_SIZE_LARGE then
-		if arg_260_0 == 10004 and arg_260_2._infoId == 40494 then
+		if arg_260_2._infoId == 40736 then
+			return arg_260_1:isInfoId(10083) or arg_260_1:isKeyword(15) or arg_260_1:isKeyword(7) or arg_260_1:hasSkillFast(3113) or (arg_260_1:hasSkills({ 3072 }) and not arg_260_2:hasSkills({ 3087 }))
+		elseif arg_260_0 == 10004 and arg_260_2._infoId == 40494 then
 			return arg_260_1:isInfoId(arg_260_0) or arg_260_1:isInfoId(10006) or arg_260_1:hasSkills({
 				3072
 			}) and not arg_260_2:hasSkills({
@@ -3773,7 +3821,7 @@ function var_0_0.isValidNotAdjustCards(arg_262_0, arg_262_1, arg_262_2, arg_262_
 	local var_262_2 = false
 	local var_262_3
 
-	if arg_262_0._infoId == 40315 and #B.filterEqualInfoIdCards(arg_262_2, 40122) == 0 then
+	if (arg_262_0._infoId == 40315 and #B.filterEqualInfoIdCards(arg_262_2, 40122) == 0) or (arg_262_0._infoId == 40732 and #B.filterEqualInfoIdCards(arg_262_2, 12328) == 0) then
 		return false
 	end
 
@@ -3800,6 +3848,10 @@ function var_0_0.isValidNotAdjustCards(arg_262_0, arg_262_1, arg_262_2, arg_262_
 	end
 
 	if arg_262_5 then
+		if arg_262_0._infoId == 40732 and #B.filterEqualInfoIdCards(arg_262_2, 12328) ~= #arg_262_2 then
+			return false
+		end
+
 		if var_262_3 and #B.filterInKeywordCards(arg_262_2, var_262_3) ~= #arg_262_2 then
 			return false
 		end
@@ -3833,6 +3885,11 @@ function var_0_0.isValidNotAdjustCards(arg_262_0, arg_262_1, arg_262_2, arg_262_
 
 	if arg_262_0._infoId == 40315 and #B.filterEqualInfoIdCards(arg_262_2, 40122) == 0 then
 		return false
+	elseif arg_262_0._infoId == 40732 then
+		arg_262_2 = B.filterEqualInfoIdCards(arg_262_2, 12328)
+		if #arg_262_2 == 0 then
+			return false
+		end
 	end
 
 	local var_262_5 = {}

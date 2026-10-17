@@ -279,22 +279,37 @@ function var_0_0.setCurrentCharacter(arg_9_0, arg_9_1)
 
 	lc.addChildToCenter(var_9_1, var_9_2)
 
-	local var_9_3 = DragonBones.create(var_0_5[arg_9_1._id])
+	if var_0_5[arg_9_1._id] then
+		local var_9_3 = DragonBones.create(var_0_5[arg_9_1._id])
 
-	var_9_3:gotoAndPlay("effect1")
-	var_9_3:setScale(0.8)
-	lc.addChildToPos(var_9_0, var_9_3, cc.p(lc.x(var_9_1) + var_0_6[arg_9_1._id].x, lc.top(var_9_1) + 120 + var_0_6[arg_9_1._id].y))
+		if var_9_3 then
+			var_9_3:gotoAndPlay("effect1")
+			var_9_3:setScale(0.8)
+			local var_0_6_pos = var_0_6[arg_9_1._id] or cc.p(-150, 30)
+			lc.addChildToPos(var_9_0, var_9_3, cc.p(lc.x(var_9_1) + var_0_6_pos.x, lc.top(var_9_1) + 120 + var_0_6_pos.y))
 
-	if ClientData.isAnotherSkin2() then
-		var_9_3:setVisible(false)
+			if ClientData.isAnotherSkin2() then
+				var_9_3:setVisible(false)
+			end
+		end
 	end
 
-	local var_9_4 = DragonBones.create(Data.getCharacterBoneName(arg_9_1._id))
+	local var_9_bone = Data.getCharacterBoneName(arg_9_1._id)
+	local var_9_4
+	if var_9_bone then
+		var_9_4 = DragonBones.create(var_9_bone)
 
-	var_9_4:gotoAndPlay(Data.getCharacterAniName(arg_9_1._id))
-	var_9_4:setScale(0.495)
-	lc.addChildToPos(var_9_0, var_9_4, cc.p(lc.x(var_9_1), lc.top(var_9_1) + 120))
-	lc.offset(var_9_4, 0, Data.getCharacterOffsetY(arg_9_1._id))
+		if var_9_4 then
+			var_9_4:gotoAndPlay(Data.getCharacterAniName(arg_9_1._id) or "standby")
+			var_9_4:setScale(0.495)
+			lc.addChildToPos(var_9_0, var_9_4, cc.p(lc.x(var_9_1), lc.top(var_9_1) + 120))
+			lc.offset(var_9_4, 0, Data.getCharacterOffsetY(arg_9_1._id) or 0)
+
+			if arg_9_1._id == 2 then
+				lc.offset(var_9_4, 10, 0)
+			end
+		end
+	end
 
 	local var_9_5 = lc.createSprite("img_light")
 
@@ -320,14 +335,17 @@ function var_0_0.setCurrentCharacter(arg_9_0, arg_9_1)
 
 	var_9_0._tipBg = var_9_7
 
-	if arg_9_1._packageIds[1] ~= 0 then
-		local var_9_8 = ClientView.createTTF(Str(STR.CAN_S) .. Str(STR.UNLOCK) .. Str(Data.getRecruiteInfo(arg_9_1._packageIds[1])._nameSid), ClientView.FontSize.S3)
+	if arg_9_1._packageIds and arg_9_1._packageIds[1] and arg_9_1._packageIds[1] ~= 0 then
+		local recruiteInfo = Data.getRecruiteInfo and Data.getRecruiteInfo(arg_9_1._packageIds[1])
+		if recruiteInfo then
+			local var_9_8 = ClientView.createTTF(Str(STR.CAN_S) .. Str(STR.UNLOCK) .. Str(recruiteInfo._nameSid), ClientView.FontSize.S3)
 
-		var_9_8:setColor(lc.Color3B.yellow)
-		lc.addChildToCenter(var_9_7, var_9_8)
+			var_9_8:setColor(lc.Color3B.yellow)
+			lc.addChildToCenter(var_9_7, var_9_8)
+		end
 	end
 
-	if arg_9_1._id == 2 then
+	if arg_9_1._id == 2 and var_9_4 then
 		lc.offset(var_9_4, 10, 0)
 	end
 
@@ -580,7 +598,19 @@ function var_0_0.onUnlocked(arg_27_0, arg_27_1)
 end
 
 function var_0_0.selectCharacter(arg_28_0, arg_28_1)
-	arg_28_0._heads[arg_28_1]:_callback()
+	if arg_28_0._heads and arg_28_0._heads[arg_28_1] then
+		arg_28_0._heads[arg_28_1]:_callback()
+	else
+		local defaultId = (arg_28_0._heads and (arg_28_0._heads[2] and 2 or (arg_28_0._heads[3] and 3)))
+		if defaultId and arg_28_0._heads[defaultId] then
+			arg_28_0._heads[defaultId]:_callback()
+		else
+			local _, firstHead = next(arg_28_0._heads or {})
+			if firstHead then
+				firstHead:_callback()
+			end
+		end
+	end
 end
 
 return var_0_0

@@ -23,6 +23,10 @@ function var_0_0.ctor(arg_1_0, ...)
 end
 
 function var_0_0.init(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
+	if arg_2_1 == nil then
+		arg_2_1 = 0
+	end
+
 	local var_2_0 = false
 	local var_2_1 = false
 	local var_2_2 = 0
@@ -101,6 +105,8 @@ function var_0_0.resetOnce(arg_8_0)
 	arg_8_0._summonedBySync = nil
 	arg_8_0._summonedByXYZ = nil
 	arg_8_0._summonedByLink = nil
+	arg_8_0._floSkillTurn = nil
+	arg_8_0._tsAwakened = nil
 	arg_8_0._saved = {}
 	arg_8_0._castedSkills = {}
 	arg_8_0._underSkills = {}
@@ -237,6 +243,52 @@ function var_0_0.resetMonster(arg_17_0)
 	arg_17_0._isBorrowed = false
 
 	arg_17_0:resetBuff()
+
+	if (arg_17_0._infoId == 40730 or arg_17_0:hasSkillFast(14719)) and arg_17_0._status == BattleData.CardStatus.board then
+		if arg_17_0._tsAwakened then
+			arg_17_0._atk = 16000
+			arg_17_0._hp = 16000
+			arg_17_0._maxAtk = 16000
+			arg_17_0._maxHp = 16000
+			arg_17_0._negativeStatus[BattleData.NegativeType.manacle] = false
+			arg_17_0._negativeStatus[BattleData.NegativeType.atkFrozen] = false
+			if arg_17_0._owner then
+				arg_17_0._owner:incShield(arg_17_0, { 12002, 12003, 12004 }, false, false, arg_17_0._id, 14719, Data.SkillMode.using)
+			end
+		else
+			arg_17_0._atk = 8000
+			arg_17_0._hp = 8000
+			arg_17_0._maxAtk = 8000
+			arg_17_0._maxHp = 8000
+			arg_17_0._negativeStatus[BattleData.NegativeType.manacle] = true
+			arg_17_0._negativeStatus[BattleData.NegativeType.atkFrozen] = true
+		end
+	end
+
+	if (arg_17_0:isInfoId(12326) or arg_17_0._infoId == 12326 or arg_17_0:hasSkillFast(14707)) and arg_17_0._status == BattleData.CardStatus.board then
+		local marks = arg_17_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+		local rate = (marks >= 5) and 600 or 300
+		local bonus = marks * rate
+		arg_17_0._atk = 2000 + bonus
+		arg_17_0._hp = 2800 + bonus
+		arg_17_0._maxAtk = 2000
+		arg_17_0._maxHp = 2800
+		if marks >= 3 and arg_17_0._owner then
+			arg_17_0._owner:incShield(arg_17_0, { 12002, 12003, 12004, 12008, 12009, 12010 }, false, false, arg_17_0._id, 14707, Data.SkillMode.using)
+		end
+	end
+
+	if (arg_17_0:isInfoId(40736) or arg_17_0._infoId == 40736) and arg_17_0._status == BattleData.CardStatus.board then
+		if arg_17_0._owner then
+			arg_17_0._owner:incShield(arg_17_0, { 12008, 12009, 12010 }, false, false, arg_17_0._id, 14750, Data.SkillMode.using)
+		end
+	end
+
+	if (arg_17_0:isInfoId(40737) or arg_17_0._infoId == 40737) and arg_17_0._status == BattleData.CardStatus.board then
+		if arg_17_0._owner then
+			arg_17_0._owner:incShield(arg_17_0, { 12002, 12003, 12004 }, false, false, arg_17_0._id, 14754, Data.SkillMode.using)
+		end
+	end
 
 	arg_17_0._monsterTarget = nil
 
@@ -512,6 +564,31 @@ function var_0_0.resetCardWhenRoundBegin(arg_24_0)
 	end
 
 	arg_24_0._markInfoId = nil
+
+	if (arg_24_0._infoId == 40730 or arg_24_0:hasSkillFast(14719)) and arg_24_0._status == BattleData.CardStatus.board then
+		if arg_24_0._tsAwakened then
+			arg_24_0._negativeStatus[BattleData.NegativeType.manacle] = false
+			arg_24_0._negativeStatus[BattleData.NegativeType.atkFrozen] = false
+		else
+			arg_24_0._negativeStatus[BattleData.NegativeType.manacle] = true
+			arg_24_0._negativeStatus[BattleData.NegativeType.atkFrozen] = true
+		end
+		local sprite = nil
+		if arg_24_0._owner and arg_24_0._owner._playerUi then
+			sprite = arg_24_0._owner._playerUi:getCardSprite(arg_24_0)
+		end
+		if not sprite then
+			local scene = ClientData and ClientData._battleScene
+			local battleUi = scene and (scene._battleUiNormal or scene._battleUi)
+			if battleUi then
+				sprite = (battleUi._playerUi and battleUi._playerUi:getCardSprite(arg_24_0)) or (battleUi._opponentUi and battleUi._opponentUi:getCardSprite(arg_24_0))
+			end
+		end
+		if sprite then
+			sprite:updateNegativeStatus()
+			sprite:updateBoardActive()
+		end
+	end
 end
 
 function var_0_0.resetCardWhenOppoRoundBegin(arg_25_0)
@@ -692,6 +769,31 @@ function var_0_0.resetCardWhenOppoRoundBegin(arg_25_0)
 	end
 
 	arg_25_0:removeSkill(9734, BattleData.SkillProvider.given)
+
+	if (arg_25_0._infoId == 40730 or arg_25_0:hasSkillFast(14719)) and arg_25_0._status == BattleData.CardStatus.board then
+		if arg_25_0._tsAwakened then
+			arg_25_0._negativeStatus[BattleData.NegativeType.manacle] = false
+			arg_25_0._negativeStatus[BattleData.NegativeType.atkFrozen] = false
+		else
+			arg_25_0._negativeStatus[BattleData.NegativeType.manacle] = true
+			arg_25_0._negativeStatus[BattleData.NegativeType.atkFrozen] = true
+		end
+		local sprite = nil
+		if arg_25_0._owner and arg_25_0._owner._playerUi then
+			sprite = arg_25_0._owner._playerUi:getCardSprite(arg_25_0)
+		end
+		if not sprite then
+			local scene = ClientData and ClientData._battleScene
+			local battleUi = scene and (scene._battleUiNormal or scene._battleUi)
+			if battleUi then
+				sprite = (battleUi._playerUi and battleUi._playerUi:getCardSprite(arg_25_0)) or (battleUi._opponentUi and battleUi._opponentUi:getCardSprite(arg_25_0))
+			end
+		end
+		if sprite then
+			sprite:updateNegativeStatus()
+			sprite:updateBoardActive()
+		end
+	end
 end
 
 function var_0_0.resetCardWhenUse(arg_26_0)
@@ -763,6 +865,15 @@ end
 
 function var_0_0.resetHp(arg_28_0)
 	arg_28_0._hp = arg_28_0._maxHp
+	if (arg_28_0._infoId == 40730 or arg_28_0:hasSkillFast(14719)) then
+		if arg_28_0._tsAwakened then
+			arg_28_0._hp = 16000
+			arg_28_0._maxHp = 16000
+		else
+			arg_28_0._hp = 8000
+			arg_28_0._maxHp = 8000
+		end
+	end
 	arg_28_0._maxHpInc = 0
 	arg_28_0._hpInc = 0
 
@@ -790,13 +901,40 @@ function var_0_0.resetHp(arg_28_0)
 end
 
 function var_0_0.resetAtk(arg_29_0)
+	if (arg_29_0._infoId == 40736 or arg_29_0:hasSkillFast(14750)) and arg_29_0._status == BattleData.CardStatus.board then
+		local owner = arg_29_0._owner
+		if owner then
+			local count = 0
+			local graveCards = owner:getGraveCards()
+			for _, gc in ipairs(graveCards) do
+				if gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736 then
+					count = count + 1
+				end
+			end
+			local bonus = count * 500
+			arg_29_0._atk = 3000 + bonus
+			arg_29_0._maxAtk = 3000 + bonus
+		end
+	end
+	if (arg_29_0._infoId == 12324 or arg_29_0:hasSkillFast(14700)) and arg_29_0._status == BattleData.CardStatus.board and arg_29_0._htAtk then
+		arg_29_0._maxAtk = 0
+	end
 	arg_29_0._atk = arg_29_0._maxAtk
+	if (arg_29_0._infoId == 40730 or arg_29_0:hasSkillFast(14719)) then
+		if arg_29_0._tsAwakened then
+			arg_29_0._atk = 16000
+			arg_29_0._maxAtk = 16000
+		else
+			arg_29_0._atk = 8000
+			arg_29_0._maxAtk = 8000
+		end
+	end
 	arg_29_0._maxAtkInc = 0
 	arg_29_0._atkInc = 0
 
 	if arg_29_0._updateInitAtk ~= nil then
 		arg_29_0._atk = math.min(arg_29_0._atk, arg_29_0._updateInitAtk)
-		arg_29_0._atkInc = sekf._atk - arg_29_0._maxAtk
+		arg_29_0._atkInc = arg_29_0._atk - arg_29_0._maxAtk
 
 		if arg_29_0._atkInc > 0 then
 			arg_29_0._maxAtkInc = arg_29_0._atkInc
@@ -833,6 +971,16 @@ function var_0_0.resetBuff(arg_30_0, arg_30_1)
 			arg_30_0:resetBuffByType(arg_30_1, iter_30_0)
 		end
 	end
+
+	if (arg_30_0._infoId == 40730 or arg_30_0:hasSkillFast(14719)) and arg_30_0._status == BattleData.CardStatus.board then
+		if arg_30_0._tsAwakened then
+			arg_30_0._negativeStatus[BattleData.NegativeType.manacle] = false
+			arg_30_0._negativeStatus[BattleData.NegativeType.atkFrozen] = false
+		else
+			arg_30_0._negativeStatus[BattleData.NegativeType.manacle] = true
+			arg_30_0._negativeStatus[BattleData.NegativeType.atkFrozen] = true
+		end
+	end
 end
 
 function var_0_0.resetBuffByType(arg_31_0, arg_31_1, arg_31_2)
@@ -841,6 +989,12 @@ function var_0_0.resetBuffByType(arg_31_0, arg_31_1, arg_31_2)
 
 	var_31_0[arg_31_2] = false
 	var_31_1[arg_31_2] = 0
+
+	if not arg_31_1 and (arg_31_2 == BattleData.NegativeType.manacle or arg_31_2 == BattleData.NegativeType.atkFrozen) then
+		if (arg_31_0._infoId == 40730 or arg_31_0:hasSkillFast(14719)) and arg_31_0._status == BattleData.CardStatus.board and not arg_31_0._tsAwakened then
+			var_31_0[arg_31_2] = true
+		end
+	end
 
 	local var_31_2 = 1
 
@@ -856,6 +1010,18 @@ function var_0_0.resetBuffByType(arg_31_0, arg_31_1, arg_31_2)
 		else
 			var_31_2 = var_31_2 + 1
 		end
+	end
+end
+
+function var_0_0.clearPositiveStatus(arg_31_0, arg_31_1)
+	if arg_31_0.resetBuffByType then
+		arg_31_0:resetBuffByType(true, arg_31_1)
+	end
+end
+
+function var_0_0.removeBuff(arg_31_0, arg_31_1, arg_31_2)
+	if arg_31_2 and arg_31_0.resetBuffByType then
+		arg_31_0:resetBuffByType(arg_31_1, arg_31_2)
 	end
 end
 
@@ -937,16 +1103,28 @@ function var_0_0.removeTableBuffValue(arg_35_0, arg_35_1, arg_35_2, arg_35_3)
 end
 
 function var_0_0.hasBuff(arg_36_0, arg_36_1, arg_36_2)
+	if not arg_36_1 and (arg_36_0._infoId == 40730 or arg_36_0:hasSkillFast(14719)) and arg_36_0._status == BattleData.CardStatus.board then
+		if not arg_36_0._tsAwakened then
+			if arg_36_2 == BattleData.NegativeType.manacle or arg_36_2 == BattleData.NegativeType.atkFrozen then
+				return true
+			end
+		end
+	end
+
 	local var_36_0 = arg_36_1 and arg_36_0._positiveStatus or arg_36_0._negativeStatus
 
 	if var_36_0 == nil then
 		return false
 	end
 
+	if arg_36_2 ~= nil then
+		return var_36_0[arg_36_2] == true
+	end
+
 	local var_36_1 = arg_36_1 and BattleData.PositiveType.count or BattleData.NegativeType.count
 
 	for iter_36_0 = 1, var_36_1 do
-		if (arg_36_2 == nil or arg_36_2 == iter_36_0) and var_36_0[iter_36_0] == true then
+		if var_36_0[iter_36_0] == true then
 			return true
 		end
 	end
@@ -1010,8 +1188,34 @@ function var_0_0.getShieldValue(arg_38_0, arg_38_1)
 	return var_38_1, var_38_2
 end
 
+local function hasCard12314OnBoard(player)
+	if not player or not player._boardCards then return false end
+	for _, c in pairs(player._boardCards) do
+		if c._infoId == 12314 or c:hasSkillFast(14634) then
+			return true
+		end
+	end
+	return false
+end
+
 function var_0_0.hasShield(arg_39_0)
+	if (arg_39_0:isBinded(21139) or arg_39_0:hasSkillFast(14670) or arg_39_0:isBindedSkill(14670) or arg_39_0:isInfoId(12320) or arg_39_0:hasSkillFast(14674)) and arg_39_0._status == BattleData.CardStatus.board then
+		return true
+	end
+
+	if (arg_39_0:isInfoId(12315) or arg_39_0:hasSkillFast(14651)) and arg_39_0._status == BattleData.CardStatus.board and arg_39_0._owner then
+		if hasCard12314OnBoard(arg_39_0._owner) or (arg_39_0._owner._opponent and hasCard12314OnBoard(arg_39_0._owner._opponent)) then
+			return true
+		end
+	end
+
 	for iter_39_0 = BattleData.PositiveType.shieldHaloBegin, BattleData.PositiveType.shieldExEnd do
+		if arg_39_0:hasBuff(true, iter_39_0) then
+			return true
+		end
+	end
+
+	for iter_39_0 = BattleData.PositiveType.shieldDestroy, BattleData.PositiveType.shieldHaloOppoTrap do
 		if arg_39_0:hasBuff(true, iter_39_0) then
 			return true
 		end
@@ -1021,6 +1225,75 @@ function var_0_0.hasShield(arg_39_0)
 end
 
 function var_0_0.hasShieldInType(arg_40_0, arg_40_1, arg_40_2)
+	if not arg_40_2 and (arg_40_0:isInfoId(40730) or arg_40_0:hasSkillFast(14719)) and arg_40_0._status == BattleData.CardStatus.board and (arg_40_0._tsAwakened or arg_40_0:hasSkillFast(12002) or (arg_40_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0) then
+		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
+			return true
+		end
+	end
+
+	if not arg_40_2 and (arg_40_0:isInfoId(12327) or arg_40_0._infoId == 12327) and arg_40_0._status == BattleData.CardStatus.board then
+		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+	end
+
+	if not arg_40_2 and (arg_40_0:isInfoId(40731) or arg_40_0._infoId == 40731) and arg_40_0._status == BattleData.CardStatus.board then
+		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
+			return true
+		end
+	end
+
+	if (arg_40_0:isInfoId(12326) or arg_40_0._infoId == 12326) and arg_40_0._status == BattleData.CardStatus.board then
+		if arg_40_2 then
+			return false
+		end
+		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		local marks = arg_40_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+		if marks >= 3 then
+			if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
+				return true
+			end
+		end
+	end
+
+	if not arg_40_2 and (arg_40_0:isInfoId(12320) or arg_40_0:hasSkillFast(14674)) and arg_40_0._status == BattleData.CardStatus.board then
+		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
+			return true
+		end
+	end
+
+	if not arg_40_2 and (arg_40_0:isBinded(21139) or arg_40_0:hasSkillFast(14670) or arg_40_0:isBindedSkill(14670)) and arg_40_0._status == BattleData.CardStatus.board then
+		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
+			return true
+		end
+	end
+
+	if not arg_40_2 and (arg_40_0:isInfoId(12315) or arg_40_0:hasSkillFast(14651)) and arg_40_0._status == BattleData.CardStatus.board and arg_40_0._owner then
+		local hasLequy = hasCard12314OnBoard(arg_40_0._owner) or (arg_40_0._owner._opponent and hasCard12314OnBoard(arg_40_0._owner._opponent))
+		if hasLequy then
+			if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
+				return true
+			end
+			if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
+				return true
+			end
+		end
+	end
+
 	if arg_40_0:hasBuff(true, arg_40_1) then
 		return true
 	end
@@ -1039,6 +1312,45 @@ function var_0_0.hasShieldInType(arg_40_0, arg_40_1, arg_40_2)
 end
 
 function var_0_0.hasShieldExInType(arg_41_0, arg_41_1, arg_41_2)
+	if not arg_41_2 and (arg_41_0:isInfoId(40730) or arg_41_0:hasSkillFast(14719)) and arg_41_0._status == BattleData.CardStatus.board and (arg_41_0._tsAwakened or arg_41_0:hasSkillFast(12002) or (arg_41_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0) then
+		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
+			return true
+		end
+	end
+
+	if not arg_41_2 and (arg_41_0:isInfoId(12320) or arg_41_0:hasSkillFast(14674)) and arg_41_0._status == BattleData.CardStatus.board then
+		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
+			return true
+		end
+	end
+
+	if not arg_41_2 and (arg_41_0:isBinded(21139) or arg_41_0:hasSkillFast(14670) or arg_41_0:isBindedSkill(14670)) and arg_41_0._status == BattleData.CardStatus.board then
+		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
+			return true
+		end
+		if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
+			return true
+		end
+	end
+
+	if not arg_41_2 and (arg_41_0:isInfoId(12315) or arg_41_0:hasSkillFast(14651)) and arg_41_0._status == BattleData.CardStatus.board and arg_41_0._owner then
+		local hasLequy = hasCard12314OnBoard(arg_41_0._owner) or (arg_41_0._owner._opponent and hasCard12314OnBoard(arg_41_0._owner._opponent))
+		if hasLequy then
+			if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
+				return true
+			end
+			if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
+				return true
+			end
+		end
+	end
+
 	if not arg_41_2 then
 		if arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
 			return true
@@ -2132,6 +2444,49 @@ function var_0_0.addGodMark(arg_89_0, arg_89_1, arg_89_2, arg_89_3, arg_89_4, ar
 			arg_89_0._owner:incPositiveValue(arg_89_0, BattleData.PositiveType.godMark, 1, Data.AggregateType.sum, arg_89_3, arg_89_4, arg_89_5)
 		end
 
+		if not arg_89_0._positiveStatus then
+			arg_89_0._positiveStatus = {}
+		end
+		arg_89_0._positiveStatus[BattleData.PositiveType.godMark] = true
+
+		arg_89_0:accountBuffValue(true, BattleData.PositiveType.godMark)
+
+		if arg_89_0:isInfoId(12326) or arg_89_0:hasSkillFast(14707) then
+			local marks = arg_89_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+			local rate = (marks >= 5) and 600 or 300
+			local bonus = marks * rate
+			arg_89_0._atk = 2000 + bonus
+			arg_89_0._hp = 2800 + bonus
+			arg_89_0._maxAtk = 2000
+			arg_89_0._maxHp = 2800
+			if marks >= 3 then
+				arg_89_0._owner:incShield(arg_89_0, { 12002, 12003, 12004, 12008, 12009, 12010 }, false, false, arg_89_0._id, 14707, Data.SkillMode.using)
+			end
+		end
+
+		if arg_89_0._changed then
+			arg_89_0._changed._positiveStatus = {}
+		end
+
+		local sprite = nil
+		if arg_89_0._owner and arg_89_0._owner._playerUi then
+			sprite = arg_89_0._owner._playerUi:getCardSprite(arg_89_0)
+		end
+		if not sprite then
+			local scene = ClientData and ClientData._battleScene
+			local battleUi = scene and (scene._battleUiNormal or scene._battleUi)
+			if battleUi then
+				sprite = (battleUi._playerUi and battleUi._playerUi:getCardSprite(arg_89_0)) or (battleUi._opponentUi and battleUi._opponentUi:getCardSprite(arg_89_0))
+			end
+		end
+		if sprite then
+			sprite:updatePositiveStatus()
+			sprite:updateAtkHp()
+			if sprite._card and sprite._card._status == BattleData.CardStatus.board then
+				sprite:updateBoardActive()
+			end
+		end
+
 		return true
 	else
 		return false
@@ -2445,6 +2800,83 @@ function var_0_0.removeMark(arg_104_0, arg_104_1, arg_104_2, arg_104_3)
 		end
 
 		var_104_1 = var_104_1 + var_104_4
+	end
+
+	if arg_104_1 == BattleData.PositiveType.godMark then
+		arg_104_0:accountBuffValue(true, BattleData.PositiveType.godMark)
+		local marks = arg_104_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+		if marks <= 0 and arg_104_0._positiveStatus then
+			arg_104_0._positiveStatus[BattleData.PositiveType.godMark] = false
+		end
+		if arg_104_0:isInfoId(12326) or arg_104_0:hasSkillFast(14707) then
+			local rate = (marks >= 5) and 600 or 300
+			local bonus = marks * rate
+			arg_104_0._atk = 2000 + bonus
+			arg_104_0._hp = 2800 + bonus
+			arg_104_0._maxAtk = 2000
+			arg_104_0._maxHp = 2800
+		end
+		local sprite = nil
+		if arg_104_0._owner and arg_104_0._owner._playerUi then
+			sprite = arg_104_0._owner._playerUi:getCardSprite(arg_104_0)
+		end
+		if not sprite then
+			local scene = ClientData and ClientData._battleScene
+			local battleUi = scene and (scene._battleUiNormal or scene._battleUi)
+			if battleUi then
+				sprite = (battleUi._playerUi and battleUi._playerUi:getCardSprite(arg_104_0)) or (battleUi._opponentUi and battleUi._opponentUi:getCardSprite(arg_104_0))
+			end
+		end
+		if sprite then
+			sprite:updatePositiveStatus()
+			sprite:updateAtkHp()
+			if sprite._card and sprite._card._status == BattleData.CardStatus.board then
+				sprite:updateBoardActive()
+			end
+		end
+	end
+
+	if arg_104_1 == BattleData.PositiveType.xyzMark then
+		arg_104_0:accountBuffValue(true, BattleData.PositiveType.xyzMark)
+		local marks = arg_104_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0
+		if (arg_104_0:isInfoId(40730) or arg_104_0._infoId == 40730 or arg_104_0:hasSkillFast(14719)) and arg_104_0._status == BattleData.CardStatus.board then
+			if marks <= 0 then
+				arg_104_0._negativeStatus[BattleData.NegativeType.manacle] = false
+				arg_104_0._negativeStatus[BattleData.NegativeType.atkFrozen] = false
+				if not arg_104_0._tsAwakened then
+					arg_104_0._tsAwakened = true
+					arg_104_0._atk = 16000
+					arg_104_0._hp = 16000
+					arg_104_0._maxAtk = 16000
+					arg_104_0._maxHp = 16000
+					if arg_104_0._owner then
+						arg_104_0._owner:incShield(arg_104_0, { 12002, 12003, 12004 }, false, false, arg_104_0._id, 14719, Data.SkillMode.using)
+					end
+				end
+			else
+				arg_104_0._negativeStatus[BattleData.NegativeType.manacle] = true
+				arg_104_0._negativeStatus[BattleData.NegativeType.atkFrozen] = true
+			end
+		end
+		local sprite = nil
+		if arg_104_0._owner and arg_104_0._owner._playerUi then
+			sprite = arg_104_0._owner._playerUi:getCardSprite(arg_104_0)
+		end
+		if not sprite then
+			local scene = ClientData and ClientData._battleScene
+			local battleUi = scene and (scene._battleUiNormal or scene._battleUi)
+			if battleUi then
+				sprite = (battleUi._playerUi and battleUi._playerUi:getCardSprite(arg_104_0)) or (battleUi._opponentUi and battleUi._opponentUi:getCardSprite(arg_104_0))
+			end
+		end
+		if sprite then
+			sprite:updatePositiveStatus()
+			sprite:updateNegativeStatus()
+			sprite:updateAtkHp()
+			if sprite._card and sprite._card._status == BattleData.CardStatus.board then
+				sprite:updateBoardActive()
+			end
+		end
 	end
 
 	return var_104_1
@@ -2870,6 +3302,24 @@ function var_0_0.getSkillsByMode(arg_118_0, arg_118_1, arg_118_2)
 
 		if arg_118_0._owner._fortressSkill ~= nil and B.skillHasMode(arg_118_0._owner._fortressSkill, arg_118_1) then
 			table.insert(var_118_0, arg_118_0._owner._fortressSkill)
+		end
+
+		if (arg_118_0:isInfoId(40733) or arg_118_0._infoId == 40733) then
+			local atkTarget = arg_118_0._atkTargets and arg_118_0._atkTargets[1]
+			if not atkTarget then
+				atkTarget = arg_118_0._target or (arg_118_0._targets and arg_118_0._targets[1])
+			end
+			if atkTarget and atkTarget._atk and atkTarget._atk > arg_118_0._atk then
+				if arg_118_1 == Data.SkillMode.before_attack then
+					local sk1004 = Data._skillInfo[1004]
+					local sk1017 = Data._skillInfo[1017]
+					if sk1004 then table.insert(var_118_0, sk1004) end
+					if sk1017 then table.insert(var_118_0, sk1017) end
+				elseif arg_118_1 == Data.SkillMode.after_attack then
+					local sk1014 = Data._skillInfo[1014]
+					if sk1014 then table.insert(var_118_0, sk1014) end
+				end
+			end
 		end
 
 		for iter_118_2 = BattleData.PositiveType.shieldBegin, BattleData.PositiveType.shieldEnd do
@@ -5488,6 +5938,63 @@ function var_0_0.hasSkills(arg_126_0, arg_126_1, arg_126_2)
 end
 
 function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
+	if (arg_127_1 == 14668 or arg_127_1 == 14669 or arg_127_1 == 14670 or arg_127_1 == 14671 or arg_127_1 == 3210 or arg_127_1 == 1080) and arg_127_0:isBinded(21139) then
+		return true
+	end
+
+	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) and (arg_127_0:isInfoId(40736) or arg_127_0._infoId == 40736) then
+		return true
+	end
+
+	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737) then
+		return true
+	end
+
+	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(12320) or arg_127_0._infoId == 12320) then
+		return true
+	end
+
+	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(12326) or arg_127_0._infoId == 12326) then
+		local marks = arg_127_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+		if marks >= 3 then
+			return true
+		end
+	end
+
+	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) and (arg_127_0:isInfoId(12326) or arg_127_0._infoId == 12326) then
+		return true
+	end
+
+	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) and (arg_127_0:isInfoId(12327) or arg_127_0._infoId == 12327) then
+		return true
+	end
+
+	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) and (arg_127_0:isInfoId(40731) or arg_127_0._infoId == 40731) then
+		return true
+	end
+
+	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40730) or arg_127_0._infoId == 40730 or arg_127_0:hasSkillFast(14719)) and arg_127_0._tsAwakened then
+		return true
+	end
+
+	if arg_127_1 == 1017 and (arg_127_0:isInfoId(12326) or arg_127_0._infoId == 12326) then
+		return true
+	end
+
+	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010 or arg_127_1 == 12007 or arg_127_1 == 12001) and (arg_127_0:isInfoId(40733) or arg_127_0._infoId == 40733) then
+		return true
+	end
+
+	if (arg_127_1 == 1014 or arg_127_1 == 1004 or arg_127_1 == 1017) and (arg_127_0:isInfoId(40733) or arg_127_0._infoId == 40733) then
+		local atkTarget = arg_127_0._atkTargets and arg_127_0._atkTargets[1]
+		if not atkTarget then
+			atkTarget = arg_127_0._target or (arg_127_0._targets and arg_127_0._targets[1])
+		end
+		if atkTarget and atkTarget._atk and atkTarget._atk > arg_127_0._atk then
+			return true
+		end
+	end
+
 	if arg_127_0._skills == nil then
 		return false
 	end
@@ -5696,7 +6203,7 @@ function var_0_0.hasPowerSacrificeSkill(arg_141_0, arg_141_1)
 		return true, Data._skillInfo[9700]
 	end
 
-	if arg_141_0:getStar() >= 5 and arg_141_1:getStar() >= 7 and not arg_141_1:hasSkillFast(3131) and arg_141_0._owner:hasBattleCardsBySkillFast("S", 7464) then
+	if arg_141_0:getStar() >= 5 and arg_141_1:getStar() >= 7 and not arg_141_1:hasSkillFast(3131) and not arg_141_1:hasSkillFast(3231) and not arg_141_1:hasSkillFast(14676) and arg_141_0._owner:hasBattleCardsBySkillFast("S", 7464) then
 		return true, Data._skillInfo[7464]
 	end
 
@@ -5716,6 +6223,7 @@ end
 function var_0_0.hasDisableMonsterBeforeAttackSkills(arg_143_0, arg_143_1)
 	if arg_143_1 then
 		return arg_143_0:hasCanCastMonsterSkills({
+			1017,
 			1045,
 			1056,
 			1064,
@@ -5723,6 +6231,7 @@ function var_0_0.hasDisableMonsterBeforeAttackSkills(arg_143_0, arg_143_1)
 		}) or arg_143_0:isBindedSkill(7532)
 	else
 		return arg_143_0:hasSkills({
+			1017,
 			1045,
 			1056,
 			1064,
@@ -5943,6 +6452,14 @@ local var_0_4 = {
 	4995,
 	4996,
 	4997,
+	4641,
+	4642,
+	5355,
+	5356,
+	5357,
+	5358,
+	5424,
+	5486,
 	7563,
 	7652
 }
@@ -6139,9 +6656,13 @@ function var_0_0.canCastInitiativeSkill(arg_155_0)
 	local var_155_1 = {}
 
 	if var_155_0 ~= nil then
-		for iter_155_0 = 1, #var_155_0 do
-			if arg_155_0._owner:canUseInitiativeSkill(arg_155_0, var_155_0[iter_155_0]) then
-				var_155_1[#var_155_1 + 1] = var_155_0[iter_155_0]
+		local ownerPlayer = arg_155_0._owner or arg_155_0._originOwner
+		if ownerPlayer ~= nil then
+			arg_155_0._owner = arg_155_0._owner or ownerPlayer
+			for iter_155_0 = 1, #var_155_0 do
+				if ownerPlayer:canUseInitiativeSkill(arg_155_0, var_155_0[iter_155_0]) then
+					var_155_1[#var_155_1 + 1] = var_155_0[iter_155_0]
+				end
 			end
 		end
 	end
@@ -6150,8 +6671,71 @@ function var_0_0.canCastInitiativeSkill(arg_155_0)
 end
 
 function var_0_0.canCastMonsterSkill(arg_156_0, arg_156_1, arg_156_2)
-	if arg_156_0._owner._isMonsterSkillDisabled then
+	if arg_156_0._inCanCastCheck then
 		return false
+	end
+	arg_156_0._inCanCastCheck = true
+	local ok, res = pcall(arg_156_0._realCanCastMonsterSkill, arg_156_0, arg_156_1, arg_156_2)
+	arg_156_0._inCanCastCheck = nil
+	if not ok then
+		error(res)
+	end
+	return res
+end
+
+function var_0_0._realCanCastMonsterSkill(arg_156_0, arg_156_1, arg_156_2)
+	local owner = arg_156_0._owner or arg_156_0._originOwner
+	if not owner or owner._isMonsterSkillDisabled then
+		return false
+	end
+	arg_156_0._owner = arg_156_0._owner or owner
+
+	if owner and owner._opponent then
+		local oppo = owner._opponent
+		local actCard = oppo._actionCard
+		if actCard and actCard._owner == oppo and (actCard:hasSkillFast(1056) or actCard._infoId == 40732 or (actCard.hasDisableMonsterBeforeAttackSkills and actCard:hasDisableMonsterBeforeAttackSkills())) then
+			local st = oppo._stepStatus
+			if st == BattleData.Status.before_attack 
+				or st == BattleData.Status.spelling 
+				or st == BattleData.Status.attacking 
+				or st == BattleData.Status.under_attack 
+				or st == BattleData.Status.under_attack_damage 
+				or st == BattleData.Status.ac_under_attack_damage 
+				or st == BattleData.Status.account_attack 
+				or st == BattleData.Status.end_attack then
+				return false
+			end
+		end
+
+		local myAct = owner._actionCard
+		if myAct and myAct._owner == owner then
+			local tgCard = myAct._atkTarget or (myAct._atkTargets and myAct._atkTargets[1])
+			if tgCard and tgCard._owner == oppo and (tgCard:hasSkillFast(1056) or tgCard._infoId == 40732 or (tgCard.hasDisableMonsterBeforeAttackSkills and tgCard:hasDisableMonsterBeforeAttackSkills())) then
+				local st = owner._stepStatus
+				if st == BattleData.Status.before_attack 
+					or st == BattleData.Status.spelling 
+					or st == BattleData.Status.attacking 
+					or st == BattleData.Status.under_attack 
+					or st == BattleData.Status.under_attack_damage 
+					or st == BattleData.Status.ac_under_attack_damage 
+					or st == BattleData.Status.account_attack 
+					or st == BattleData.Status.end_attack then
+					return false
+				end
+			end
+		end
+
+		if arg_156_0._dieByCard and arg_156_0._dieByCard._owner == oppo and (arg_156_0._dieByCard:hasSkillFast(1056) or arg_156_0._dieByCard._infoId == 40732 or (arg_156_0._dieByCard.hasDisableMonsterBeforeAttackSkills and arg_156_0._dieByCard:hasDisableMonsterBeforeAttackSkills())) and arg_156_0._dieByAttack then
+			return false
+		end
+
+		if arg_156_0._status == BattleData.CardStatus.grave or arg_156_0._status == BattleData.CardStatus.leave then
+			local has21141 = #oppo:getBattleCardsByInfoId("S", 21141) > 0 or #oppo:getBattleCardsByInfoId("B", 21141) > 0 or #oppo:getBattleCardsByInfoId("F", 21141) > 0 or #oppo:getBattleCardsBySkillFast("S", 14722) > 0 or #oppo:getBattleCardsBySkillFast("B", 14722) > 0
+			local hasVL = #oppo:getBattleCardsByInfoId("B", 12328) > 0
+			if has21141 and hasVL then
+				return false
+			end
+		end
 	end
 
 	if arg_156_0:hasBuff(false, BattleData.NegativeType.skillFrozenHalo) then
@@ -6294,14 +6878,22 @@ function var_0_0.isProtectedBy6189(arg_157_0)
 end
 
 function var_0_0.disableUnderSkill(arg_158_0, arg_158_1, arg_158_2, arg_158_3, arg_158_4)
-	if arg_158_1._ignoreDisable == true then
+	if arg_158_1._ignoreDisable == true or arg_158_1._sid == 14673 or arg_158_1._sid == 14719 or arg_158_1._sid == 14720 or arg_158_1._sid == 14721 or (arg_158_1._sid >= 14706 and arg_158_1._sid <= 14710) then
 		return false
 	end
 
 	local var_158_0 = arg_158_0._owner:getCardById(arg_158_1._cid)
 	local var_158_1 = Data._skillInfo[arg_158_1._sid]
 
+	if (var_158_0 ~= nil and var_158_0 == arg_158_0) or arg_158_1._cid == arg_158_0._id or arg_158_1._sid == 14719 or arg_158_1._sid == 14720 or arg_158_1._sid == 14721 or (arg_158_1._sid >= 14706 and arg_158_1._sid <= 14710) then
+		return false
+	end
+
 	if var_158_0 ~= nil and var_158_0._owner == arg_158_0._owner and var_158_1 ~= nil and (var_158_1._isIgnoreDefend == 3 or var_158_1._isIgnoreDefend == 4 or var_158_1._isIgnoreDefend == 6 or var_158_1._isIgnoreDefend == 8) then
+		return false
+	end
+
+	if (arg_158_0:isInfoId(12326) or arg_158_0._infoId == 12326) and ((var_158_0 ~= nil and var_158_0._owner == arg_158_0._owner) or arg_158_1._cid == 0 or arg_158_1._cid == nil) then
 		return false
 	end
 
@@ -6337,6 +6929,25 @@ function var_0_0.disableUnderSkill(arg_158_0, arg_158_1, arg_158_2, arg_158_3, a
 	return true
 end
 
+function var_0_0.disableUnderSkills(arg_card, arg_cid, arg_sid, arg_mode)
+	if arg_card._underSkills == nil then return false end
+	local disabled = false
+	for iter_i = 1, #arg_card._underSkills do
+		local skill = arg_card._underSkills[iter_i]
+		if skill and skill._disabled ~= true and skill._ignoreDisable ~= true and skill._sid ~= 14673 and skill._sid ~= 14719 and skill._sid ~= 14720 and skill._sid ~= 14721 and not (skill._sid >= 14706 and skill._sid <= 14710) then
+			skill._disabled = true
+			if skill._trigger ~= nil then
+				skill._trigger._disabled = true
+				if skill._trigger._trigger ~= nil then
+					skill._trigger._trigger._disabled = true
+				end
+			end
+			disabled = true
+		end
+	end
+	return disabled
+end
+
 function var_0_0.disableUnderSkillByIds(arg_159_0, arg_159_1, arg_159_2, arg_159_3, arg_159_4, arg_159_5)
 	local var_159_0 = false
 
@@ -6365,7 +6976,7 @@ function var_0_0.disableUnderSkillByType(arg_160_0, arg_160_1, arg_160_2, arg_16
 	for iter_160_0 = 1, #arg_160_0._underSkills do
 		local var_160_1 = arg_160_0._underSkills[iter_160_0]
 
-		if var_160_1._disabled ~= true and math.floor(var_160_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_160_1 and var_160_1._mode ~= Data.SkillMode.halo and var_160_1._mode ~= Data.SkillMode.under_attack and var_160_1._mode ~= Data.SkillMode.under_attack_damage and var_160_1._mode ~= Data.SkillMode.under_spell_damage and arg_160_0:disableUnderSkill(var_160_1, arg_160_2, arg_160_3, arg_160_4) then
+		if var_160_1._disabled ~= true and var_160_1._sid ~= 14673 and var_160_1._sid ~= 14719 and var_160_1._sid ~= 14720 and var_160_1._sid ~= 14721 and not (var_160_1._sid >= 14706 and var_160_1._sid <= 14710) and var_160_1._cid ~= arg_160_0._id and math.floor(var_160_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_160_1 and var_160_1._mode ~= Data.SkillMode.halo and var_160_1._mode ~= Data.SkillMode.under_attack and var_160_1._mode ~= Data.SkillMode.under_attack_damage and var_160_1._mode ~= Data.SkillMode.under_spell_damage and arg_160_0:disableUnderSkill(var_160_1, arg_160_2, arg_160_3, arg_160_4) then
 			var_160_0 = true
 		end
 	end
@@ -6386,7 +6997,20 @@ function var_0_0.disableUnderSkillByOppoType(arg_161_0, arg_161_1, arg_161_2, ar
 		local var_161_2 = arg_161_0._owner:getCardById(var_161_1._cid)
 		local var_161_3 = Data._skillInfo[var_161_1._sid]
 
-		if var_161_1._disabled ~= true and math.floor(var_161_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_161_1 and arg_161_0._owner ~= var_161_2._owner and (var_161_3 == nil or var_161_3._isIgnoreDefend ~= 7 and var_161_3._isIgnoreDefend ~= 8 and var_161_3._isIgnoreDefend ~= 10 and var_161_3._isIgnoreDefend ~= 11) and var_161_1._mode ~= Data.SkillMode.halo and var_161_1._mode ~= Data.SkillMode.under_attack and var_161_1._mode ~= Data.SkillMode.under_attack_damage and var_161_1._mode ~= Data.SkillMode.under_spell_damage and arg_161_0:disableUnderSkill(var_161_1, arg_161_2, arg_161_3, arg_161_4) then
+		local isOppo = false
+		if var_161_2 ~= nil then
+			isOppo = (arg_161_0._owner ~= var_161_2._owner)
+		elseif var_161_1._cid and var_161_1._cid ~= 0 and var_161_1._cid ~= arg_161_0._id then
+			isOppo = true
+		end
+
+		local isThacSamAwakened = (arg_161_0:isInfoId(40730) or arg_161_0:hasSkillFast(14719)) and (arg_161_0._tsAwakened or arg_161_0:hasSkillFast(12002) or (arg_161_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
+		local ignoreDefendOk = (var_161_3 == nil or var_161_3._isIgnoreDefend ~= 7 and var_161_3._isIgnoreDefend ~= 8 and var_161_3._isIgnoreDefend ~= 10 and var_161_3._isIgnoreDefend ~= 11)
+		if isThacSamAwakened then
+			ignoreDefendOk = true
+		end
+
+		if var_161_1._disabled ~= true and var_161_1._sid ~= 14719 and var_161_1._sid ~= 14720 and var_161_1._sid ~= 14721 and not (var_161_1._sid >= 14706 and var_161_1._sid <= 14710) and var_161_1._cid ~= arg_161_0._id and math.floor(var_161_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_161_1 and isOppo and ignoreDefendOk and var_161_1._mode ~= Data.SkillMode.halo and var_161_1._mode ~= Data.SkillMode.under_attack and var_161_1._mode ~= Data.SkillMode.under_attack_damage and var_161_1._mode ~= Data.SkillMode.under_spell_damage and arg_161_0:disableUnderSkill(var_161_1, arg_161_2, arg_161_3, arg_161_4) then
 			var_161_0 = true
 		end
 	end
@@ -6408,7 +7032,20 @@ function var_0_0.disableUnderSkillByOppoTypeAndCheckShield(arg_162_0, arg_162_1,
 		local var_162_3 = arg_162_0._owner:getCardById(var_162_2._cid)
 		local var_162_4 = Data._skillInfo[var_162_2._sid]
 
-		if var_162_2._disabled ~= true and math.floor(var_162_2._sid / Data.INFO_ID_GROUP_SIZE) == arg_162_1 and arg_162_0._owner ~= var_162_3._owner and not var_162_3:hasShieldInType(arg_162_5) and (var_162_4 == nil or var_162_4._isIgnoreDefend ~= 7 and var_162_4._isIgnoreDefend ~= 8 and var_162_4._isIgnoreDefend ~= 10 and var_162_4._isIgnoreDefend ~= 11) and var_162_2._mode ~= Data.SkillMode.halo and var_162_2._mode ~= Data.SkillMode.under_attack and var_162_2._mode ~= Data.SkillMode.under_attack_damage and var_162_2._mode ~= Data.SkillMode.under_spell_damage and arg_162_0:disableUnderSkill(var_162_2, arg_162_2, arg_162_3, arg_162_4) then
+		local isOppo = false
+		if var_162_3 ~= nil then
+			isOppo = (arg_162_0._owner ~= var_162_3._owner)
+		elseif var_162_2._cid and var_162_2._cid ~= 0 and var_162_2._cid ~= arg_162_0._id then
+			isOppo = true
+		end
+
+		local isThacSamAwakened = (arg_162_0:isInfoId(40730) or arg_162_0:hasSkillFast(14719)) and (arg_162_0._tsAwakened or arg_162_0:hasSkillFast(12002) or (arg_162_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
+		local ignoreDefendOk = (var_162_4 == nil or var_162_4._isIgnoreDefend ~= 7 and var_162_4._isIgnoreDefend ~= 8 and var_162_4._isIgnoreDefend ~= 10 and var_162_4._isIgnoreDefend ~= 11)
+		if isThacSamAwakened then
+			ignoreDefendOk = true
+		end
+
+		if var_162_2._disabled ~= true and var_162_2._sid ~= 14719 and var_162_2._sid ~= 14720 and var_162_2._sid ~= 14721 and not (var_162_2._sid >= 14706 and var_162_2._sid <= 14710) and var_162_2._cid ~= arg_162_0._id and math.floor(var_162_2._sid / Data.INFO_ID_GROUP_SIZE) == arg_162_1 and isOppo and (var_162_3 == nil or not var_162_3:hasShieldInType(arg_162_5)) and ignoreDefendOk and var_162_2._mode ~= Data.SkillMode.halo and var_162_2._mode ~= Data.SkillMode.under_attack and var_162_2._mode ~= Data.SkillMode.under_attack_damage and var_162_2._mode ~= Data.SkillMode.under_spell_damage and arg_162_0:disableUnderSkill(var_162_2, arg_162_2, arg_162_3, arg_162_4) then
 			var_162_0 = true
 			var_162_1 = var_162_3
 		end
@@ -7192,6 +7829,10 @@ function var_0_0.getLeftNeighbor(arg_212_0)
 end
 
 function var_0_0.canAction(arg_213_0)
+	if (arg_213_0:isInfoId(40730) or arg_213_0:hasSkillFast(14719)) and not arg_213_0._tsAwakened then
+		return false
+	end
+
 	if arg_213_0._mark2517_2 then
 		return true
 	end
@@ -7250,6 +7891,22 @@ function var_0_0.canAction(arg_213_0)
 		var_213_2 = var_213_2 + 1
 	end
 
+	if arg_213_0:isBinded(21139) or arg_213_0:hasSkillFast(14669) or arg_213_0:isBindedSkill(14669) then
+		var_213_2 = math.max(var_213_2, 2)
+	end
+
+	if arg_213_0._infoId == 40729 or arg_213_0:hasSkillFast(14712) then
+		local eqCount = 0
+		if arg_213_0._binds then
+			for _, b in ipairs(arg_213_0._binds) do
+				if b and (b:isKeyword(13) or b:isKeyword(61) or (b._info and (b._info._keyword == 13 or b._info._keyword == 61))) then
+					eqCount = eqCount + 1
+				end
+			end
+		end
+		var_213_2 = math.max(var_213_2, 1 + eqCount)
+	end
+
 	if var_213_3 then
 		var_213_2 = math.min(2, var_213_2)
 	end
@@ -7278,11 +7935,62 @@ function var_0_0.canAction(arg_213_0)
 end
 
 function var_0_0.actioned(arg_214_0)
+	if (arg_214_0:isBinded(21139) or arg_214_0:hasSkillFast(14669) or arg_214_0:isBindedSkill(14669)) and arg_214_0._actionIndex <= 2 then
+		return false
+	end
+
+	if arg_214_0._infoId == 40729 or arg_214_0:hasSkillFast(14712) then
+		local eqCount = 0
+		if arg_214_0._binds then
+			for _, b in ipairs(arg_214_0._binds) do
+				if b and (b:isKeyword(13) or b:isKeyword(61) or (b._info and (b._info._keyword == 13 or b._info._keyword == 61))) then
+					eqCount = eqCount + 1
+				end
+			end
+		end
+		if arg_214_0._actionIndex <= (1 + eqCount) then
+			return false
+		end
+	end
+
 	return arg_214_0._actionIndex > 1
 end
 
 function var_0_0.canAttack(arg_215_0, arg_215_1)
+	local oppo = arg_215_0._owner and arg_215_0._owner._opponent
+	if oppo then
+		local zioW = oppo:getBattleCardsByInfoId("B", 40735)
+		if #zioW == 0 then
+			zioW = oppo:getBattleCardsBySkillFast("B", 14746)
+		end
+		for _, zw in ipairs(zioW) do
+			if zw:canCastMonsterSkill() then
+				local nat = (arg_215_0._nature or (arg_215_0._info and arg_215_0._info._nature))
+				if nat == 1 or nat == 2 then
+					return false
+				end
+				break
+			end
+		end
+	end
+
+	if (arg_215_0:isInfoId(40730) or arg_215_0:hasSkillFast(14719)) and not arg_215_0._tsAwakened then
+		return false
+	end
+
+	if not arg_215_0._canAttack then
+		return false
+	end
+
+	if arg_215_0._owner and arg_215_0._owner._isAttacker and (arg_215_0._owner._round == 1 or (arg_215_0._owner._battleType == Data.BattleType.PVP_room and arg_215_0._owner._round == 2)) and arg_215_0._owner._battleType ~= Data.BattleType.unittest and arg_215_0._owner._battleType ~= Data.BattleType.teach then
+		return false
+	end
+
 	if arg_215_1 and not arg_215_0:canAction() then
+		return false
+	end
+
+	if arg_215_0._owner._mark2948 and arg_215_0 ~= arg_215_0._owner._mark2948 then
 		return false
 	end
 
@@ -7344,6 +8052,12 @@ function var_0_0.canAttack(arg_215_0, arg_215_1)
 
 	if arg_215_0._owner._mark4522 and arg_215_0 ~= arg_215_0._owner._mark4522 then
 		return false
+	end
+	if arg_215_0._owner and (arg_215_0._owner._riderKickAttackDisabledRound == arg_215_0._owner._round or arg_215_0._owner._riderKickAttackDisabledTurn) then
+		local turnId = (arg_215_0._owner._round or 0) * 1000 + ((arg_215_0._owner._owner and arg_215_0._owner._owner._round) or arg_215_0._owner._round or 0)
+		if (arg_215_0._owner._riderKickAttackDisabledRound == arg_215_0._owner._round or arg_215_0._owner._riderKickAttackDisabledTurn == turnId) and (arg_215_0:isKeyword(302) or (arg_215_0._info and arg_215_0._info._keyword == 302)) then
+			return false
+		end
 	end
 
 	if arg_215_0._owner._mark4685 and arg_215_0 ~= arg_215_0._owner._mark4685 then
@@ -7819,6 +8533,10 @@ function var_0_0.canAttackTarget(arg_256_0, arg_256_1, arg_256_2)
 		return false
 	end
 
+	if (arg_256_1:hasCanCastMonsterSkillFast(14675) or arg_256_1._infoId == 12320) and #arg_256_1._owner:getBoardCards() > 1 then
+		return false
+	end
+
 	if arg_256_1._type == Data.CardType.fortress and arg_256_0:hasSkillFast(6578) and arg_256_0._mark6578 and not arg_256_0:hasSkillFast(3616) and not arg_256_0:hasSkillFast(3191) then
 		return false
 	end
@@ -7947,7 +8665,7 @@ function var_0_0.canBeSacrificed(arg_258_0, arg_258_1, arg_258_2)
 		return false
 	end
 
-	if arg_258_0:hasSkillFast(3146) or arg_258_0:hasSkillFast(3295) or arg_258_0:hasSkillFast(13131) then
+	if arg_258_0:hasSkillFast(3146) or arg_258_0:hasSkillFast(3295) or arg_258_0:hasSkillFast(13131) or arg_258_0:isInfoId(40730) or arg_258_0:hasSkillFast(14719) then
 		return false
 	end
 
@@ -8177,6 +8895,8 @@ function var_0_0.canBeLinked(arg_262_0, arg_262_1, arg_262_2)
 
 	if arg_262_1 and (arg_262_1._infoId == 40725 or arg_262_1._infoId == 40726) and (arg_262_0:isKeyword(7) or (arg_262_0._info and arg_262_0._info._category == 13)) then
 		-- Allowed for Chu Tuoc Tu and 5 chi em Harpie if it has keyword Harpie or Winged-Beast
+	elseif arg_262_1 and arg_262_1._infoId == 40729 and B.isThanhKyMonster(arg_262_0) then
+		-- Allowed for Lăng Thiên Hậu if it has keyword Thánh Kỵ
 	elseif not arg_262_2 and (arg_262_0:isMerge() and not arg_262_0:hasSkillFast(14389) or arg_262_0:isSync() or arg_262_0:isXYZ()) then
 		return false
 	end
@@ -8205,7 +8925,7 @@ function var_0_0.canBeLinked(arg_262_0, arg_262_1, arg_262_2)
 		return false
 	end
 
-	if arg_262_0:actioned() then
+	if arg_262_0:actioned() and not (arg_262_1 and arg_262_1._infoId == 40729) then
 		return false
 	end
 
@@ -8234,6 +8954,176 @@ function var_0_0.setDieStat(arg_264_0)
 	arg_264_0._dieByOppo = arg_264_0:isTriggerByOppo()
 	arg_264_0._dieFromStatus = arg_264_0._sourceStatus
 	arg_264_0._dieByCastTrap = arg_264_0._statusVal == BattleData.CardStatusVal.h2g_trap
+
+	if arg_264_0:isInfoId(40734) then
+		arg_264_0._byKmrWEffect = nil
+	end
+
+	if (arg_264_0._infoId == 40659 or Data.getOriginId(arg_264_0._infoId) == 40659 or arg_264_0._infoId == 40052 or Data.getOriginId(arg_264_0._infoId) == 40052 or arg_264_0:hasSkillFast(14641)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and arg_264_0._dieByAttack and (arg_264_0._dieByOppo or (arg_264_0._owner and arg_264_0._owner._stepStatus == BattleData.Status.wait_opponent)) then
+		local var_oppo = arg_264_0._owner and arg_264_0._owner._opponent
+		if var_oppo then
+			var_oppo._frozenAttackRounds[var_oppo._round] = true
+			if var_oppo.sendEvent and not var_oppo._isReviewing then
+				var_oppo:sendEvent(BattleData.Status.update_board_active)
+			end
+			if arg_264_0._owner and arg_264_0._owner.sendEvent and not arg_264_0._owner._isReviewing then
+				arg_264_0._owner:sendEvent(BattleData.Status.update_board_active)
+			end
+		end
+	end
+
+	if (arg_264_0._infoId == 12316 or arg_264_0:hasSkillFast(14649)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and (arg_264_0._dieByAttack or arg_264_0._dieByEffect) then
+		local owner = arg_264_0._owner
+		if owner then
+			local myCards = owner:getBoardCards()
+			local coverCards = owner:getBattleCards("CS")
+			local toDestroy = {}
+			for _, c in ipairs(myCards) do
+				if c ~= arg_264_0 and c._status == BattleData.CardStatus.board then
+					table.insert(toDestroy, c)
+				end
+			end
+			for _, c in ipairs(coverCards) do
+				if c._status == BattleData.CardStatus.cover or c._status == BattleData.CardStatus.show then
+					table.insert(toDestroy, c)
+				end
+			end
+			if owner._fieldCard and owner._fieldCard._status == BattleData.CardStatus.field then
+				table.insert(toDestroy, owner._fieldCard)
+			end
+			local count = #toDestroy
+			for _, c in ipairs(toDestroy) do
+				owner:setCardStatus(c, BattleData.CardStatus.grave, 12316, 14649, Data.SkillMode.magic)
+			end
+			if count > 0 then
+				owner:addDamage(owner._fortress, count * 500, 12316, 14649, Data.SkillMode.magic)
+			end
+		end
+	end
+
+	-- Vương Lâm - Hợp Đạo (40733 / 14737): Khi bị phá hủy phe ta nhận được Tường Chắn Sinh Mệnh (12005)
+	if (arg_264_0._infoId == 40733 or arg_264_0:hasSkillFast(14737)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and (arg_264_0._dieByAttack or arg_264_0._dieByEffect) then
+		local owner = arg_264_0._owner or (arg_264_0.getOriginOwner and arg_264_0:getOriginOwner())
+		if owner and owner._fortress and not arg_264_0._mark14737Triggered then
+			arg_264_0._mark14737Triggered = true
+			owner:incShield(owner._fortress, { 12005 }, false, false, arg_264_0._id, 14737, Data.SkillMode.magic)
+		end
+	end
+
+	-- Luyện Hồn Tông (21134 / 7836): "Luyện Hồn Bộc Phá" - Khi lá bài này bị phá hủy từ trên sân
+	if (arg_264_0._infoId == 21134 or arg_264_0:hasSkillFast(7836)) and (arg_264_0._dieFromStatus == BattleData.CardStatus.field or arg_264_0._sourceStatus == BattleData.CardStatus.field) and not arg_264_0._mark7836_triggered then
+		arg_264_0._mark7836_triggered = true
+		local owner = arg_264_0._owner or (arg_264_0.getOriginOwner and arg_264_0:getOriginOwner())
+		if owner then
+			local oppo = owner._opponent
+			local myMonsters = owner:getBattleCardsByType("G", Data.CardType.monster)
+			local oppoMonsters = oppo and oppo:getBattleCardsByType("G", Data.CardType.monster) or {}
+			local banishedCount = #myMonsters + #oppoMonsters
+
+			for _, c in ipairs(myMonsters) do
+				owner:setCardStatus(c, BattleData.CardStatus.leave, 21134, 7836, Data.SkillMode.magic)
+			end
+
+			if oppo then
+				for _, c in ipairs(oppoMonsters) do
+					oppo:setCardStatus(c, BattleData.CardStatus.leave, 21134, 7836, Data.SkillMode.magic)
+				end
+			end
+
+			if banishedCount > 0 then
+				local damage = banishedCount * 100
+				if owner._fortress then
+					owner:addDamage(owner._fortress, owner:calcFortressDamage(damage), 21134, 7836, Data.SkillMode.magic)
+				end
+				if oppo and oppo._fortress then
+					oppo:addDamage(oppo._fortress, oppo:calcFortressDamage(damage), 21134, 7836, Data.SkillMode.magic)
+				end
+			end
+		end
+	end
+
+	-- Đỗ kiến - tiên vệ (12327 / 14718): Khi bị phá hủy trong chiến đấu và đưa vào Mộ: đối phương bỏ 1 bài trên tay
+	if (arg_264_0._infoId == 12327 or arg_264_0:hasSkillFast(14718)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and arg_264_0._dieByAttack then
+		local oppo = arg_264_0._owner and arg_264_0._owner._opponent
+		if oppo then
+			local oppoHand = oppo:getBattleCards("H")
+			if #oppoHand > 0 then
+				local targetCard = oppo:randomOne(oppoHand)
+				if targetCard then
+					oppo:setCardStatus(targetCard, BattleData.CardStatus.grave, 12327, 14718, Data.SkillMode.magic)
+				end
+			end
+		end
+	end
+
+	-- Lăng Thiên Kiếm Khí - Bản Mệnh (21140 / 14715): Khi quái Thánh Kỵ phe ta bị phá hủy
+	if arg_264_0._dieFromStatus == BattleData.CardStatus.board and (arg_264_0._dieByAttack or arg_264_0._dieByEffect) then
+		local owner = arg_264_0._owner or (arg_264_0.getOriginOwner and arg_264_0:getOriginOwner())
+		if owner and (arg_264_0._type == Data.CardType.monster or arg_264_0._type == Data.CardType.rare or (arg_264_0.isMonster and arg_264_0:isMonster()) or (arg_264_0.isMonsterRare and arg_264_0:isMonsterRare())) then
+			local isTKMonster = false
+			if (arg_264_0.isKeyword and (arg_264_0:isKeyword(13) or arg_264_0:isKeyword(61) or arg_264_0:isKeyword(193) or arg_264_0:isKeyword(300)))
+				or (arg_264_0._info and (arg_264_0._info._keyword == 13 or arg_264_0._info._keyword == 61 or arg_264_0._info._keyword == 193 or arg_264_0._info._keyword == 300)) then
+				isTKMonster = true
+			else
+				local cname = arg_264_0._info and ((_G.CARD_NAME_OVERRIDES and _G.CARD_NAME_OVERRIDES[arg_264_0._info._nameSid]) or (Str and Str(arg_264_0._info._nameSid)))
+				if cname and (string.find(cname, "Thánh Kỵ") or string.find(cname, "Thánh kỵ") or string.find(cname, "thánh kỵ")) then
+					isTKMonster = true
+				end
+			end
+			if isTKMonster then
+				local turnKey = tostring(owner._round or 0) .. "_" .. tostring(owner._opponent and owner._opponent._round or 0)
+				if owner._ltkkHandTurnKey ~= turnKey then
+					owner._ltkkHandTurnKey = turnKey
+					owner._ltkkHandCount = 0
+				end
+				if (owner._ltkkHandCount or 0) < 3 then
+					local ltkkCard = nil
+					for _, hc in ipairs(owner._handCards) do
+						if (hc._infoId == 21140 or (hc.isInfoId and hc:isInfoId(21140)) or hc:hasSkillFast(14715)) and not hc._ltkkDiscardQueued then
+							ltkkCard = hc
+							break
+						end
+					end
+					if ltkkCard ~= nil then
+						ltkkCard._ltkkDiscardQueued = true
+						owner._ltkkHandCount = (owner._ltkkHandCount or 0) + 1
+						owner:setCardStatus(ltkkCard, BattleData.CardStatus.grave, arg_264_0._id, 14715, Data.SkillMode.using, BattleData.CardStatusVal.h2g_cost)
+						owner:changeCardStatus(ltkkCard, BattleData.CardStatus.hand, BattleData.CardStatus.grave, BattleData.CardStatusVal.h2g_cost, arg_264_0)
+						local oppo = owner._opponent
+						if oppo then
+							local oppBoardMonsters = oppo:getBoardCards()
+							if #oppBoardMonsters > 0 then
+								local target = B.getMaxAtkCard(oppBoardMonsters)
+								if target then
+									if target.resetBuffByType then
+										target:resetBuffByType(true, BattleData.PositiveType.shieldMonster)
+										if BattleData.PositiveType.shieldEffectDestroy then
+											target:resetBuffByType(true, BattleData.PositiveType.shieldEffectDestroy)
+										end
+										if BattleData.PositiveType.shieldDestroy then
+											target:resetBuffByType(true, BattleData.PositiveType.shieldDestroy)
+										end
+									end
+									oppo:setCardStatus(target, BattleData.CardStatus.grave, ltkkCard._id, 14715, Data.SkillMode.using, BattleData.CardStatusVal.b2g_skill)
+									oppo:changeCardStatus(target, BattleData.CardStatus.board, BattleData.CardStatus.grave, BattleData.CardStatusVal.b2g_skill, ltkkCard)
+								end
+							elseif #oppo._handCards > 0 then
+								local oppHandCard = oppo._handCards[math.random(#oppo._handCards)]
+								if oppHandCard then
+									oppo:setCardStatus(oppHandCard, BattleData.CardStatus.grave, ltkkCard._id, 14715, Data.SkillMode.using, BattleData.CardStatusVal.h2g_cost)
+									oppo:changeCardStatus(oppHandCard, BattleData.CardStatus.hand, BattleData.CardStatus.grave, BattleData.CardStatusVal.h2g_cost, ltkkCard)
+								end
+							else
+								if oppo._fortress then
+									oppo:addDamage(oppo._fortress, 2000, ltkkCard._id, 14715, Data.SkillMode.using)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 local var_0_5 = {
@@ -8530,6 +9420,20 @@ function var_0_0.isExtraKeyword(arg_267_0, arg_267_1, arg_267_2)
 end
 
 function var_0_0.isInfoId(arg_268_0, arg_268_1)
+	if type(arg_268_1) == "table" then
+		for iter_268_0 = 1, #arg_268_1 do
+			if arg_268_0:isInfoId(arg_268_1[iter_268_0]) then
+				return true
+			end
+		end
+
+		return false
+	end
+
+	if (arg_268_1 == 10083 or arg_268_1 == 10290) and (arg_268_0._infoId == 40736) and (arg_268_0._status == BattleData.CardStatus.board or arg_268_0._status == BattleData.CardStatus.grave) then
+		return true
+	end
+
 	if arg_268_0._infoId == arg_268_1 then
 		return true
 	end
@@ -8538,6 +9442,10 @@ function var_0_0.isInfoId(arg_268_0, arg_268_1)
 end
 
 function var_0_0.isInInfoIdGroup(arg_269_0, arg_269_1)
+	if type(arg_269_1) ~= "table" then
+		return arg_269_0:isInfoId(arg_269_1)
+	end
+
 	for iter_269_0 = 1, #arg_269_1 do
 		if arg_269_0:isInfoId(arg_269_1[iter_269_0]) then
 			return true
@@ -8660,6 +9568,13 @@ local var_0_10 = {
 }
 
 function var_0_0.isKeyword(arg_270_0, arg_270_1, arg_270_2)
+	local infoId = arg_270_0._infoId or (arg_270_0._info and arg_270_0._info._id)
+	if infoId == 21146 or infoId == 30594 or infoId == 30595 then
+		if arg_270_1 == 6 or arg_270_1 == 7 or arg_270_1 == 15 or (Data and Data.CardKeyword and (arg_270_1 == Data.CardKeyword.ymx or arg_270_1 == Data.CardKeyword.ys or arg_270_1 == Data.CardKeyword.ysnl)) then
+			return true
+		end
+	end
+
 	if arg_270_0._info._keyword == arg_270_1 then
 		return true
 	end
@@ -8710,7 +9625,11 @@ function var_0_0.isKeyword(arg_270_0, arg_270_1, arg_270_2)
 	end
 
 	if arg_270_1 == Data.CardKeyword.ys then
-		return arg_270_0:isKeyword(Data.CardKeyword.ysnl)
+		return (arg_270_0._info and arg_270_0._info._keyword == Data.CardKeyword.ysnl) or arg_270_0:isExtraKeyword(Data.CardKeyword.ysnl, arg_270_2)
+	end
+
+	if arg_270_1 == Data.CardKeyword.ysnl then
+		return (arg_270_0._info and arg_270_0._info._keyword == Data.CardKeyword.ys) or arg_270_0:isExtraKeyword(Data.CardKeyword.ys, arg_270_2)
 	end
 
 	return false
@@ -8810,6 +9729,14 @@ function var_0_0.isCategoryGroup(arg_274_0, arg_274_1)
 end
 
 function var_0_0.isSameNameWith(arg_275_0, arg_275_1)
+	if not arg_275_1 then
+		return false
+	end
+
+	if type(arg_275_1) == "number" then
+		return arg_275_0:isInfoId(arg_275_1)
+	end
+
 	if arg_275_0._mark5504 == arg_275_1._infoId or arg_275_1._mark5504 == arg_275_0._infoId then
 		return true
 	end
@@ -8928,10 +9855,58 @@ function var_0_0.getSkillLevel(arg_281_0, arg_281_1)
 end
 
 function var_0_0.getAtk(arg_282_0)
+	if (arg_282_0._infoId == 40736 or arg_282_0:hasSkillFast(14750)) and arg_282_0._status == BattleData.CardStatus.board then
+		local baseAtk = arg_282_0._atk or 3000
+		local owner = arg_282_0._owner
+		if owner then
+			local count = 0
+			local graveCards = owner:getGraveCards()
+			for _, gc in ipairs(graveCards) do
+				if gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736 then
+					count = count + 1
+				end
+			end
+			return baseAtk + count * 500
+		end
+		return baseAtk
+	end
+	if (arg_282_0._infoId == 12324 or arg_282_0:hasSkillFast(14700)) and arg_282_0._status == BattleData.CardStatus.board then
+		return arg_282_0._atk or (arg_282_0._htAtk or 0)
+	end
+	if (arg_282_0._infoId == 12326 or arg_282_0:hasSkillFast(14707)) and arg_282_0._status == BattleData.CardStatus.board then
+		if arg_282_0._atk ~= nil then
+			return arg_282_0._atk
+		end
+		local marks = arg_282_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+		local rate = (marks >= 5) and 600 or 300
+		local bonus = marks * rate
+		return 2000 + bonus
+	end
+	if (arg_282_0._infoId == 40730 or arg_282_0:hasSkillFast(14719)) and arg_282_0._status == BattleData.CardStatus.board then
+		if arg_282_0._atk ~= nil then
+			return arg_282_0._atk
+		end
+		return arg_282_0._tsAwakened and 16000 or 8000
+	end
 	return arg_282_0._atk
 end
 
 function var_0_0.getHp(arg_283_0)
+	if (arg_283_0._infoId == 12326 or arg_283_0:hasSkillFast(14707)) and arg_283_0._status == BattleData.CardStatus.board then
+		if arg_283_0._hp ~= nil then
+			return arg_283_0._hp
+		end
+		local marks = arg_283_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+		local rate = (marks >= 5) and 600 or 300
+		local bonus = marks * rate
+		return 2800 + bonus
+	end
+	if (arg_283_0._infoId == 40730 or arg_283_0:hasSkillFast(14719)) and arg_283_0._status == BattleData.CardStatus.board then
+		if arg_283_0._hp ~= nil then
+			return arg_283_0._hp
+		end
+		return arg_283_0._tsAwakened and 16000 or 8000
+	end
 	return arg_283_0._hp
 end
 
@@ -8963,7 +9938,7 @@ function var_0_0.getStar(arg_286_0)
 
 		local var_286_1 = var_286_0 + (arg_286_0._mark2734 or 0)
 
-		return math.min(12, math.max(1, var_286_1))
+		return math.min(14, math.max(1, var_286_1))
 	else
 		return 0
 	end
@@ -9021,12 +9996,43 @@ function var_0_0.getSacrificeCount(arg_290_0)
 	end
 
 	if arg_290_0:hasSkills({
-		3231,
 		3541,
 		2564,
 		9832
 	}) then
 		return 0
+	end
+
+	if (arg_290_0._infoId == 12315 or arg_290_0:hasSkillFast(14640)) and hasCard12314OnBoard(arg_290_0._owner) then
+		return 0
+	end
+
+	if arg_290_0._infoId == 12323 or arg_290_0:hasSkillFast(14697) then
+		local hasLei = false
+		for _, c in ipairs(arg_290_0._owner:getBoardCards()) do
+			if (c._infoId == 12322 or c._infoId == 12323 or (c._info and (c._info._nature == 1 or c._info._category == 21))) and c:isMonsterRare() then
+				hasLei = true
+				break
+			end
+		end
+		if not hasLei then
+			return 0
+		end
+	end
+
+	-- KMR-W (12332 / 14744): Khi trên sân không có quái hoặc có quái "Hiệp sĩ mặt nạ", không cần vật tế
+	if arg_290_0._infoId == 12332 or arg_290_0:hasSkillFast(14744) then
+		local bCards = arg_290_0._owner and arg_290_0._owner:getBoardCards()
+		if bCards then
+			if #bCards == 0 then
+				return 0
+			end
+			for _, bc in ipairs(bCards) do
+				if bc:isKeyword(302) or (bc._info and bc._info._keyword == 302) then
+					return 0
+				end
+			end
+		end
 	end
 
 	if arg_290_0:hasSkillFast(3226) and #arg_290_0._owner._opponent:getBoardCards() >= 2 then
@@ -9121,8 +10127,10 @@ function var_0_0.getSacrificeCount(arg_290_0)
 
 	if arg_290_0:hasSkills({
 		3131,
-		3799
-	}) then
+		3799,
+		14676,
+		3231
+	}) or arg_290_0._infoId == 12320 or arg_290_0._infoId == 10407 or arg_290_0._infoId == 12142 or Data.getOriginId(arg_290_0._infoId) == 10407 then
 		return 3
 	end
 
@@ -9141,8 +10149,24 @@ function var_0_0.getOriginOwner(arg_291_0)
 	return arg_291_0._isBorrowed == true and arg_291_0._owner._opponent or arg_291_0._owner
 end
 
+function var_0_0.isMonster(arg_291_1)
+	return arg_291_1._type == Data.CardType.monster
+end
+
 function var_0_0.isMonsterRare(arg_292_0)
 	return arg_292_0._type == Data.CardType.monster or arg_292_0._type == Data.CardType.rare
+end
+
+function var_0_0.isMagic(arg_292_1)
+	return arg_292_1._type == Data.CardType.magic
+end
+
+function var_0_0.isTrap(arg_292_2)
+	return arg_292_2._type == Data.CardType.trap
+end
+
+function var_0_0.isMagicTrap(arg_292_3)
+	return arg_292_3._type == Data.CardType.magic or arg_292_3._type == Data.CardType.trap
 end
 
 function var_0_0.isV12(arg_293_0)
@@ -9162,7 +10186,7 @@ function var_0_0.isStatusValNormalSummon(arg_296_0)
 end
 
 function var_0_0.isStatusValComposeSummon(arg_297_0)
-	return arg_297_0._statusVal == BattleData.CardStatusVal.r2b_compose or arg_297_0._statusVal == BattleData.CardStatusVal.r2b_compose_ex
+	return arg_297_0._statusVal == BattleData.CardStatusVal.r2b_compose or arg_297_0._statusVal == BattleData.CardStatusVal.r2b_compose_ex or arg_297_0._statusVal == BattleData.CardStatusVal.r2b_merge
 end
 
 function var_0_0.isStatusValCeremonySummon(arg_298_0)

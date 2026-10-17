@@ -149,14 +149,15 @@ def trigger_room_ready(room):
             match_id = f"sm_{int(now*1000)}_{pid}_ai"
             seed = random.randint(1, 65535)
 
+            ai_match_first = random.choice([True, False])
             room["matches"][pid] = {
                 "code": 200,
                 "status": "matched",
                 "room_id": room["id"],
                 "match_id": match_id,
                 "seed": seed,
-                "is_attacker": True,
-                "first": True,
+                "is_attacker": ai_match_first,
+                "first": ai_match_first,
                 "is_real_player": False,
                 "oppo_online": False,
                 "oppo": {
@@ -171,7 +172,7 @@ def trigger_room_ready(room):
                     "is_real_player": False
                 }
             }
-            print(f"[SURVIVAL MATCH] Real vs AI: {p['name']} (ID {pid}) vs {bot['name']} in Room {room['id']}")
+            print(f"[SURVIVAL MATCH] Real vs AI: {p['name']} (ID {pid}, first={ai_match_first}) vs {bot['name']} in Room {room['id']}")
         else:
             remaining_real_pids.append(pid)
 
@@ -185,6 +186,7 @@ def trigger_room_ready(room):
 
         match_id = f"sm_{int(now*1000)}_{p1_id}_{p2_id}"
         seed = random.randint(1, 65535)
+        p1_first = random.choice([True, False])
 
         # Player 1 match info (Attacker)
         room["matches"][p1_id] = {
@@ -193,8 +195,8 @@ def trigger_room_ready(room):
             "room_id": room["id"],
             "match_id": match_id,
             "seed": seed,
-            "is_attacker": True,
-            "first": True,
+            "is_attacker": p1_first,
+            "first": p1_first,
             "is_real_player": True,
             "oppo_online": True,
             "oppo": {
@@ -217,8 +219,8 @@ def trigger_room_ready(room):
             "room_id": room["id"],
             "match_id": match_id,
             "seed": seed,
-            "is_attacker": False,
-            "first": False,
+            "is_attacker": not p1_first,
+            "first": not p1_first,
             "is_real_player": True,
             "oppo_online": True,
             "oppo": {
@@ -233,7 +235,7 @@ def trigger_room_ready(room):
                 "is_real_player": True
             }
         }
-        print(f"[SURVIVAL MATCH] Real vs Real: {p1['name']} (ID {p1_id}) vs {p2['name']} (ID {p2_id}) in Room {room['id']}")
+        print(f"[SURVIVAL MATCH] Real vs Real: {p1['name']} (ID {p1_id}, first={p1_first}) vs {p2['name']} (ID {p2_id}) in Room {room['id']}")
         i += 2
 
     # If 1 leftover real player, pair with a fallback AI
@@ -243,6 +245,7 @@ def trigger_room_ready(room):
         bot = room["ais"][0]
         match_id = f"sm_{int(now*1000)}_{last_pid}_ai"
         seed = random.randint(1, 65535)
+        last_first = random.choice([True, False])
 
         room["matches"][last_pid] = {
             "code": 200,
@@ -250,8 +253,8 @@ def trigger_room_ready(room):
             "room_id": room["id"],
             "match_id": match_id,
             "seed": seed,
-            "is_attacker": True,
-            "first": True,
+            "is_attacker": last_first,
+            "first": last_first,
             "is_real_player": False,
             "oppo_online": False,
             "oppo": {
@@ -313,6 +316,7 @@ class SurvivalHandler(BaseHTTPRequestHandler):
         self._handle_api(path, req)
 
     def _handle_api(self, path, req):
+        global ACTIVE_ROOM
         if path in ('/api/survival/status', '/status'):
             with STATE_LOCK:
                 room = get_or_create_room()
@@ -481,14 +485,15 @@ class SurvivalHandler(BaseHTTPRequestHandler):
                     is_real = False
 
                 seed = random.randint(1, 65535)
+                surv_first = random.choice([True, False])
                 match_id = f"sm_{int(time.time()*1000)}_{acc_id}_{random.randint(100,999)}"
                 resp = {
                     "code": 200,
                     "status": "matched",
                     "match_id": match_id,
                     "seed": seed,
-                    "is_attacker": True,
-                    "first": True,
+                    "is_attacker": surv_first,
+                    "first": surv_first,
                     "is_real_player": is_real,
                     "oppo_online": is_real,
                     "oppo": {
@@ -532,9 +537,21 @@ def room_monitor_loop():
         time.sleep(1)
 
 
+def console_cleaner_loop():
+    while True:
+        time.sleep(1800)
+        try:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(f"[SYSTEM] Đã dọn dẹp console log định kỳ (mỗi 30 phút). Survival server hoạt động bình thường lúc {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        except Exception:
+            pass
+
 def main():
     monitor_thread = threading.Thread(target=room_monitor_loop, daemon=True)
     monitor_thread.start()
+
+    cleaner_thread = threading.Thread(target=console_cleaner_loop, daemon=True)
+    cleaner_thread.start()
 
     server = ThreadingHTTPServer(('0.0.0.0', PORT), SurvivalHandler)
     server.daemon_threads = True

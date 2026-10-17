@@ -183,7 +183,7 @@ function var_0_0.initBonusList(arg_6_0, arg_6_1, arg_6_2)
 
 	var_6_2:bindData(var_6_3, function(arg_8_0, arg_8_1)
 		arg_6_0:setOrCreateItem(arg_8_0, arg_8_1)
-	end, math.min(10, #var_6_3))
+	end, #var_6_3)
 
 	for iter_6_2 = 1, var_6_2._cacheCount do
 		local var_6_4 = arg_6_0:setOrCreateItem(nil, var_6_3[iter_6_2])

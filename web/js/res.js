@@ -71,6 +71,9 @@
 
 	R.init = function (manifest, base) {
 		R.manifest = manifest;
+		if (manifest && manifest.files) {
+			R.filesSet = new Set(manifest.files);
+		}
 		if (base) R.base = base;
 	};
 
@@ -135,6 +138,28 @@
 		});
 	}
 
+	var atlasSlots = 2, atlasQueue = [];
+	function withAtlasSlot(task) {
+		return new Promise(function (resolve, reject) {
+			function run() {
+				atlasSlots--;
+				var done = function () {
+					atlasSlots++;
+					if (atlasQueue.length) atlasQueue.shift()();
+				};
+				Promise.resolve().then(task).then(function (v) { done(); resolve(v); },
+								 function (e) { done(); reject(e); });
+			}
+			if (atlasSlots > 0) run(); else atlasQueue.push(run);
+		});
+	}
+
+	function forget(imgs) {
+		for (var i = 0; i < imgs.length; i++) {
+			if (imgs[i]) { imgs[i].onload = imgs[i].onerror = null; try { imgs[i].src = ''; } catch (e) {} }
+		}
+	}
+
 	/* The mask carries its coverage in luminance, not in alpha, so the two
 	 * planes have to be merged per pixel. ponytail: a plain JS loop, ~15ms
 	 * for a 2048x2048 atlas; move it to a GL pass if atlas loads ever show
@@ -142,6 +167,7 @@
 	function composite(colour, mask) {
 		var w = colour.width, h = colour.height;
 		var canvas = document.createElement('canvas');
+		canvas.__jdzcOwned = true;
 		canvas.width = w;
 		canvas.height = h;
 
@@ -227,7 +253,73 @@
 		'card_ico_40725': { path: 'res/new/thumb/card_ico_40725.png', w: 82, h: 82 },
 		'card_ico_40725_3': { path: 'res/new/thumb/card_ico_40725_3.png', w: 82, h: 82 },
 		'card_ico_40726': { path: 'res/new/thumb/card_ico_40726.png', w: 82, h: 82 },
-		'card_ico_40726_3': { path: 'res/new/thumb/card_ico_40726_3.png', w: 82, h: 82 }
+		'card_ico_40726_3': { path: 'res/new/thumb/card_ico_40726_3.png', w: 82, h: 82 },
+		'card_ico_12313': { path: 'res/new/thumb/card_ico_12313.png', w: 82, h: 82 },
+		'card_ico_12313_3': { path: 'res/new/thumb/card_ico_12313_3.png', w: 82, h: 82 },
+		'card_ico_12314': { path: 'res/new/thumb/card_ico_12314.png', w: 82, h: 82 },
+		'card_ico_12314_3': { path: 'res/new/thumb/card_ico_12314_3.png', w: 82, h: 82 },
+		'card_ico_12315': { path: 'res/new/thumb/card_ico_12315.png', w: 82, h: 82 },
+		'card_ico_12315_3': { path: 'res/new/thumb/card_ico_12315_3.png', w: 82, h: 82 },
+		'card_ico_12316': { path: 'res/new/thumb/card_ico_12316.png', w: 82, h: 82 },
+		'card_ico_12316_3': { path: 'res/new/thumb/card_ico_12316_3.png', w: 82, h: 82 },
+		'card_ico_21135': { path: 'res/new/thumb/card_ico_21135.png', w: 82, h: 82 },
+		'card_ico_21135_3': { path: 'res/new/thumb/card_ico_21135_3.png', w: 82, h: 82 },
+		'card_ico_21136': { path: 'res/new/thumb/card_ico_21136.png', w: 82, h: 82 },
+		'card_ico_21136_3': { path: 'res/new/thumb/card_ico_21136_3.png', w: 82, h: 82 },
+		'card_ico_21137': { path: 'res/new/thumb/card_ico_21137.png', w: 82, h: 82 },
+		'card_ico_21137_3': { path: 'res/new/thumb/card_ico_21137_3.png', w: 82, h: 82 },
+		'card_ico_21138': { path: 'res/new/thumb/card_ico_21138.png', w: 82, h: 82 },
+		'card_ico_21138_3': { path: 'res/new/thumb/card_ico_21138_3.png', w: 82, h: 82 },
+		'card_ico_21139': { path: 'res/new/thumb/card_ico_21139.png', w: 82, h: 82 },
+		'card_ico_21139_3': { path: 'res/new/thumb/card_ico_21139_3.png', w: 82, h: 82 },
+		'card_ico_30592': { path: 'res/new/thumb/card_ico_30592.png', w: 82, h: 82 },
+		'card_ico_30592_3': { path: 'res/new/thumb/card_ico_30592_3.png', w: 82, h: 82 },
+		'card_ico_12317': { path: 'res/new/thumb/card_ico_12317.png', w: 82, h: 82 },
+		'card_ico_12317_3': { path: 'res/new/thumb/card_ico_12317_3.png', w: 82, h: 82 },
+		'card_ico_12318': { path: 'res/new/thumb/card_ico_12318.png', w: 82, h: 82 },
+		'card_ico_12318_3': { path: 'res/new/thumb/card_ico_12318_3.png', w: 82, h: 82 },
+		'card_ico_12319': { path: 'res/new/thumb/card_ico_12319.png', w: 82, h: 82 },
+		'card_ico_12319_3': { path: 'res/new/thumb/card_ico_12319_3.png', w: 82, h: 82 },
+		'card_ico_12320': { path: 'res/new/thumb/card_ico_12320.png', w: 82, h: 82 },
+		'card_ico_12320_3': { path: 'res/new/thumb/card_ico_12320_3.png', w: 82, h: 82 },
+		'card_ico_12321': { path: 'res/new/thumb/card_ico_12321.png', w: 82, h: 82 },
+		'card_ico_12321_3': { path: 'res/new/thumb/card_ico_12321_3.png', w: 82, h: 82 },
+		'card_ico_12322': { path: 'res/new/thumb/card_ico_12322.png', w: 82, h: 82 },
+		'card_ico_12322_3': { path: 'res/new/thumb/card_ico_12322_3.png', w: 82, h: 82 },
+		'card_ico_12323': { path: 'res/new/thumb/card_ico_12323.png', w: 82, h: 82 },
+		'card_ico_12323_3': { path: 'res/new/thumb/card_ico_12323_3.png', w: 82, h: 82 },
+		'card_ico_12324': { path: 'res/new/thumb/card_ico_12324.png', w: 82, h: 82 },
+		'card_ico_12324_3': { path: 'res/new/thumb/card_ico_12324_3.png', w: 82, h: 82 },
+		'card_ico_12325': { path: 'res/new/thumb/card_ico_12325.png', w: 82, h: 82 },
+		'card_ico_12325_3': { path: 'res/new/thumb/card_ico_12325_3.png', w: 82, h: 82 },
+		'card_ico_12326': { path: 'res/new/thumb/card_ico_12326.png', w: 82, h: 82 },
+		'card_ico_12326_3': { path: 'res/new/thumb/card_ico_12326_3.png', w: 82, h: 82 },
+		'card_ico_12327': { path: 'res/new/thumb/card_ico_12327.png', w: 82, h: 82 },
+		'card_ico_12327_3': { path: 'res/new/thumb/card_ico_12327_3.png', w: 82, h: 82 },
+		'card_ico_12328': { path: 'res/new/thumb/card_ico_12328.png', w: 82, h: 82 },
+		'card_ico_12328_3': { path: 'res/new/thumb/card_ico_12328_3.png', w: 82, h: 82 },
+		'card_ico_21140': { path: 'res/new/thumb/card_ico_21140.png', w: 82, h: 82 },
+		'card_ico_21140_3': { path: 'res/new/thumb/card_ico_21140_3.png', w: 82, h: 82 },
+		'card_ico_21141': { path: 'res/new/thumb/card_ico_21141.png', w: 82, h: 82 },
+		'card_ico_21141_3': { path: 'res/new/thumb/card_ico_21141_3.png', w: 82, h: 82 },
+		'card_ico_30593': { path: 'res/new/thumb/card_ico_30593.png', w: 82, h: 82 },
+		'card_ico_30593_3': { path: 'res/new/thumb/card_ico_30593_3.png', w: 82, h: 82 },
+		'card_ico_40727': { path: 'res/new/thumb/card_ico_40727.png', w: 82, h: 82 },
+		'card_ico_40727_3': { path: 'res/new/thumb/card_ico_40727_3.png', w: 82, h: 82 },
+		'card_ico_40728': { path: 'res/new/thumb/card_ico_40728.png', w: 82, h: 82 },
+		'card_ico_40728_3': { path: 'res/new/thumb/card_ico_40728_3.png', w: 82, h: 82 },
+		'card_ico_40729': { path: 'res/new/thumb/card_ico_40729.png', w: 82, h: 82 },
+		'card_ico_40729_3': { path: 'res/new/thumb/card_ico_40729_3.png', w: 82, h: 82 },
+		'card_ico_40730': { path: 'res/new/thumb/card_ico_40730.png', w: 82, h: 82 },
+		'card_ico_40730_3': { path: 'res/new/thumb/card_ico_40730_3.png', w: 82, h: 82 },
+		'card_ico_40731': { path: 'res/new/thumb/card_ico_40731.png', w: 82, h: 82 },
+		'card_ico_40731_3': { path: 'res/new/thumb/card_ico_40731_3.png', w: 82, h: 82 },
+		  'card_ico_12329': { path: 'res/new/thumb/card_ico_12329.png', w: 82, h: 82 },
+  'card_ico_12329_3': { path: 'res/new/thumb/card_ico_12329_3.png', w: 82, h: 82 },
+		'card_ico_40732': { path: 'res/new/thumb/card_ico_40732.png', w: 82, h: 82 },
+		'card_ico_40732_3': { path: 'res/new/thumb/card_ico_40732_3.png', w: 82, h: 82 },
+		'card_ico_12330': { path: 'res/new/thumb/card_ico_12330.png', w: 82, h: 82 },
+		'card_ico_12330_3': { path: 'res/new/thumb/card_ico_12330_3.png', w: 82, h: 82 }
 	};
 	global.CUSTOM_ICON_REPLACEMENTS = CUSTOM_ICON_REPLACEMENTS;
 	R.CUSTOM_ICON_REPLACEMENTS = CUSTOM_ICON_REPLACEMENTS;
@@ -396,7 +488,7 @@
 				   R.manifest.sizes[normalized.replace(/^res\//, '')] ||
 				   R.manifest.sizes['res/' + key.replace(/^res\//, '')] ||
 				   R.manifest.sizes['res/' + normalized.replace(/^res\//, '')];
-			cc.log('[EMPTY_TEX]', key, 'size:', JSON.stringify(size));
+			// cc.log('[EMPTY_TEX]', key, 'size:', JSON.stringify(size));
 			if (size && size[0] && size[1]) {
 				tex._contentSize.width = size[0];
 				tex._contentSize.height = size[1];
@@ -457,18 +549,29 @@
 			tex = emptyTexture(key);
 			cc.textureCache._textures[key] = tex;
 		}
-		if (tex.isLoaded() || maskedInflight[key]) return tex;
+		if ((tex.isLoaded && tex.isLoaded() && tex._isMaskedComposited) || maskedInflight[key]) return tex;
 
-		maskedInflight[key] = Promise.all([loadImage(colourUrl), loadImage(maskUrl)])
-			.then(function (imgs) {
+		maskedInflight[key] = withAtlasSlot(function () {
+			return Promise.all([loadImage(colourUrl), loadImage(maskUrl)])
+				.then(function (imgs) {
+					var canvas = composite(imgs[0], imgs[1]);
+					forget(imgs);
+					return canvas;
+				});
+		})
+			.then(function (canvas) {
 				delete maskedInflight[key];
-				cacheUnder(key, composite(imgs[0], imgs[1]));
+				var cTex = cacheUnder(key, canvas);
+				cTex._isMaskedComposited = true;
+				if (tex !== cTex) tex._isMaskedComposited = true;
 			})
 			.catch(function () {
 				/* nothing beside it: the colour plane on its own */
 				return loadImage(colourUrl).then(function (img) {
 					delete maskedInflight[key];
-					cacheUnder(key, img);
+					var cTex = cacheUnder(key, img);
+					cTex._isMaskedComposited = true;
+					if (tex !== cTex) tex._isMaskedComposited = true;
 				}).catch(function (e) {
 					delete maskedInflight[key];
 					cc.log('[res] ' + key + ': ' + e);
@@ -491,7 +594,7 @@
 	 * ------------------------------------------------------------------ */
 
 	function versionedUrl(url) {
-		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261004v1';
+		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261016v1792097500';
 		if (!url || typeof url !== 'string') return url;
 		return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
 	}
@@ -547,22 +650,50 @@
 
 		/* atlases first: the .sfb of a container needs its texture */
 		var jpms = entries.filter(function (e) { return /\.jpm$/.test(e); });
-		var rest = entries.filter(function (e) { return !/\.jpm$/.test(e); });
+		var maskedPairs = [];
+		var maskedNames = {};
+		entries.forEach(function (e) {
+			if (/_ori\.jpg$/.test(e)) {
+				var base = e.replace(/_ori\.jpg$/, '');
+				var maskName = base + '.png';
+				if (entries.indexOf(maskName) >= 0) {
+					maskedPairs.push({ base: base, colour: e, mask: maskName });
+					maskedNames[e] = true;
+					maskedNames[maskName] = true;
+				}
+			}
+		});
+		var rest = entries.filter(function (e) { return !/\.jpm$/.test(e) && !maskedNames[e]; });
 
 		var p = Promise.all(jpms.map(function (name) {
-			return fetchBuffer(dir + name).then(function (buf) {
-				var parts = splitJpm(buf);
-				return Promise.all([loadBlob(parts[0]), loadBlob(parts[1])]);
-			}).then(function (imgs) {
-				var canvas = composite(imgs[0], imgs[1]);
-				try { imgs[0].src = ''; imgs[1].src = ''; } catch(e) {}
-				atlases[name.replace(/\.jpm$/, '')] = cacheUnder(name, canvas);
-				R.resolvePending(name);
-				R.announce(name);
+			return withAtlasSlot(function () {
+				return fetchBuffer(dir + name).then(function (buf) {
+					var parts = splitJpm(buf);
+					return Promise.all([loadBlob(parts[0]), loadBlob(parts[1])]);
+				}).then(function (imgs) {
+					var canvas = composite(imgs[0], imgs[1]);
+					forget(imgs);
+					atlases[name.replace(/\.jpm$/, '')] = cacheUnder(name, canvas);
+					R.resolvePending(name);
+					R.announce(name);
+				});
 			}).catch(function (e) {
 				cc.log('[res] ' + name + ': ' + e);
 			});
 		}));
+
+		if (maskedPairs.length > 0) {
+			p = p.then(function () {
+				return Promise.all(maskedPairs.map(function (pair) {
+					return R.loadMaskedTexture(pair.mask, dir + pair.colour, dir + pair.mask)
+						.then(function () {
+							R.resolvePending(pair.mask);
+							R.announce(pair.mask);
+						})
+						.catch(function (e) { cc.log('[res] masked pair ' + pair.base + ': ' + e); });
+				}));
+			});
+		}
 
 		p = p.then(function () {
 			return Promise.all(rest.map(function (name) {
@@ -634,6 +765,7 @@
 			var key = R.frameOwner[name];
 			var tex = key && cc.textureCache.getTextureForKey(key);
 			if (tex) cc.spriteFrameCache.removeSpriteFramesFromTexture(tex);
+			if (key) cc.textureCache.removeTextureForKey(key);
 			delete R.frameOwner[name];
 		} else {
 			cc.textureCache.removeTextureForKey(name);
@@ -711,6 +843,7 @@
 			throw new Error('unsupported PVR depth ' + bpp);
 
 		var canvas = document.createElement('canvas');
+		canvas.__jdzcOwned = true;
 		canvas.width = width;
 		canvas.height = height;
 
@@ -753,15 +886,19 @@
 		if (!path) return false;
 		if (typeof path === 'string') path = path.split('?')[0];
 		if (CUSTOM_ICON_REPLACEMENTS && CUSTOM_ICON_REPLACEMENTS[path]) return true;
-		if (CUSTOM_ICON_REPLACEMENTS) {
-			for (var k in CUSTOM_ICON_REPLACEMENTS) {
-				if (CUSTOM_ICON_REPLACEMENTS[k].path === path) return true;
-			}
-		}
 		if (!R.manifest) return false;
-		if (R.manifest.files.indexOf(path) >= 0) return true;
-		var jpgPath = path.replace(/\.jpm$/, '.jpg');
-		if (jpgPath !== path && R.manifest.files.indexOf(jpgPath) >= 0) return true;
+		if (!R.filesSet && R.manifest.files) {
+			R.filesSet = new Set(R.manifest.files);
+		}
+		if (R.filesSet) {
+			if (R.filesSet.has(path)) return true;
+			var jpgPath = path.replace(/\.jpm$/, '.jpg');
+			if (jpgPath !== path && R.filesSet.has(jpgPath)) return true;
+		} else if (R.manifest.files) {
+			if (R.manifest.files.indexOf(path) >= 0) return true;
+			var jpgPath = path.replace(/\.jpm$/, '.jpg');
+			if (jpgPath !== path && R.manifest.files.indexOf(jpgPath) >= 0) return true;
+		}
 		return !!R.entriesOf(path);
 	};
 

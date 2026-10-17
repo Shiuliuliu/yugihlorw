@@ -1,10 +1,10 @@
 {
-	"debugMode": 1,
+	"debugMode": 0,
 	"showFPS": false,
 	"frameRate": 60,
 	"id": "gameCanvas",
 	"renderMode": 0,
-	"noCache": true,
+	"noCache": false,
 	"engineDir": "vendor/",
 
 	"modules": ["cocos2d", "ccui", "gui", "audio", "particle",
@@ -13,8 +13,8 @@
 		    "transitions", "motion-streak", "editbox"],
 
 	"jsList": [
-		"js/res.js?v=20261004v1",
-		"js/engine.js?v=20261004v1",
-		"js/net.js?v=20261004v1"
+		"js/res.js?v=20261017v181500",
+		"js/engine.js?v=20261017v181500",
+		"js/net.js?v=20261017v181500"
 	]
 }

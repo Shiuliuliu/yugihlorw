@@ -571,21 +571,21 @@ function var_0_0.refreshItemCustom(arg_29_0, arg_29_1, arg_29_2)
 			local var_29_6, var_29_7 = arg_29_0:getCardCountInUnionTroops(arg_29_2)
 			local var_29_8, var_29_9 = Data.getInfo(arg_29_1._thumbnail._infoId)
 
-			arg_29_1._countArea:update(true, var_29_4, var_29_8._maxCount * Data.GROUP_NUM, var_29_5, var_29_3 - var_29_7)
+			arg_29_1._countArea:update(true, var_29_4, (var_29_8 and var_29_8._maxCount or 3) * Data.GROUP_NUM, var_29_5, var_29_3 - var_29_7)
 		elseif arg_29_0._mode == var_0_0.ModeType.dark_troop then
 			local var_29_10 = P._playerCard:getCardCount(arg_29_2)
 			local var_29_11, var_29_12 = arg_29_0:getCardCountInTroop(var_29_2, arg_29_2)
 			local var_29_13, var_29_14 = arg_29_0:getCardCountInDarkTroops(arg_29_2)
 			local var_29_15, var_29_16 = Data.getInfo(arg_29_1._thumbnail._infoId)
 
-			arg_29_1._countArea:update(true, var_29_11, var_29_15._maxCount, var_29_12, var_29_10 - var_29_14)
+			arg_29_1._countArea:update(true, var_29_11, var_29_15 and var_29_15._maxCount or 3, var_29_12, var_29_10 - var_29_14)
 		elseif arg_29_0._mode == var_0_0.ModeType.room_dark_troop then
 			local var_29_17, var_29_18 = arg_29_0:getCardCountInTroop(var_29_2, arg_29_2)
 			local var_29_19, var_29_20 = arg_29_0:getCardCountInRoomDarkTroops(arg_29_2)
 			local var_29_21, var_29_22 = Data.getInfo(arg_29_1._thumbnail._infoId)
 			local var_29_23 = P._playerCard:getCardCount(arg_29_2)
 
-			arg_29_1._countArea:update(true, var_29_17 + var_29_19, var_29_21._maxCount, var_29_18, var_29_23 - var_29_20)
+			arg_29_1._countArea:update(true, var_29_17 + var_29_19, var_29_21 and var_29_21._maxCount or 3, var_29_18, var_29_23 - var_29_20)
 		elseif arg_29_0._mode == var_0_0.ModeType.card_operate then
 			local var_29_24, var_29_25 = arg_29_0:getCardCountInTroop(var_29_2, arg_29_2)
 			local var_29_26, var_29_27 = Data.getInfo(arg_29_1._thumbnail._infoId)
@@ -596,7 +596,7 @@ function var_0_0.refreshItemCustom(arg_29_0, arg_29_1, arg_29_2)
 			local var_29_29, var_29_30 = arg_29_0:getCardCountInTroop(var_29_2, arg_29_2)
 			local var_29_31, var_29_32 = Data.getInfo(arg_29_1._thumbnail._infoId)
 
-			arg_29_1._countArea:update(true, var_29_29, var_29_31._maxCount, var_29_30)
+			arg_29_1._countArea:update(true, var_29_29, var_29_31 and var_29_31._maxCount or 3, var_29_30)
 		end
 
 		arg_29_1._thumbnail:updateFlag()
@@ -729,7 +729,8 @@ function var_0_0.refreshItemCustom(arg_29_0, arg_29_1, arg_29_2)
 		local var_29_41 = (arg_29_0._curPage - 1) * arg_29_0._itemRow * arg_29_0._itemCol + arg_29_1._thumbnail._index
 		local var_29_42 = arg_29_0._shopInfo[var_29_41]
 		local var_29_43 = P._playerCard:getCardCount(var_29_42._infoId)
-		local var_29_44 = (Data.getInfo(var_29_42._infoId)._maxCount or 3) - var_29_43
+		local var_info_42 = Data.getInfo(var_29_42._infoId)
+		local var_29_44 = (var_info_42 and var_info_42._maxCount or 3) - var_29_43
 
 		arg_29_1._thumbnail:updateUnionShopFlag(var_29_43, var_29_44 + var_29_43, var_29_42._price, var_29_42._priceType, var_29_42._disCount)
 
@@ -753,8 +754,9 @@ function var_0_0.refreshItemCustom(arg_29_0, arg_29_1, arg_29_2)
 		local var_29_46 = (arg_29_0._curPage - 1) * arg_29_0._itemRow * arg_29_0._itemCol + arg_29_1._thumbnail._index
 		local var_29_47 = arg_29_0._shopInfo[var_29_46]
 		local var_29_48 = P._playerCard:getCardCount(var_29_47._infoId)
+		local var_info_47 = Data.getInfo(var_29_47._infoId)
 
-		if not Data.getInfo(var_29_47._infoId)._maxCount then
+		if not var_info_47 or not var_info_47._maxCount then
 			local var_29_49 = 3
 		end
 
@@ -805,7 +807,8 @@ function var_0_0.refreshItemCustom(arg_29_0, arg_29_1, arg_29_2)
 		local var_29_56 = (arg_29_0._curPage - 1) * arg_29_0._itemRow * arg_29_0._itemCol + arg_29_1._thumbnail._index
 		local var_29_57 = arg_29_0._shopInfo[var_29_56]
 		local var_29_58 = P._playerCard:getCardCount(var_29_57._infoId)
-		local var_29_59 = (Data.getInfo(var_29_57._infoId)._maxCount or 3) - var_29_58
+		local var_info_57 = Data.getInfo(var_29_57._infoId)
+		local var_29_59 = (var_info_57 and var_info_57._maxCount or 3) - var_29_58
 		local var_29_60 = false
 
 		if P._playerMarket._rareGoodsMap[var_29_57._id] then
@@ -834,7 +837,8 @@ function var_0_0.refreshItemCustom(arg_29_0, arg_29_1, arg_29_2)
 		local var_29_62 = (arg_29_0._curPage - 1) * arg_29_0._itemRow * arg_29_0._itemCol + arg_29_1._thumbnail._index
 		local var_29_63 = arg_29_0._shopInfo[var_29_62]
 		local var_29_64 = P._playerCard:getCardCount(var_29_63._infoId)
-		local var_29_65 = (Data.getInfo(var_29_63._infoId)._maxCount or 3) - var_29_64
+		local var_info_63 = Data.getInfo(var_29_63._infoId)
+		local var_29_65 = (var_info_63 and var_info_63._maxCount or 3) - var_29_64
 
 		arg_29_1._thumbnail:updateDiamondShopFlag(var_29_64, var_29_65 + var_29_64, var_29_63._price, var_29_63._priceType)
 
@@ -858,7 +862,8 @@ function var_0_0.refreshItemCustom(arg_29_0, arg_29_1, arg_29_2)
 		local var_29_67 = (arg_29_0._curPage - 1) * arg_29_0._itemRow * arg_29_0._itemCol + arg_29_1._thumbnail._index
 		local var_29_68 = arg_29_0._shopInfo[var_29_67]
 		local var_29_69 = P._playerCard:getCardCount(var_29_68._infoId)
-		local var_29_70 = (Data.getInfo(var_29_68._infoId)._maxCount or 3) - var_29_69
+		local var_info_68 = Data.getInfo(var_29_68._infoId)
+		local var_29_70 = (var_info_68 and var_info_68._maxCount or 3) - var_29_69
 		local var_29_71 = false
 
 		arg_29_1._thumbnail:updateRareShopFlag(var_29_69, var_29_70 + var_29_69, var_29_68._price, var_29_68._priceType, var_29_71)
@@ -1000,15 +1005,20 @@ function var_0_0.getCardCountInTroop(arg_41_0, arg_41_1, arg_41_2)
 	local var_41_4 = 0
 	local var_41_5 = 0
 
+	if not arg_41_1 then return 0, 0 end
+
 	for iter_41_0 = 1, #arg_41_1 do
-		local var_41_6, var_41_7, var_41_8 = Data.removeAdditional(arg_41_1[iter_41_0]._infoId)
+		local it = arg_41_1[iter_41_0]
+		if it and it._infoId then
+			local var_41_6, var_41_7, var_41_8 = Data.removeAdditional(it._infoId)
 
-		if Data.getOriginId(var_41_6) == var_41_3 then
-			var_41_4 = var_41_4 + arg_41_1[iter_41_0]._num
-		end
+			if Data.getOriginId(var_41_6) == var_41_3 then
+				var_41_4 = var_41_4 + (it._num or 1)
+			end
 
-		if arg_41_2 == arg_41_1[iter_41_0]._infoId then
-			var_41_5 = var_41_5 + arg_41_1[iter_41_0]._num
+			if arg_41_2 == it._infoId then
+				var_41_5 = var_41_5 + (it._num or 1)
+			end
 		end
 	end
 

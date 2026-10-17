@@ -58,14 +58,20 @@ function var_0_0.loadAudioConfig(arg_2_0, arg_2_1)
 	local var_2_0 = cc.FileUtils:getInstance():getDataFromFile(arg_2_0)
 	local var_2_1 = cc.FileUtils:getInstance():getValueMapFromData(var_2_0, #var_2_0).audios
 
-	for iter_2_0, iter_2_1 in ipairs(var_2_1) do
-		local var_2_2 = iter_2_1.name
+	if var_2_1 then
+		for iter_2_0, iter_2_1 in ipairs(var_2_1) do
+			local var_2_2 = iter_2_1.name
 
-		if not var_2_2:find("%.") then
-			var_2_2 = var_2_2 .. ".mp3"
+			if not var_2_2:find("%.") then
+				var_2_2 = var_2_2 .. ".mp3"
+			end
+
+			var_0_0.addAudio(var_2_2, iter_2_1.behavior, iter_2_1.duration, iter_2_1.group, iter_2_1.loop, iter_2_1.condition, iter_2_1.switch, arg_2_1)
 		end
+	end
 
-		var_0_0.addAudio(var_2_2, iter_2_1.behavior, iter_2_1.duration, iter_2_1.group, iter_2_1.loop, iter_2_1.condition, iter_2_1.switch)
+	if var_0_0._configs[arg_2_1] and not var_0_0._configs[arg_2_1][33] then
+		var_0_0.addAudio("res/audio/m_battle_flo.mp3", var_0_0.Behavior.music, 228, 2, true, 2, 0, arg_2_1)
 	end
 end
 
@@ -111,11 +117,19 @@ end
 function var_0_0.preloadAudio(arg_6_0, arg_6_1)
 	arg_6_1 = arg_6_1 or "main"
 
-	assert(var_0_0._configs[arg_6_1], string.format("[lc.Audio.preloadAudio] The info table '%s' is not exist!", arg_6_1))
+	if not var_0_0._configs or not var_0_0._configs[arg_6_1] then
+		return
+	end
 
 	local var_6_0 = var_0_0._configs[arg_6_1][arg_6_0]
 
-	assert(var_6_0, string.format("[lc.Audio.preloadAudio] The audio id '%d' in table '%s' is not exist!", arg_6_0, arg_6_1))
+	if not var_6_0 then
+		if arg_6_0 == 33 or (AUDIO and arg_6_0 == AUDIO.M_BATTLE_FLO) then
+			var_6_0 = var_0_0.addAudio("res/audio/m_battle_flo.mp3", var_0_0.Behavior.music, 228, 2, true, 2, 0, arg_6_1)
+		else
+			return
+		end
+	end
 
 	if var_6_0.state ~= var_0_0.State.unloaded then
 		return
@@ -133,11 +147,15 @@ end
 function var_0_0.unloadAudio(arg_7_0, arg_7_1)
 	arg_7_1 = arg_7_1 or "main"
 
-	assert(var_0_0._configs[arg_7_1], string.format("[lc.Audio.unloadAudio] The info table '%s' is not exist!", arg_7_1))
+	if not var_0_0._configs or not var_0_0._configs[arg_7_1] then
+		return
+	end
 
 	local var_7_0 = var_0_0._configs[arg_7_1][arg_7_0]
 
-	assert(var_7_0, string.format("[lc.Audio.unloadAudio] The audio id '%d' in table '%s' is not exist!", arg_7_0, arg_7_1))
+	if not var_7_0 then
+		return
+	end
 
 	if var_7_0.state == var_0_0.State.unloaded then
 		return
@@ -166,11 +184,22 @@ function var_0_0.playAudio(arg_8_0, arg_8_1, arg_8_2)
 
 	arg_8_2 = arg_8_2 or "main"
 
-	assert(var_0_0._configs[arg_8_2], string.format("[lc.Audio.playAudio] The info table '%s' is not exist!", arg_8_2))
+	if not var_0_0._configs or not var_0_0._configs[arg_8_2] then
+		return
+	end
 
 	local var_8_0 = var_0_0._configs[arg_8_2][arg_8_0]
 
-	assert(var_8_0, string.format("[lc.Audio.playAudio] The audio id '%d' in table '%s' is not exist!", arg_8_0, arg_8_2))
+	if not var_8_0 then
+		if arg_8_0 == 33 or (AUDIO and arg_8_0 == AUDIO.M_BATTLE_FLO) then
+			var_8_0 = var_0_0.addAudio("res/audio/m_battle_flo.mp3", var_0_0.Behavior.music, 228, 2, true, 2, 0, arg_8_2)
+		end
+	end
+
+	if not var_8_0 then
+		print(string.format("[lc.Audio.playAudio] The audio id '%s' in table '%s' is not exist! Skipping.", tostring(arg_8_0), tostring(arg_8_2)))
+		return
+	end
 
 	arg_8_1 = arg_8_1 or false
 
@@ -229,11 +258,15 @@ end
 function var_0_0.pauseAudio(arg_9_0, arg_9_1)
 	arg_9_1 = arg_9_1 or "main"
 
-	assert(var_0_0._configs[arg_9_1], string.format("[lc.Audio.pauseAudio] The info table '%s' is not exist!", arg_9_1))
+	if not var_0_0._configs or not var_0_0._configs[arg_9_1] then
+		return
+	end
 
 	local var_9_0 = var_0_0._configs[arg_9_1][arg_9_0]
 
-	assert(var_9_0, string.format("[lc.Audio.pauseAudio] The audio id '%d' in table '%s' is not exist!", arg_9_0, arg_9_1))
+	if not var_9_0 then
+		return
+	end
 
 	if var_9_0.state ~= var_0_0.State.playing then
 		return
@@ -260,11 +293,15 @@ end
 function var_0_0.resumeAudio(arg_10_0, arg_10_1)
 	arg_10_1 = arg_10_1 or "main"
 
-	assert(var_0_0._configs[arg_10_1], string.format("[lc.Audio.resumeAudio] The info table '%s' is not exist!", arg_10_1))
+	if not var_0_0._configs or not var_0_0._configs[arg_10_1] then
+		return
+	end
 
 	local var_10_0 = var_0_0._configs[arg_10_1][arg_10_0]
 
-	assert(var_10_0, string.format("[lc.Audio.resumeAudio] The audio id '%d' in table '%s' is not exist!", arg_10_0, arg_10_1))
+	if not var_10_0 then
+		return
+	end
 
 	if var_10_0.state ~= var_0_0.State.paused then
 		return
@@ -286,11 +323,15 @@ end
 function var_0_0.stopAudio(arg_11_0, arg_11_1)
 	arg_11_1 = arg_11_1 or "main"
 
-	assert(var_0_0._configs[arg_11_1], string.format("[lc.Audio.stopAudio] The info table '%s' is not exist!", arg_11_1))
+	if not var_0_0._configs or not var_0_0._configs[arg_11_1] then
+		return
+	end
 
 	local var_11_0 = var_0_0._configs[arg_11_1][arg_11_0]
 
-	assert(var_11_0, string.format("[lc.Audio.stopAudio] The audio id '%d' in table '%s' is not exist!", arg_11_0, arg_11_1))
+	if not var_11_0 then
+		return
+	end
 
 	if var_11_0.state == var_0_0.State.idle or var_11_0.state == var_0_0.State.unloaded then
 		return

@@ -582,8 +582,19 @@ def handle_client(sock, addr):
         print(f"[TCP] Connection closed for {addr}")
         sys.stdout.flush()
 
+def console_cleaner_loop():
+    while True:
+        time.sleep(1800)
+        try:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(f"[SYSTEM] Đã dọn dẹp console log định kỳ (mỗi 30 phút). Proto server hoạt động bình thường lúc {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        except Exception:
+            pass
+
 def main():
     local_ip = get_local_ip()
+    cleaner_thread = threading.Thread(target=console_cleaner_loop, daemon=True)
+    cleaner_thread.start()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST, PORT))

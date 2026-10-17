@@ -278,10 +278,6 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 		return arg_3_0._dropLayer:onTouchEnded(arg_3_1)
 	end
 
-	if arg_3_0._playerUi._isGuideSkill or arg_3_0._opponentUi._isGuideSkill then
-		return false
-	end
-
 	if arg_3_0._icons then
 		for iter_3_0, iter_3_1 in ipairs(arg_3_0._icons) do
 			iter_3_1:removeFromParent()
@@ -291,6 +287,17 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 	end
 
 	arg_3_0._isTouching = false
+
+	if arg_3_0._playerUi._isGuideSkill or arg_3_0._opponentUi._isGuideSkill then
+		if arg_3_0._touchCard then
+			arg_3_0._touchCard:onTouchEnded(arg_3_1)
+			arg_3_0._touchCard = nil
+		end
+		if arg_3_0._selectTargetLayer then
+			arg_3_0:hideSelectTarget(arg_3_0._selectTargetLayer)
+		end
+		return false
+	end
 
 	if arg_3_0._touchCard then
 		local var_3_0 = arg_3_0._touchCard
@@ -366,7 +373,7 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 								var_3_11, var_3_12, var_3_13 = var_3_1._owner:isGraveSkill(var_3_1._skills[1], nil, false)
 							end
 
-							if not var_3_11 and var_3_1._skills[2] ~= nil and (var_3_1._skills[2]._id == 3456 or var_3_1._skills[2]._id == 3645) then
+							if not var_3_11 and var_3_1._skills[2] ~= nil and (var_3_1._skills[2]._id == 3456 or var_3_1._skills[2]._id == 3645 or var_3_1._skills[2]._id == 14732 or var_3_1._skills[2]._id == 14742 or B.skillHasMode(var_3_1._skills[2], Data.SkillMode.initiative_grave)) then
 								var_3_11, var_3_12, var_3_13 = var_3_1._owner:isGraveSkill(var_3_1._skills[2], nil, false)
 							end
 
@@ -398,8 +405,19 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 								4861,
 								4957,
 								4979
-							}) or var_3_1:hasSkillFast(7544) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7579) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7622) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7631) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7693) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7731) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7753) and var_3_1._status == BattleData.CardStatus.hand then
+							}) or var_3_1:hasSkillFast(7544) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7579) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7622) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7631) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7693) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7731) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7753) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(14743) and var_3_1._status == BattleData.CardStatus.hand then
 								var_3_3:showChoiceMerge(var_3_0, var_3_4)
+							elseif var_3_1:hasSkillFast(14733) and var_3_1._status == BattleData.CardStatus.hand then
+								local canMerge = (var_3_2._castedSkillCounts[14733] == nil or var_3_2._castedSkillCounts[14733] == 0) and (#var_3_2:getValidMergeResultInfoIdsByTriggerCard(var_3_1, 1) > 0)
+								local canExchange = (var_3_2._castedSkillCounts[14735] == nil or var_3_2._castedSkillCounts[14735] == 0) and (#var_3_2:getBattleCardsBy14735() > 0)
+
+								if canMerge and canExchange then
+									var_3_3:showChoiceHopDao(var_3_0, var_3_4)
+								elseif canExchange and not canMerge then
+									var_3_3:showChoiceGrave(var_3_0, var_3_4, B.sortCardsByBoardPos(var_3_2:getBattleCardsBy14735()), 1, 3 * BattleData.ChoiceId.stage_3)
+								else
+									var_3_3:showChoiceMerge(var_3_0, var_3_4)
+								end
 							elseif B.isSkillCeremony(var_3_1._skills[1]._id) then
 								var_3_3:showChoiceCeremony(var_3_0, var_3_4, 0)
 							else
@@ -407,13 +425,15 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 								local var_3_15
 								local var_3_16
 
-								if var_3_1._skills[1] ~= nil and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_bcs) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_grave) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_rare) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_hand) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_leave) then
-									var_3_14, var_3_15, var_3_16 = var_3_1._owner:isGraveSkill(var_3_1._skills[1], nil, false)
+								if ((var_3_1._skills and var_3_1._skills[1] ~= nil) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_bcs) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_grave) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_rare) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_hand) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_leave)) or var_3_1:hasSkillFast(14752) or var_3_1:hasSkillFast(14757) or var_3_1:isInfoId(21145) or var_3_1:isInfoId(21146) then
+									if var_3_1._skills and var_3_1._skills[1] and var_3_1._owner then
+										var_3_14, var_3_15, var_3_16 = var_3_1._owner:isGraveSkill(var_3_1._skills[1], nil, false)
+									end
 								end
 
-								if var_3_14 then
+								if var_3_14 and var_3_15 and #var_3_15 > 0 then
 									var_3_3:showChoiceGrave(var_3_0, var_3_4, var_3_15, var_3_16)
-								elseif var_3_1:hasSkillFast(7655) then
+								elseif var_3_1:hasSkillFast(7655) or var_3_1:hasSkillFast(14752) or var_3_1:hasSkillFast(14757) or var_3_1:isInfoId(21145) or var_3_1:isInfoId(21146) then
 									var_3_3:sendEvent(PlayerUi.EventType.send_use_card, {
 										_choice = 0,
 										_card = var_3_0._card
@@ -444,12 +464,19 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 							local var_3_18
 							local var_3_19
 
-							if var_3_1._skills[1] ~= nil and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_bcs) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_grave) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_rare) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_hand) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_leave) then
-								var_3_17, var_3_18, var_3_19 = var_3_1._owner:isGraveSkill(var_3_1._skills[1], nil, false)
+							if ((var_3_1._skills and var_3_1._skills[1] ~= nil) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_bcs) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_grave) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_rare) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_hand) and not B.skillHasMode(var_3_1._skills[1], Data.SkillMode.initiative_leave)) or var_3_1:hasSkillFast(14758) or var_3_1:isInfoId(30595) then
+								if var_3_1._skills and var_3_1._skills[1] and var_3_1._owner then
+									var_3_17, var_3_18, var_3_19 = var_3_1._owner:isGraveSkill(var_3_1._skills[1], nil, false)
+								end
 							end
 
-							if var_3_17 then
+							if var_3_17 and var_3_18 and #var_3_18 > 0 then
 								var_3_3:showChoiceGrave(var_3_0, var_3_4, var_3_18, var_3_19)
+							elseif var_3_1:hasSkillFast(14758) or var_3_1:isInfoId(30595) then
+								var_3_3:sendEvent(PlayerUi.EventType.send_use_card, {
+									_choice = 0,
+									_card = var_3_0._card
+								})
 							else
 								var_3_3:showChoiceSkill(var_3_0, var_3_4, nil, 0)
 							end
@@ -613,7 +640,7 @@ function var_0_0.getTouchedCard(arg_5_0, arg_5_1)
 		for iter_5_4 = #var_5_0._pGraveCards, 1, -1 do
 			local var_5_5 = var_5_0._pGraveCards[iter_5_4]
 
-			if var_5_5 ~= nil and var_5_5:containsTouchLocation(arg_5_1:getLocation().x, arg_5_1:getLocation().y) then
+			if var_5_5 ~= nil and var_5_5.containsTouchLocation and var_5_5:containsTouchLocation(arg_5_1:getLocation().x, arg_5_1:getLocation().y) then
 				return var_5_5
 			end
 		end
@@ -621,7 +648,7 @@ function var_0_0.getTouchedCard(arg_5_0, arg_5_1)
 		for iter_5_5 = #var_5_0._pRareCards, 1, -1 do
 			local var_5_6 = var_5_0._pRareCards[iter_5_5]
 
-			if var_5_6 ~= nil and var_5_6:containsTouchLocation(arg_5_1:getLocation().x, arg_5_1:getLocation().y) then
+			if var_5_6 ~= nil and var_5_6.containsTouchLocation and var_5_6:containsTouchLocation(arg_5_1:getLocation().x, arg_5_1:getLocation().y) then
 				return var_5_6
 			end
 		end
@@ -654,10 +681,10 @@ function var_0_0.getTouchedBoardCard(arg_6_0, arg_6_1, arg_6_2, arg_6_3, arg_6_4
 				if arg_6_2._card:isMonsterRare() then
 					-- block empty
 				elseif arg_6_2._card._type == Data.CardType.magic then
-					if not arg_6_4._player:canUseMagicOnTarget(arg_6_2._card, var_6_0._card) then
+					if not arg_6_2._card._owner:canUseMagicOnTarget(arg_6_2._card, var_6_0._card) then
 						isValid = false
 					end
-				elseif arg_6_2._card._type == Data.CardType.trap and not arg_6_4._player:canUseTrapOnTarget(arg_6_2._card, var_6_0._card) then
+				elseif arg_6_2._card._type == Data.CardType.trap and not arg_6_2._card._owner:canUseTrapOnTarget(arg_6_2._card, var_6_0._card) then
 					isValid = false
 				end
 
@@ -798,6 +825,13 @@ function var_0_0.showSelectTarget(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 	end
 
 	function var_12_5.onTouchEnded(arg_14_0, arg_14_1)
+		if arg_14_0._isHandled then return end
+		arg_14_0._isHandled = true
+
+		if arg_12_1._targetCard == nil and arg_14_1 ~= nil then
+			arg_14_0:onTouchMoved(arg_14_1)
+		end
+
 		var_12_1:hideSelectTarget(arg_14_0)
 
 		local var_14_0 = arg_12_1._targetCard
@@ -806,9 +840,12 @@ function var_0_0.showSelectTarget(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 			if var_12_4._type == Data.CardType.monster then
 				var_12_2:showChoiceSummon(arg_12_1, var_14_0)
 			elseif var_12_4._type == Data.CardType.magic or var_12_4._type == Data.CardType.trap then
-				local var_14_1, var_14_2, var_14_3 = var_12_4._owner:isGraveSkill(var_12_4._skills[1], var_14_0._card, false)
+				local var_14_1, var_14_2, var_14_3
+				if var_12_4._skills and var_12_4._skills[1] and var_12_4._owner then
+					var_14_1, var_14_2, var_14_3 = var_12_4._owner:isGraveSkill(var_12_4._skills[1], var_14_0._card, false)
+				end
 
-				if var_14_1 then
+				if var_14_1 and var_14_2 and #var_14_2 > 0 then
 					var_12_2:showChoiceGrave(arg_12_1, var_14_0, var_14_2, var_14_3)
 				elseif var_12_4:hasSkillFast(4796) then
 					var_12_2:showChoiceNumber(arg_12_1, var_14_0, 1, 12, 0)
@@ -837,13 +874,21 @@ function var_0_0.showSelectTarget(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 
 	var_12_5:addChild(var_12_6)
 	var_12_6:directTo(arg_12_3:getLocation(), nil)
+	var_12_5:onTouchMoved(arg_12_3)
 end
 
 function var_0_0.hideSelectTarget(arg_16_0, arg_16_1)
+	if not arg_16_1 or arg_16_1._isHiding then return end
+	arg_16_1._isHiding = true
+
 	local var_16_0 = arg_16_1._pCard
 
-	arg_16_0._playerUi:playAction(var_16_0, PlayerUi.Action.replace_hand_card, 0, 1)
-	arg_16_1:removeFromParent()
+	if var_16_0 and arg_16_0._playerUi then
+		arg_16_0._playerUi:playAction(var_16_0, PlayerUi.Action.replace_hand_card, 0, 1)
+	end
+	if arg_16_1:getParent() then
+		arg_16_1:removeFromParent()
+	end
 
 	arg_16_0._selectTargetLayer = nil
 end

@@ -5,7 +5,7 @@ end)
 DragonBones = var_0_0
 
 function var_0_0.create(arg_2_0)
-	print("Create DragonBones: ", arg_2_0)
+	-- print("Create DragonBones: ", arg_2_0)
 
 	if arg_2_0 == "malikepifu2" then
 		local var_2_0
@@ -24,6 +24,12 @@ function var_0_0.create(arg_2_0)
 end
 
 function var_0_0.onCleanup(arg_4_0)
+	-- In battle scenes, never unload DragonBones effects to keep 60 FPS smooth
+	-- and prevent synchronous network fetching / canvas rebuilding during combat.
+	if lc._runningScene and (lc._runningScene._sceneId == ClientData.SceneId.battle or lc._runningScene._sceneId == ClientData.SceneId.battle_test) then
+		return
+	end
+
 	if ClientData._dragonBonesTexture[arg_4_0._name] ~= nil then
 		ClientData._dragonBonesTexture[arg_4_0._name] = ClientData._dragonBonesTexture[arg_4_0._name] - 1
 	end

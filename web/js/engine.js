@@ -26,6 +26,50 @@
 		cc.LabelTTF._firsrEnglish = /^[a-zA-Z0-9_\u00C0-\u024F\u1EA0-\u1EF9]/;
 	}
 
+	var retainedNodes = global.jdzcRetainedNodes = new Set();
+	cc.Node.prototype.retain = function () {
+		this.__jdzcRetain = (this.__jdzcRetain || 0) + 1;
+		retainedNodes.add(this);
+	};
+	cc.Node.prototype.release = function () {
+		if (this.__jdzcRetain > 0 && --this.__jdzcRetain === 0)
+			retainedNodes.delete(this);
+	};
+
+	function nodeIsLive(node) {
+		var root = node;
+		for (var n = node; n; n = n._parent) {
+			if (n.__jdzcRetain) return true;
+			root = n;
+		}
+		var d = cc.director, running = d._runningScene;
+		if (root === running || root === d._nextScene || root === d._notificationNode)
+			return true;
+		if (running && (root === running._inScene || root === running._outScene))
+			return true;
+		var stack = d._scenesStack || [];
+		for (var i = 0; i < stack.length; i++) if (stack[i] === root) return true;
+		return false;
+	}
+
+	function sweepDeadListeners() {
+		var em = cc.eventManager, map = em && em._nodeListenersMap;
+		if (!map || em._inDispatch) return 0;
+		var dead = [];
+		for (var id in map) {
+			var list = map[id];
+			var node = list && list.length ? list[0]._node : null;
+			if (node && !node._running && !nodeIsLive(node)) dead.push(node);
+		}
+		for (var j = 0; j < dead.length; j++) em.removeListeners(dead[j], false);
+		return dead.length;
+	}
+
+	global.jdzcSweepDeadListeners = sweepDeadListeners;
+	setInterval(function () {
+		try { sweepDeadListeners(); } catch (e) { cc.log('[sweep] ' + e); }
+	}, 3000);
+
 	/* ------------------------------------------------------------------ *
 	 * cc.Application -- lc.App
 	 *
@@ -352,11 +396,28 @@
 
 		/* the alpha lives in <name>_mask.png beside the colour plane */
 		var url = res.base + path.replace(/^res\//, '');
-		var ver = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20260919v14';
+		var ver = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261008v9';
 		var sep = url.indexOf('?') >= 0 ? '&' : '?';
 		var colourUrl = url + sep + 'v=' + ver;
 		var maskUrl = url.replace(/\.[A-Za-z]+$/, '_mask.png') + sep + 'v=' + ver;
 		return res.maskedTexture(path, colourUrl, maskUrl);
+	};
+
+	global.jdzcFreeUploadedCanvases = function () {
+		if (cc._renderType !== cc.game.RENDER_TYPE_WEBGL) return false;
+		var baseHandleLoaded = cc.Texture2D.prototype.handleLoadedTexture;
+		cc.Texture2D.prototype.handleLoadedTexture = function (premultiplied) {
+			var element = this._htmlElementObj;
+			var result = baseHandleLoaded.call(this, premultiplied);
+			if (element && element.__jdzcOwned && element === this._htmlElementObj &&
+			    cc.game._rendererInitialized && element.width && element.height &&
+			    this._pixelsWide === element.width) {
+				element.width = 0;
+				element.height = 0;
+			}
+			return result;
+		};
+		return true;
 	};
 
 	/* the game evicts textures on scene exit (TavernScene's
@@ -515,7 +576,71 @@
 		'card_ico_40725': 'res/new/thumb/card_ico_40725.png',
 		'card_ico_40725_3': 'res/new/thumb/card_ico_40725_3.png',
 		'card_ico_40726': 'res/new/thumb/card_ico_40726.png',
-		'card_ico_40726_3': 'res/new/thumb/card_ico_40726_3.png'
+		'card_ico_40726_3': 'res/new/thumb/card_ico_40726_3.png',
+		'card_ico_12313': 'res/new/thumb/card_ico_12313.png',
+		'card_ico_12313_3': 'res/new/thumb/card_ico_12313_3.png',
+		'card_ico_12314': 'res/new/thumb/card_ico_12314.png',
+		'card_ico_12314_3': 'res/new/thumb/card_ico_12314_3.png',
+		'card_ico_12315': 'res/new/thumb/card_ico_12315.png',
+		'card_ico_12315_3': 'res/new/thumb/card_ico_12315_3.png',
+		'card_ico_12316': 'res/new/thumb/card_ico_12316.png',
+		'card_ico_12316_3': 'res/new/thumb/card_ico_12316_3.png',
+		'card_ico_12317': 'res/new/thumb/card_ico_12317.png',
+		'card_ico_12317_3': 'res/new/thumb/card_ico_12317_3.png',
+		'card_ico_12318': 'res/new/thumb/card_ico_12318.png',
+		'card_ico_12318_3': 'res/new/thumb/card_ico_12318_3.png',
+		'card_ico_12319': 'res/new/thumb/card_ico_12319.png',
+		'card_ico_12319_3': 'res/new/thumb/card_ico_12319_3.png',
+		'card_ico_12320': 'res/new/thumb/card_ico_12320.png',
+		'card_ico_12320_3': 'res/new/thumb/card_ico_12320_3.png',
+		'card_ico_12321': 'res/new/thumb/card_ico_12321.png',
+		'card_ico_12321_3': 'res/new/thumb/card_ico_12321_3.png',
+		'card_ico_12322': 'res/new/thumb/card_ico_12322.png',
+		'card_ico_12322_3': 'res/new/thumb/card_ico_12322_3.png',
+		'card_ico_12323': 'res/new/thumb/card_ico_12323.png',
+		'card_ico_12323_3': 'res/new/thumb/card_ico_12323_3.png',
+		'card_ico_12324': 'res/new/thumb/card_ico_12324.png',
+		'card_ico_12324_3': 'res/new/thumb/card_ico_12324_3.png',
+		'card_ico_12325': 'res/new/thumb/card_ico_12325.png',
+		'card_ico_12325_3': 'res/new/thumb/card_ico_12325_3.png',
+		'card_ico_12326': 'res/new/thumb/card_ico_12326.png',
+		'card_ico_12326_3': 'res/new/thumb/card_ico_12326_3.png',
+		'card_ico_21135': 'res/new/thumb/card_ico_21135.png',
+		'card_ico_21135_3': 'res/new/thumb/card_ico_21135_3.png',
+		'card_ico_21136': 'res/new/thumb/card_ico_21136.png',
+		'card_ico_21136_3': 'res/new/thumb/card_ico_21136_3.png',
+		'card_ico_21137': 'res/new/thumb/card_ico_21137.png',
+		'card_ico_21137_3': 'res/new/thumb/card_ico_21137_3.png',
+		'card_ico_21138': 'res/new/thumb/card_ico_21138.png',
+		'card_ico_21138_3': 'res/new/thumb/card_ico_21138_3.png',
+		'card_ico_21139': 'res/new/thumb/card_ico_21139.png',
+		'card_ico_21139_3': 'res/new/thumb/card_ico_21139_3.png',
+		'card_ico_12327': 'res/new/thumb/card_ico_12327.png',
+		'card_ico_12327_3': 'res/new/thumb/card_ico_12327_3.png',
+		'card_ico_12328': 'res/new/thumb/card_ico_12328.png',
+		'card_ico_12328_3': 'res/new/thumb/card_ico_12328_3.png',
+		'card_ico_21140': 'res/new/thumb/card_ico_21140.png',
+		'card_ico_21140_3': 'res/new/thumb/card_ico_21140_3.png',
+		'card_ico_21141': 'res/new/thumb/card_ico_21141.png',
+		'card_ico_21141_3': 'res/new/thumb/card_ico_21141_3.png',
+		'card_ico_30592': 'res/new/thumb/card_ico_30592.png',
+		'card_ico_30592_3': 'res/new/thumb/card_ico_30592_3.png',
+		'card_ico_30593': 'res/new/thumb/card_ico_30593.png',
+		'card_ico_30593_3': 'res/new/thumb/card_ico_30593_3.png',
+		'card_ico_40727': 'res/new/thumb/card_ico_40727.png',
+		'card_ico_40727_3': 'res/new/thumb/card_ico_40727_3.png',
+		'card_ico_40728': 'res/new/thumb/card_ico_40728.png',
+		'card_ico_40728_3': 'res/new/thumb/card_ico_40728_3.png',
+		'card_ico_40729': 'res/new/thumb/card_ico_40729.png',
+		'card_ico_40729_3': 'res/new/thumb/card_ico_40729_3.png',
+		'card_ico_40730': 'res/new/thumb/card_ico_40730.png',
+		'card_ico_40730_3': 'res/new/thumb/card_ico_40730_3.png',
+		'card_ico_40731': 'res/new/thumb/card_ico_40731.png',
+		'card_ico_40731_3': 'res/new/thumb/card_ico_40731_3.png',
+		    'card_ico_12329': 'res/new/thumb/card_ico_12329.png',
+    'card_ico_12329_3': 'res/new/thumb/card_ico_12329_3.png',
+'card_ico_40732': 'res/new/thumb/card_ico_40732.png',
+		'card_ico_40732_3': 'res/new/thumb/card_ico_40732_3.png'
 	};
 	global.CUSTOM_FRAME_IMAGE_MAP = CUSTOM_FRAME_IMAGE_MAP;
 
@@ -523,8 +648,10 @@
 	 * existence test for optional skins and channel variants. The asynchronous
 	 * construction paths below wait for late atlas frames themselves. */
 	var lookupFrame = cc.spriteFrameCache.getSpriteFrame.bind(cc.spriteFrameCache);
+	var negativeFrameMap = {};
 
 	function getCustomSpriteFrame(name) {
+		if (negativeFrameMap[name]) return null;
 		var custom = (global.jdzcRes && global.jdzcRes.CUSTOM_ICON_REPLACEMENTS) || global.CUSTOM_ICON_REPLACEMENTS;
 		if (!custom || !custom[name]) {
 			if (CUSTOM_FRAME_IMAGE_MAP && CUSTOM_FRAME_IMAGE_MAP[name]) {
@@ -541,9 +668,11 @@
 						if (!custom) custom = {};
 						custom[name] = { path: candidatePath, w: 82, h: 82 };
 					} else {
+						negativeFrameMap[name] = true;
 						return null;
 					}
 				} else {
+					negativeFrameMap[name] = true;
 					return null;
 				}
 			}
@@ -976,6 +1105,58 @@
 				x: proj_cx + (vx - cx) * k,
 				y: proj_cy + (vy - cy) * k
 			};
+		},
+
+		projectFlatInPlace: function (verts, root) {
+			var winSize = cc.director._winSizeInPoints || cc.director.getWinSize();
+			var camX = winSize.width * 0.5;
+			var camY = winSize.height * 0.5;
+			var zEye = camY * 1.7320508075688772;
+			var anchorX = root ? root.getPositionX() : camX;
+			var anchorY = root ? root.getPositionY() : (camY + 112);
+			var rotX = root && root.__rotation3D ? root.__rotation3D.x : -20;
+			var rad = rotX * 0.017453292519943295;
+			var cosT = Math.cos(rad);
+			var sinT = Math.sin(rad);
+			var offsetY = anchorY - camY;
+
+			for (var i = 0; i < 4; i++) {
+				var v = verts[i];
+				var dx = v.x - anchorX;
+				var dy = v.y - anchorY;
+				var distZ = zEye - dy * sinT;
+				if (distZ <= 10) distZ = 10;
+				var k = zEye / distZ;
+				v.x = camX + dx * k;
+				v.y = camY + (offsetY + dy * cosT) * k;
+			}
+		},
+
+		projectUprightInPlace: function (verts, cx, cy, root) {
+			var winSize = cc.director._winSizeInPoints || cc.director.getWinSize();
+			var camX = winSize.width * 0.5;
+			var camY = winSize.height * 0.5;
+			var zEye = camY * 1.7320508075688772;
+			var anchorX = root ? root.getPositionX() : camX;
+			var anchorY = root ? root.getPositionY() : (camY + 112);
+			var rotX = root && root.__rotation3D ? root.__rotation3D.x : -20;
+			var rad = rotX * 0.017453292519943295;
+			var cosT = Math.cos(rad);
+			var sinT = Math.sin(rad);
+			var offsetY = anchorY - camY;
+
+			var dy_center = cy - anchorY;
+			var distZ = zEye - dy_center * sinT;
+			if (distZ <= 10) distZ = 10;
+			var k = zEye / distZ;
+			var proj_cx = camX + (cx - anchorX) * k;
+			var proj_cy = camY + (offsetY + dy_center * cosT) * k;
+
+			for (var i = 0; i < 4; i++) {
+				var v = verts[i];
+				v.x = proj_cx + (v.x - cx) * k;
+				v.y = proj_cy + (v.y - cy) * k;
+			}
 		}
 	};
 
@@ -993,6 +1174,7 @@
 		}
 	}
 
+	var _staticCenter = { x: 0, y: 0 };
 	function getUprightCenter(uprightRoot) {
 		var ucmd = uprightRoot && uprightRoot._renderCmd;
 		if (ucmd && ucmd._worldTransform) {
@@ -1000,23 +1182,24 @@
 			if (uprightRoot._contentSize && uprightRoot._contentSize.width > 0) {
 				var hw = uprightRoot._contentSize.width * 0.5;
 				var hh = uprightRoot._contentSize.height * 0.5;
-				return {
-					x: hw * uwt.a + hh * uwt.c + uwt.tx,
-					y: hw * uwt.b + hh * uwt.d + uwt.ty
-				};
+				_staticCenter.x = hw * uwt.a + hh * uwt.c + uwt.tx;
+				_staticCenter.y = hw * uwt.b + hh * uwt.d + uwt.ty;
+				return _staticCenter;
 			}
-			return { x: uwt.tx, y: uwt.ty };
+			_staticCenter.x = uwt.tx;
+			_staticCenter.y = uwt.ty;
+			return _staticCenter;
 		}
 		if (uprightRoot && uprightRoot.convertToWorldSpace) {
-			if (uprightRoot._contentSize && uprightRoot._contentSize.width > 0) {
-				return uprightRoot.convertToWorldSpace(cc.p(
-					uprightRoot._contentSize.width * 0.5,
-					uprightRoot._contentSize.height * 0.5
-				));
-			}
-			return uprightRoot.convertToWorldSpace(cc.p(0, 0));
+			var cs = uprightRoot._contentSize;
+			var p = (cs && cs.width > 0) ? uprightRoot.convertToWorldSpace(cc.p(cs.width * 0.5, cs.height * 0.5)) : uprightRoot.convertToWorldSpace(cc.p(0, 0));
+			_staticCenter.x = p.x;
+			_staticCenter.y = p.y;
+			return _staticCenter;
 		}
-		return { x: 0, y: 0 };
+		_staticCenter.x = 0;
+		_staticCenter.y = 0;
+		return _staticCenter;
 	}
 
 	function getUprightRoot(node) {
@@ -1095,24 +1278,9 @@
 			var uprightRoot = getUprightRoot(node);
 			if (uprightRoot) {
 				var center = getUprightCenter(uprightRoot);
-				var cx = center.x, cy = center.y;
-				var p0 = BATTLE_PERSPECTIVE.projectUpright(verts[0].x, verts[0].y, cx, cy, root);
-				var p1 = BATTLE_PERSPECTIVE.projectUpright(verts[1].x, verts[1].y, cx, cy, root);
-				var p2 = BATTLE_PERSPECTIVE.projectUpright(verts[2].x, verts[2].y, cx, cy, root);
-				var p3 = BATTLE_PERSPECTIVE.projectUpright(verts[3].x, verts[3].y, cx, cy, root);
-				verts[0].x = p0.x; verts[0].y = p0.y;
-				verts[1].x = p1.x; verts[1].y = p1.y;
-				verts[2].x = p2.x; verts[2].y = p2.y;
-				verts[3].x = p3.x; verts[3].y = p3.y;
+				BATTLE_PERSPECTIVE.projectUprightInPlace(verts, center.x, center.y, root);
 			} else {
-				var p0 = BATTLE_PERSPECTIVE.projectFlat(verts[0].x, verts[0].y, root);
-				var p1 = BATTLE_PERSPECTIVE.projectFlat(verts[1].x, verts[1].y, root);
-				var p2 = BATTLE_PERSPECTIVE.projectFlat(verts[2].x, verts[2].y, root);
-				var p3 = BATTLE_PERSPECTIVE.projectFlat(verts[3].x, verts[3].y, root);
-				verts[0].x = p0.x; verts[0].y = p0.y;
-				verts[1].x = p1.x; verts[1].y = p1.y;
-				verts[2].x = p2.x; verts[2].y = p2.y;
-				verts[3].x = p3.x; verts[3].y = p3.y;
+				BATTLE_PERSPECTIVE.projectFlatInPlace(verts, root);
 			}
 		};
 
@@ -1155,6 +1323,18 @@
 					}
 				}
 
+				var winSize = cc.director._winSizeInPoints || cc.director.getWinSize();
+				var camX = winSize.width * 0.5;
+				var camY = winSize.height * 0.5;
+				var zEye = camY * 1.7320508075688772;
+				var anchorX = root ? root.getPositionX() : camX;
+				var anchorY = root ? root.getPositionY() : (camY + 112);
+				var rotX = root && root.__rotation3D ? root.__rotation3D.x : -20;
+				var rad = rotX * 0.017453292519943295;
+				var cosT = Math.cos(rad);
+				var sinT = Math.sin(rad);
+				var offsetY = anchorY - camY;
+
 				for (var iy = 0; iy < NY; iy++) {
 					var y0 = by + (iy / NY) * (ty - by);
 					var y1 = by + ((iy + 1) / NY) * (ty - by);
@@ -1167,27 +1347,50 @@
 						var cu0 = u_left + (ix / NX) * (u_right - u_left);
 						var cu1 = u_left + ((ix + 1) / NX) * (u_right - u_left);
 
-						var p0 = BATTLE_PERSPECTIVE.projectFlat(x0 * wt.a + y1 * wt.c + wt.tx, x0 * wt.b + y1 * wt.d + wt.ty, root);
-						var p1 = BATTLE_PERSPECTIVE.projectFlat(x0 * wt.a + y0 * wt.c + wt.tx, x0 * wt.b + y0 * wt.d + wt.ty, root);
-						var p2 = BATTLE_PERSPECTIVE.projectFlat(x1 * wt.a + y1 * wt.c + wt.tx, x1 * wt.b + y1 * wt.d + wt.ty, root);
-						var p3 = BATTLE_PERSPECTIVE.projectFlat(x1 * wt.a + y0 * wt.c + wt.tx, x1 * wt.b + y0 * wt.d + wt.ty, root);
+						// p0
+						var wx0 = x0 * wt.a + y1 * wt.c + wt.tx, wy0 = x0 * wt.b + y1 * wt.d + wt.ty;
+						var dx0 = wx0 - anchorX, dy0 = wy0 - anchorY;
+						var dz0 = zEye - dy0 * sinT; if (dz0 <= 10) dz0 = 10;
+						var k0 = zEye / dz0;
+						var p0x = camX + dx0 * k0, p0y = camY + (offsetY + dy0 * cosT) * k0;
 
-						f32buffer[offset] = p0.x; f32buffer[offset + 1] = p0.y; f32buffer[offset + 2] = z;
+						// p1
+						var wx1 = x0 * wt.a + y0 * wt.c + wt.tx, wy1 = x0 * wt.b + y0 * wt.d + wt.ty;
+						var dx1 = wx1 - anchorX, dy1 = wy1 - anchorY;
+						var dz1 = zEye - dy1 * sinT; if (dz1 <= 10) dz1 = 10;
+						var k1 = zEye / dz1;
+						var p1x = camX + dx1 * k1, p1y = camY + (offsetY + dy1 * cosT) * k1;
+
+						// p2
+						var wx2 = x1 * wt.a + y1 * wt.c + wt.tx, wy2 = x1 * wt.b + y1 * wt.d + wt.ty;
+						var dx2 = wx2 - anchorX, dy2 = wy2 - anchorY;
+						var dz2 = zEye - dy2 * sinT; if (dz2 <= 10) dz2 = 10;
+						var k2 = zEye / dz2;
+						var p2x = camX + dx2 * k2, p2y = camY + (offsetY + dy2 * cosT) * k2;
+
+						// p3
+						var wx3 = x1 * wt.a + y0 * wt.c + wt.tx, wy3 = x1 * wt.b + y0 * wt.d + wt.ty;
+						var dx3 = wx3 - anchorX, dy3 = wy3 - anchorY;
+						var dz3 = zEye - dy3 * sinT; if (dz3 <= 10) dz3 = 10;
+						var k3 = zEye / dz3;
+						var p3x = camX + dx3 * k3, p3y = camY + (offsetY + dy3 * cosT) * k3;
+
+						f32buffer[offset] = p0x; f32buffer[offset + 1] = p0y; f32buffer[offset + 2] = z;
 						ui32buffer[offset + 3] = color;
 						f32buffer[offset + 4] = cu0; f32buffer[offset + 5] = cv1;
 						offset += 6;
 
-						f32buffer[offset] = p1.x; f32buffer[offset + 1] = p1.y; f32buffer[offset + 2] = z;
+						f32buffer[offset] = p1x; f32buffer[offset + 1] = p1y; f32buffer[offset + 2] = z;
 						ui32buffer[offset + 3] = color;
 						f32buffer[offset + 4] = cu0; f32buffer[offset + 5] = cv0;
 						offset += 6;
 
-						f32buffer[offset] = p2.x; f32buffer[offset + 1] = p2.y; f32buffer[offset + 2] = z;
+						f32buffer[offset] = p2x; f32buffer[offset + 1] = p2y; f32buffer[offset + 2] = z;
 						ui32buffer[offset + 3] = color;
 						f32buffer[offset + 4] = cu1; f32buffer[offset + 5] = cv1;
 						offset += 6;
 
-						f32buffer[offset] = p3.x; f32buffer[offset + 1] = p3.y; f32buffer[offset + 2] = z;
+						f32buffer[offset] = p3x; f32buffer[offset + 1] = p3y; f32buffer[offset + 2] = z;
 						ui32buffer[offset + 3] = color;
 						f32buffer[offset + 4] = cu1; f32buffer[offset + 5] = cv0;
 						offset += 6;
@@ -2277,6 +2480,7 @@
 				data.texture = cachedTexture;
 			this.removeAllChildren();
 			this._slotNodes = [];
+			this._slotNodesByBone = {};
 
 			var slots = data.ske.slots.slice().sort(function (a, b) {
 				return a.z - b.z;
@@ -2302,6 +2506,7 @@
 
 					if (!data.texture.isLoaded()) {
 						var bindTexture = function () {
+							if (self._destroyed) return;
 							sprite.setTexture(data.texture);
 							/* A few html5 renderer builds reject a Texture2D
 							 * placeholder even after its element is uploaded. Keep
@@ -2315,13 +2520,14 @@
 							sprite.setTextureRect(rect);
 							sprite.setAnchorPoint(ax, ay);
 						};
-						data.texture.addEventListener('load', bindTexture);
+						data.texture.addEventListener('load', bindTexture, self);
 
 						/* Some canvas/WebGL texture paths can finish between the
 						 * loaded check and listener registration. Poll briefly as a
 						 * fallback so a missed event cannot leave a permanent hole. */
 						var retries = 0;
 						(function retryBind() {
+							if (self._destroyed) return;
 							var latestTexture = cc.textureCache.getTextureForKey(data.textureKey);
 							if (latestTexture && latestTexture !== data.texture)
 								data.texture = latestTexture;
@@ -2329,7 +2535,7 @@
 								bindTexture();
 								return;
 							}
-							if (++retries < 200) setTimeout(retryBind, 50);
+							if (++retries < 40) setTimeout(retryBind, 50);
 						}());
 					}
 					sprite.setScaleX(display.scaleX);
@@ -2344,10 +2550,15 @@
 
 				if (sprites[0]) sprites[0].setVisible(true);
 				self.addChild(holder);
-				self._slotNodes.push({
+				var entry = {
 					slot: slot, node: holder, sprites: sprites,
 					shown: 0,
-				});
+				};
+				self._slotNodes.push(entry);
+				if (!self._slotNodesByBone[slot.bone]) {
+					self._slotNodesByBone[slot.bone] = [];
+				}
+				self._slotNodesByBone[slot.bone].push(entry);
 			});
 
 			this._applyPose();
@@ -2378,50 +2589,48 @@
 			}
 
 			var frameAt = this._time * this._data.ske.fps;
-			var bones = this._data.ske.bones;
-			var self = this;
+			var byBone = this._slotNodesByBone || {};
+			var timelines = anim.timelines;
 
-			var activeTimelines = {};
-			anim.timelines.forEach(function (timeline) {
-				activeTimelines[timeline.bone] = timeline;
-			});
-
-			self._slotNodes.forEach(function (entry) {
-				if (!activeTimelines[entry.slot.bone]) {
-					entry.node.setVisible(false);
-				}
-			});
-
-			anim.timelines.forEach(function (timeline) {
+			for (var ti = 0; ti < timelines.length; ti++) {
+				var timeline = timelines[ti];
 				var found = pickFrame(timeline.frames, frameAt);
-				if (!found) return;
+				if (!found) continue;
 
-				self._slotNodes.forEach(function (entry) {
-					if (entry.slot.bone !== timeline.bone) return;
+				var entries = byBone[timeline.bone];
+				if (!entries) continue;
 
-					var isVisible = !!found.transform && (found.displayIndex === undefined || found.displayIndex >= 0);
+				var isVisible = !!found.transform && (found.displayIndex === undefined || found.displayIndex >= 0);
+				for (var ei = 0; ei < entries.length; ei++) {
+					var entry = entries[ei];
 					entry.node.setVisible(isVisible);
-					if (!isVisible) return;
+					if (!isVisible) continue;
 
 					setBone(entry.node, found.transform);
 					showDisplay(entry, found.displayIndex);
 					var sprite = entry.sprites[entry.shown];
 					if (sprite) {
-						if (found.alpha !== undefined)
-							sprite.setOpacity(
-								Math.max(0, Math.min(255,
-									Math.round(found.alpha * 255))));
-						if (found.colorR !== undefined)
-							sprite.setColor(cc.color(
-								Math.max(0, Math.min(255,
-									Math.round(found.colorR * 255))),
-								Math.max(0, Math.min(255,
-									Math.round(found.colorG * 255))),
-								Math.max(0, Math.min(255,
-									Math.round(found.colorB * 255)))));
+						if (found.alpha !== undefined) {
+							var op = Math.max(0, Math.min(255, Math.round(found.alpha * 255)));
+							if (sprite._lastOpacity !== op) {
+								sprite._lastOpacity = op;
+								sprite.setOpacity(op);
+							}
+						}
+						if (found.colorR !== undefined) {
+							var r = Math.max(0, Math.min(255, Math.round(found.colorR * 255)));
+							var g = Math.max(0, Math.min(255, Math.round(found.colorG * 255)));
+							var b = Math.max(0, Math.min(255, Math.round(found.colorB * 255)));
+							if (sprite._lastR !== r || sprite._lastG !== g || sprite._lastB !== b) {
+								sprite._lastR = r;
+								sprite._lastG = g;
+								sprite._lastB = b;
+								sprite.setColor(cc.color(r, g, b));
+							}
+						}
 					}
-				});
-			});
+				}
+			}
 		},
 
 		gotoAndPlay: function (name, loop) {
@@ -2438,6 +2647,19 @@
 			this._time = 0;
 			this._playing = true;
 			this._loop = loop !== undefined ? !!loop : anim.playTimes <= 0;
+
+			if (!anim._activeBones) {
+				anim._activeBones = {};
+				for (var ai = 0; ai < anim.timelines.length; ai++) {
+					anim._activeBones[anim.timelines[ai].bone] = true;
+				}
+			}
+			for (var si = 0; si < this._slotNodes.length; si++) {
+				var snEntry = this._slotNodes[si];
+				if (!anim._activeBones[snEntry.slot.bone]) {
+					snEntry.node.setVisible(false);
+				}
+			}
 
 			var self = this;
 			this.unscheduleUpdate();
@@ -2456,12 +2678,20 @@
 		},
 
 		onExit: function () {
+			this._destroyed = true;
 			this.stop();
+			if (this._data && this._data.texture && this._data.texture.removeEventListener) {
+				this._data.texture.removeEventListener('load', this);
+			}
 			this._super();
 		},
 
 		cleanup: function () {
+			this._destroyed = true;
 			this.stop();
+			if (this._data && this._data.texture && this._data.texture.removeEventListener) {
+				this._data.texture.removeEventListener('load', this);
+			}
 			this._super();
 		},
 
@@ -2486,7 +2716,25 @@
 		return node;
 	};
 	cc.DragonBonesNode.removeTextureAtlas = function (name) {
-		cc.textureCache.removeTextureForKey(name + '.png');
+		// Retain dbCache entries and textures so subsequent effect plays do not freeze the browser
+		// with synchronous XMLHttpRequest (readBinSync) or canvas re-compositing.
+	};
+
+	cc.DragonBonesNode.clearCache = function () {
+		for (var k in dbCache) {
+			if (dbCache[k]) {
+				var entry = dbCache[k];
+				if (entry.atlas && entry.atlas.regions) {
+					Object.keys(entry.atlas.regions).forEach(function (rName) {
+						cc.spriteFrameCache.removeSpriteFrameByName(rName);
+					});
+				}
+				if (entry.textureKey) {
+					cc.textureCache.removeTextureForKey(entry.textureKey);
+				}
+			}
+			delete dbCache[k];
+		}
 	};
 
 	/* ------------------------------------------------------------------ *
@@ -3395,36 +3643,20 @@
 	var fontFamilies = {};
 
 	global.jdzcFontFamily = function (path) {
-		// Map empty, Arial, Segoe, HYB2GJM, or YuGiOhFont to the authentic Vietnamese font (Be Vietnam Pro Bold)
-		if (!path || path === 'Arial' || path === 'YuGiOhFont' || path === 'Be Vietnam Pro' ||
-		    path.indexOf('HYB2GJM') !== -1 || path.indexOf('Segoe') !== -1 || path.indexOf('sans-serif') !== -1) {
-			return 'YuGiOhFont';
-		}
+		if (!path) return 'Arial';
 		if (fontFamilies[path]) return fontFamilies[path];
 
 		var family = 'jdzc_' + path.replace(/[^A-Za-z0-9]/g, '_');
 		var url = (config.resBase || '/res/') + String(path).replace(/^res\//, '');
 		var style = document.createElement('style');
 		style.textContent = '@font-face{font-family:"' + family +
-			'";src:url("' + url + '");font-display:swap;}';
+			'";src:url("' + url + '");}';
 		document.head.appendChild(style);
 		fontFamilies[path] = family;
 		return family;
 	};
 
 	if (cc.LabelTTF) {
-		var origInitWithString = cc.LabelTTF.prototype.initWithString;
-		cc.LabelTTF.prototype.initWithString = function (label, fontName, fontSize, dimensions, hAlignment, vAlignment) {
-			fontName = global.jdzcFontFamily ? global.jdzcFontFamily(fontName) : (fontName || 'YuGiOhFont');
-			return origInitWithString.call(this, label, fontName, fontSize, dimensions, hAlignment, vAlignment);
-		};
-
-		var origSetFontName = cc.LabelTTF.prototype.setFontName;
-		cc.LabelTTF.prototype.setFontName = function (fontName) {
-			fontName = global.jdzcFontFamily ? global.jdzcFontFamily(fontName) : (fontName || 'YuGiOhFont');
-			return origSetFontName.call(this, fontName);
-		};
-
 		cc.LabelTTF.prototype.setSystemFontName = function (fontName) {
 			this.setFontName(fontName);
 		};
@@ -3660,7 +3892,7 @@
 			var now = Date.now();
 			if (node.__frameRetryAt && now - node.__frameRetryAt <= 1000) return;
 			node.__frameRetryAt = now;
-			res.awaitFrame(node.__frameName, function () {
+			node.__healWaiter = node.__healWaiter || function () {
 				if (node._originalSize && node._originalSize.width) return;
 				var frame = lookupFrame(node.__frameName);
 				if (isBlankFrame(frame)) return;
@@ -3676,7 +3908,8 @@
 				node.setSpriteFrame(frame, node.__frameCaps);
 				if (keep.width || keep.height) node.setContentSize(keep);
 				if (wedged) node.setVisible(true);
-			});
+			};
+			res.awaitFrame(node.__frameName, node.__healWaiter);
 		}
 
 		/* The renderer never calls node.visit. A parent draws its children with

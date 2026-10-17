@@ -102,7 +102,16 @@ function var_0_0.addCardList(arg_9_0)
 	local function var_9_2(arg_11_0)
 		local var_11_0 = arg_11_0._card
 
-		if var_11_0._price > P:getItemCount(var_11_0._priceType) then
+		if P._playerCard:getCardCount(var_11_0._infoId) >= (Data.getInfo(var_11_0._infoId)._maxCount or 3) then
+			return ToastManager.push(Str(STR.SHOP_CARD_MAX))
+		end
+
+		local curResCount = P:getItemCount(var_11_0._priceType)
+		if (var_11_0._priceType == 3 or var_11_0._priceType == 7339 or var_11_0._priceType == 7114) and P._ingot then
+			curResCount = P._ingot
+		end
+
+		if var_11_0._price > curResCount then
 			ToastManager.push(string.format(Str(STR.NOT_ENOUGH), ClientData.getNameByInfoId(var_11_0._priceType)))
 		else
 			require("Dialog").showDialog(Str(STR.SURE_TO_BUY), function()
@@ -146,6 +155,8 @@ function var_0_0.addCardList(arg_9_0)
 			end
 		end
 	end
+
+	table.sort(var_9_4, function(arg_a, arg_b) return arg_a._id > arg_b._id end)
 
 	var_9_0._shopInfo = var_9_4
 

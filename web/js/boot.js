@@ -80,10 +80,12 @@
 		var el = document.getElementById('bootStatus');
 		if (el) el.textContent = text;
 		if (global.__setBootProgress) global.__setBootProgress(undefined, text);
-		cc.log('[boot] ' + text);
 	}
 
 	Boot.start = function () {
+		if (typeof cc !== 'undefined') {
+			cc.log = function () {};
+		}
 		var config = global.JDZC_CONFIG;
 
 		status('Đang tải dữ liệu cấu hình...');
@@ -95,12 +97,18 @@
 		Boot.total = 9 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261004v1';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261017v181500';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
 			done(fetchJson('lua_src.json?v=' + ver)),
 			done(fetchJson('data_dumps.json?v=' + ver)),
-			done(global.LuaVM()),
+			done(global.LuaVM({
+				print: function (text) {
+					if (!text) return;
+					if (text.indexOf('math.random') !== -1 || text.indexOf('updateInitiativeSkills') !== -1 || text.indexOf('skillFrozen') !== -1 || text.indexOf('[BATTLE]') !== -1 || text.indexOf('[BATTLE_STEP]') !== -1 || text.indexOf('Create DragonBones') !== -1 || text.indexOf('sendBattleUseCard') !== -1 || text.indexOf('++++++++') !== -1) return;
+					console.log(text);
+				}
+			})),
 		]).then(function (all) {
 			var manifest = all[0], sources = all[1], dumps = all[2],
 			    Module = all[3];
@@ -123,20 +131,31 @@
 			var preloadList = config.preload || [];
 			function safe(tag, p, timeoutMs) {
 				if (!p || typeof p.then !== 'function') return Promise.resolve(p);
-				var limit = timeoutMs || (isIOS ? 30000 : 25000);
+				var limit = timeoutMs || 45000;
+				var timerId = null;
 				var timer = new Promise(function (resolve) {
-					setTimeout(function () {
+					timerId = setTimeout(function () {
+						timerId = null;
 						console.warn('[boot] ' + tag + ' timed out (' + limit + 'ms), proceeding to prevent freeze');
 						resolve(null);
 					}, limit);
 				});
-				return Promise.race([p, timer]).catch(function (err) {
+				return Promise.race([
+					Promise.resolve(p).then(function (v) {
+						if (timerId !== null) { clearTimeout(timerId); timerId = null; }
+						return v;
+					}, function (err) {
+						if (timerId !== null) { clearTimeout(timerId); timerId = null; }
+						throw err;
+					}),
+					timer
+				]).catch(function (err) {
 					console.warn('[boot] ' + tag + ' notice:', err);
 					return null;
 				});
 			}
 			return Promise.all([
-				done(safe('Language', jdzcRes.preloadLanguage())),
+				done(safe('Language', jdzcRes.preloadLanguage(), 60000)),
 				done(safe('Texts', jdzcRes.preloadTexts())),
 				done(safe('Pvr', jdzcRes.preloadPvr())),
 				done(safe('Fonts', jdzcRes.preloadFonts())),
@@ -150,7 +169,7 @@
 				function loadNext() {
 					if (index >= preloadList.length) return Promise.resolve();
 					var path = preloadList[index++];
-					return done(safe('Container ' + path, jdzcRes.loadContainer(path), 35000)).then(loadNext);
+					return done(safe('Container ' + path, jdzcRes.loadContainer(path), 60000)).then(loadNext);
 				}
 				var workers = [];
 				for (var w = 0; w < Math.min(concurrency, preloadList.length); w++) {
@@ -208,7 +227,7 @@
 				if (pct >= 100) Boot.takeOverlayDown();
 			});
 
-			status('Đang vào thế giới Yu-Gi-Oh!...');
+			status('Đang vào thế giới Yu-Gi-Oh!... ');
 			lua.run('require("h5_boot")', 'h5_boot');
 
 			/* Safety net: a boot chain that dies before 100 would leave the
@@ -233,13 +252,8 @@
 	}
 
 	cc.game.onStart = function () {
+		if (global.jdzcFreeUploadedCanvases) global.jdzcFreeUploadedCanvases();
 		cc.view.adjustViewPort(true);
-		/* The phone hands cocos CSS pixels and cocos only turns retina on for
-		 * iOS/mac, so on Android the whole game rendered at ~400x860 and the
-		 * panel upscaled it -- soft art, soft text. This makes the canvas
-		 * backing store the real screen, capped at 2x: past that it is fill
-		 * rate for nothing. Has to come first, because the design size reads
-		 * it when it sizes the canvas. */
 		cc.view.enableRetina(true);
 		/* Match the native Director: a fixed logical height with the width
 		 * expanded to the browser aspect ratio. Fixed height in portrait too
@@ -254,32 +268,14 @@
 		/* Entering fullscreen and rotating both change the frame, and mobile
 		 * browsers report the old one for a beat -- so re-run the resize once
 		 * it has settled. cocos binds its own handler to the same events. */
-		function triggerLuaResize() {
-			if (window.jdzcLua && window.jdzcLua.run) {
-				try {
-					window.jdzcLua.run('pcall(function() if ClientView and ClientView.updateScreenSize then ClientView.updateScreenSize() end end)');
-				} catch (e) {}
-			}
-		}
-		window.triggerLuaResize = triggerLuaResize;
-
 		['fullscreenchange', 'webkitfullscreenchange', 'orientationchange'].forEach(function (name) {
 			document.addEventListener(name, function () {
-				setTimeout(function () {
-					cc.view._resizeEvent();
-					triggerLuaResize();
-				}, 300);
+				setTimeout(function () { cc.view._resizeEvent(); }, 300);
 			});
-		});
-		window.addEventListener('resize', function () {
-			setTimeout(function () {
-				triggerLuaResize();
-			}, 300);
 		});
 		document.addEventListener('touchend', function onFirstTap() {
 			document.removeEventListener('touchend', onFirstTap);
 			enterFullscreen();
-			setTimeout(triggerLuaResize, 400);
 		}, { passive: true });
 
 		/* the game's boot chain schedules its first step on the running
@@ -294,3 +290,4 @@
 
 	cc.game.run();
 })(window);
+

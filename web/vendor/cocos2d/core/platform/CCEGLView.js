@@ -40,10 +40,16 @@ var __BrowserGetter = {
         this.html = document.getElementsByTagName("html")[0];
     },
     availWidth: function(frame){
-        return (window.visualViewport ? Math.round(window.visualViewport.width) : null) || window.innerWidth || (frame ? frame.clientWidth : 1024);
+        if(!frame || frame === this.html)
+            return window.innerWidth;
+        else
+            return frame.clientWidth;
     },
     availHeight: function(frame){
-        return (window.visualViewport ? Math.round(window.visualViewport.height) : null) || window.innerHeight || (frame ? frame.clientHeight : 768);
+        if(!frame || frame === this.html)
+            return window.innerHeight;
+        else
+            return frame.clientHeight;
     },
     meta: {
         "width": "device-width"
@@ -61,20 +67,20 @@ switch(__BrowserGetter.adaptationType){
     case cc.sys.BROWSER_TYPE_SAFARI:
         __BrowserGetter.meta["minimal-ui"] = "true";
         __BrowserGetter.availWidth = function(frame){
-            return (window.visualViewport ? Math.round(window.visualViewport.width) : null) || window.innerWidth || frame.clientWidth;
+            return frame.clientWidth;
         };
         __BrowserGetter.availHeight = function(frame){
-            return (window.visualViewport ? Math.round(window.visualViewport.height) : null) || window.innerHeight || frame.clientHeight;
+            return frame.clientHeight;
         };
         break;
     case cc.sys.BROWSER_TYPE_CHROME:
     case cc.sys.BROWSER_TYPE_SOUGOU:
     case cc.sys.BROWSER_TYPE_UC:
         __BrowserGetter.availWidth = function(frame){
-            return (window.visualViewport ? Math.round(window.visualViewport.width) : null) || window.innerWidth || (frame ? frame.clientWidth : 1024);
+            return frame.clientWidth;
         };
         __BrowserGetter.availHeight = function(frame){
-            return (window.visualViewport ? Math.round(window.visualViewport.height) : null) || window.innerHeight || (frame ? frame.clientHeight : 768);
+            return frame.clientHeight;
         };
         break;
     case cc.sys.BROWSER_TYPE_MIUI:
@@ -931,8 +937,7 @@ cc.ContainerStrategy = cc.Class.extend(/** @lends cc.ContainerStrategy# */{
         // Setup pixel ratio for retina display
         var devicePixelRatio = view._devicePixelRatio = 1;
         if (view.isRetinaEnabled()) {
-            var dpr = window.devicePixelRatio || 1;
-            devicePixelRatio = view._devicePixelRatio = Math.min(3, Math.max(1, dpr));
+            devicePixelRatio = view._devicePixelRatio = Math.min(2, window.devicePixelRatio || 1);
         }
         // Setup canvas
         locCanvas.width = Math.round(w * devicePixelRatio);

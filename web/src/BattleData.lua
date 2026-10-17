@@ -62,6 +62,7 @@ var_0_0.Status = {
 	before_account_attack = 31,
 	before_account_event = 33
 }
+var_0_0.Event = var_0_0.Status
 var_0_0.CardStatus = {
 	cover = 9,
 	pile = 2,
@@ -81,6 +82,7 @@ var_0_0.CardStatusVal = {
 	e2h_self_new = 33,
 	p2h_6576 = 75,
 	r2b_compose = 101,
+	r2b_merge = 101,
 	h2g_3560 = 56,
 	h2b_def = 44,
 	h2g_magic = 51,

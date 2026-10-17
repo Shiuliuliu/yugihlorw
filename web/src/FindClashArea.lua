@@ -252,30 +252,27 @@ function var_0_0.initFieldArea(arg_9_0)
 	lc.addChildToPos(var_9_5, var_9_7, cc.p(lc.right(var_9_6) + 16, lc.y(var_9_6)))
 
 	if var_9_1 then
-		local var_9_8 = math.max(0, 100 - P._pvpWinDaily)
-
-		if ClientData._cfg and ClientData._cfg.testAutoBattle then
-			var_9_8 = 1
+		if ClientData._findStrongOpponent == nil then
+			ClientData._findStrongOpponent = false
 		end
 
 		local var_9_9 = ClientView.createScale9ShaderButton("img_btn_2", function()
-			if P._monthCardDay2 > 0 then
-				arg_9_0:find(true)
+			ClientData._findStrongOpponent = not ClientData._findStrongOpponent
+			arg_9_0:updateFindStrongButton()
+			if ClientData._findStrongOpponent then
+				ToastManager.push("Đã BẬT: Có thể ghép với đối thủ rank cao hơn không giới hạn!")
 			else
-				require("Dialog").showDialog(Str(STR.AUTO_BATTLE_TIP), function()
-					lc.pushScene(require("ActivityScene").create(3))
-				end)
+				ToastManager.push("Đã TẮT: Chỉ ghép với đối thủ chênh lệch tối đa 1000 rank.")
 			end
 		end, ClientView.CRECT_BUTTON, 150)
 
-		var_9_9:setDisabledShader(ClientView.SHADER_DISABLE)
 		lc.addChildToPos(var_9_2, var_9_9, cc.p(lc.left(var_9_3) - 10 - lc.cw(var_9_9), 96), 1)
 
-		local var_9_10 = ClientView.createTTF(Str(STR.AUTO_BATTLE), ClientView.FontSize.M2)
+		local var_9_10 = ClientView.createTTF("Tìm đối thủ mạnh", ClientView.FontSize.M2)
 
 		var_9_10:setColor(lc.Color3B.yellow)
 		lc.addChildToPos(var_9_9, var_9_10, cc.p(lc.w(var_9_9) / 2, lc.h(var_9_9) / 2 + 2))
-		ClientView.fitLabel(var_9_10, lc.w(var_9_9) - 20)
+		ClientView.fitLabel(var_9_10, lc.w(var_9_9) - 16)
 
 		local var_9_11 = lc.createSprite({
 			_name = "img_com_bg_22",
@@ -289,21 +286,15 @@ function var_0_0.initFieldArea(arg_9_0)
 
 		arg_9_0._remainBg = var_9_11
 
-		local var_9_12 = string.format(Str(STR.REMAIN_BUY_TIMES), var_9_8)
-
-		if var_9_0 <= 0 then
-			var_9_12 = Str(STR.UNLOCK_AUTO_BATTLE)
-		end
-
-		local var_9_13 = ClientView.createTTF(var_9_12, ClientView.FontSize.S3)
+		local var_9_13 = ClientView.createTTF("", ClientView.FontSize.S3)
 
 		lc.addChildToPos(var_9_11, var_9_13, cc.p(lc.cw(var_9_11), lc.ch(var_9_11)))
-		var_9_9:setEnabled(var_9_8 > 0)
 
-		if var_9_0 <= 0 or var_9_8 <= 0 then
-			ClientData._isAutoBattle = false
-			ClientData._autoReloadCount = 0
-		end
+		arg_9_0._btnFindStrong = var_9_9
+		arg_9_0._labelFindStrong = var_9_10
+		arg_9_0._subLabelFindStrong = var_9_13
+
+		arg_9_0:updateFindStrongButton()
 	end
 
 	arg_9_0:updateClashTarget()
@@ -595,6 +586,37 @@ function var_0_0.initBottomArea(arg_22_0)
 	lc.addChildToPos(var_22_0, var_22_6, cc.p(lc.left(var_22_5) - 10 - lc.w(var_22_6) / 2, lc.y(var_22_2)))
 
 	arg_22_0._btnTroop = var_22_6
+
+	local repBtn = ClientView.createScale9ShaderButton("img_btn_1_s", function()
+		local curRep = (type(ClientData.getReputation) == "function" and ClientData.getReputation()) or ((P and P._reputation) or 50)
+		local nextIn = (type(ClientData.getNextReputationIn) == "function" and ClientData.getNextReputationIn()) or 0
+		local mins = math.floor(nextIn / 60)
+		local secs = nextIn % 60
+		local msg = string.format("Điểm Uy Tín: %d/55\n\n- Mặc định: 50 điểm, Tối đa: 55 điểm.\n- Mỗi khi đầu hàng bị trừ 1 điểm uy tín.\n- Dưới 45 điểm sẽ bị cấm đấu hạng.\n- Tự động hồi phục: 15 phút hồi 1 điểm uy tín.", curRep)
+		if curRep < 55 then
+			msg = msg .. string.format("\n- Hồi 1 điểm tiếp theo sau: %dp%02ds", mins, secs)
+		end
+		if curRep < 45 then
+			msg = msg .. "\n\n[CẢNH BÁO] Điểm uy tín < 45! Bạn đang bị CẤM ĐẤU HẠNG!"
+		end
+		require("Dialog").showDialog(msg)
+	end, ClientView.CRECT_BUTTON_S, 130)
+
+	local curRep = (type(ClientData.getReputation) == "function" and ClientData.getReputation()) or ((P and P._reputation) or 50)
+	repBtn:addLabel(string.format("Uy tín: %d/55", curRep))
+	if repBtn._label then
+		repBtn._label:setColor(curRep >= 45 and cc.c3b(100, 255, 100) or cc.c3b(255, 80, 80))
+	end
+	lc.addChildToPos(var_22_0, repBtn, cc.p(lc.w(var_22_0) / 2, lc.y(var_22_2)))
+	arg_22_0._btnReputation = repBtn
+end
+
+function var_0_0.updateReputationButton(arg_28_1)
+	if arg_28_1._btnReputation and arg_28_1._btnReputation._label then
+		local curRep = (type(ClientData.getReputation) == "function" and ClientData.getReputation()) or ((P and P._reputation) or 50)
+		arg_28_1._btnReputation._label:setString(string.format("Uy tín: %d/55", curRep))
+		arg_28_1._btnReputation._label:setColor(curRep >= 45 and cc.c3b(100, 255, 100) or cc.c3b(255, 80, 80))
+	end
 end
 
 function var_0_0.updateLogFlag(arg_28_0)
@@ -605,6 +627,25 @@ function var_0_0.updateTroopButton(arg_29_0)
 	if arg_29_0._btnTroop then
 		arg_29_0._btnTroop._label:setString(string.format("%s %d", Str(STR.TROOP), P._curTroopIndex))
 	end
+end
+
+function var_0_0.updateFindStrongButton(arg_29_1)
+	if not arg_29_1._labelFindStrong or not arg_29_1._subLabelFindStrong then
+		return
+	end
+
+	if ClientData._findStrongOpponent then
+		arg_29_1._labelFindStrong:setString("Tìm đối thủ mạnh")
+		arg_29_1._labelFindStrong:setColor(lc.Color3B.green)
+		arg_29_1._subLabelFindStrong:setString("Trạng thái: BẬT")
+		arg_29_1._subLabelFindStrong:setColor(lc.Color3B.green)
+	else
+		arg_29_1._labelFindStrong:setString("Tìm đối thủ mạnh")
+		arg_29_1._labelFindStrong:setColor(lc.Color3B.yellow)
+		arg_29_1._subLabelFindStrong:setString("Trạng thái: TẮT")
+		arg_29_1._subLabelFindStrong:setColor(lc.Color3B.gray)
+	end
+	ClientView.fitLabel(arg_29_1._labelFindStrong, lc.w(arg_29_1._btnFindStrong) - 16)
 end
 
 function var_0_0.showFields(arg_30_0)
@@ -648,6 +689,15 @@ function var_0_0.find(arg_31_0, arg_31_1)
 		return
 	end
 
+	local myRep = (type(ClientData.getReputation) == "function" and ClientData.getReputation()) or ((P and P._reputation) or 50)
+	if myRep < 45 then
+		local nextIn = (type(ClientData.getNextReputationIn) == "function" and ClientData.getNextReputationIn()) or 900
+		local mins = math.floor(nextIn / 60)
+		local secs = nextIn % 60
+		ToastManager.push(string.format("Điểm uy tín của bạn là %d/55 (< 45). Bạn bị cấm đấu hạng! Hồi 1 điểm sau %dp%02ds (15 phút/điểm).", myRep, mins, secs))
+		return
+	end
+
 	ClientData._isAutoBattle = arg_31_1
 
 	require("FindMatchPanel").create(Data.FindMatchType.clash):show()
@@ -667,6 +717,8 @@ function var_0_0.onEnter(arg_32_0)
 			arg_32_0:initAreas()
 		end
 		arg_32_0:updateTroopButton()
+		arg_32_0:updateFindStrongButton()
+		arg_32_0:updateReputationButton()
 
 		if P._playerFindClash._isFirst then
 			require("FindClashFirstForm").create():show()
@@ -682,6 +734,8 @@ function var_0_0.onEnter(arg_32_0)
 		end
 	end
 	arg_32_0:updateTroopButton()
+	arg_32_0:updateFindStrongButton()
+	arg_32_0:updateReputationButton()
 	table.insert(arg_32_0._listeners, lc.addEventListener(Data.Event.rematch_again, function(arg_34_0)
 		arg_32_0:onRematchEvent(arg_34_0)
 	end))

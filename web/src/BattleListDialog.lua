@@ -224,7 +224,17 @@ function var_0_0.confirm6401(arg_9_0)
 
 				arg_9_0._ignoreCancel = true
 
-				local var_10_0 = require("CardThumbnail").create(var_9_0._infoId, nil, var_9_0._originOwner._skins[var_9_0._infoId])
+				local ownerObj = var_9_0._originOwner or var_9_0._owner
+				local skinId = nil
+				if ownerObj and ownerObj._skins and type(ownerObj._skins[var_9_0._infoId]) == "number" then
+					skinId = ownerObj._skins[var_9_0._infoId]
+				elseif P and P._playerCard and type(P._playerCard.getSkinId) == "function" then
+					local sid = P._playerCard:getSkinId(var_9_0._infoId)
+					if type(sid) == "number" and sid > 0 then
+						skinId = sid
+					end
+				end
+				local var_10_0 = require("CardThumbnail").create(var_9_0._infoId, nil, skinId)
 
 				var_10_0:setScale(0.7)
 				lc.addChildToCenter(var_9_1, var_10_0)
@@ -307,7 +317,17 @@ function var_0_0.createCardItem(arg_15_0, arg_15_1, arg_15_2)
 	}) and not arg_15_0._card:hasSkillFast(9313)) and (arg_15_0._playerUi == nil or arg_15_1._owner ~= arg_15_0._playerUi._player) then
 		var_15_1 = lc.createSprite(ClientView.getCardBackName())
 	else
-		var_15_1 = require("CardThumbnail").create(arg_15_1._srcInfoId, nil, arg_15_1._originOwner._skins[arg_15_1._infoId])
+		local ownerObj = arg_15_1._originOwner or arg_15_1._owner
+		local skinId = nil
+		if ownerObj and ownerObj._skins and type(ownerObj._skins[arg_15_1._infoId]) == "number" then
+			skinId = ownerObj._skins[arg_15_1._infoId]
+		elseif P and P._playerCard and type(P._playerCard.getSkinId) == "function" then
+			local sid = P._playerCard:getSkinId(arg_15_1._infoId)
+			if type(sid) == "number" and sid > 0 then
+				skinId = sid
+			end
+		end
+		var_15_1 = require("CardThumbnail").create(arg_15_1._srcInfoId or arg_15_1._infoId, nil, skinId)
 
 		if (arg_15_0._mode == var_0_0.Mode.sync or arg_15_0._mode == var_0_0.Mode.xyz) and not arg_15_1:isXYZ() then
 			var_15_1._frame._starArea:update(arg_15_1:getStar(), arg_15_1._infoId)

@@ -20,44 +20,75 @@ function var_0_0.init(arg_2_0)
 
 	arg_2_0._list = var_2_0
 
-	local var_2_1 = P:getCharacterId() * 100
-	local var_2_2 = {}
+	-- 1. Duelist Avatars
+	local duelist_list = {}
+	local curChar = (P and P:getCharacterId()) or 3
+	local curCharAv = curChar * 100 + 1
+	table.insert(duelist_list, curCharAv)
 
-	for iter_2_0 = 1, ClientData.isAnotherSkin() and 3 or 1 do
-		local var_2_3 = var_2_1 + iter_2_0
-
-		if lc.FrameCache:getSpriteFrame(ClientData.getAvatarName(var_2_3)) == nil then
-			break
-		end
-
-		table.insert(var_2_2, var_2_3)
-	end
-
-	for iter_2_1, iter_2_2 in pairs(Data._skinInfo) do
-		if iter_2_2._infoId == P:getCharacterId() and iter_2_2._id >= 52000 and iter_2_2._id < 53000 and P._playerCard:hasSkin(iter_2_2._id) then
-			table.insert(var_2_2, iter_2_2._id)
+	local standard_duelists = {
+		301, 201, 501, 401, 1201, 1101, 1301, 1401, 1501, 1601, 1701, 1801, 1901, 701, 901, 1001, 5101
+	}
+	local seen_duelists = { [curCharAv] = true }
+	for _, aid in ipairs(standard_duelists) do
+		if not seen_duelists[aid] then
+			table.insert(duelist_list, aid)
+			seen_duelists[aid] = true
 		end
 	end
 
-	arg_2_0._avatarIds = var_2_2
+	-- Also include any other characters from Data._characterInfo
+	if Data and Data._characterInfo then
+		for cid, _ in pairs(Data._characterInfo) do
+			local c_num = tonumber(cid)
+			if c_num and c_num > 0 then
+				local aid = c_num * 100 + 1
+				if not seen_duelists[aid] then
+					local avName = ClientData.getAvatarName(aid)
+					if lc.FrameCache and lc.FrameCache:getSpriteFrame(avName) then
+						table.insert(duelist_list, aid)
+						seen_duelists[aid] = true
+					end
+				end
+			end
+		end
+	end
+
+	-- 2. Monster Skins (52001 - 52072)
+	local monster_skins = {}
+	for sid = 52001, 52072 do
+		table.insert(monster_skins, sid)
+	end
+
+	arg_2_0._duelistAvatars = duelist_list
+	arg_2_0._monsterSkins = monster_skins
 
 	arg_2_0:updateAvatarList()
 end
 
 function var_0_0.updateAvatarList(arg_3_0)
 	local var_3_0 = {}
-	local var_3_1
 
-	table.insert(var_3_0, Str(STR.AVATAR_CARD_TIP))
-
-	for iter_3_0 = 1, #arg_3_0._avatarIds do
-		if var_3_1 == nil or #var_3_1 == var_0_2 then
-			var_3_1 = {}
-
-			table.insert(var_3_0, var_3_1)
+	-- Section 1: Duelist Avatars
+	table.insert(var_3_0, Str(STR.CHANGE_CHARACTER) or "Avatar Đấu Thủ")
+	local cur_row = nil
+	for _, aid in ipairs(arg_3_0._duelistAvatars or {}) do
+		if cur_row == nil or #cur_row == var_0_2 then
+			cur_row = {}
+			table.insert(var_3_0, cur_row)
 		end
+		table.insert(cur_row, aid)
+	end
 
-		table.insert(var_3_1, arg_3_0._avatarIds[iter_3_0])
+	-- Section 2: Monster Skins
+	table.insert(var_3_0, Str(STR.AVATAR_CARD_TIP) or "Avatar Quái Thú Đặc Biệt")
+	cur_row = nil
+	for _, sid in ipairs(arg_3_0._monsterSkins or {}) do
+		if cur_row == nil or #cur_row == var_0_2 then
+			cur_row = {}
+			table.insert(var_3_0, cur_row)
+		end
+		table.insert(cur_row, sid)
 	end
 
 	local var_3_2 = arg_3_0._list
@@ -102,19 +133,39 @@ function var_0_0.setOrCreateItem(arg_5_0, arg_5_1, arg_5_2)
 				if ClientData._player:changeIcon(iter_5_1) then
 					ClientData.sendSetAvatar(iter_5_1)
 					arg_5_0:hide()
+				else
+					ClientData.sendSetAvatar(iter_5_1)
+					arg_5_0:hide()
 				end
 			end)
 
 			lc.addChildToPos(arg_5_1, var_5_5, var_5_4)
 
 			local var_5_6 = lc.createSprite("img_card_ico_bg")
-
 			lc.addChildToCenter(var_5_5, var_5_6, -1)
 
-			local var_5_7 = lc.createSprite(ClientData.getAvatarName(iter_5_1))
+			local avName = ClientData.getAvatarName(iter_5_1)
+			local var_5_7 = nil
+			if avName and lc.FrameCache and lc.FrameCache:getSpriteFrame(avName) then
+				var_5_7 = lc.createSprite(avName)
+			else
+				var_5_7 = lc.createSprite("avatar_03")
+			end
 
-			var_5_7:setScale(0.8)
-			lc.addChildToCenter(var_5_5, var_5_7, -1)
+			if var_5_7 then
+				var_5_7:setScale(0.8)
+				lc.addChildToCenter(var_5_5, var_5_7, -1)
+			end
+
+			-- Highlight equipped avatar
+			if P and P._avatar == iter_5_1 then
+				local selFrame = lc.createSprite("avatar_frame_vip_bg")
+				if not selFrame then selFrame = lc.createSprite("avatar_frame_001") end
+				if selFrame then
+					selFrame:setScale(1.06)
+					lc.addChildToCenter(var_5_5, selFrame, 2)
+				end
+			end
 
 			var_5_4.x = var_5_4.x + lc.w(var_5_5) + var_5_2
 		end

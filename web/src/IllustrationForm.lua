@@ -308,7 +308,7 @@ function var_0_0.updateCardList(arg_13_0, arg_13_1)
 
 	var_13_28:bindData(var_13_0, function(arg_15_0, arg_15_1)
 		arg_13_0:setOrCreateItem(arg_15_0, arg_15_1)
-	end, math.min(8, #var_13_0), 1)
+	end, #var_13_0, 1)
 
 	for iter_13_5 = 1, var_13_28._cacheCount do
 		local var_13_29 = var_13_0[iter_13_5]

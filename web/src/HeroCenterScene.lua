@@ -248,8 +248,17 @@ function var_0_1.createTroopArea(arg_15_0)
 		end, ClientView.CRECT_BUTTON_S, 110, 44)
 
 		lc.addChildToPos(var_15_2, var_15_10, cc.p(lc.cw(var_15_2) - 10, lc.y(var_15_8)))
-		var_15_10:setScale(0.6)
-		var_15_10:addLabel(string.format("%s%d", Str(STR.TROOP), P._curTroopIndex))
+		local troopTitle
+		if Data.isNormalTroop(arg_15_0._curTroopIndex) then
+			troopTitle = string.format("%s %d", Str(STR.TROOP), arg_15_0._curTroopIndex)
+		elseif Data.isDarkTroop(arg_15_0._curTroopIndex) then
+			troopTitle = string.format("%s %d", Str(STR.DARK_TROOP), arg_15_0._curTroopIndex - Data.TroopIndex.dark_battle1 + 1)
+		elseif Data.isUnionBattleTroop(arg_15_0._curTroopIndex) then
+			troopTitle = string.format("%s %d", Str(STR.UNION_TROOP), arg_15_0._curTroopIndex - Data.TroopIndex.union_battle1 + 1)
+		else
+			troopTitle = string.format("%s %d", Str(STR.TROOP), arg_15_0._curTroopIndex)
+		end
+		var_15_10:addLabel(troopTitle)
 		var_15_10._label:setScale(0.8)
 
 		arg_15_0._btnTroop = var_15_10
@@ -339,6 +348,20 @@ function var_0_1.onSelectTroop(arg_23_0, arg_23_1, arg_23_2)
 
 	arg_23_0._lastTabIndex = nil
 
+	if arg_23_0._btnTroop and arg_23_0._btnTroop._label then
+		if Data.isNormalTroop(arg_23_1) then
+			arg_23_0._btnTroop._label:setString(string.format("%s %d", Str(STR.TROOP), arg_23_1))
+		elseif Data.isDarkTroop(arg_23_1) then
+			arg_23_0._btnTroop._label:setString(string.format("%s %d", Str(STR.DARK_TROOP), arg_23_1 - Data.TroopIndex.dark_battle1 + 1))
+		elseif Data.isUnionBattleTroop(arg_23_1) then
+			arg_23_0._btnTroop._label:setString(string.format("%s %d", Str(STR.UNION_TROOP), arg_23_1 - Data.TroopIndex.union_battle1 + 1))
+		end
+	end
+
+	if Data.isNormalTroop(arg_23_1) and P and type(P.setCurrentTroopIndex) == "function" then
+		P:setCurrentTroopIndex(arg_23_1, false)
+	end
+
 	arg_23_0:showTab(arg_23_0._tabArea._focusTabIndex and arg_23_0._tabArea._focusTabIndex or 1)
 end
 
@@ -348,7 +371,7 @@ function var_0_1.releaseToopList(arg_24_0)
 	for iter_24_0, iter_24_1 in ipairs(var_24_0) do
 		local var_item = iter_24_1._item or (iter_24_1.getChildren and #iter_24_1:getChildren() > 0 and iter_24_1:getChildren()[1])
 		if var_item then
-			var_0_3.releaseToPool(var_item)
+			pcall(function() var_0_3.releaseToPool(var_item) end)
 		end
 		pcall(function() iter_24_1:release() end)
 	end
@@ -898,7 +921,7 @@ function var_0_1.onItemTap(arg_46_0, arg_46_1, arg_46_2)
 
 	if arg_46_2 == var_0_1.MODE_TROOP then
 		if arg_46_0._movingSprite and (arg_46_0._isInList or lc.y(arg_46_0._movingSprite) < 240) then
-			local var_46_8 = var_46_2._maxCount
+			local var_46_8 = var_46_2 and var_46_2._maxCount or 3
 
 			if Data.isUnionBattleTroop(arg_46_0._curTroopIndex) then
 				var_46_8 = var_46_8 * Data.GROUP_NUM
@@ -1421,9 +1444,7 @@ function var_0_1.syncTroop(arg_71_0)
 	if Data.isNormalTroop(arg_71_0._curTroopIndex) then
 		ClientData.sendDefTroopIndex(arg_71_0._curTroopIndex)
 
-		local var_71_0 = ClientData._cloneTroops[arg_71_0._curTroopIndex]
-
-		if var_71_0 ~= nil and #var_71_0 > 0 then
+		if P and type(P.setCurrentTroopIndex) == "function" then
 			P:setCurrentTroopIndex(arg_71_0._curTroopIndex, false)
 		end
 	end

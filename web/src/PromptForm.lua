@@ -534,6 +534,7 @@ function var_0_12.init(arg_40_0, arg_40_1)
 			arg_40_0:hide()
 		end)
 		arg_40_0:addButton("img_btn_1_s", Str(STR.FIND_REMATCH), var_40_1 + var_0_1 / 2 + 20, var_0_2 + 80, function()
+			arg_40_0._preTroopIndex = var_0_12._troopIndex
 			lc.sendEvent(Data.Event.rematch_again)
 			arg_40_0:hide()
 		end)
@@ -550,6 +551,7 @@ function var_0_12.init(arg_40_0, arg_40_1)
 		end)
 
 		arg_40_0:addButton("img_btn_1_s", Str(STR.FIND_MATCH_NPC), var_40_1 + var_0_1 / 2 + 20, nil, function()
+			arg_40_0._preTroopIndex = var_0_12._troopIndex
 			lc.sendEvent(Data.Event.rematch_npc)
 			arg_40_0:hide()
 		end)

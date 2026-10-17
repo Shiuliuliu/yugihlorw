@@ -1,5 +1,5 @@
 local var_0_0 = {}
-local var_0_1 = 2000
+local var_0_1 = 100
 
 function var_0_0.init()
 	var_0_0._textures = {}
@@ -15,10 +15,22 @@ function var_0_0.clear()
 	var_0_0.init()
 end
 
+function var_0_0.trim(arg_count)
+	arg_count = arg_count or 40
+	if var_0_0._textures == nil then return end
+	while var_0_0._count > arg_count do
+		local prev_count = var_0_0._count
+		var_0_0.unloadOldestTexture()
+		if var_0_0._count >= prev_count then
+			break
+		end
+	end
+end
+
 function var_0_0.loadTexture(arg_3_0, arg_3_1)
 	if var_0_0._textures == nil then var_0_0.init() end
 	if not var_0_0._textures[arg_3_0] then
-		if var_0_0._count == var_0_1 then
+		if var_0_0._count >= var_0_1 then
 			var_0_0.unloadOldestTexture()
 		end
 

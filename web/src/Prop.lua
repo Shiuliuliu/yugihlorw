@@ -12,7 +12,7 @@ function var_0_0.ctor(arg_1_0, arg_1_1, arg_1_2)
 end
 
 function var_0_0.getQuality(arg_2_0)
-	return arg_2_0._info._quality
+	return (arg_2_0._info and arg_2_0._info._quality) or 1
 end
 
 function var_0_0.sendPropDirty(arg_3_0)

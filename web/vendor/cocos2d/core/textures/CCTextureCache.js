@@ -216,6 +216,9 @@ cc.textureCache = /** @lends cc.textureCache# */{
             return;
         if (this._textures[textureKeyName])
             delete(this._textures[textureKeyName]);
+        if (this._textureColorsCache && this._textureColorsCache[textureKeyName]) {
+            delete(this._textureColorsCache[textureKeyName]);
+        }
     },
 
     //addImage move to Canvas/WebGL

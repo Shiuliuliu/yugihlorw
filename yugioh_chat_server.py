@@ -57,6 +57,7 @@ def ensure_chat_db():
                         avatar INT DEFAULT 201,
                         msg_type INT DEFAULT 1,
                         card_id INT DEFAULT 0,
+                        union_id INT DEFAULT 0,
                         content TEXT NOT NULL,
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                         timestamp_ms BIGINT NOT NULL,
@@ -66,7 +67,8 @@ def ensure_chat_db():
                         trophy INT NOT NULL DEFAULT 800,
                         INDEX (account_id),
                         INDEX (created_at),
-                        INDEX (client_msg_id)
+                        INDEX (client_msg_id),
+                        INDEX (union_id)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
                 """)
     except Exception as e:
@@ -78,15 +80,53 @@ def db_get_today_chat_history():
         with get_db() as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    SELECT id, client_msg_id, account_id, sender_name AS name, level, avatar,
-                           msg_type AS type, card_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
-                           gold_cup, silver_cup, bronze_cup, trophy
-                    FROM (
-                        SELECT * FROM chat_messages
-                        WHERE DATE(created_at) = CURDATE()
-                        ORDER BY id DESC
-                        LIMIT 50
-                    ) t
+                    SELECT * FROM (
+                        (
+                            SELECT id, client_msg_id, account_id, sender_name AS name, level, avatar,
+                                   msg_type AS type, card_id, union_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
+                                   gold_cup, silver_cup, bronze_cup, trophy
+                            FROM chat_messages
+                            WHERE (DATE(created_at) = CURDATE() OR created_at >= NOW() - INTERVAL 24 HOUR)
+                              AND msg_type = 1
+                              AND content NOT LIKE '%replay_id%'
+                              AND content NOT LIKE '%chia sẻ một trận chiến%'
+                            ORDER BY id DESC
+                            LIMIT 50
+                        )
+                        UNION ALL
+                        (
+                            SELECT id, client_msg_id, account_id, sender_name AS name, level, avatar,
+                                   msg_type AS type, card_id, union_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
+                                   gold_cup, silver_cup, bronze_cup, trophy
+                            FROM chat_messages
+                            WHERE (DATE(created_at) = CURDATE() OR created_at >= NOW() - INTERVAL 24 HOUR)
+                              AND msg_type = 3
+                            ORDER BY id DESC
+                            LIMIT 30
+                        )
+                        UNION ALL
+                        (
+                            SELECT id, client_msg_id, account_id, sender_name AS name, level, avatar,
+                                   msg_type AS type, card_id, union_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
+                                   gold_cup, silver_cup, bronze_cup, trophy
+                            FROM chat_messages
+                            WHERE (DATE(created_at) = CURDATE() OR created_at >= NOW() - INTERVAL 24 HOUR)
+                              AND msg_type = 2
+                            ORDER BY id DESC
+                            LIMIT 50
+                        )
+                        UNION ALL
+                        (
+                            SELECT id, client_msg_id, account_id, sender_name AS name, level, avatar,
+                                   msg_type AS type, card_id, union_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
+                                   gold_cup, silver_cup, bronze_cup, trophy
+                            FROM chat_messages
+                            WHERE (DATE(created_at) = CURDATE() OR created_at >= NOW() - INTERVAL 24 HOUR)
+                              AND msg_type = 4
+                            ORDER BY id DESC
+                            LIMIT 50
+                        )
+                    ) combined
                     ORDER BY id ASC
                 """)
                 rows = cur.fetchall()
@@ -104,6 +144,7 @@ def db_get_today_chat_history():
                         "msg": r['msg'],
                         "type": r['type'],
                         "card_id": r['card_id'],
+                        "union_id": r.get('union_id', 0) or 0,
                         "gold_cup": r.get('gold_cup', 0),
                         "silver_cup": r.get('silver_cup', 0),
                         "bronze_cup": r.get('bronze_cup', 0),
@@ -124,7 +165,7 @@ def db_get_today_chat_history():
 
                     if r['card_id'] > 0:
                         m['items'] = [{'info_id': r['card_id'], '_infoId': r['card_id'], 'num': 1, '_num': 1}]
-                    if r['type'] == 3 and r['content'] and (r['content'].startswith('{') or '"replay_id"' in r['content']):
+                    if r['type'] == 3 and r['content'] and (str(r['content']).startswith('{') or '"replay_id"' in str(r['content'])):
                         try:
                             m['battle_data'] = json.loads(r['content'])
                         except Exception:
@@ -140,18 +181,69 @@ def db_save_chat_message(msg_obj):
     try:
         with get_db() as conn:
             with conn.cursor() as cur:
+                # 1. Deduplicate by client_msg_id if provided
+                c_id = msg_obj.get('client_msg_id')
+                if c_id and str(c_id).strip():
+                    cur.execute("SELECT id FROM chat_messages WHERE client_msg_id = %s LIMIT 1", (str(c_id).strip(),))
+                    row = cur.fetchone()
+                    if row:
+                        msg_obj['id'] = row['id']
+                        return row['id']
+
+                # 2. Check if already has a valid DB id
+                existing_id = msg_obj.get('id')
+                if existing_id and int(existing_id) > 0:
+                    cur.execute("SELECT id FROM chat_messages WHERE id = %s LIMIT 1", (int(existing_id),))
+                    row = cur.fetchone()
+                    if row:
+                        return row['id']
+
+                m_type = int(msg_obj.get('type', 1))
+                c_text = str(msg_obj.get('content', ''))
+                s_name = str(msg_obj.get('name', ''))
+                raw_acc_id = msg_obj.get('account_id')
+                acc_id = int(raw_acc_id) if raw_acc_id is not None else 1
+
+                if 'replay_id' in c_text or 'chia sẻ một trận chiến' in c_text or msg_obj.get('battle_data'):
+                    m_type = 3
+                    msg_obj['type'] = 3
+                elif acc_id == 0 or s_name == 'Hệ Thống' or '[THÔNG BÁO]' in c_text or '[KẾT TOÁN' in c_text or '[Tri ân]' in c_text:
+                    m_type = 2
+                    msg_obj['type'] = 2
+                    msg_obj['union_id'] = 0
+                    acc_id = 0
+                    s_name = 'Hệ Thống'
+                elif m_type == 4 or (m_type == 2 and int(msg_obj.get('union_id', 0) or 0) > 0 and acc_id > 0):
+                    m_type = 4
+                    msg_obj['type'] = 4
+                else:
+                    m_type = 1
+                    msg_obj['type'] = 1
+
+                u_id = int(msg_obj.get('union_id', 0) or 0)
+                if m_type == 4 and u_id == 0 and acc_id > 0:
+                    try:
+                        cur.execute("SELECT union_id FROM union_members WHERE account_id = %s", (acc_id,))
+                        um = cur.fetchone()
+                        if um: u_id = um['union_id']
+                    except: pass
+                if m_type != 4:
+                    u_id = 0
+                msg_obj['union_id'] = u_id
+
                 cur.execute("""
                     INSERT INTO chat_messages 
-                    (client_msg_id, account_id, sender_name, level, avatar, msg_type, card_id, content, created_at, timestamp_ms, gold_cup, silver_cup, bronze_cup, trophy)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s, %s)
+                    (client_msg_id, account_id, sender_name, level, avatar, msg_type, card_id, union_id, content, created_at, timestamp_ms, gold_cup, silver_cup, bronze_cup, trophy)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s, %s)
                 """, (
                     msg_obj.get('client_msg_id'),
-                    msg_obj.get('account_id', 1),
-                    msg_obj.get('name', 'Duelist'),
+                    acc_id,
+                    s_name or msg_obj.get('name', 'Duelist'),
                     msg_obj.get('level', 1),
                     msg_obj.get('avatar', 201),
-                    msg_obj.get('type', 1),
+                    m_type,
                     msg_obj.get('card_id', 0),
+                    u_id,
                     msg_obj.get('content', ''),
                     msg_obj.get('timestamp', int(time.time() * 1000)),
                     msg_obj.get('gold_cup', 0),
@@ -297,12 +389,15 @@ class ChatHTTPHandler(BaseHTTPRequestHandler):
                 msg_type = int(req.get('type', 1))
             except Exception:
                 msg_type = 1
+            if 'replay_id' in content or 'chia sẻ một trận chiến' in content or req.get('battle_data'):
+                msg_type = 3
             card_id = int(req.get('card_id', 0))
             client_msg_id = req.get('client_msg_id')
             gold_cup = int(req.get('gold_cup', 0))
             silver_cup = int(req.get('silver_cup', 0))
             bronze_cup = int(req.get('bronze_cup', 0))
             trophy = int(req.get('trophy', 800))
+            union_id = int(req.get('union_id', 0) or 0)
 
             if content:
                 now_ts = int(time.time() * 1000)
@@ -317,6 +412,7 @@ class ChatHTTPHandler(BaseHTTPRequestHandler):
                     "msg": content,
                     "type": msg_type,
                     "card_id": card_id,
+                    "union_id": union_id,
                     "gold_cup": gold_cup,
                     "silver_cup": silver_cup,
                     "bronze_cup": bronze_cup,
@@ -355,6 +451,15 @@ def run_http_server():
     print(f"[CHAT HTTP SERVER] Listening on http://0.0.0.0:{CHAT_HTTP_PORT}")
     server.serve_forever()
 
+def console_cleaner_loop():
+    while True:
+        time.sleep(1800)
+        try:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(f"[SYSTEM] Đã dọn dẹp console log định kỳ (mỗi 30 phút). Chat server hoạt động bình thường lúc {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        except Exception:
+            pass
+
 if __name__ == '__main__':
     print("=" * 60)
     print("      YU-GI-OH STANDALONE CHAT SERVER")
@@ -363,6 +468,9 @@ if __name__ == '__main__':
     print("=" * 60)
     ensure_chat_db()
     
+    cleaner_thread = threading.Thread(target=console_cleaner_loop, daemon=True)
+    cleaner_thread.start()
+
     ws_thread = threading.Thread(target=run_ws_server, daemon=True)
     ws_thread.start()
     

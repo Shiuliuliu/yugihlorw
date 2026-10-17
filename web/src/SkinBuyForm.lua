@@ -27,7 +27,9 @@ function var_0_0.init(arg_2_0, arg_2_1)
 	}
 	arg_2_0._propId = arg_2_0._info._resType
 
-	if arg_2_0._isCharacter or arg_2_0._isAvatar then
+	if arg_2_0._isAvatar then
+		arg_2_0._propId = Data.ResType.ingot
+	elseif arg_2_0._isCharacter then
 		arg_2_0._propId = arg_2_0._skinInfo._resType
 	end
 
@@ -182,15 +184,12 @@ function var_0_0.onBtn(arg_11_0, arg_11_1)
 
 		require("Dialog").showDialog(var_11_3, function()
 			if arg_11_0._isAvatar then
-				if P:changeCharacter(arg_11_0._skinInfo._infoId) or P:getCharacterId() == arg_11_0._skinInfo._infoId then
-					if ClientData._player:changeIcon(arg_11_0._skinId) then
-						ClientData.sendSetAvatar(arg_11_0._skinId)
-						ToastManager.push(Str(STR.SET_AVATAR_SKIN_SUCCEED))
-					else
-						ToastManager.push(Str(STR.SET_AVATAR_SKIN_FAILED))
-					end
+				if ClientData._player:changeIcon(arg_11_0._skinId) then
+					ClientData.sendSetAvatar(arg_11_0._skinId)
+					ToastManager.push(Str(STR.SET_AVATAR_SKIN_SUCCEED))
 				else
-					ToastManager.push(Str(STR.SET_AVATAR_SKIN_FAILED))
+					ClientData.sendSetAvatar(arg_11_0._skinId)
+					ToastManager.push(Str(STR.SET_AVATAR_SKIN_SUCCEED))
 				end
 			elseif arg_11_0._isCharacter then
 				if P:changeCharacterSkin(arg_11_0._skinId) then

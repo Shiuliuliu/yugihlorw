@@ -30,6 +30,15 @@ brsh = bit.rshift
 lc = lc or {}
 log = ""
 
+local function safeHasField(t, f)
+	if type(t) ~= "table" then return false end
+	if type(t.HasField) == "function" then
+		local ok, res = pcall(t.HasField, t, f)
+		if ok then return res end
+	end
+	return rawget(t, f) ~= nil or t[f] ~= nil
+end
+
 function Str(arg_1_0)
 	return arg_1_0 or 0
 end
@@ -111,7 +120,7 @@ function _M.genInputFromResp(arg_8_0)
 	var_8_0._player._isNpc = var_8_1.is_npc
 	var_8_0._opponent._name, var_8_0._opponent._level, var_8_0._opponent._vip, var_8_0._opponent._avatar, var_8_0._opponent._region, var_8_0._opponent._privilege = var_8_2.name or "", var_8_2.level or 0, var_8_2.vip or 0, var_8_2.avatar or 0, var_8_2.rid, var_8_2.privilege or 0
 	var_8_0._opponent._avatarFrame, var_8_0._opponent._cardBackId = var_8_2.avatar_frame, var_8_2.card_back == 0 and Data.PropsId.card_back or var_8_2.card_back
-	var_8_0._opponent._bossId = arg_8_0:HasField("boss_id") and arg_8_0.boss_id or 0
+	var_8_0._opponent._bossId = safeHasField(arg_8_0, "boss_id") and arg_8_0.boss_id or 0
 	var_8_0._opponent._isNpc = var_8_2.is_npc
 	var_8_0._player._troopCards, var_8_0._opponent._troopCards = arg_8_0.player_troop.cards, arg_8_0.opponent_troop.cards
 	var_8_0._player._troopLevels, var_8_0._opponent._troopLevels = arg_8_0.player_troop.levels, arg_8_0.opponent_troop.levels
@@ -123,7 +132,7 @@ function _M.genInputFromResp(arg_8_0)
 	var_8_0._player._idInRoom, var_8_0._opponent._idInRoom = arg_8_0.player_troop.id, arg_8_0.opponent_troop.id
 	var_8_0._player._crown = nil
 
-	if var_8_1:HasField("crown") then
+	if safeHasField(var_8_1, "crown") then
 		var_8_0._player._crown = {
 			_infoId = var_8_1.crown.info_id,
 			_num = var_8_1.crown.num
@@ -132,7 +141,7 @@ function _M.genInputFromResp(arg_8_0)
 
 	var_8_0._opponent._crown = nil
 
-	if var_8_2:HasField("crown") then
+	if safeHasField(var_8_2, "crown") then
 		var_8_0._opponent._crown = {
 			_infoId = var_8_2.crown.info_id,
 			_num = var_8_2.crown.num
@@ -141,13 +150,13 @@ function _M.genInputFromResp(arg_8_0)
 
 	var_8_0._player._avatarFrameCount = 0
 
-	if var_8_1:HasField("avatar_frame_count") then
+	if safeHasField(var_8_1, "avatar_frame_count") then
 		var_8_0._player._avatarFrameCount = var_8_1.avatar_frame_count
 	end
 
 	var_8_0._opponent._avatarFrameCount = 0
 
-	if var_8_2:HasField("avatar_frame_count") then
+	if safeHasField(var_8_2, "avatar_frame_count") then
 		var_8_0._opponent._avatarFrameCount = var_8_2.avatar_frame_count
 	end
 
@@ -261,7 +270,7 @@ function _M.genInputFromFindStartResp(arg_11_0)
 
 	var_11_0._sceneType = arg_11_0.opponent_troop.info.id % 4 + 1
 
-	if arg_11_0:HasField("level_id") then
+	if safeHasField(arg_11_0, "level_id") then
 		var_11_0._battleType = Data.BattleType.PVP_revenge
 		var_11_0._levelId = arg_11_0.level_id
 	else

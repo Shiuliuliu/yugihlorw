@@ -113,18 +113,21 @@ function var_0_0.init(arg_4_0)
 
 	local var_4_5 = lc.addEventListener(Data.Event.bonus_dirty, function(arg_8_0)
 		local var_8_0 = arg_8_0._data
+		if not var_8_0 or not var_8_0._info then
+			return
+		end
 		local var_8_1 = var_8_0._type
 		local var_8_2 = var_8_0._info._cid
 
 		if var_8_1 == Data.BonusType.vip_daily or var_8_1 == Data.BonusType.month_card or var_8_1 == Data.BonusType.week_checkin or var_8_1 == Data.BonusType.month_checkin or var_8_1 == Data.BonusType.online or var_8_1 == Data.BonusType.login then
 			arg_4_0:updateCheckinBonusFlag()
-		elseif var_8_1 == Data.BonusType.fund_level or var_8_1 == Data.BonusType.fund_all or Data.isPersonalFund(var_8_0._infoId) or var_8_2 >= Data.BonusCid.new_server_begin or var_8_2 >= Data.BonusCid.new_server_end then
+		elseif var_8_1 == Data.BonusType.fund_level or var_8_1 == Data.BonusType.fund_all or Data.isPersonalFund(var_8_0._infoId) or (var_8_2 and (var_8_2 >= Data.BonusCid.new_server_begin or var_8_2 >= Data.BonusCid.new_server_end)) then
 			arg_4_0:updateActivityFlag()
 		elseif var_8_1 == Data.BonusType.fund_task then
 			arg_4_0:updateDailyActiveFlag()
 		end
 
-		if var_8_0._info._cid >= Data.BonusCid.channel_begin and var_8_0._info._cid <= Data.BonusCid.channel_end then
+		if var_8_2 and var_8_2 >= Data.BonusCid.channel_begin and var_8_2 <= Data.BonusCid.channel_end then
 			arg_4_0:updateChannelFlag()
 		end
 	end)

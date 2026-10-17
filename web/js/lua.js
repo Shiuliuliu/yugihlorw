@@ -27,7 +27,8 @@
 	    OP_GET      = 5,  /* __jsb(5, "cc.PLATFORM_OS_WINDOWS")      */
 	    OP_INDEX    = 6,  /* __jsb(6, handle, "key") -> value        */
 	    OP_SETINDEX = 7,  /* __jsb(7, handle, "key", value)          */
-	    OP_BINCALL  = 8;  /* like OP_CALL, but strings are raw bytes */
+	    OP_BINCALL  = 8,  /* like OP_CALL, but strings are raw bytes */
+	    OP_ALIVE    = 9;  /* __jsb(9, handle) -> is the object still there */
 
 	/* Methods whose Lua binding returns a pair of numbers where html5
 	 * returns a point object. */
@@ -51,12 +52,20 @@
 		this.M = Module;
 		this.L = Module._jdzc_open();
 
-		this.objects = new Map();      /* handle -> js value        */
+		this.objects = new Map();      /* handle -> js value (a node: WeakRef) */
 		this.handles = new WeakMap();  /* js object -> handle       */
 		this.nextHandle = 1;
 		this.classSeq = 0;
 		this.reportedMembers = {};
-		this.callbacks = new Map();    /* lua ref -> js wrapper     */
+		var M0 = Module, self0 = this;
+		this.dropRef = typeof FinalizationRegistry === 'function'
+			? new FinalizationRegistry(function (ref) { M0._jdzc_unref(self0.L, ref); })
+			: null;
+		this.callbacks = this.dropRef ? null : new Map();
+		this.pinProxy = this.dropRef
+			? new FinalizationRegistry(function (ref) { M0._jdzc_unref(self0.L, ref); })
+			: null;
+		this.deadCalls = 0;
 		this.newproxyRef = 0;          /* lua ref of __jsb_newproxy */
 		this.utf8 = new TextDecoder('utf-8');
 		this._cstrs = {};
@@ -121,14 +130,24 @@
 	 * handles: a JS object as seen from Lua
 	 * ------------------------------------------------------------------ */
 
+	var WEAK = typeof WeakRef === 'function';
+	function isNode(obj) {
+		return WEAK && global.cc && global.cc.Node && obj instanceof global.cc.Node;
+	}
+
 	Lua.prototype.handleOf = function (obj) {
 		var h = this.handles.get(obj);
 		if (h === undefined) {
 			h = this.nextHandle++;
 			this.handles.set(obj, h);
-			this.objects.set(h, obj);
+			this.objects.set(h, isNode(obj) ? new WeakRef(obj) : obj);
 		}
 		return h;
+	};
+
+	Lua.prototype.get = function (h) {
+		var v = this.objects.get(h);
+		return (WEAK && v instanceof WeakRef) ? v.deref() : v;
 	};
 
 	/* The name is the key of the per-class method cache in bridge.lua, so it
@@ -151,6 +170,7 @@
 	/* push the Lua proxy table for a JS object, reusing the live one */
 	Lua.prototype.pushProxy = function (obj) {
 		var M = this.M, L = this.L;
+		var fresh = this.pinProxy && isNode(obj) && this.handles.get(obj) === undefined;
 		M._jdzc_getref(L, this.newproxyRef);
 		M._lua_pushnumber(L, this.handleOf(obj));
 		this.pushStr(this.classNameOf(obj));
@@ -158,6 +178,10 @@
 			var err = this.toStr(-1);
 			this.pop(1);
 			throw new Error('newproxy failed: ' + err);
+		}
+		if (fresh) {
+			M._lua_pushvalue(L, -1);
+			this.pinProxy.register(obj, M._jdzc_ref(L));
 		}
 	};
 
@@ -192,7 +216,7 @@
 		if (this.type(-1) === T_NUMBER) {
 			var h = M._lua_tonumber(L, -1);
 			this.pop(1);
-			return this.objects.get(h);
+			return this.get(h);
 		}
 		this.pop(1);
 
@@ -318,7 +342,8 @@
 			return self.callRef(ref, Array.prototype.slice.call(arguments));
 		};
 		fn.__luaRef = ref;
-		this.callbacks.set(ref, fn);
+		if (this.dropRef) this.dropRef.register(fn, ref);
+		else this.callbacks.set(ref, fn);
 		return fn;
 	};
 
@@ -382,8 +407,12 @@
 			case OP_BINCALL: {
 				var bin = op === OP_BINCALL;
 				var h = M._lua_tonumber(L, 2), mname = this.toStr(3);
-				var obj = this.objects.get(h);
-				if (!obj) throw new Error('dead handle ' + h + ':' + mname);
+				var obj = this.get(h);
+				if (!obj) {
+					if (this.deadCalls++ < 20)
+						console.warn('[jsb] call on a freed node: ' + mname);
+					return 0;
+				}
 				var m = obj[mname];
 				if (typeof m !== 'function')
 					throw new Error(this.classNameOf(obj) + ':' + mname +
@@ -406,7 +435,7 @@
 			}
 			case OP_MEMBER: {
 				var oh = M._lua_tonumber(L, 2), key = this.toStr(3);
-				var o = this.objects.get(oh);
+				var o = this.get(oh);
 				if (!o) return 0;
 				if (HIDDEN_MEMBERS[key]) return 0;
 				if (typeof o[key] === 'function') { this.pushStr('f'); return 1; }
@@ -425,9 +454,14 @@
 			}
 			case OP_RELEASE: {
 				var rh = M._lua_tonumber(L, 2);
-				var ro = this.objects.get(rh);
-				if (ro) { this.handles.delete(ro); this.objects.delete(rh); }
+				var ro = this.get(rh);
+				if (ro) this.handles.delete(ro);
+				this.objects.delete(rh);
 				return 0;
+			}
+			case OP_ALIVE: {
+				M._lua_pushboolean(L, this.get(M._lua_tonumber(L, 2)) ? 1 : 0);
+				return 1;
 			}
 			case OP_GET: {
 				var v = this.resolve(this.toStr(2));
@@ -437,14 +471,14 @@
 			}
 			case OP_INDEX: {
 				var ih = M._lua_tonumber(L, 2);
-				var io = this.objects.get(ih);
+				var io = this.get(ih);
 				if (!io) return 0;
 				this.push(io[this.toStr(3)]);
 				return 1;
 			}
 			case OP_SETINDEX: {
 				var sh = M._lua_tonumber(L, 2);
-				var so = this.objects.get(sh);
+				var so = this.get(sh);
 				if (so) so[this.toStr(3)] = this.toJS(4);
 				return 0;
 			}

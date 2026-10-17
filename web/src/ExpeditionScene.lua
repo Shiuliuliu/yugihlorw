@@ -105,9 +105,12 @@ function var_0_0.onEnter(arg_7_0)
 		arg_7_0._btnLottery._bones = var_7_1
 	end
 
-	if arg_7_0._nextRefresh == 0 then
+	if arg_7_0._nextRefresh == 0 or ClientData._needRefreshExpedition then
+		ClientData._needRefreshExpedition = nil
 		ClientView.getActiveIndicator():show(Str(STR.WAITING))
 		ClientData.sendGetExpeditionEx()
+	else
+		arg_7_0:updatePlayers()
 	end
 end
 
@@ -155,7 +158,14 @@ end
 function var_0_0.createPlayerItem(arg_12_0, arg_12_1)
 	local var_12_0 = arg_12_0:calRandomPos(arg_12_1._randomSeed)
 	local var_12_1 = ClientView.SCR_H - var_12_0.y
-	local var_12_2 = string.format("img_expedition_avatar_%02d", arg_12_1._avatar)
+	local charId = arg_12_1._avatar or 1
+	if charId >= 100 then
+		charId = P.getCharacterId(arg_12_1)
+	end
+	charId = math.max(1, math.min(19, tonumber(charId) or 1))
+	-- img_expedition_avatar_01 does not exist in textures (starts from 02)
+	local safeCharId = (charId > 1 and charId <= 19) and charId or 2
+	local var_12_2 = string.format("img_expedition_avatar_%02d", safeCharId)
 
 	if ClientData.isAnotherSkin() and lc.FrameCache:getSpriteFrame(var_12_2 .. "_2") then
 		var_12_2 = var_12_2 .. "_2"
@@ -163,8 +173,9 @@ function var_0_0.createPlayerItem(arg_12_0, arg_12_1)
 		var_12_2 = var_12_2 .. "_3"
 	end
 
-	local var_12_3 = string.format("img_expedition_mark_%02d", arg_12_1._level or 3)
-	local var_12_4 = string.format("img_expedition_bottom_%02d", arg_12_1._level or 3)
+	local markLvl = math.max(1, math.min(3, tonumber(arg_12_1._level) or 1))
+	local var_12_3 = string.format("img_expedition_mark_%02d", markLvl)
+	local var_12_4 = string.format("img_expedition_bottom_%02d", markLvl)
 	local var_12_5 = ClientView.createShaderButton(nil)
 
 	function var_12_5._callback()
@@ -178,6 +189,12 @@ function var_0_0.createPlayerItem(arg_12_0, arg_12_1)
 	var_12_5._position = var_12_0
 
 	local var_12_6 = lc.createSprite(var_12_3)
+	if not var_12_6 then var_12_6 = lc.createSprite("img_expedition_mark_01") end
+	if not var_12_6 then var_12_6 = lc.createSprite("avatar_frame_001") end
+	if not var_12_6 then
+		var_12_6 = cc.Node:create()
+		var_12_6:setContentSize(cc.size(80, 80))
+	end
 
 	var_12_5:setContentSize(cc.size(lc.w(var_12_6) + 16, lc.h(var_12_6) + 16))
 	var_12_5:setAnchorPoint(cc.p(0.5, 0))
@@ -186,21 +203,53 @@ function var_0_0.createPlayerItem(arg_12_0, arg_12_1)
 	var_12_6._pos = cc.p(var_12_6:getPosition())
 
 	local var_12_7 = lc.createSprite(var_12_2)
-	local var_12_8 = cc.p(lc.cw(var_12_6) + 2, lc.h(var_12_6) - lc.ch(var_12_7) + 6)
+	if not var_12_7 then
+		var_12_7 = lc.createSprite("img_expedition_avatar_02")
+	end
+	if not var_12_7 then
+		local ok, head = pcall(function() return ClientView.createCharacterHeadById(safeCharId) end)
+		if ok and head then var_12_7 = head end
+	end
+	if not var_12_7 then
+		var_12_7 = lc.createSprite("head_02")
+	end
+	if not var_12_7 then
+		var_12_7 = cc.Node:create()
+		var_12_7:setContentSize(cc.size(60, 60))
+	end
 
+	local var_12_8 = cc.p(lc.cw(var_12_6) + 2, lc.h(var_12_6) - lc.ch(var_12_7) + 6)
 	if arg_12_1._type == var_0_0.PlayerType.boss then
 		var_12_8.y = var_12_8.y - 32
 	end
 
 	lc.addChildToPos(var_12_6, var_12_7, var_12_8)
-
 	var_12_7._posY = var_12_7:getPositionY()
 
 	var_12_6:runAction(lc.rep(lc.sequence(lc.moveTo(0.5, cc.p(var_12_6._pos.x, var_12_6._pos.y - 5)), lc.moveTo(0.5, cc.p(var_12_6._pos.x, var_12_6._pos.y + 5)))))
 
 	local var_12_9 = lc.createSprite(var_12_4)
+	if not var_12_9 then var_12_9 = lc.createSprite("img_expedition_bottom_01") end
+	if var_12_9 then
+		lc.addChildToPos(var_12_5, var_12_9, cc.p(lc.cw(var_12_5), -10), -1)
+	end
 
-	lc.addChildToPos(var_12_5, var_12_9, cc.p(lc.cw(var_12_5), -10), -1)
+	-- Name plate below player pin
+	local playerName = arg_12_1._name or ("Duelist_" .. tostring(arg_12_1._id or 1))
+	local nameLabel = ClientView.createTTF(playerName, ClientView.FontSize.S2, cc.c3b(255, 255, 255))
+	if nameLabel then
+		nameLabel:enableOutline(cc.c4b(0, 0, 0, 220), 2)
+		lc.addChildToPos(var_12_5, nameLabel, cc.p(lc.cw(var_12_5), -16), 10)
+	end
+
+	-- Boss badge if boss
+	if arg_12_1._type == var_0_0.PlayerType.boss then
+		local bossLabel = ClientView.createTTF("👑 BOSS", ClientView.FontSize.S2, cc.c3b(255, 50, 50))
+		if bossLabel then
+			bossLabel:enableOutline(cc.c4b(0, 0, 0, 220), 2)
+			lc.addChildToPos(var_12_5, bossLabel, cc.p(lc.cw(var_12_5), lc.h(var_12_5) + 10), 10)
+		end
+	end
 
 	return var_12_5
 end
@@ -222,7 +271,7 @@ function var_0_0.onSelectPlayer(arg_14_0, arg_14_1)
 
 	ClientData._expeditionCurNpc = arg_14_1._id + 1
 
-	ClientData.sendWorldExpeditionEx(P._curTroopIndex, arg_14_1._id, arg_14_1._type == var_0_0.PlayerType.boss)
+	ClientData.sendWorldExpeditionEx(P._curTroopIndex, arg_14_1._id, arg_14_1._type == var_0_0.PlayerType.boss, arg_14_1._infoId, arg_14_1._rank)
 end
 
 function var_0_0.onMsg(arg_15_0, arg_15_1)
@@ -256,20 +305,28 @@ function var_0_0.onMsg(arg_15_0, arg_15_1)
 
 		ClientData._expeditionBossInfo = {}
 
-		if var_15_2:HasField("boss") then
+		local hasBoss = false
+		if type(var_15_2.HasField) == "function" then
+			hasBoss = var_15_2:HasField("boss")
+		else
+			hasBoss = (var_15_2.boss ~= nil)
+		end
+
+		if hasBoss then
 			local var_15_5 = var_15_2.boss
 
-			if var_15_5.boss.info.avatar ~= 0 then
+			if var_15_5 and var_15_5.boss and var_15_5.boss.info and var_15_5.boss.info.avatar ~= 0 then
 				local var_15_6 = ClientData._expeditionBossInfo
 
 				var_15_6._type = var_0_0.PlayerType.boss
-				var_15_6._challengeCount = var_15_5.chanllenge_count
-				var_15_6._randomSeed = var_15_5.random_position
+				var_15_6._challengeCount = var_15_5.chanllenge_count or 0
+				var_15_6._randomSeed = var_15_5.random_position or 10
 				var_15_6._id = var_15_5.boss.id
 				var_15_6._infoId = var_15_5.boss.info.id
 				var_15_6._name = var_15_5.boss.info.name
 				var_15_6._avatar = var_15_5.boss.info.avatar
-				var_15_6._nextRefresh = math.floor(var_15_5.next_refresh / 1000)
+				var_15_6._avatar = P.getCharacterId(var_15_6)
+				var_15_6._nextRefresh = math.floor((var_15_5.next_refresh or 0) / 1000)
 			end
 		end
 
@@ -369,32 +426,32 @@ function var_0_0.showInfo(arg_18_0, arg_18_1, arg_18_2)
 	lc.addChildToPos(var_18_4, var_18_9, cc.p(lc.cw(var_18_4), 150))
 	var_18_9:setScale(1.8, 0.5)
 
+	local rCount = arg_18_1._rewardCount or (100 + (arg_18_1._level or 1) * 50)
 	local var_18_10 = Data._characterDescInfo[arg_18_1._avatar]
 
-	if var_18_10 then
-		local var_18_11 = ClientView.createTTF(arg_18_1._name, ClientView.FontSize.M2, ClientView.COLOR_GLOW_BLUE)
-
-		lc.addChildToPos(var_18_4, var_18_11, cc.p(lc.cw(var_18_4), lc.h(var_18_4) - 34))
-
-		local var_18_12 = ClientView.createTTF(lc.str(var_18_10._descSid), ClientView.FontSize.S2, nil, cc.size(var_18_2.width - 60, 0))
-
-		lc.addChildToPos(var_18_4, var_18_12, cc.p(lc.cw(var_18_4), lc.h(var_18_4) - 90 - lc.ch(var_18_12)))
+	local displayName = arg_18_1._name or "Duelist"
+	if arg_18_1._rank then
+		displayName = string.format("[Top %d] %s", arg_18_1._rank, displayName)
 	end
+	local var_18_11 = ClientView.createTTF(displayName, ClientView.FontSize.M2, ClientView.COLOR_GLOW_BLUE)
 
-	local var_18_13 = arg_18_0._dropInfos[(arg_18_1._level or 3) + 1]
+	lc.addChildToPos(var_18_4, var_18_11, cc.p(lc.cw(var_18_4), lc.h(var_18_4) - 34))
 
-	if var_18_13 then
-		local var_18_14 = ClientView.createBMFont(ClientView.BMFont.huali_26, lc.str(STR.TASK))
+	local descText = (arg_18_1._rank and string.format("Clone đối thủ Top %d BXH. Thưởng: %d Linh thạch cao cấp.", arg_18_1._rank, rCount)) or (var_18_10 and lc.str(var_18_10._descSid)) or "Đối thủ thám hiểm"
+	local var_18_12 = ClientView.createTTF(descText, ClientView.FontSize.S2, nil, cc.size(var_18_2.width - 60, 0))
 
-		lc.addChildToPos(var_18_4, var_18_14, cc.p(lc.cw(var_18_14) + 30, 120))
-		var_18_14:setColor(ClientView.COLOR_LABEL_LIGHT)
+	lc.addChildToPos(var_18_4, var_18_12, cc.p(lc.cw(var_18_4), lc.h(var_18_4) - 90 - lc.ch(var_18_12)))
 
-		local var_18_15 = IconWidget.createByInfoId(var_18_13._pid[1][1], var_18_13._pid[1][2])
+	local var_18_14 = ClientView.createBMFont(ClientView.BMFont.huali_26, "Phần Thưởng")
 
-		lc.addChildToPos(var_18_4, var_18_15, cc.p(lc.cw(var_18_4), lc.y(var_18_14) - 20))
-		var_18_15:setScale(0.8)
-		var_18_15._countBg:setVisible(true)
-	end
+	lc.addChildToPos(var_18_4, var_18_14, cc.p(lc.cw(var_18_4) + 30, 120))
+	var_18_14:setColor(ClientView.COLOR_LABEL_LIGHT)
+
+	local var_18_15 = IconWidget.createByInfoId(Data.ResType.ingot, rCount)
+
+	lc.addChildToPos(var_18_4, var_18_15, cc.p(lc.cw(var_18_4), lc.y(var_18_14) - 20))
+	var_18_15:setScale(0.8)
+	var_18_15._countBg:setVisible(true)
 
 	if arg_18_1._challengeCount then
 		local var_18_16 = ClientView.createTTF(lc.str(STR.REMAIN_CHALLENGE_TIMES) .. ": " .. arg_18_1._challengeCount, ClientView.FontSize.S2)
@@ -477,10 +534,10 @@ function var_0_0.getCost(arg_25_0, arg_25_1)
 			Data._globalInfo._expeditionSimpleNPCCost,
 			Data._globalInfo._expeditionMediumNPCCost,
 			Data._globalInfo._expeditionHardNPCCost
-		})[arg_25_1._level + 1]
+		})[arg_25_1._level + 1] or Data._globalInfo._expeditionSimpleNPCCost or 0
 	end
 
-	return var_25_0
+	return var_25_0 or 0
 end
 
 function var_0_0.getRemainSecondsStr(arg_26_0, arg_26_1)

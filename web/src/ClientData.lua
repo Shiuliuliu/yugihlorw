@@ -1,6 +1,15 @@
 local var_0_0 = {}
 var_0_0._language = _G._cachedLanguage or (rawget(_G, 'ClientData') and ClientData._language)
 
+local function safeHasField(t, f)
+	if type(t) ~= "table" then return false end
+	if type(t.HasField) == "function" then
+		local ok, res = pcall(t.HasField, t, f)
+		if ok then return res end
+	end
+	return rawget(t, f) ~= nil or t[f] ~= nil
+end
+
 var_0_0.DEBUG_GUIDE_ID = nil
 
 if lc.PLATFORM == cc.PLATFORM_OS_WINDOWS then
@@ -384,31 +393,32 @@ function var_0_0.unloadLCRes(arg_14_0)
 end
 
 function var_0_0.str(arg_15_0, arg_15_1)
-	local var_15_0, var_15_1 = var_0_0.getBinVersion()
+	if not arg_15_0 then return "" end
+	local numSid = tonumber(arg_15_0)
+	local var_15_1 = nil
 
-	if var_15_0 == "1.5.0" then
-		local lang = var_0_0._language or _G._cachedLanguage or (rawget(_G, 'ClientData') and ClientData._language)
-		var_15_1 = lang and lang[arg_15_0]
+	if rawget(_G, "CARD_NAME_OVERRIDES") then
+		var_15_1 = (numSid and _G.CARD_NAME_OVERRIDES[numSid]) or _G.CARD_NAME_OVERRIDES[arg_15_0]
+	end
 
-		if var_15_1 then
+	if not var_15_1 or var_15_1 == "" then
+		local var_15_0 = var_0_0.getBinVersion()
+		if var_15_0 == "1.5.0" then
+			local lang = var_0_0._language or _G._cachedLanguage or (rawget(_G, 'ClientData') and ClientData._language)
+			var_15_1 = lang and ((numSid and lang[numSid]) or lang[arg_15_0])
+		else
+			var_15_1 = lc.str(arg_15_0, arg_15_1)
+		end
+	end
+
+	if var_15_1 and var_15_1 ~= "" then
+		if type(var_15_1) == "string" and string.find(var_15_1, "\\n") then
 			var_15_1 = string.gsub(var_15_1, "\\n", "\n")
 		end
-	else
-		var_15_1 = lc.str(arg_15_0, arg_15_1)
+		return var_15_1
 	end
 
-	if var_15_1 == nil or var_15_1 == "" then
-		local var_15_2 = string.format("region:%s, id:%s", var_0_0._userRegion and var_0_0._userRegion._id or "NA", P and P._id or "NA")
-		local var_15_3 = string.format("[LUA ERROR]: <SceneId:%s> %s\n%s ", lc._runningScene and lc._runningScene._sceneId or "NA", string.format("Faild to get string id = %s", tostring(arg_15_0)), debug.traceback())
-
-		print(var_15_3)
-
-		if lc.PLATFORM ~= cc.PLATFORM_OS_WINDOWS then
-			onLuaException(var_15_2, var_15_3)
-		end
-	end
-
-	return var_15_1 or ""
+	return tostring(arg_15_0 or "")
 end
 
 function var_0_0.decrypt(arg_16_0, arg_16_1, arg_16_2)
@@ -1232,7 +1242,7 @@ function var_0_0.onMsgBeforeScene(arg_53_0)
 
 		local var_53_40 = arg_53_0.Extensions[Battle_pb.SglBattleMsg.battle_end_resp]
 
-		if var_53_40:HasField("dark_duel_end_resp") then
+		if safeHasField(var_53_40, "dark_duel_end_resp") then
 			P._playerFindDark:onInningEnd(var_53_40.dark_duel_end_resp)
 		end
 
@@ -1705,11 +1715,20 @@ function var_0_0.getNameByInfoId(arg_77_0)
 
 	arg_77_0, var_77_2, var_77_3 = Data.removeAdditional(arg_77_0)
 
+	if arg_77_0 == Data.ResType.ingot or arg_77_0 == 3 or arg_77_0 == 7352 or arg_77_0 == 7114 or arg_77_0 == 7339 then
+		return "Linh Thạch Cao Cấp"
+	elseif arg_77_0 == Data.ResType.gold or arg_77_0 == 1 then
+		return "Linh Thạch"
+	end
+
 	if type == Data.CardType.nature then
 		return Str(STR.NATURE_NONE + arg_77_0 % 1000)
 	elseif type == Data.CardType.category then
 		return Str(STR.CARD_CATEGORY_BEGIN + arg_77_0 % 1000)
 	elseif type == Data.CardType.keyword then
+		if arg_77_0 % 1000 == 300 or arg_77_0 == 300 then
+			return "Tru tiên"
+		end
 		return Str(STR.CARD_KEYWORD_BEGIN + arg_77_0 % 1000)
 	elseif type == Data.CardType.flag then
 		return Str(STR.MONSTER_FLAG_BEGIN + arg_77_0 % 1000)
@@ -2352,38 +2371,43 @@ end
 
 function var_0_0.getAvatarName(arg_135_0)
 	local var_135_0
+	arg_135_0 = tonumber(arg_135_0) or 301
 
-	if ClientData.isAnotherSkin() then
-		if arg_135_0 > 52000 then
-			var_135_0 = string.format("avatar_%d", arg_135_0)
-		else
-			var_135_0 = arg_135_0 > 10000 and arg_135_0 < 20000 and "avatar_51" or string.format("avatar_%04d", arg_135_0)
-		end
-
-		if lc.FrameCache:getSpriteFrame(var_135_0 .. "_2") then
-			var_135_0 = var_135_0 .. "_2"
-		end
-	elseif ClientData.isAnotherSkin2() and arg_135_0 < 10000 then
-		var_135_0 = string.format("avatar_%02d_3", math.floor(arg_135_0 / 100))
-	elseif arg_135_0 > 52000 then
+	if arg_135_0 >= 52000 then
 		var_135_0 = string.format("avatar_%d", arg_135_0)
+	elseif arg_135_0 >= 100 then
+		local cand4 = string.format("avatar_%04d", arg_135_0)
+		if lc.FrameCache and lc.FrameCache:getSpriteFrame(cand4) then
+			var_135_0 = cand4
+		else
+			var_135_0 = string.format("avatar_%02d", math.floor(arg_135_0 / 100))
+		end
 	else
-		var_135_0 = arg_135_0 > 10000 and arg_135_0 < 20000 and "avatar_51" or string.format("avatar_%02d", math.floor(arg_135_0 / 100))
+		var_135_0 = string.format("avatar_%02d", arg_135_0)
 	end
 
-	print("++++++++++++++++", var_135_0, ClientData.isAnotherSkin(), ClientData.isAnotherSkin2())
+	if lc.FrameCache and not lc.FrameCache:getSpriteFrame(var_135_0) then
+		local cid = (arg_135_0 < 100 and arg_135_0) or math.floor(arg_135_0 / 100)
+		local head_name = string.format("head_%02d", cid)
+		if lc.FrameCache:getSpriteFrame(head_name) then
+			var_135_0 = head_name
+		elseif lc.FrameCache:getSpriteFrame("avatar_03") then
+			var_135_0 = "avatar_03"
+		end
+	end
 
 	return var_135_0
 end
 
 function var_0_0.getSkillDesc(arg_136_0, arg_136_1)
 	local var_136_0 = Data._skillInfo[arg_136_0]
+	if not var_136_0 then return "" end
 	local var_136_1
 
-	if var_136_0._val[1] == 0 then
-		var_136_1 = Str(var_136_0._descSid)
+	if not var_136_0._val or not var_136_0._val[1] or var_136_0._val[1] == 0 then
+		var_136_1 = Str(var_136_0._descSid or 0)
 	else
-		var_136_1 = string.gsub(Str(var_136_0._descSid), "%[%d+%]", string.format("%d", var_136_0._val[arg_136_1]))
+		var_136_1 = string.gsub(Str(var_136_0._descSid or 0), "%[%d+%]", string.format("%d", var_136_0._val[arg_136_1] or var_136_0._val[1]))
 	end
 
 	return (string.gsub(var_136_1, "#", ""))
@@ -3342,7 +3366,7 @@ function var_0_0.genInputFromResp(arg_185_0)
 	var_185_0._player._isNpc = var_185_1.is_npc
 	var_185_0._opponent._name, var_185_0._opponent._level, var_185_0._opponent._vip, var_185_0._opponent._avatar, var_185_0._opponent._region, var_185_0._opponent._privilege, var_185_0._opponent._monthCardType = var_185_2.name or "", var_185_2.level or 0, var_185_2.vip or 0, var_185_2.avatar or 0, var_185_2.rid, var_185_2.privilege or 0, var_185_2.month_card or 0
 	var_185_0._opponent._avatarFrame, var_185_0._opponent._cardBackId = var_185_2.avatar_frame, var_185_2.card_back == 0 and Data.PropsId.card_back or var_185_2.card_back
-	var_185_0._opponent._bossId = arg_185_0:HasField("boss_id") and arg_185_0.boss_id or 0
+	var_185_0._opponent._bossId = safeHasField(arg_185_0, "boss_id") and arg_185_0.boss_id or 0
 	var_185_0._opponent._isNpc = var_185_2.is_npc
 	var_185_0._player._monthCardType, var_185_0._opponent._monthCardType = (var_185_1.battle_round_extra_time_flag or 0) * 4 + var_185_0._player._monthCardType, (var_185_2.battle_round_extra_time_flag or 0) * 4 + var_185_0._opponent._monthCardType
 	var_185_0._player._isNewRound, var_185_0._opponent._isNewRound = arg_185_0.player_troop.round_optimization, arg_185_0.opponent_troop.round_optimization
@@ -3359,7 +3383,7 @@ function var_0_0.genInputFromResp(arg_185_0)
 	var_185_0._player._idInRoom, var_185_0._opponent._idInRoom = arg_185_0.player_troop.id, arg_185_0.opponent_troop.id
 	var_185_0._player._crown = nil
 
-	if var_185_1:HasField("crown") then
+	if safeHasField(var_185_1, "crown") then
 		var_185_0._player._crown = {
 			_infoId = var_185_1.crown.info_id,
 			_num = var_185_1.crown.num
@@ -3368,7 +3392,7 @@ function var_0_0.genInputFromResp(arg_185_0)
 
 	var_185_0._opponent._crown = nil
 
-	if var_185_2:HasField("crown") then
+	if safeHasField(var_185_2, "crown") then
 		var_185_0._opponent._crown = {
 			_infoId = var_185_2.crown.info_id,
 			_num = var_185_2.crown.num
@@ -3377,7 +3401,7 @@ function var_0_0.genInputFromResp(arg_185_0)
 
 	var_185_0._player._legendCrown = nil
 
-	if var_185_1:HasField("legend_crown") then
+	if safeHasField(var_185_1, "legend_crown") then
 		var_185_0._player._legendCrown = {
 			_infoId = var_185_1.legend_crown.info_id,
 			_num = var_185_1.legend_crown.num
@@ -3386,7 +3410,7 @@ function var_0_0.genInputFromResp(arg_185_0)
 
 	var_185_0._opponent._legendCrown = nil
 
-	if var_185_2:HasField("legend_crown") then
+	if safeHasField(var_185_2, "legend_crown") then
 		var_185_0._opponent._legendCrown = {
 			_infoId = var_185_2.legend_crown.info_id,
 			_num = var_185_2.legend_crown.num
@@ -3395,13 +3419,13 @@ function var_0_0.genInputFromResp(arg_185_0)
 
 	var_185_0._player._avatarFrameCount = 0
 
-	if var_185_1:HasField("avatar_frame_count") then
+	if safeHasField(var_185_1, "avatar_frame_count") then
 		var_185_0._player._avatarFrameCount = var_185_1.avatar_frame_count
 	end
 
 	var_185_0._opponent._avatarFrameCount = 0
 
-	if var_185_2:HasField("avatar_frame_count") then
+	if safeHasField(var_185_2, "avatar_frame_count") then
 		var_185_0._opponent._avatarFrameCount = var_185_2.avatar_frame_count
 	end
 
@@ -3528,7 +3552,7 @@ function var_0_0.genInputFromFindStartResp(arg_188_0)
 
 	var_188_0._sceneType = arg_188_0.opponent_troop.info.id % 4 + 1
 
-	if arg_188_0:HasField("level_id") then
+	if safeHasField(arg_188_0, "level_id") then
 		var_188_0._battleType = Data.BattleType.PVP_revenge
 		var_188_0._levelId = arg_188_0.level_id
 	elseif arg_188_0.type == Battle_pb.PB_BATTLE_WORLD_LADDER then
@@ -3738,7 +3762,7 @@ function var_0_0.genInputFromExpeditionExResp(arg_199_0, arg_199_1)
 			table.insert(ClientData._expeditionNpcInfos, var_199_2)
 		end
 
-		if var_199_1:HasField("boss") then
+		if safeHasField(var_199_1, "boss") then
 			local var_199_3 = var_199_1.boss
 
 			if ClientData._expeditionBossInfo == nil then
@@ -4236,6 +4260,10 @@ function var_0_0.unloadLoadingRes(arg_213_0)
 end
 
 function var_0_0.unloadBattleRes()
+	if TextureManager and TextureManager.trim then
+		TextureManager.trim(40)
+	end
+
 	ClientData.unloadLCRes({
 		"battle.jpm",
 		"battle.png.sfb"
@@ -4311,6 +4339,10 @@ function var_0_0.unloadUnionRes()
 end
 
 function var_0_0.unloadAllDragonBones()
+	if cc.DragonBonesNode and cc.DragonBonesNode.clearCache then
+		pcall(function() cc.DragonBonesNode:clearCache() end)
+	end
+
 	if Data._dragonBonesList == nil then
 		local var_220_0 = lc.readFile("res/effects/list.txt")
 
@@ -5345,6 +5377,10 @@ function var_0_0.sendWorldFindNpc(arg_291_0)
 end
 
 function var_0_0.sendWorldAttack(arg_292_0, arg_292_1)
+	if Data.isNormalTroop(arg_292_0) and P and type(P.setCurrentTroopIndex) == "function" then
+		P:setCurrentTroopIndex(arg_292_0, false)
+	end
+
 	local var_292_0 = SglMsg_pb.SglReqMsg()
 
 	var_292_0.type = SglMsgType_pb.PB_TYPE_WORLD_ATTACK
@@ -5358,6 +5394,10 @@ function var_0_0.sendWorldAttack(arg_292_0, arg_292_1)
 end
 
 function var_0_0.sendWorldChallenge(arg_293_0, arg_293_1, arg_293_2)
+	if Data.isNormalTroop(arg_293_0) and P and type(P.setCurrentTroopIndex) == "function" then
+		P:setCurrentTroopIndex(arg_293_0, false)
+	end
+
 	local var_293_0 = SglMsg_pb.SglReqMsg()
 
 	var_293_0.type = SglMsgType_pb.PB_TYPE_WORLD_CHALLENGE

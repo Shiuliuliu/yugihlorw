@@ -540,7 +540,17 @@ if not tolua then
 
 	tolua = {
 		isnull = function(value)
-			return value == nil
+			if value == nil then
+				return true
+			end
+
+			-- a JS object seen from Lua: dead once html5 let it go, the way a
+			-- device node is null once freed (see __jsb_alive in bridge.lua)
+			if type(value) == "table" and rawget(value, "__h") ~= nil and __jsb_alive then
+				return not __jsb_alive(value)
+			end
+
+			return false
 		end,
 		cast = function(value)
 			return value

@@ -191,7 +191,7 @@ function var_0_0.updateList(arg_9_0)
 
 	var_9_7:bindData(var_9_2, function(arg_14_0, arg_14_1)
 		arg_9_0:setOrCreateItem(arg_14_0, arg_14_1)
-	end, math.min(7, #var_9_2))
+	end, #var_9_2)
 
 	arg_9_0._members = var_9_2
 

@@ -1,7 +1,7 @@
 local var_0_0 = class("PlayerRank")
 local var_0_1 = require("Rank")
 
-var_0_0.RANK_COUNT = 50
+var_0_0.RANK_COUNT = 100
 
 local var_0_2
 local var_0_3
@@ -111,11 +111,11 @@ function var_0_0.parseRankData(arg_11_0, arg_11_1, arg_11_2, arg_11_3)
 			else
 				local var_11_6
 
-				if var_11_4 <= var_0_0.RANK_COUNT then
-					var_11_6 = var_11_1[var_11_4]
-
-					var_11_6:set(var_11_5, arg_11_2, arg_11_3)
+				if var_11_4 > #var_11_1 then
+					table.insert(var_11_1, var_0_1.new())
 				end
+				var_11_6 = var_11_1[var_11_4]
+				var_11_6:set(var_11_5, arg_11_2, arg_11_3)
 
 				if not var_11_2 and not var_11_3 and var_11_5.user_info.id == var_11_1._rankId or var_11_2 and var_11_5.union_info.id == P._unionId or var_11_3 and var_11_5.team.id == P._playerUnion._groupId then
 					if var_11_6 == nil then

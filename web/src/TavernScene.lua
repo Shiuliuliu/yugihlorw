@@ -32,7 +32,8 @@ var_0_1.TAB = {
 	draw_card = 2,
 	god_shop = 8,
 	extra_card = 21,
-	expansion_card = 22
+	expansion_card = 22,
+	fairy_hero_card = 23
 }
 
 function var_0_1.create(arg_1_0, arg_1_1)
@@ -89,22 +90,12 @@ function var_0_1.init(arg_2_0, arg_2_1, arg_2_2)
 		_str = "Gói bài mở rộng"
 	})
 
-	if #arg_2_0._godPumpPackages > 0 and P._vip >= 1 then
-		table.insert(var_2_1, {
-			_index = var_0_1.TAB.god_pump,
-			_str = Str(STR.GOD_PUMP)
-		})
-	end
+	table.insert(var_2_1, {
+		_index = var_0_1.TAB.fairy_hero_card,
+		_str = "Gói bài tiên hiệp"
+	})
 
 	if not ClientData.isAnotherSkin2Locked() then
-		table.insert(var_2_1, {
-			_index = var_0_1.TAB.rare_shop,
-			_str = Str(STR.GOD_SHOP)
-		})
-		table.insert(var_2_1, {
-			_index = var_0_1.TAB.diamond_shop,
-			_str = Str(STR.DIAMOND_SHOP)
-		})
 		table.insert(var_2_1, {
 			_index = var_0_1.TAB.depot_shop,
 			_str = Str(STR.DEPOT_SHOP)
@@ -254,6 +245,7 @@ function var_0_1.generateCardPackageData(arg_5_0)
 	local var_5_8 = {}
 	local var_5_extra = {}
 	local var_5_expansion = {}
+	local var_5_fairy_hero = {}
 
 	arg_5_0._timeLimitPackages = var_5_1
 	arg_5_0._godPumpPackages = var_5_2
@@ -261,6 +253,7 @@ function var_0_1.generateCardPackageData(arg_5_0)
 	arg_5_0._rareDrawCardPackages = var_5_4
 	arg_5_0._extraDrawCardPackages = var_5_extra
 	arg_5_0._expansionDrawCardPackages = var_5_expansion
+	arg_5_0._fairyHeroDrawCardPackages = var_5_fairy_hero
 	arg_5_0._criticalPackages = var_5_5
 	arg_5_0._selectPackages = var_5_6
 	arg_5_0._clashPackages = var_5_7
@@ -321,6 +314,23 @@ function var_0_1.generateCardPackageData(arg_5_0)
 		local p50 = getValidPackInfo(prefix + 50) or p1
 		if p1 then
 			table.insert(var_5_expansion, var_5_9(p1, p10, p50))
+		end
+	end
+
+	-- Populate Fairy Hero Pack (Gói bài tiên hiệp: Gói bài Tru Tiên & Tiên Nghịch)
+	do
+		local p1 = getValidPackInfo(221001)
+		local p10 = getValidPackInfo(221010) or p1
+		local p50 = getValidPackInfo(221050) or p1
+		if p1 then
+			table.insert(var_5_fairy_hero, var_5_9(p1, p10, p50))
+		end
+
+		local tn1 = getValidPackInfo(222001)
+		local tn10 = getValidPackInfo(222010) or tn1
+		local tn50 = getValidPackInfo(222050) or tn1
+		if tn1 then
+			table.insert(var_5_fairy_hero, var_5_9(tn1, tn10, tn50))
 		end
 	end
 
@@ -454,9 +464,9 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		var_10_0:setVisible(true)
 		var_10_0:bindData(var_10_1, function(arg_11_0, arg_11_1)
 			arg_10_0:createRecruitItem(arg_11_0, arg_11_1)
-		end, math.min(8, #var_10_1), 1)
+		end, #var_10_1, 1)
 
-		for iter_10_1 = 1, var_10_0._cacheCount do
+		for iter_10_1 = 1, #var_10_1 do
 			local var_10_2 = var_10_1[iter_10_1]
 			local var_10_3 = arg_10_0:createRecruitItem(nil, var_10_2)
 
@@ -470,9 +480,9 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		var_10_4:setVisible(true)
 		var_10_4:bindData(var_10_5, function(arg_12_0, arg_12_1)
 			arg_10_0:createRecruitItem(arg_12_0, arg_12_1)
-		end, math.min(8, #var_10_5), 1)
+		end, #var_10_5, 1)
 
-		for iter_10_2 = 1, var_10_4._cacheCount do
+		for iter_10_2 = 1, #var_10_5 do
 			local var_10_6 = var_10_5[iter_10_2]
 			local var_10_7 = arg_10_0:createRecruitItem(nil, var_10_6)
 
@@ -486,9 +496,9 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		var_10_8:setVisible(true)
 		var_10_8:bindData(var_10_9, function(arg_13_0, arg_13_1)
 			arg_10_0:createRecruitItem(arg_13_0, arg_13_1)
-		end, math.min(8, #var_10_9), 1)
+		end, #var_10_9, 1)
 
-		for iter_10_3 = 1, var_10_8._cacheCount do
+		for iter_10_3 = 1, #var_10_9 do
 			local var_10_10 = var_10_9[iter_10_3]
 			local var_10_11 = arg_10_0:createRecruitItem(nil, var_10_10)
 
@@ -502,9 +512,9 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		var_10_12:setVisible(true)
 		var_10_12:bindData(var_10_13, function(arg_14_0, arg_14_1)
 			arg_10_0:createRecruitItem(arg_14_0, arg_14_1)
-		end, math.min(8, #var_10_13), 1)
+		end, #var_10_13, 1)
 
-		for iter_10_4 = 1, var_10_12._cacheCount do
+		for iter_10_4 = 1, #var_10_13 do
 			local var_10_14 = var_10_13[iter_10_4]
 			local var_10_15 = arg_10_0:createRecruitItem(nil, var_10_14)
 
@@ -518,9 +528,9 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		var_10_16:setVisible(true)
 		var_10_16:bindData(var_10_17, function(arg_15_0, arg_15_1)
 			arg_10_0:createRecruitItem(arg_15_0, arg_15_1)
-		end, math.min(8, #var_10_17), 1)
+		end, #var_10_17, 1)
 
-		for iter_10_5 = 1, var_10_16._cacheCount do
+		for iter_10_5 = 1, #var_10_17 do
 			local var_10_18 = var_10_17[iter_10_5]
 			local var_10_19 = arg_10_0:createRecruitItem(nil, var_10_18)
 
@@ -534,9 +544,9 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		var_10_20:setVisible(true)
 		var_10_20:bindData(var_10_21, function(arg_16_0, arg_16_1)
 			arg_10_0:createRecruitItem(arg_16_0, arg_16_1)
-		end, math.min(8, #var_10_21), 1)
+		end, #var_10_21, 1)
 
-		for iter_10_6 = 1, var_10_20._cacheCount do
+		for iter_10_6 = 1, #var_10_21 do
 			local var_10_22 = var_10_21[iter_10_6]
 			local var_10_23 = arg_10_0:createRecruitItem(nil, var_10_22)
 
@@ -550,14 +560,30 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		var_10_exp:setVisible(true)
 		var_10_exp:bindData(var_10_exp_packs, function(arg_exp_0, arg_exp_1)
 			arg_10_0:createRecruitItem(arg_exp_0, arg_exp_1)
-		end, math.min(8, #var_10_exp_packs), 1)
+		end, #var_10_exp_packs, 1)
 
-		for iter_exp = 1, var_10_exp._cacheCount do
+		for iter_exp = 1, #var_10_exp_packs do
 			local var_exp_p = var_10_exp_packs[iter_exp]
 			local var_exp_item = arg_10_0:createRecruitItem(nil, var_exp_p)
 
 			var_10_exp:pushBackCustomItem(var_exp_item)
 			table.insert(arg_10_0._recruitItems, var_exp_item)
+		end
+	elseif arg_10_1._index == var_0_1.TAB.fairy_hero_card then
+		local var_10_fh = arg_10_0._list
+		local var_10_fh_packs = arg_10_0._fairyHeroDrawCardPackages
+
+		var_10_fh:setVisible(true)
+		var_10_fh:bindData(var_10_fh_packs, function(arg_fh_0, arg_fh_1)
+			arg_10_0:createRecruitItem(arg_fh_0, arg_fh_1)
+		end, #var_10_fh_packs, 1)
+
+		for iter_fh = 1, #var_10_fh_packs do
+			local var_fh_p = var_10_fh_packs[iter_fh]
+			local var_fh_item = arg_10_0:createRecruitItem(nil, var_fh_p)
+
+			var_10_fh:pushBackCustomItem(var_fh_item)
+			table.insert(arg_10_0._recruitItems, var_fh_item)
 		end
 	elseif arg_10_1._index == var_0_1.TAB.god_pump then
 		local var_10_24 = arg_10_0._list
@@ -566,9 +592,9 @@ function var_0_1.showTab(arg_10_0, arg_10_1)
 		var_10_24:setVisible(true)
 		var_10_24:bindData(var_10_25, function(arg_17_0, arg_17_1)
 			arg_10_0:createRecruitItem(arg_17_0, arg_17_1)
-		end, math.min(8, #var_10_25), 1)
+		end, #var_10_25, 1)
 
-		for iter_10_7 = 1, var_10_24._cacheCount do
+		for iter_10_7 = 1, #var_10_25 do
 			local var_10_26 = var_10_25[iter_10_7]
 			local var_10_27 = arg_10_0:createRecruitItem(nil, var_10_26)
 
@@ -616,14 +642,14 @@ function var_0_1.setResourcePanel(arg_19_0)
 	if arg_19_0._detailData then
 		local var_19_1 = arg_19_0._detailData[1]
 
-		if #var_19_1._showRes > 1 then
+		if var_19_1 and var_19_1._showRes and #var_19_1._showRes > 1 then
 			var_19_0:setMode(nil, nil, var_19_1._showRes)
 
 			return
 		end
 
-		local var_19_2 = var_19_1._param[6]
-		local var_19_3 = var_19_1._param[7]
+		local var_19_2 = var_19_1 and var_19_1._param and var_19_1._param[6]
+		local var_19_3 = var_19_1 and var_19_1._param and var_19_1._param[7]
 
 		if var_19_2 and var_19_2 ~= 0 and var_19_3 and var_19_3 ~= 0 and P._propBag:hasProps(var_19_2, var_19_3) then
 			var_19_0:setMode(var_19_2)
@@ -806,7 +832,7 @@ function var_0_1.createCostArea(arg_32_0, arg_32_1, arg_32_2, arg_32_3, arg_32_4
 	local var_32_3 = arg_32_1._param[6]
 	local var_32_4 = arg_32_1._param[7]
 
-	local isLiyaPkg = Data.getIsRareRecruite(arg_32_1) or (arg_32_1._value and arg_32_1._value >= 101001 and arg_32_1._value <= 140050)
+	local isLiyaPkg = Data.getIsRareRecruite(arg_32_1) or (arg_32_1._value and arg_32_1._value >= 101001)
 	local isCharPkg = Data.getIsCharacterRecruite(arg_32_1) or (arg_32_1._value and arg_32_1._value >= 10001 and arg_32_1._value < 100000)
 
 	local baseUnitPrice = 500
@@ -834,12 +860,20 @@ function var_0_1.createCostArea(arg_32_0, arg_32_1, arg_32_2, arg_32_3, arg_32_4
 		var_32_7._resArea:setPosition(cc.p(lc.cw(var_32_7), lc.ch(var_32_7) - 14))
 		var_32_7._resArea:setVisible(true)
 		var_32_7._resArea:setOpacity(0)
+		var_32_7._resArea:setCascadeColorEnabled(false)
 		var_32_7._resArea:setCascadeOpacityEnabled(false)
+		if var_32_7._resArea._ico then
+			var_32_7._resArea._ico:setColor(lc.Color3B.white)
+		end
 	else
 		lc.offset(var_32_7._resArea, 6, 0)
 		var_32_7._resArea:setVisible(true)
 		var_32_7._resArea:setOpacity(0)
+		var_32_7._resArea:setCascadeColorEnabled(false)
 		var_32_7._resArea:setCascadeOpacityEnabled(false)
+		if var_32_7._resArea._ico then
+			var_32_7._resArea._ico:setColor(lc.Color3B.white)
+		end
 	end
 
 	function var_32_7.update(arg_33_0)
@@ -885,12 +919,14 @@ function var_0_1.createCostArea(arg_32_0, arg_32_1, arg_32_2, arg_32_3, arg_32_4
 		var_33_7:setColor(P:getItemCount(var_33_4) < arg_33_0._resNeed and ClientView.COLOR_TEXT_RED_DARK or ClientView.COLOR_TEXT_WHITE)
 
 		arg_33_0._resArea:setVisible(true)
+		arg_33_0._resArea:setCascadeColorEnabled(false)
 		arg_33_0._resArea:setCascadeOpacityEnabled(false)
 		local ico = arg_33_0._resArea._ico
 		local lbl = var_33_7
 		if ico and lbl then
 			ico:setVisible(true)
 			ico:setOpacity(255)
+			ico:setColor(lc.Color3B.white)
 			lbl:setVisible(true)
 			lbl:setOpacity(255)
 			local icoW = (ico.getContentSize and ico:getContentSize().width) or 26

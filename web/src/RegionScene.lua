@@ -479,6 +479,7 @@ function var_0_1.onLoginSubmit(arg_ls_0)
 				elseif bc > 0 then
 					P._crown = { _infoId = 7206, _num = bc }
 				end
+				P._reputation = tonumber(res.account.reputation) or 50
 			end
 			ClientData._loginUsername = username
 			ClientData._loginPassword = password
@@ -810,6 +811,9 @@ function var_0_1.switchScene(arg_21_0)
 			ClientData.loadLCRes("res/cards_img_1.lcres")
 
 			local acc = res.data.account
+			if res.data.server_date or res.data.today then
+				ClientData._serverDate = res.data.server_date or res.data.today
+			end
 			if res.data.leaderboard then
 				ClientData._cachedLeaderboard = res.data.leaderboard
 			end
@@ -821,8 +825,37 @@ function var_0_1.switchScene(arg_21_0)
 				setProgress(68, "Đang nạp danh mục thẻ bài...")
 
 				local ob = require("OnlineBridge")
-				local pb_data = ob.buildLoginData(acc, cards, decks, cur_levels, res.data.checkins)
+				local pb_data = ob.buildLoginData(acc, cards, decks, cur_levels, res.data.checkins, res.data.effects)
 				ClientData.loadPlayerData(P, pb_data)
+
+				if P then
+					local c_id = tonumber(acc.character_id) or 3
+					local c_av = tonumber(acc.avatar) or (c_id * 100 + 1)
+					P._characterId = c_id
+					P._avatar = c_av
+				end
+				if ClientData then
+					ClientData._account = acc
+				end
+
+				-- Hydrate propBag with server props (e.g. 7149 effect_skin_crystal)
+				local srvProps = res.data.props or (acc and acc.props)
+				if srvProps and P and P._propBag and P._propBag._props then
+					for pid, cnt in pairs(srvProps) do
+						local p_num = tonumber(pid)
+						local c_num = tonumber(cnt) or 0
+						if p_num then
+							if P._propBag._props[p_num] then
+								P._propBag._props[p_num]._num = c_num
+							else
+								local Prop = require("Prop")
+								P._propBag._props[p_num] = Prop.new(p_num, { num = c_num })
+							end
+						end
+					end
+				end
+
+				ClientData._claimedCheckinsList = res.data.checkins
 				if ob and ob.syncCheckinBonuses then
 					ob.syncCheckinBonuses(P, res.data.checkins)
 				end

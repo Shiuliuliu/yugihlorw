@@ -285,13 +285,13 @@ local var_0_11 = cc.size(340, 88)
 function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 	local var_2_0, var_2_1, var_2_2, var_2_3 = Data.removeAdditional(arg_2_0)
 	local var_2_4, var_2_5 = Data.getInfo(arg_2_0)
-	local var_2_6 = cc.ShaderSprite:createWithFramename(var_0_0.getCardFrameName(var_2_4._quality, arg_2_0))
+	local var_2_6 = cc.ShaderSprite:createWithFramename(var_0_0.getCardFrameName(var_2_4 and var_2_4._quality or 1, arg_2_0))
 	local var_2_7 = lc.createNode(var_2_6:getContentSize())
 
 	var_2_7._showFg = true
 	var_2_7._showInBattle = false
 	var_2_7._infoId = arg_2_0
-	var_2_7._backId = (arg_2_1 and arg_2_1 > 0) and arg_2_1 or 7600
+	var_2_7._backId = (type(arg_2_1) == "number" and arg_2_1 > 0) and arg_2_1 or 7600
 	var_2_7._skinId = arg_2_2
 	var_2_7._effectId = arg_2_3
 
@@ -484,7 +484,7 @@ function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 		local var_5_10 = arg_5_0._showInBattle and var_5_9 and var_5_9._effect ~= "0.0" and true or false
 		local var_5_11 = arg_5_0._showFg and (var_5_5 == Data.CardType.monster or var_5_5 == Data.CardType.rare)
 
-		local curBackId = (arg_5_0._backId and arg_5_0._backId > 0) and arg_5_0._backId or 7600
+		local curBackId = (arg_5_0._backId and arg_5_0._backId >= 7600) and arg_5_0._backId or 7600
 		arg_5_0._frame:setSpriteFrame(arg_5_0._showFg and var_0_0.getCardFrameName(var_5_4._quality, arg_5_1) or ClientView.getCardBackName(curBackId, arg_5_0._showInBattle))
 
 		if not arg_5_0._showFg then
@@ -1272,11 +1272,14 @@ function var_0_0.getCardFrameName(arg_30_0, arg_30_1)
 end
 
 function var_0_0.getCardBackName(arg_31_0, arg_31_1)
-	local var_31_0 = (arg_31_1 and "card_back_square" or "card_back") .. "_" .. (arg_31_0 and arg_31_0 - 7600 or 0)
+	local backIdx = (arg_31_0 and arg_31_0 >= 7600) and (arg_31_0 - 7600) or 0
+	local var_31_0 = (arg_31_1 and "card_back_square" or "card_back") .. "_" .. backIdx
 	local var_31_1 = var_31_0 .. "_" .. ClientData.getSubChannelName()
 
 	if lc.FrameCache:getSpriteFrame(var_31_1) then
 		var_31_0 = var_31_1
+	elseif not lc.FrameCache:getSpriteFrame(var_31_0) then
+		var_31_0 = arg_31_1 and "card_back_square_0" or "card_back_0"
 	end
 
 	return var_31_0
@@ -1301,7 +1304,7 @@ function var_0_0.getCardImageName(arg_34_0, arg_34_1)
 
 	arg_34_0 = var_34_0
 
-	local var_34_3 = arg_34_1 and arg_34_1 > 0 and arg_34_1 or ClientData.getPicIdByInfoId(arg_34_0)
+	local var_34_3 = (type(arg_34_1) == "number" and arg_34_1 > 0) and arg_34_1 or ClientData.getPicIdByInfoId(arg_34_0)
 	local var_34_4 = ""
 	local var_34_5 = Data.getType(tonumber(var_34_3))
 
@@ -1348,7 +1351,17 @@ function var_0_0.getCardIconName(arg_35_0)
 	local customCards = {
 		[10001] = true, [10004] = true, [10006] = true, [10120] = true,
 		[20566] = true, [21134] = true, [30074] = true, [30244] = true,
-		[40718] = true, [40725] = true, [40726] = true
+		[40718] = true, [40725] = true, [40726] = true,
+		[12313] = true, [12314] = true, [12315] = true, [12316] = true,
+		[12317] = true, [12318] = true, [12319] = true, [12320] = true,
+		[12321] = true, [12322] = true, [12323] = true, [12324] = true,
+		[12325] = true, [12326] = true, [12327] = true, [12328] = true,
+		[12329] = true, [12330] = true,
+		[21135] = true, [21136] = true, [21137] = true, [21138] = true,
+		[21139] = true, [21140] = true, [21141] = true, [21142] = true,
+		[30592] = true, [30593] = true,
+		[40727] = true, [40728] = true, [40729] = true, [40730] = true,
+		[40731] = true, [40732] = true, [40733] = true
 	}
 
 	if lc.FrameCache:getSpriteFrame(var_35_1) == nil and not customCards[var_35_0] then
@@ -1378,12 +1391,20 @@ function var_0_0.getCardShadowFrameName(arg_36_0)
 end
 
 function var_0_0.getCardFrameIndex(arg_37_0)
+	if not arg_37_0 or arg_37_0 == 0 then
+		return 1
+	end
+
 	local var_37_0, var_37_1, var_37_2 = Data.removeAdditional(arg_37_0)
 
 	arg_37_0 = var_37_0
 
 	local var_37_3, var_37_4 = Data.getInfo(arg_37_0)
-	local var_37_5 = var_37_4
+	local var_37_5 = var_37_4 or 1
+
+	if not var_37_3 or not var_37_3._option then
+		return var_37_5
+	end
 
 	if var_37_4 == Data.CardType.monster then
 		if band(var_37_3._option, Data.MonsterOption.is_ceremony) ~= 0 then
@@ -1407,19 +1428,32 @@ function var_0_0.getCardFrameIndex(arg_37_0)
 end
 
 function var_0_0.getCardShader(arg_38_0)
+	if not arg_38_0 or arg_38_0 == 0 then
+		return nil
+	end
+
 	if Data.isGold(arg_38_0) then
 		return nil
 	else
-		return var_0_0.SHADER_TYPES[var_0_0.getCardFrameIndex(arg_38_0)]
+		local var_38_0 = var_0_0.getCardFrameIndex(arg_38_0)
+		return var_0_0.SHADER_TYPES[var_38_0]
 	end
 end
 
 function var_0_0.getMagicTrapTypeFrameName(arg_39_0)
+	if not arg_39_0 or arg_39_0 == 0 then
+		return ""
+	end
+
 	local var_39_0, var_39_1, var_39_2 = Data.removeAdditional(arg_39_0)
 
 	arg_39_0 = var_39_0
 
 	local var_39_3, var_39_4 = Data.getInfo(arg_39_0)
+
+	if not var_39_3 or not var_39_3._option then
+		return ""
+	end
 
 	if var_39_4 == Data.CardType.magic then
 		if band(var_39_3._option, Data.MagicOption.is_equipment) > 0 then
@@ -2060,14 +2094,18 @@ function var_0_0.createResConsumeButton(arg_73_0, arg_73_1, arg_73_2, arg_73_3, 
 
 	local var_73_2 = var_0_0.createResIconLabel(arg_73_1, arg_73_2, lc.Color3B.black)
 
+	var_73_2:setCascadeColorEnabled(false)
 	var_73_2:setCascadeOpacityEnabled(false)
 	var_73_2:setOpacity(0)
 	if var_73_2._ico then
+		var_73_2._ico:setCascadeColorEnabled(false)
 		var_73_2._ico:setCascadeOpacityEnabled(false)
 		var_73_2._ico:setOpacity(255)
+		var_73_2._ico:setColor(lc.Color3B.white)
 		var_73_2._ico:setVisible(true)
 	end
 	if var_73_2._label then
+		var_73_2._label:setCascadeColorEnabled(false)
 		var_73_2._label:setCascadeOpacityEnabled(false)
 		var_73_2._label:setOpacity(255)
 		var_73_2._label:setVisible(true)
@@ -2683,12 +2721,16 @@ function var_0_0.createResIconLabel(arg_100_0, arg_100_1, arg_100_2)
 
 	var_100_1:setContentSize(arg_100_0, var_100_0)
 	var_100_1:setOpacity(120)
+	var_100_1:setCascadeColorEnabled(false)
+	var_100_1:setCascadeOpacityEnabled(false)
 	var_100_1:setColor(arg_100_2 or lc.Color3B.black)
 
 	if arg_100_1 then
 		local var_100_2 = cc.Sprite:createWithSpriteFrameName(arg_100_1)
 
 		var_100_2:setPosition(0, var_100_0 / 2)
+		var_100_2:setCascadeColorEnabled(false)
+		var_100_2:setColor(lc.Color3B.white)
 		var_100_1:addChild(var_100_2)
 
 		var_100_1._ico = var_100_2
@@ -3134,17 +3176,18 @@ function var_0_0.createStarArea(arg_124_0, arg_124_1)
 	var_124_1:setCascadeOpacityEnabled(true)
 
 	local var_124_2 = {}
+	local var_124_3 = "card_quality"
+	local var_124_4 = Data.getInfo(arg_124_1)
 
-	for iter_124_0 = 1, var_0_0.MAX_STAR_COUNT do
-		local var_124_3 = "card_quality"
-		local var_124_4 = Data.getInfo(arg_124_1)
-
+	if var_124_4 and var_124_4._option then
 		if band(var_124_4._option, Data.MonsterOption.is_adjust) ~= 0 then
 			var_124_3 = "card_quality2"
 		elseif band(var_124_4._option, Data.MonsterOption.is_xyz) ~= 0 then
 			var_124_3 = "card_quality3"
 		end
+	end
 
+	for iter_124_0 = 1, var_0_0.MAX_STAR_COUNT do
 		local var_124_5 = cc.ShaderSprite:createWithFramename(var_124_3)
 
 		lc.addChildToCenter(var_124_1, var_124_5)
@@ -3158,10 +3201,12 @@ function var_0_0.createStarArea(arg_124_0, arg_124_1)
 		local var_125_0 = "card_quality"
 		local var_125_1 = Data.getInfo(arg_125_2)
 
-		if band(var_125_1._option, Data.MonsterOption.is_adjust) ~= 0 then
-			var_125_0 = "card_quality2"
-		elseif band(var_125_1._option, Data.MonsterOption.is_xyz) ~= 0 then
-			var_125_0 = "card_quality3"
+		if var_125_1 and var_125_1._option then
+			if band(var_125_1._option, Data.MonsterOption.is_adjust) ~= 0 then
+				var_125_0 = "card_quality2"
+			elseif band(var_125_1._option, Data.MonsterOption.is_xyz) ~= 0 then
+				var_125_0 = "card_quality3"
+			end
 		end
 
 		local var_125_2 = lc.frameSize(var_125_0)
@@ -4533,16 +4578,6 @@ function var_0_0.createTrophyProgressBar(arg_193_0, initTrophy)
 	var_193_1._label = var_193_3
 
 	function var_193_1.update(customTrophy)
-		if var_193_1._curBone then
-			var_193_1._curBone:removeFromParent()
-			var_193_1._curBone = nil
-		end
-
-		if var_193_1._nextBone then
-			var_193_1._nextBone:removeFromParent()
-			var_193_1._nextBone = nil
-		end
-
 		local trophyVal = customTrophy or initTrophy or (var_193_0 and var_193_0._trophy) or (P and P._trophy) or 0
 		if trophyVal < 0 then trophyVal = 0 end
 		local var_194_0 = (var_193_0 and var_193_0.getGrade and var_193_0:getGrade(trophyVal)) or 1
@@ -4561,20 +4596,34 @@ function var_0_0.createTrophyProgressBar(arg_193_0, initTrophy)
 		var_193_1._bar:setPercent(var_194_4)
 		var_193_3:setString(tostring(trophyVal) .. "/" .. tostring(var_194_2))
 
-		local var_194_5 = ClientView.createTrophyGradeDB(var_194_0)
+		if var_193_1._curGrade ~= var_194_0 then
+			var_193_1._curGrade = var_194_0
 
-		var_194_5:setScale(0.5)
-		lc.addChildToPos(var_193_1, var_194_5, cc.p(-25, lc.ch(var_193_1)))
+			if var_193_1._curBone then
+				var_193_1._curBone:removeFromParent()
+				var_193_1._curBone = nil
+			end
 
-		var_193_1._curBone = var_194_5
+			if var_193_1._nextBone then
+				var_193_1._nextBone:removeFromParent()
+				var_193_1._nextBone = nil
+			end
 
-		if var_194_0 < Data.FindClashGrade.legend then
-			local var_194_6 = ClientView.createTrophyGradeDB(var_194_0 + 1)
+			local var_194_5 = ClientView.createTrophyGradeDB(var_194_0)
 
-			var_194_6:setScale(0.5)
-			lc.addChildToPos(var_193_1, var_194_6, cc.p(lc.w(var_193_1) + 25, lc.ch(var_193_1)))
+			var_194_5:setScale(0.5)
+			lc.addChildToPos(var_193_1, var_194_5, cc.p(-25, lc.ch(var_193_1)))
 
-			var_193_1._nextBone = var_194_6
+			var_193_1._curBone = var_194_5
+
+			if var_194_0 < Data.FindClashGrade.legend then
+				local var_194_6 = ClientView.createTrophyGradeDB(var_194_0 + 1)
+
+				var_194_6:setScale(0.5)
+				lc.addChildToPos(var_193_1, var_194_6, cc.p(lc.w(var_193_1) + 25, lc.ch(var_193_1)))
+
+				var_193_1._nextBone = var_194_6
+			end
 		end
 	end
 
@@ -6388,7 +6437,7 @@ function var_0_0.createSkinFrame(arg_317_0, arg_317_1, arg_317_2)
 
 		var_317_2._nameLabel = var_317_5
 
-		local var_317_6 = ClientView.createTTF(Str(var_317_1._nameSid), ClientView.FontSize.S1)
+		local var_317_6 = ClientView.createTTF(Str(var_317_1 and var_317_1._nameSid or 0), ClientView.FontSize.S1)
 
 		var_317_6:setColor(ClientView.COLOR_LABEL_LIGHT)
 		lc.addChildToPos(var_317_2, var_317_6, cc.p(lc.cw(var_317_2), 22), 1)

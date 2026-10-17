@@ -1998,7 +1998,7 @@ function var_0_0.onEvent(arg_84_0, arg_84_1, arg_84_2)
 	elseif arg_84_2 == Data.Event.bonus_dirty then
 		local var_84_0 = arg_84_1._data
 
-		if var_84_0 and var_84_0._info._type == Data.BonusType.fund_all then
+		if var_84_0 and var_84_0._info and var_84_0._info._type == Data.BonusType.fund_all then
 			arg_84_0:updateAll()
 		end
 	elseif arg_84_2 == Data.Event.personal_fund_dirty and arg_84_0._detailLayer.update then

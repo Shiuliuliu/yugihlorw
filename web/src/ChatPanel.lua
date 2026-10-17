@@ -243,7 +243,47 @@ function var_0_0.resetList(arg_15_0)
 	pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
 	local var_15_3 = P._playerMessage._msgAll[var_15_1]
 
+	if var_15_3 and #var_15_3 > 0 then
+		local uniqueMap = {}
+		local cleaned = {}
+		for _, m in ipairs(var_15_3) do
+			local skip = false
+			if var_15_1 == var_0_1.world then
+				-- WORLD tab: strictly chat messages only (no battle shares, no bulletins)
+				if m._type == Data.MsgType.battle or m._type == Data.MsgType.bulletin or m._log ~= nil or m._replayId ~= nil
+					or (type(m._content) == "string" and (m._content:find('"replay_id"') or m._content:find('chia sẻ một trận chiến')))
+					or (type(m._content) == "table" and (m._content.replay_id or m._content.battle_data)) then
+					skip = true
+				end
+			elseif var_15_1 == var_0_1.battle then
+				-- BATTLE tab: strictly battle share messages only
+				if m._type ~= Data.MsgType.battle and m._log == nil and m._replayId == nil then
+					skip = true
+				end
+			elseif var_15_1 == var_0_1.bulletin then
+				-- BULLETIN tab: strictly system announcements
+				if m._type ~= Data.MsgType.bulletin then
+					skip = true
+				end
+			end
 
+			if not skip then
+				local uid = (m._id and tostring(m._id)) or (m._clientMsgId and tostring(m._clientMsgId)) or (m._log and m._log._id and tostring(m._log._id)) or (m._replayId and tostring(m._replayId))
+				if not uid or not uniqueMap[uid] then
+					if uid then uniqueMap[uid] = true end
+					table.insert(cleaned, m)
+				end
+			end
+		end
+		table.sort(cleaned, function(a, b)
+			local tsA = a._timestamp or 0
+			local tsB = b._timestamp or 0
+			if tsA ~= tsB then return tsA > tsB end
+			return (tonumber(a._id) or 0) > (tonumber(b._id) or 0)
+		end)
+		for i = #var_15_3, 1, -1 do var_15_3[i] = nil end
+		for i, m in ipairs(cleaned) do var_15_3[i] = m end
+	end
 
 	var_15_0:removeAllItems()
 	var_15_0:bindData(var_15_3, function(arg_16_0, arg_16_1)
@@ -365,7 +405,7 @@ function var_0_0.updateItemUser(arg_22_0, arg_22_1)
 	local var_22_0 = arg_22_1._userArea
 	local var_22_1 = arg_22_1._msg._user
 
-	if var_22_1 and not var_22_1._crown then
+	if var_22_1 then
 		local msg = arg_22_1._msg
 		local gc = tonumber((msg and msg._goldCup) or var_22_1._goldCup or var_22_1.gold_cup or 0) or 0
 		local sc = tonumber((msg and msg._silverCup) or var_22_1._silverCup or var_22_1.silver_cup or 0) or 0
@@ -373,6 +413,7 @@ function var_0_0.updateItemUser(arg_22_0, arg_22_1)
 		if gc > 0 then var_22_1._crown = { _infoId = 7204, _num = gc }
 		elseif sc > 0 then var_22_1._crown = { _infoId = 7205, _num = sc }
 		elseif bc > 0 then var_22_1._crown = { _infoId = 7206, _num = bc }
+		else var_22_1._crown = nil
 		end
 	end
 
@@ -384,19 +425,98 @@ function var_0_0.updateItemTime(arg_23_0, arg_23_1)
 end
 
 function var_0_0.setOrCreateItem(arg_24_0, arg_24_1, arg_24_2)
-	if arg_24_2._type == Data.MsgType.world or arg_24_2._type == Data.MsgType.union then
-		return arg_24_0:setOrCreateChatItem(arg_24_1, arg_24_2)
-	elseif arg_24_2._type == Data.MsgType.bulletin then
+	if arg_24_2._type == Data.MsgType.bulletin then
 		return arg_24_0:setOrCreateBulletinItem(arg_24_1, arg_24_2)
-	elseif arg_24_2._type == Data.MsgType.battle then
+	elseif arg_24_2._type == Data.MsgType.battle or arg_24_2._log ~= nil or arg_24_2._replayId ~= nil then
 		return arg_24_0:setOrCreateBattleItem(arg_24_1, arg_24_2)
+	else
+		return arg_24_0:setOrCreateChatItem(arg_24_1, arg_24_2)
 	end
+end
+
+local function ensureBattleWidgets(widget)
+	if widget._oppoArea then return end
+
+	local var_27_0 = UserWidget.create(nil, UserWidget.Flag.REGION_NAME_UNION, 1, true)
+	var_27_0:setScale(0.8)
+	var_27_0:setAnchorPoint(1, 1)
+
+	if var_27_0._vipArea then
+		var_27_0._vipArea:setVisible(false)
+	end
+
+	if var_27_0._unionArea then
+		var_27_0._unionArea._name:setColor(ClientView.COLOR_TEXT_ORANGE)
+	end
+
+	widget:addChild(var_27_0)
+	widget._oppoArea = var_27_0
+
+	local var_27_1 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_28_0)
+		return
+	end, ClientView.CRECT_BUTTON_S, 150)
+
+	var_27_1:setDisabledShader(ClientView.SHADER_DISABLE)
+	var_27_1:addLabel("")
+	widget:addChild(var_27_1)
+	widget._btn1 = var_27_1
+
+	local var_27_2 = ClientView.createScale9ShaderButton("img_btn_2_s", function(arg_29_0)
+		return
+	end, ClientView.CRECT_BUTTON_S, 150)
+
+	var_27_2:addLabel("")
+	var_27_2:addIcon("img_icon_like")
+	widget:addChild(var_27_2)
+	widget._btn2 = var_27_2
+
+	local var_27_3 = lc.createNode(cc.size(220, 40))
+
+	local function var_27_4(arg_30_0, arg_30_1, arg_30_2)
+		local var_30_0 = lc.createSprite(arg_30_0)
+		lc.addChildToPos(var_27_3, var_30_0, cc.p(arg_30_1 + lc.w(var_30_0) / 2, lc.h(var_27_3) / 2))
+		local var_30_1 = ClientView.createTTF("0", ClientView.FontSize.S3, ClientView.COLOR_LABEL_LIGHT)
+		var_30_1:setAnchorPoint(0, 0.5)
+		lc.addChildToPos(var_27_3, var_30_1, cc.p(lc.right(var_30_0) + 6, lc.y(var_30_0)))
+		if arg_30_2 then
+			lc.offset(var_30_0, 0, arg_30_2)
+		end
+		return var_30_1
+	end
+
+	widget._roundVal = var_27_4("img_icon_clock", 0)
+	widget._watchVal = var_27_4("img_icon_watch", 100)
+	widget._likeVal = var_27_4("img_icon_like", 180, 2)
+
+	lc.addChildToPos(widget, var_27_3, cc.p(lc.w(var_27_3) / 2, 0))
+	widget._infoArea = var_27_3
+
+	local var_27_5 = lc.createSprite({
+		_name = "img_divide_line_8",
+		_crect = cc.rect(6, 1, 1, 1),
+		_size = cc.size(lc.w(widget) + 28, 5)
+	})
+	lc.addChildToPos(widget, var_27_5, cc.p(lc.w(widget) / 2, 0))
+	widget._divideLine = var_27_5
+end
+
+local function hideBattleWidgets(widget)
+	if widget._oppoArea then widget._oppoArea:setVisible(false) end
+	if widget._btn1 then widget._btn1:setVisible(false) end
+	if widget._btn2 then widget._btn2:setVisible(false) end
+	if widget._infoArea then widget._infoArea:setVisible(false) end
+	if widget._divideLine then widget._divideLine:setVisible(false) end
+	widget:removeChildrenByTag(var_0_7)
+	if widget._userArea then widget._userArea:removeChildrenByTag(var_0_7) end
+	widget:removeChildrenByTag(1000)
 end
 
 function var_0_0.setOrCreateChatItem(arg_25_0, arg_25_1, arg_25_2)
 	if arg_25_1 == nil then
 		arg_25_1 = arg_25_0:createItem()
 	end
+
+	hideBattleWidgets(arg_25_1)
 
 	local var_25_0 = arg_25_0:updateItemBase(arg_25_1, arg_25_2)
 
@@ -419,7 +539,11 @@ function var_0_0.setOrCreateBulletinItem(arg_26_0, arg_26_1, arg_26_2)
 		})
 
 		lc.addChildToPos(arg_26_1, var_26_0, cc.p(lc.w(arg_26_1) / 2, 0))
+		arg_26_1._divideLine = var_26_0
 	end
+
+	hideBattleWidgets(arg_26_1)
+	if arg_26_1._divideLine then arg_26_1._divideLine:setVisible(true) end
 
 	local var_26_1 = 70
 	local var_26_2 = 8
@@ -463,79 +587,14 @@ end
 function var_0_0.setOrCreateBattleItem(arg_27_0, arg_27_1, arg_27_2)
 	if arg_27_1 == nil then
 		arg_27_1 = arg_27_0:createItem()
-
-		local var_27_0 = UserWidget.create(nil, UserWidget.Flag.REGION_NAME_UNION, 1, true)
-
-		var_27_0:setScale(0.8)
-		var_27_0:setAnchorPoint(1, 1)
-
-		if var_27_0._vipArea then
-			var_27_0._vipArea:setVisible(false)
-		end
-
-		if var_27_0._unionArea then
-			var_27_0._unionArea._name:setColor(ClientView.COLOR_TEXT_ORANGE)
-		end
-
-		arg_27_1:addChild(var_27_0)
-
-		arg_27_1._oppoArea = var_27_0
-
-		local var_27_1 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_28_0)
-			return
-		end, ClientView.CRECT_BUTTON_S, 150)
-
-		var_27_1:setDisabledShader(ClientView.SHADER_DISABLE)
-		var_27_1:addLabel("")
-		arg_27_1:addChild(var_27_1)
-
-		arg_27_1._btn1 = var_27_1
-
-		local var_27_2 = ClientView.createScale9ShaderButton("img_btn_2_s", function(arg_29_0)
-			return
-		end, ClientView.CRECT_BUTTON_S, 150)
-
-		var_27_2:addLabel("")
-		var_27_2:addIcon("img_icon_like")
-		arg_27_1:addChild(var_27_2)
-
-		arg_27_1._btn2 = var_27_2
-
-		local var_27_3 = lc.createNode(cc.size(220, 40))
-
-		local function var_27_4(arg_30_0, arg_30_1, arg_30_2)
-			local var_30_0 = lc.createSprite(arg_30_0)
-
-			lc.addChildToPos(var_27_3, var_30_0, cc.p(arg_30_1 + lc.w(var_30_0) / 2, lc.h(var_27_3) / 2))
-
-			local var_30_1 = ClientView.createTTF("0", ClientView.FontSize.S3, ClientView.COLOR_LABEL_LIGHT)
-
-			var_30_1:setAnchorPoint(0, 0.5)
-			lc.addChildToPos(var_27_3, var_30_1, cc.p(lc.right(var_30_0) + 6, lc.y(var_30_0)))
-
-			if arg_30_2 then
-				lc.offset(var_30_0, 0, arg_30_2)
-			end
-
-			return var_30_1
-		end
-
-		arg_27_1._roundVal = var_27_4("img_icon_clock", 0)
-		arg_27_1._watchVal = var_27_4("img_icon_watch", 100)
-		arg_27_1._likeVal = var_27_4("img_icon_like", 180, 2)
-
-		lc.addChildToPos(arg_27_1, var_27_3, cc.p(lc.w(var_27_3) / 2, 0))
-
-		arg_27_1._infoArea = var_27_3
-
-		local var_27_5 = lc.createSprite({
-			_name = "img_divide_line_8",
-			_crect = cc.rect(6, 1, 1, 1),
-			_size = cc.size(lc.w(arg_27_1) + 28, 5)
-		})
-
-		lc.addChildToPos(arg_27_1, var_27_5, cc.p(lc.w(arg_27_1) / 2, 0))
 	end
+
+	ensureBattleWidgets(arg_27_1)
+
+	arg_27_1:removeChildrenByTag(1000)
+	arg_27_1:removeChildrenByTag(var_0_7)
+	if arg_27_1._userArea then arg_27_1._userArea:removeChildrenByTag(var_0_7) end
+	if arg_27_1._divideLine then arg_27_1._divideLine:setVisible(true) end
 
 	local var_27_6 = arg_27_1._btn1
 	local var_27_7 = arg_27_1._btn2
@@ -543,16 +602,24 @@ function var_0_0.setOrCreateBattleItem(arg_27_0, arg_27_1, arg_27_2)
 
 	arg_27_1:setContentSize(lc.w(arg_27_1), var_27_8)
 	arg_27_1._userArea:setPosition(0, var_27_8 - lc.h(arg_27_1._content) - 22)
-	arg_27_1._userArea._regionArea:setColor(ClientView.COLOR_TEXT_WHITE)
-	arg_27_1._userArea._idArea:setColor(ClientView.COLOR_TEXT_WHITE)
+	if arg_27_1._userArea._regionArea then
+		arg_27_1._userArea._regionArea:setColor(ClientView.COLOR_TEXT_WHITE)
+	end
+	if arg_27_1._userArea._idArea then
+		arg_27_1._userArea._idArea:setColor(ClientView.COLOR_TEXT_WHITE)
+	end
 	arg_27_1._time:setPosition(lc.w(arg_27_1), var_27_8)
 	arg_27_1._content:setPosition(0, var_27_8 - lc.h(arg_27_1._content))
 	arg_27_1._oppoArea:setPosition(cc.p(lc.w(arg_27_1) + 4, lc.y(arg_27_1._userArea)))
-	arg_27_1._oppoArea._regionArea:setColor(ClientView.COLOR_TEXT_WHITE)
-	arg_27_1._oppoArea._idArea:setColor(ClientView.COLOR_TEXT_WHITE)
+	if arg_27_1._oppoArea._regionArea then
+		arg_27_1._oppoArea._regionArea:setColor(ClientView.COLOR_TEXT_WHITE)
+	end
+	if arg_27_1._oppoArea._idArea then
+		arg_27_1._oppoArea._idArea:setColor(ClientView.COLOR_TEXT_WHITE)
+	end
+	var_27_6:setVisible(true)
 	var_27_6:setPosition(lc.w(arg_27_1) - lc.w(var_27_6) / 2, 38)
 	var_27_7:setVisible(false)
-	arg_27_1._userArea:removeChildrenByTag(var_0_7)
 
 	if arg_27_2._log then
 		local var_27_9 = arg_27_1._oppoArea
@@ -562,7 +629,7 @@ function var_0_0.setOrCreateBattleItem(arg_27_0, arg_27_1, arg_27_2)
 
 		local var_27_10 = cc.p(lc.cw(arg_27_1), lc.y(arg_27_1._userArea) - 70)
 
-		if arg_27_2._watchIds[P._sid] then
+		if arg_27_2._watchIds and arg_27_2._watchIds[P._sid] then
 			local var_27_11 = lc.createSprite(arg_27_2._resultType == Data.BattleResult.win and "img_win" or arg_27_2._resultType == Data.BattleResult.lose and "img_lose" or "img_draw")
 
 			var_27_11:setScale(0.5)
@@ -576,16 +643,16 @@ function var_0_0.setOrCreateBattleItem(arg_27_0, arg_27_1, arg_27_2)
 
 		arg_27_1._infoArea:setVisible(true)
 		arg_27_1._infoArea:setPositionY(lc.y(var_27_6))
-		arg_27_1._roundVal:setString(string.format(Str(STR.ROUND_N), arg_27_2._round))
-		arg_27_1._watchVal:setString(tostring(arg_27_2._watchIdsCount))
-		arg_27_1._likeVal:setString(tostring(arg_27_2._likeIdsCount))
+		arg_27_1._roundVal:setString(string.format(Str(STR.ROUND_N), arg_27_2._round or 1))
+		arg_27_1._watchVal:setString(tostring(arg_27_2._watchIdsCount or 1))
+		arg_27_1._likeVal:setString(tostring(arg_27_2._likeIdsCount or 0))
 		var_27_6._label:setString(Str(STR.REPLAY))
 
 		function var_27_6._callback()
 			arg_27_0:replayBattle(arg_27_2)
 		end
 
-		if arg_27_2._likeIds[P._sid] then
+		if arg_27_2._likeIds and arg_27_2._likeIds[P._sid] then
 			var_27_7._label:setString(Str(STR.CANCEL))
 
 			function var_27_7._callback()

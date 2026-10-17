@@ -84,21 +84,27 @@ function var_0_0.prepareData(arg_8_0)
 	local var_8_0 = {}
 	local var_8_1 = {}
 
-	for iter_8_0, iter_8_1 in pairs(P._propBag._props) do
-		if iter_8_1._info._type > 0 and iter_8_1._info._rank > 0 then
-			if iter_8_1._info._type == Data.PropsType.artifact or iter_8_1._info._type == Data.PropsType.activity then
-				var_8_1[#var_8_1 + 1] = iter_8_1
-			else
-				var_8_0[#var_8_0 + 1] = iter_8_1
+	if P and P._propBag and P._propBag._props then
+		for iter_8_0, iter_8_1 in pairs(P._propBag._props) do
+			if iter_8_1 and iter_8_1._info and iter_8_1._info._type and iter_8_1._info._rank and iter_8_1._info._type > 0 and iter_8_1._info._rank > 0 then
+				if iter_8_1._info._type == Data.PropsType.artifact or iter_8_1._info._type == Data.PropsType.activity then
+					var_8_1[#var_8_1 + 1] = iter_8_1
+				else
+					var_8_0[#var_8_0 + 1] = iter_8_1
+				end
 			end
 		end
 	end
 
 	table.sort(var_8_0, function(arg_9_0, arg_9_1)
-		return arg_9_0._info._rank < arg_9_1._info._rank
+		local r0 = (arg_9_0 and arg_9_0._info and arg_9_0._info._rank) or 0
+		local r1 = (arg_9_1 and arg_9_1._info and arg_9_1._info._rank) or 0
+		return r0 < r1
 	end)
 	table.sort(var_8_1, function(arg_10_0, arg_10_1)
-		return arg_10_0._info._id < arg_10_1._info._id
+		local id0 = (arg_10_0 and arg_10_0._info and arg_10_0._info._id) or 0
+		local id1 = (arg_10_1 and arg_10_1._info and arg_10_1._info._id) or 0
+		return id0 < id1
 	end)
 
 	arg_8_0._props = var_8_0

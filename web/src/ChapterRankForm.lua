@@ -174,7 +174,7 @@ function var_0_0.onMsg(arg_12_0, arg_12_1)
 
 		var_12_2:bindData(arg_12_0._ranks, function(arg_13_0, arg_13_1)
 			arg_12_0:setOrCreateItem(arg_13_0, arg_13_1)
-		end, math.min(6, #arg_12_0._ranks))
+		end, #arg_12_0._ranks)
 
 		for iter_12_2 = 1, var_12_2._cacheCount do
 			local var_12_3 = arg_12_0:setOrCreateItem(nil, arg_12_0._ranks[iter_12_2])

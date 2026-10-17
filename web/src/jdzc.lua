@@ -217,31 +217,14 @@ local function __dump_later()
 end
 -- =================== END H5 DATA DUMP ===================
 
-collectgarbage("setpause", 100)
-collectgarbage("setstepmul", 5000)
+collectgarbage("setpause", 160)
+collectgarbage("setstepmul", 200)
 
 local var_0_0 = {}
 local var_0_1 = 3
-local var_0_2 = "/data/data/com.tuoyin.jdzc.android.guopan/files/jdzc_offline_trace.log"
-
-pcall(os.remove, var_0_2)
 
 local function var_0_3(arg_1_0)
-	local var_1_0 = "[JDZC_OFFLINE] " .. tostring(arg_1_0)
-
-	print(var_1_0)
-	pcall(function()
-		local var_2_0 = io.open(var_0_2, "a")
-
-		if var_2_0 ~= nil then
-			var_2_0:write(var_1_0, "\n")
-			var_2_0:close()
-		end
-	end)
-
-	if lc ~= nil and lc.log ~= nil then
-		pcall(lc.log, var_1_0)
-	end
+	-- Tracing disabled to eliminate file I/O overhead and console spam
 end
 
 var_0_3("entry")
@@ -5365,6 +5348,27 @@ local function var_0_9()
 			end
 		end
 
+		if arg_166_1 == "expedition_ex" and arg_166_2 == Data.BattleResult.win then
+			local rewardCount = ClientData._curExpeditionReward or 100
+			local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+			local api = jsbridge and jsbridge.object("jdzcApi")
+			if api and api.post then
+				api:post("claim_expedition_reward", {
+					account_id = accId,
+					item_id = 7352,
+					count = rewardCount
+				})
+			end
+			pcall(function()
+				if P and P._propBag then
+					P._propBag:changeProps(7352, rewardCount)
+				end
+				local rItem = var_166_0.resource:add()
+				rItem.info_id = 7352
+				rItem.num = rewardCount
+			end)
+		end
+
 		var_8_18(SglMsgType_pb.PB_TYPE_BATTLE_END, Battle_pb.SglBattleMsg.battle_end_resp, var_166_0, function()
 			if arg_166_1 == "room" then
 				var_8_0.accountRoomBattle(arg_166_0._input, arg_166_2)
@@ -7385,7 +7389,7 @@ local function var_0_9()
 			local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
 			if pvpNet and arg_255_0.match_id then
 				local myId = (P and P._id) or 1
-				pvpNet:connect(arg_255_0.match_id, myId, function(intsJson)
+				pvpNet:connect(arg_255_0.match_id, myId, (arg_255_0.first == true), function(intsJson)
 					local ok, ints = pcall(json.decode, intsJson)
 					if ok and type(ints) == "table" and #ints > 0 then
 						ClientData._usedCardsToAdd = ClientData._usedCardsToAdd or {}

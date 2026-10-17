@@ -22353,9 +22353,9 @@ Vua chiến ma tà ác, cuồng bạo và hung hăn
 Đấu sĩ Amazon mạnh mẽ được thần phù hộ.
 0
 Đấu Sĩ Amazon
-Kiếm Sĩ Amazon
-Thông qua thần thuật của Amazon có thể giảm sát thương phải chịu.
-|Mô tả|\nKỹ năng của Kiếm sĩ Amazon sử dụng đòn tấn công tự sát để gây sát thương cho sức khỏe của đối thủ khi đối thủ triệu hồi quái vật cấp cao, mang đến khả năng quay trở lại\n|Các kết hợp thông thường|\nKiếm sĩ Amazon + Cỗ máy thời gian Kiếm sĩ Amazon + Ý chí Amazon Kiếm sĩ Amazon + Sự hồi sinh của người chết Kiếm sĩ Amazon + Chôn cất sớm
+Kiếm Sĩ Amazoness
+Sát thương chiến đấu mà bản thân phải chịu từ trận chiến có lá bài này sẽ do đối thủ gánh chịu (nhân đôi x2 sát thương phản đòn nếu LP đối thủ > 10,000).
+|Mô tả|\nKiếm Sĩ Amazoness sở hữu kỹ năng phản toàn bộ sát thương chiến đấu sang cho đối thủ. Đặc biệt, khi LP của đối phương vượt quá 10,000, lượng sát thương phản lại sẽ được nhân đôi (x2), khắc chế cực mạnh các bộ bài hồi máu hoặc pháo đài LP cao.
 Kiếm Sĩ Amazon
 Chiến Sĩ Amazon
 Chiến sĩ Amazon sở trường tấn công tầm xa.
@@ -33721,8 +33721,8 @@ Anh hùng nguyên tố · Flash Phoenix Man
 0
 E·Flash Phoenix Man
 Hổ Sư Tử Amazon
-<Hổ Rừng Amazon> + Quái có từ khóa “Amazon”
-0
+<Hổ Rừng Amazon> + Quái có từ khóa “Amazon”.\nKhi bị đối thủ tiêu diệt trong chiến đấu, đối thủ không thể tiếp tục tấn công trong lượt đó.
+|Mô tả|\nHổ Sư Tử Amazon sở hữu sức mạnh chiến đấu uy mãnh và khả năng đoạn hậu hoàn hảo. Khi bị tiêu diệt trong chiến đấu, toàn bộ các đòn tấn công tiếp theo của đối phương trong lượt đó sẽ bị ngắt đứng hoàn toàn.
 Pet Cọp Sư Tử
 Anh hùng nguyên tố·Người bay lửa chớp nhoáng
 <Anh hùng nguyên tố·Người bay lửa>+<Anh hùng nguyên tố·Người điện>
@@ -35713,7 +35713,7 @@ Quái có từ khóa “Nhập Hồn” x2.
 |Mô tả|\nChỉ những quái vật chưa hành động mới có thể được sử dụng làm nguyên liệu liên kết. Không thể sử dụng quái vật dung hợp, đồng bộ và siêu quái vật làm nguyên liệu liên kết.
 Nhập Hồn-Nafeili
 Thần âm phủ đóng cửa thế giới
-Quái hiệu quả x2 trở lên.
+[Quái Hiệu Quả - Link 5]\nQuái hiệu quả x2 trở lên.\n+ Khi lá bài này trên sân: Phe ta không thể triệu hồi quái từ Bộ bài thêm.
 |Mô tả|\nChỉ những quái vật chưa hành động mới có thể được sử dụng làm nguyên liệu liên kết. Không thể sử dụng quái vật dung hợp, đồng bộ và siêu quái vật làm nguyên liệu liên kết.
 Địa ngục thế giới khép kín
 Người Xoay Khối Vuông
@@ -36145,8 +36145,8 @@ Quái Dung Hợp có từ khóa “Anh Hùng” + Quái Tộc Chiến Binh.
 0
 Đánh Thức Anh Hùng
 Vua Hổ Sư Tử Amazon
-Quái có từ khóa “Amazon” x2
-0
+Quái có từ khóa “Amazon” x2.\nKhi bị đối thủ tiêu diệt trong chiến đấu, đối thủ không thể tiếp tục tấn công trong lượt đó.
+|Mô tả|\nVua Hổ Sư Tử Amazon - chúa sơn lâm tối cao của bộ tộc Amazoness. Chốt chặn phòng ngự tuyệt đối: Khi bị đối thủ tiêu diệt trong chiến đấu, đối phương lập tức bị khóa, không thể tiếp tục tấn công trong lượt đó.
 Vua Hổ Sư Amazon
 Tiểu Phụng Tiên
 2 Quái trở lên, trong đó phải có ít nhất 1 quái có từ khóa “Tam Quốc”.
@@ -36397,7 +36397,7 @@ Quái Tộc Lôi X2
 0
 Siêu Lôi Long
 Rồng Bạc Mắt Xanh
-Quái Tộc Rồng 8 Sao x2.
+Quái Tộc Rồng 8 Sao x3.
 0
 Rồng Bạc Mắt Xanh
 SNo.38 Thần Ngân Hà
@@ -36636,7 +36636,7 @@ Khi tấn công; phá hủy quái và đưa vào mộ; Triệu Hồi Đặc Bi�
 Quạt Lông Thiên Cẩu
 Khi tấn công khiến đối thủ nhận sát thương; quái đối thủ không được tấn công vào lượt sau.
 Liên Trảm
-Có thể tấn công mỗi quái trên sân đối thủ 1 lần; không thể tấn công trực tiếp người chơi.
+Có thể tấn công mỗi quái trên sân đối thủ 1 lần; không thể tấn công trực tiếp đối thủ.
 Quái Bò Sát Nguyền Rủa
 Khi tấn công quái mà không phá hủy được quái; tấn công của quái mục tiêu bị trừ vĩnh viễn đi giá trị tấn công hiện tại và vĩnh viễn không được chuyển đổi thế.
 Thiên Quyền
@@ -36815,8 +36815,8 @@ Bảo Vệ
 Sau khi bị quái vật tấn công; nếu gây sát thương cho người chơi của mình; sát thương đó sẽ bị bỏ qua và người chơi của đối phương sẽ tăng tuổi thọ cho đòn tấn công hiện tại của quái vật đang tấn công.
 Đổi Thế
 Quái sau khi chiến đấu với lá bài này sẽ thay đổi công thủ
-Phản Kích
-Khi nhận thiệt hại trong Chiến Đấu; sát thương vào điểm LP sẽ tính cho đối phương
+Phản Sát Thương
+Sát thương chiến đấu mà bản thân phải chịu từ trận chiến có lá bài này sẽ do đối thủ gánh chịu. Nếu LP của đối thủ lớn hơn 10,000, sát thương phản lại sẽ được nhân đôi (x2).
 Mê hoặc
 Sau khi bị quái tấn công; quái đó sẽ quay về bài trên tay
 Đánh trả
@@ -38700,7 +38700,7 @@ Chủ động: Mỗi lượt chỉ 1 lần; gỡ 1 Chỉ Thị XYZ khỏi bản 
 Sấm Sét Tà Đạo
 Chủ động: Mỗi lượt chỉ 1 lần. Chọn và phá hủy 1 quái trên sân đối thủ.
 Chuẩn Bị Liên Trảm
-Chủ động: Bản thân chưa hành động có thể dùng. Chỉ lượt này; nhận được “Liên Trảm”.
+Chủ động: Bản thân chưa hành động có thể dùng. Chỉ lượt này; nhận được “Liên Trảm”; sau khi kích hoạt, các quái vật khác ở phe bạn không thể tấn công.
 Tà Đạo Nuốt Trôi
 Khi bài này được Triệu Hồi Dung Hợp; khi lên sân; tăng tấn công bằng tổng tấn công gốc của các bài được dùng làm nguyên liệu dung hợp.
 Vylon-Bảo Vệ
@@ -39262,7 +39262,7 @@ Khi nó bị tiêu diệt khỏi sân; Triệu Hồi Đặc Biệt một quái v
 Mắt Đỏ Hồi Sinh
 Khi nó bị tiêu diệt trong trận chiến và đi vào nghĩa địa; Triệu Hồi Đặc Biệt một quái vật có từ khóa “Mắt đỏ” có ngôi sao [1] trở xuống từ bộ bài. Nếu Vùng bẫy ma thuật chưa đầy; hãy trang bị <Áo giáp mắt đỏ> cho quái vật được Triệu Hồi Đặc Biệt. Sau khi thành công; thẻ này tạm thời bị loại bỏ.
 Đường Tà Ác
-Bài này không thể Triệu Hồi Đặc Biệt. Bài này triệu hồi thường không cần vật tế.
+Bài này không thể Triệu Hồi Đặc Biệt. Cần có 3 Quái thú hiến tế mới có thể Triệu Hồi Thường.
 Kết Giới Loại Trừ
 Vào đầu lượt của đối thủ sau khi lá này vào sân; lá này mất “Rào cản ma thuật và bẫy”
 Lửa Tiến Hóa
@@ -39344,9 +39344,9 @@ Khi lên Sân; sao chép điểm Công Thủ cơ bản của quái có sức t�
 Satan Giáng Lâm
 Hiến tế 1 bài quái trên sân đối thủ; sau đó triệu hồi thường bài này lên sân đối thủ (Kỹ năng không tính vào hiệu quả quái)
 Món Quà Satan
-Khi lên sân; rút 1 lá bài
+Khi lên sân, hai bên cùng rút 1 lá bài.
 Ác Niệm Satan
-Sau khi vào sân và mỗi lượt: Gây [1] thiệt hại cho người điều khiển lá này; và ngăn chặn các Quái Vật bị đặt vào bất kỳ khoảng trống nào trên sân của đối thủ. Lá bài này bị tiêu diệt vào đầu lượt thứ ba của đối thủ sau khi vào sân.
+Sau khi vào sân và mỗi lượt: Gây [1] thiệt hại cho người điều khiển lá này, và phong tỏa tối đa 2 ô trống trên sân. Lá bài này bị tiêu diệt vào đầu lượt thứ hai sau khi vào sân.
 Nhiễu Động Ma Lực
 Sau khi vào sân; nếu chỉ có quái vật loại pháp sư trên sân của bạn; đối thủ của bạn không thể kích hoạt phép thuật hoặc bẫy chỉ trong vòng này.
 Lễ Tế Lửa
@@ -42991,10 +42991,10 @@ Trở Lại Hư Vô
 Khi rời sân; lá bài này bị loại trừ
 Giải Cứu
 Trên sân phe ta có quái có từ khóa “Amazon” bị phá hủy bởi hiệu quả đối thủ và rời sân sẽ kích hoạt. Quái mục tiêu được đưa về bài trên tay; sau đó Triệu Hồi Đặc Biệt 1 quái ngoài quái vừa được đưa về tay.
-Bão Lốc Amazon
-Chủ động: Mỗi lượt chỉ 1 lần; Triệu Hồi Đặc Biệt 1 quái có từ khóa “Amazon” từ bài trên tay; quái nhận được “Bóng Ma Đột Kích”
+Bão Lốc Amazon - Triệu Hồi
+Chủ động: Mỗi lượt 1 lần, Triệu Hồi Đặc Biệt 1 quái có từ khóa “Amazon” từ bài trên tay; quái nhận được “Bóng Ma Đột Kích”.
 Hồi Sinh Amazon
-Khi bị phá hủy và đưa vào mộ từ trên sân; Triệu Hồi Đặc Biệt 1 quái có từ khóa “Amazon” từ mộ phe ta
+Khi bị phá hủy và đưa vào mộ từ trên sân; Triệu Hồi Đặc Biệt 1 quái có từ khóa “Amazon” từ mộ phe ta.
 Hình Thái Khả Biến
 Chủ động: Mỗi lượt chỉ 1 lần. Có thể dùng khi trên sân phe ta có 2 bài trở lên có từ khóa “Người Bọ”. Lựa chọn: “Người Bọ Biến Hình” hoặc “Người Bọ Phục Hồi”.
 Bọ Thép Biến Hình
@@ -47765,8 +47765,8 @@ Người Máy Cổ Đại-Tái Sinh
 Chủ động: Có thể dùng khi trên sân phe ta không có quái; mỗi lượt chỉ 1 lần. Chọn và Triệu Hồi Đặc Biệt 1 quái có từ khóa “Người Máy Cổ Đại” trong mộ phe ta và cho nó tăng [1] tấn công.
 Goblin Chặn Đường
 Khi có mặt; quái trên sân phe ta nhận được “Dao Tiêu Hồn”
-Quyết Chiến
-Khi ở trên sân; Quái Vật có từ khóa “Amazon” ở bên sân của bạn nhận được “Tâm hồn tan vỡ”, đồng thời khi nhận thiệt hại trong chiến đấu, bỏ qua sát thương vào điểm LP.
+Bảo Hộ Chiến Đấu
+Khi có lá này trên sân, tất cả quái thú mang từ khóa “Amazon” khi giao chiến sẽ triệt tiêu toàn bộ sát thương chiến đấu về 0 (người chơi không bị trừ LP), đồng thời tối ưu cơ chế phản sát thương khi giao chiến với quái thú đối phương.
 Châu Báu Người Bọ
 Khi quái có từ khóa “Người Bọ” phe ta bị quái đối thủ tấn công sẽ kích hoạt. Tăng cho quái phe ta [1] công và thủ.
 Bọ Thép Đổi Chỗ
@@ -49310,7 +49310,7 @@ Khi bài này trong thế tấn công; sẽ không bị phá hủy trong chiến
 Nhập Thể-Bảo Vệ
 Trên sân phe ta có quái không cùng tên; có từ khóa “Nhập Thể” bị phá hủy; xóa 1 Chỉ Thị XYZ đang có thay cho hiệu quả phá hủy lần này.
 Mắt Xanh-Tân Sinh
-Chủ động: Bản thân bài này chưa tấn công sẽ có thể dùng. Hi sinh bản thân; chọn và Triệu Hồi Đặc Biệt 1 quái có từ khóa “Mắt Xanh” từ bộ bài thêm phe ta.
+Chủ động: Bản thân bài này chưa tấn công sẽ có thể dùng. Hi sinh bản thân; chọn và Triệu Hồi Đặc Biệt 1 quái có từ khóa “Mắt Xanh” từ bộ bài thêm phe ta; sau khi kích hoạt, phe ta chỉ có thể triệu hồi/triệu hồi đặc biệt quái có từ khóa “Mắt Xanh”.
 Gelatine Tan Chảy
 Chủ động: Đưa bản thân bài này vào mộ bài loại bỏ; chọn và phá hủy 1 bài Bẫy/Phép trên sân đối thủ.
 Ma Nữ Búp Bê
@@ -51760,7 +51760,7 @@ Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Khi bài này đư�
 Yêu Ma-Mộ Băng
 Chủ động: Mỗi lượt chỉ 1 lần. Chọn và vô hiệu hóa hiệu quả quái của 1 quái trên sân đối thủ (bỏ qua “Tường Chắn Quái”).
 Yêu Ma-Băng Giá
-Kỹ năng bộ bài thêm chủ động: Mỗi lượt chỉ 1 lần. Khi trên sân hoặc trên tay phe ta không có bài sẽ có thể dùng. Chọn tối đa [1] quái trên sân đối thủ; đưa vào mộ bài loại bỏ (bỏ qua “Tường Chắn Quái”); Triệu Hồi Đặc Biệt bản thân bài này.
+Kỹ năng bộ bài thêm chủ động: Mỗi lượt chỉ 1 lần. Khi trên sân hoặc trên tay phe ta không có bài sẽ có thể dùng. Chọn tối đa [1] quái trên sân đối thủ; đưa vào mộ bài loại bỏ (bỏ qua “Tường Chắn Quái”); Triệu Hồi Đặc Biệt bản thân bài này, sau đó loại bỏ ngẫu nhiên 2 lá bài trên tay phe ta.
 Yêu Ma-Thao Túng
 Kỹ năng mộ chủ động: Mỗi lượt tối đa 2 lần. Loại bỏ bản thân bài này; chọn và Triệu Hồi Đặc Biệt 1 Quái Synchron Tộc Xác Sống từ mộ/mộ bài loại bỏ phe ta.
 Chúng Sinh Bình Đẳng
@@ -52554,7 +52554,7 @@ Kỹ năng kích hoạt: Chỉ một lần mỗi vòng; loại bỏ 1 bộ đế
 TrickStar-Thay Áo
 Bài này có thể dùng Quái Dung Hợp có từ khóa “TrickStar” làm nguyên liệu Link.
 TrickStar-Chi Viện
-Khi bài này nằm trong mộ; phe ta bị mất LP từ chiến đấu trực tiếp sẽ có thể dùng. Loại bỏ bản thân bài này; bỏ qua sát thương lần này.
+Khi bài này nằm trong mộ; phe ta bị mất LP từ chiến đấu trực tiếp sẽ có thể dùng. Loại bỏ bản thân bài này; giảm 1 nửa sát thương lần này.
 TrickStar-Tao Nhã
 Mỗi lượt tối đa 3 lần. Khi bài này được Triệu Hồi Link; khi lên sân; bỏ lá bài trên cùng của bộ bài đối thủ.
 TrickStar-Khiêm Tốn
@@ -52628,7 +52628,7 @@ Chủ động: Mỗi lượt chỉ 1 lần. Chọn 1 lá bài trên sân đối 
 Mài Sắc Lưỡi Kiếm
 Chủ động: Mỗi lượt chỉ 1 lần; rút 1 lá bài; kỹ năng này chỉ kích hoạt 1 lần
 TrickStar-Ma Nữ
-Lên đến ba lần trong một vòng. Khi ở trên sân; khi phe của bạn triệu hồi một Quái Vật liên kết phía trên link[1]; hãy rút một lá bài.
+1 lần trong một vòng. Khi ở trên sân; khi phe của bạn triệu hồi một Quái Vật liên kết phía trên link[1]; hãy rút một lá bài.
 Cộng Hưởng-Ác Quỷ
 Kỹ năng tay chủ động: Hi sinh 1 quái Tộc Quỷ không cùng tên trong bộ bài phe ta; Triệu Hồi Đặc Biệt bài này từ bài trên tay.
 Cộng Hưởng-Chi Viện
@@ -53160,7 +53160,7 @@ Kỹ năng tay·mộ chủ động: Khi trên sân phe ta có quái thuộc tín
 Ngân Hà-Bắt Chước
 Chủ động: Mỗi lượt chỉ 1 lần; chọn mục tiêu là 1 quái khác có cấp sao trên sân phe ta; bản thân và mục tiêu chỉ trong lượt này đổi thành [1] sao
 Ngân Hà-Chiến Ý
-Mỗi lượt tối đa 2 lần. Khi bài này nằm trên tay; khi đối thủ Triệu Hồi Đặc Biệt quái sẽ kích hoạt. Hi sinh bản thân; vô hiệu hóa và phá hủy quái đối thủ (xuyên thấu “Tường Chắn Quái”); ngẫu nhiên lấy 1 <Rồng Chiến Ngân Hà> hoặc 1 quái có từ khóa “Ngân Hà”·“Ánh Sáng”·“Sóng Ánh Sáng” từ bộ bài phe ta vào tay.
+Mỗi lượt tối đa 2 lần. Khi bài này nằm trên tay; khi đối thủ Triệu Hồi Đặc Biệt quái sẽ kích hoạt. Hi sinh bản thân; vô hiệu hóa và phá hủy quái đối thủ (xuyên thấu “Tường Chắn Quái”); nếu trên sân phe ta có quái có từ khóa “Ngân Hà”, “Ánh Sáng” hoặc “Sóng Ánh Sáng”, ngẫu nhiên lấy 1 <Rồng Chiến Ngân Hà> hoặc 1 quái có từ khóa “Ngân Hà”·“Ánh Sáng”·“Sóng Ánh Sáng” từ bộ bài phe ta vào tay.
 X-Trang Bị
 Kỹ năng tay chủ động: Khi trên sân phe ta có quái Tộc Máy Móc hoặc quái Đồng Minh có thể dùng. Triệu Hồi Đặc Biệt bài này từ trên tay.
 X Chi Viện
@@ -53260,7 +53260,7 @@ Kỹ năng tay·sân chủ động: Hi sinh bản thân; chọn 1 quái thuộc 
 Linh Môi Dịch Chuyển·Địa
 Mỗi lượt chỉ 1 lần. Khi bài này ở trong bộ bài; khi phe ta triệu hồi thường quái thuộc tính Địa sẽ kích hoạt. Triệu Hồi Đặc Biệt bản thân bài này từ bộ bài.
 Mắt Xanh-Tia Sáng
-Kỹ năng chủ động bộ bài Extra: Mỗi lượt chỉ 1 lần. Hi sinh bản thân và 1 <Rồng Trắng Mắt Xanh> từ bộ bài phe ta; chọn 1 lá bài trên sân đối thủ đưa vào mộ（xuyên thấu “Tường Chắn Quái”）
+Kỹ năng chủ động bộ bài Extra: Mỗi lượt chỉ 1 lần. Hi sinh bản thân và 1 <Rồng Trắng Mắt Xanh> từ bộ bài phe ta; chọn 1 lá bài trên sân đối thủ đưa vào mộ.
 Mắt Xanh-Uy Thế
 Mỗi lượt chỉ 1 lần; khi bài này được Triệu Hồi XYZ; khi lên sân; vô hiệu hóa hiệu quả tất cả quái trên sân đối thủ（bỏ qua “Tường Chắn Quái”）.
 Mắt Xanh-Thì Thầm
@@ -54434,8 +54434,8 @@ Bài bẫy có thể bảo vệ quái có từ khóa “Amazon”.
 0
 Giải Cứu
 Bão Lốc Amazon
-Bài bẫy, có thể Triệu Hồi Đặc Biệt quái có từ khóa “Amazon”.
-0
+Cạm bẫy vĩnh cửu Amazon: Chủ động (1 lượt 1 lần): Triệu Hồi Đặc Biệt 1 quái “Amazon” từ bài trên tay. Khi có lá này trên sân, tất cả quái thú mang từ khóa “Amazon” khi giao chiến sẽ triệt tiêu toàn bộ sát thương chiến đấu về 0 (người chơi không bị trừ LP), đồng thời tối ưu cơ chế phản sát thương khi công/thủ. Khi bị phá hủy từ trên sân, Triệu Hồi Đặc Biệt 1 quái “Amazon” từ mộ.
+|Mô tả|\nBão Lốc Amazon: Cạm bẫy vĩnh cửu cốt lõi của bộ tộc Amazoness. Triệu hồi quái thú từ tay, bảo hộ toàn diện quái thú Amazon khi giao chiến, triệt tiêu toàn bộ sát thương chiến đấu về 0 và tối ưu phản sát thương khi công/thủ.
 Bão Lốc Amazon
 Đao Vàng Bổ Đập
 Khi có <Anh hùng Nguyên tố·Golden Blade> trên sân của bạn, bạn có thể tiêu diệt Quái Vật của đối thủ.
@@ -56808,3 +56808,412 @@ Harpie-Tụ Hợp Tỷ Muội
 Kĩ năng chủ động: 1 lượt 1 lần, chọn tối đa 2 quái có từ khóa "harpie" từ mộ phe ta triệu hồi đặc biệt lên sân trong thế phòng thủ (quái không thể thay đổi tư thế trong lượt này).
 Harpie-Phong Dực Hộ Thể
 Kĩ năng chủ động mộ: 1 lượt 1 lần, loại bỏ bản thân, tất cả quái thú tộc "Thú có cánh" trên sân phe ta nhận khiên chắn quái/phép/bẫy trong 1 lượt (loại khiên có hào quang).
+Cửu Thiên Huyền Sát-Tru Tiên
+Kĩ năng chủ động mộ: 1 lượt 1 lần, khi trên sân phe ta có <Kỳ Baby>, loại bỏ bản thân khỏi mộ để thêm 1 lá <Cửu Thiên Huyền Sát> từ bộ bài lên tay.
+A Lương
+Không thể Triệu Hồi Đặc Biệt. Lá bài này trên sân không thể bị phá hủy bởi bất kỳ hiệu ứng nào. Khi vào sân, nhận 1 tầng Khiên Chắn Quái. 1 lượt 1 lần, vô hiệu hóa và phá hủy lá bài Phép/Bẫy của đối phương. Công và thủ tăng theo Cấp sao x 200. Mỗi đầu lượt phe ta tăng 1 sao (tối đa 14 sao). Đạt 13 sao: đối phương không thể kích hoạt hiệu ứng bài trên sân. Đạt 14 sao: đối phương không thể kích hoạt hiệu ứng bài ở bất cứ đâu.
+A Lương-Cấm Đoán
+Không thể Triệu Hồi Đặc Biệt.
+A Lương-Bất Hoại
+Lá bài này trên sân không thể bị phá hủy bởi bất kỳ hiệu ứng nào.
+A Lương-Hộ Thể
+Khi vào sân nhận 1 tầng Khiên Chắn Quái.
+A Lương-Trảm Pháp
+1 lượt 1 lần, vô hiệu hóa và phá hủy lá bài Phép/Bẫy của đối phương.
+A Lương-Vô Thượng Kiếm Đạo
+Công và thủ tăng theo Cấp sao x 200. Mỗi đầu lượt phe ta tăng 1 sao (tối đa 14 sao). Đạt 13 sao: đối phương không thể kích hoạt hiệu ứng bài trên sân. Đạt 14 sao: đối phương không thể kích hoạt hiệu ứng bài ở bất cứ đâu.
+Quỷ Lệ
+Khi vào sân nhận 1 tầng Lá Chắn Năng Lượng Quái, Phép và Bẫy. Kĩ năng chủ động: 1 lượt 1 lần, chọn và thêm 1 lá bài Phép có từ khóa "Tru tiên" từ bộ bài lên tay. 1 lượt 1 lần được bỏ qua 1 lần phá hủy. 1 lượt 1 lần khi đối phương kích hoạt lá bài Phép/Bẫy: trả 1000 Điểm Gốc, vô hiệu hóa và phá hủy lá bài đó.
+Quỷ Lệ-Tam Giới Chướng
+Khi vào sân nhận 1 tầng Lá Chắn Năng Lượng Quái, Phép và Bẫy.
+Quỷ Lệ-Tìm Kiếm Pháp Bảo
+Kĩ năng chủ động: 1 lượt 1 lần, chọn và thêm 1 lá bài Phép có từ khóa "Tru tiên" từ bộ bài lên tay.
+Quỷ Lệ-Bất Diệt Linh Hồn
+1 lượt 1 lần được bỏ qua 1 lần phá hủy.
+Quỷ Lệ-Trảm Ma Đạo
+1 lượt 1 lần, khi đối phương kích hoạt lá bài Phép/Bẫy: trả 1000 Điểm Gốc, vô hiệu hóa và phá hủy lá bài đó.
+Đọa Nhập Ma Đạo
+Mỗi lượt chỉ có thể kích hoạt 1 lần: Trả 1000 Điểm Gốc và phá hủy 1 quái thú trên sân phe ta, Triệu Hồi Đặc Biệt 1 lá <Quỷ Lệ> từ Mộ, Bộ Bài hoặc Trên Tay. Kĩ năng chủ động mộ: phá hủy 1 quái thú hệ BÓNG TỐI trên sân phe ta, hồi Điểm Gốc bằng điểm Công của quái thú đó.
+Đọa Nhập Ma Đạo
+Mỗi lượt chỉ có thể kích hoạt 1 lần: Trả 1000 Điểm Gốc và phá hủy 1 quái thú trên sân phe ta, Triệu Hồi Đặc Biệt 1 lá <Quỷ Lệ> từ Mộ, Bộ Bài hoặc Trên Tay.
+Đọa Nhập Ma Đạo-Hấp Thu
+Kĩ năng chủ động mộ: Phá hủy 1 quái thú hệ BÓNG TỐI trên sân phe ta, hồi Điểm Gốc bằng điểm Công của quái thú đó.
+Kỳ Baby
+Khi có mặt trên sân, quái thú đối phương được Triệu Hồi hoặc Triệu Hồi Đặc Biệt sẽ bị khóa trong thế phòng thủ 1 lượt (không thể đổi tư thế trong lượt đó). Nếu trên sân phe ta có <Quỷ Lệ>, lá bài này có thể Triệu Hồi Thường mà không cần quái tế, đồng thời nhận tường chắn quái/phép/bẫy.
+Kỳ Baby-Khống Chế Trận Địa
+Khi có mặt trên sân, quái thú đối phương được Triệu Hồi hoặc Triệu Hồi Đặc Biệt sẽ bị khóa trong thế phòng thủ 1 lượt (không thể đổi tư thế trong lượt đó).
+Kỳ Baby-Hỗ Trợ Ma Đạo
+Nếu trên sân phe ta có <Quỷ Lệ>, lá bài này có thể Triệu Hồi Thường mà không cần quái tế.
+Khóa Đột Kích
+Khi bị đối thủ tiêu diệt trong chiến đấu, đối thủ không thể tiếp tục tấn công trong lượt đó.
+Đồng vợ đồng chồng
+Khi trên sân phe ta có <Quỷ Lệ> và <Kỳ Baby> chưa hành động có thể kích hoạt, phá hủy tất cả quái thú trên sân đối phương (Xuyên qua tường chắn quái thú).
+Đồng Vợ Đồng Chồng-Phá Diệt
+Khi trên sân phe ta có <Quỷ Lệ> và <Kỳ Baby> chưa hành động có thể kích hoạt, phá hủy tất cả quái thú trên sân đối phương (Xuyên qua tường chắn quái thú).
+Vào sinh cộng tử
+Khi trên sân phe ta có <Quỷ Lệ> có thể kích hoạt, chọn: Triệu hồi đặc biệt <Kỳ Baby> từ tay/bộ bài/trong mộ lên sân, sau đó chọn 1 bài phép có từ khóa "Tru tiên" thêm vào tay.
+Vào Sinh Cộng Tử-Triệu Hồi
+Khi trên sân phe ta có <Quỷ Lệ> có thể kích hoạt, chọn: Triệu hồi đặc biệt <Kỳ Baby> từ tay/bộ bài/trong mộ lên sân, sau đó chọn 1 bài phép có từ khóa "Tru tiên" thêm vào tay.
+Thần khiển
+Khi trên tay phe ta có <Bát hoang hỏa long>, ngoại trừ <Bát hoang hỏa long> khi tổng số sao quái trên sân / trên tay phe ta có >= 10 (hoặc khi trên sân phe ta có <Thú thần>, không cần hiến tế), có thể kích hoạt: Triệu hồi nghi thức <Bát hoang hỏa long> từ tay.
+Thần Khiển-Nghi Thức Triệu Hồi
+Khi trên tay phe ta có <Bát hoang hỏa long>, ngoại trừ <Bát hoang hỏa long> khi tổng số sao quái trên sân / trên tay phe ta có >= 10 (hoặc khi trên sân phe ta có <Thú thần>, không cần hiến tế), có thể kích hoạt: Triệu hồi nghi thức <Bát hoang hỏa long> từ tay.
+Bát hoang hỏa long
+Không thể triệu hồi thường, lần đầu triệu hồi đặc biệt cần hiệu ứng của <Thần khiển> để triệu hồi đặc biệt.\nKĩ năng chỉ kích hoạt 1 lần vào lần lá bài này được triệu hồi nghi thức, gây thiệt hại cho đối phương bằng 1 nửa LP hiện tại của họ.\nKhi lên sân, phá hủy tất cả bài phép môi trường trên sân 2 bên.\nKhi lá bài này trên sân, 2 bên không thể sử dụng bài phép môi trường.\nKhi lên sân nhận tường chắn 12002, 12003, 12004.\nKhi lá bài này trên sân, hiệu quả tăng LP của đối thủ trở thành nhận sát thương.\nMỗi khi đối phương triệu hồi/triệu hồi đặc biệt quái thú, đối phương nhận 200 thiệt hại (tăng lên thành 400 nếu đối phương có trên 8000 LP).\nKhi lá bài này bị phá hủy, phá hủy tất cả bài trên sân phe ta, phe ta chịu thiệt hại bằng số bài bị phá hủy x 500.
+Bát Hoang-Tường Chắn Tam Giới
+Khi lên sân nhận tường chắn 12002, 12003, 12004.
+Bát Hoang-Huyền Hỏa Phệ Hồn
+Kĩ năng chỉ kích hoạt 1 lần vào lần lá bài này được triệu hồi nghi thức, gây thiệt hại cho đối phương bằng 1 nửa LP hiện tại của họ.
+Bát Hoang-Tuyệt Môi Diệt Cảnh
+Khi lên sân, phá hủy tất cả bài phép môi trường trên sân 2 bên. Khi lá bài này trên sân, 2 bên không thể sử dụng bài phép môi trường.
+Bát Hoang-Chích Nhiệt Phản Phệ
+Khi lá bài này trên sân, hiệu quả tăng LP của đối thủ trở thành nhận sát thương. Mỗi khi đối phương triệu hồi/triệu hồi đặc biệt quái thú, đối phương nhận 200 thiệt hại (tăng lên thành 400 nếu đối phương có trên 8000 LP).
+Bát Hoang-Long Hồn Câu Diệt
+Khi lá bài này bị phá hủy, phá hủy tất cả bài trên sân phe ta, phe ta chịu thiệt hại bằng số bài bị phá hủy x 500.
+Bát Hoang-Quy Tắc Nghi Lễ
+Không thể triệu hồi thường, lần đầu triệu hồi đặc biệt cần hiệu ứng của <Thần khiển> để triệu hồi đặc biệt.
+Kỳ Baby-Hộ Thể Đạo Lữ
+Khi có <Quỷ Lệ> trên sân, nhận tường chắn quái, phép và bẫy.
+Huyền Hỏa Giám
+Bẫy phản kích: Khi phe ta chịu thiệt hại LP sẽ kích hoạt, ngăn chặn thiệt hại đó, trong lượt này phe ta sẽ không chịu thêm bất kì thiệt hại nào. Khi lá bài này nằm trên tay và trên sân phe ta không có bài, đối phương gây thiệt hại cho phe ta sẽ kích hoạt, đưa lá bài này vào mộ, trong lượt này phe ta sẽ không chịu thêm bất kì thiệt hại nào.
+Huyền Hỏa Giám
+Huyền Hỏa Giám-Bảo Hộ
+Bẫy phản kích: Khi phe ta chịu thiệt hại LP sẽ kích hoạt, ngăn chặn thiệt hại đó, trong lượt này phe ta sẽ không chịu thêm bất kì thiệt hại nào. Khi lá bài này nằm trên tay và trên sân phe ta không có bài, đối phương gây thiệt hại cho phe ta sẽ kích hoạt, đưa lá bài này vào mộ, trong lượt này phe ta sẽ không chịu thêm bất kì thiệt hại nào.
+Tru Tiên Kiếm
+Phép trang bị: Trang bị dành cho quái Chiến binh/Phù thủy. Quái trang bị nhận được “Quá Tải”, “Liên Trảm”, tăng 5000 Công và nhận tường chắn quái, phép, bẫy. Giảm 1000 Công và phe ta chịu 1000 thiệt hại sau mỗi lần tấn công.
+Tru Tiên Kiếm
+Tru Tiên Kiếm-Trảm Tiên Diệt Ma
+Phép trang bị: Trang bị dành cho quái Chiến binh/Phù thủy. Quái trang bị nhận được “Quá Tải”, “Liên Trảm”, tăng 5000 Công và nhận tường chắn quái, phép, bẫy. Giảm 1000 Công và phe ta chịu 1000 thiệt hại sau mỗi lần tấn công.
+Đạo Huyền
+Không thể Triệu Hồi Thường. Có thể Triệu Hồi Đặc Biệt từ trên tay bằng cách hiến tế 2 quái thú [Phù Thủy] trên sân. Khi lên sân: lấy 1 [Tru Tiên Kiếm] từ Bộ bài lên tay. [Kích hoạt trên sân - 1 lần/lượt]: Trục xuất 1 Ma pháp/Cạm bẫy trong Mộ -> phá hủy 1 lá bài trên sân đối phương (xuyên tường). [Kích hoạt trên sân - 1 lần/lượt, khi trang bị Tru Tiên Kiếm]: Tiêu diệt toàn bộ quái thú đối phương (xuyên tường), đưa bản thân vào Mộ -> Triệu Hồi Đặc Biệt [Đạo Huyền Tâm Ma] từ Bộ bài/Tay/Mộ.
+Đạo Huyền
+Đạo Huyền-Chân Nhân Quy Tắc
+Không thể Triệu Hồi Thường. Hiến tế 2 [Phù Thủy] trên sân để Triệu Hồi Đặc Biệt từ trên tay.
+Đạo Huyền-Chấp Chưởng Tru Tiên
+Khi xuất hiện trên sân, lấy 1 [Tru Tiên Kiếm] từ Bộ bài lên tay.
+Đạo Huyền-Thanh Vân Kiếm Khí
+1 lần/lượt: Trục xuất 1 Ma pháp/Cạm bẫy trong Mộ để phá hủy 1 lá trên sân đối thủ (xuyên tường quái thú).
+Đạo Huyền-Tru Tiên Kiếm Trận
+1 lần/lượt, khi trang bị Tru Tiên Kiếm: Phá hủy toàn bộ quái thú đối thủ (xuyên tường), đưa bản thân vào Mộ để Triệu Hồi Đặc Biệt [Đạo Huyền Tâm Ma] từ Bộ bài, Tay hoặc Mộ.
+Đạo Huyền Tâm Ma
+Không thể Triệu Hồi Thường hoặc Triệu Hồi Đặc Biệt trừ hiệu ứng của [Đạo Huyền]. Khi lên sân: Tiêu diệt toàn bộ quái thú khác trên sân ta, đồng thời nhận tường chắn Quái thú. Tối đa 3 lần 1 lượt: Khi đối thủ kích hoạt Ma pháp/Cạm bẫy -> Vô hiệu hóa và phá hủy lá đó, bản thân nhận 500 Công, phe ta nhận 500 sát thương. Bản thân không thể bị phá hủy bởi chiến đấu. Cuối mỗi lượt: Điểm gốc của ta nhận 1000 sát thương; nếu Điểm gốc <= 1000, trục xuất lá này.
+Đạo Huyền Tâm Ma
+Tâm Ma-Nhập Ma Tẫn Diệt
+Khi lên sân: Phá hủy toàn bộ quái thú khác trên sân ta, nhận khiên chắn Quái thú.
+Tâm Ma-Ma Huyết Thao Thiên
+Tối đa 3 lần 1 lượt: Khi đối thủ kích hoạt Ma pháp/Cạm bẫy: Vô hiệu và phá hủy lá đó, bản thân nhận 500 Công, phe ta nhận 500 thiệt hại.
+Tâm Ma-Bất Diệt Ma Thân
+Bản thân không thể bị tiêu diệt bởi chiến đấu.
+Tâm Ma-Phệ Hồn Phản Phệ
+Cuối mỗi lượt, trừ 1000 Điểm gốc của ta. Nếu Điểm gốc <= 1000, trục xuất lá này.
+Bích Dao
+[Kích hoạt trên tay - 1 lần/lượt]: Bỏ 1 lá bài trên tay vào Mộ -> Triệu Hồi Đặc Biệt lá này lên sân. [Kích hoạt trên sân - 1 lần/lượt]: Lấy 1 [Đọa Nhập Ma Đạo] từ Bộ bài lên tay. [Hiệu ứng trên tay]: Khi có [Quỷ Lệ] trên sân ta và đối thủ kích hoạt Ma pháp/Cạm bẫy -> đưa lá này từ tay vào Mộ để vô hiệu hóa và phá hủy lá đó. [Kích hoạt trong Mộ - 1 lần/lượt]: Khi có [Quỷ Lệ] trên sân -> trục xuất lá này khỏi Mộ, tất cả [Quỷ Lệ] trên sân tăng 1000 Công.
+Bích Dao
+Bích Dao-Si Tình Tương Phùng
+1 lần/lượt trên tay: Bỏ 1 lá bài trên tay vào Mộ để Triệu Hồi Đặc Biệt lá này lên sân.
+Bích Dao-Dẫn Đạo Nhập Ma
+1 lần/lượt trên sân: Lấy 1 lá [Đọa Nhập Ma Đạo] từ Bộ bài lên tay.
+Bích Dao-Si Tình Chú
+Trên tay khi có [Quỷ Lệ] trên sân: Đưa vào Mộ để vô hiệu hóa Ma pháp/Cạm bẫy đối phương.
+Bích Dao-Hồn Về Thương Tâm
+1 lần/lượt trong Mộ khi có [Quỷ Lệ] trên sân: Trục xuất bản thân để tăng 1000 Công cho tất cả [Quỷ Lệ].
+Huyền Hỏa Giám-Hộ Mệnh
+Khi lá bài này nằm trên tay và trên sân phe ta không có bài: Khi đối phương gây thiệt hại cho phe ta, đưa lá bài này vào Mộ; ngăn chặn thiệt hại đó và trong lượt này phe ta không chịu thêm bất kì thiệt hại nào.
+Tru Tiên Kiếm-Quá Tải
+Quái trang bị nhận được kỹ năng [Quá Tải]: Khi tấn công quái thú có DEF thấp hơn ATK của nó, gây sát thương chênh lệch cho đối thủ.
+Tru Tiên Kiếm-Liên Trảm
+Quái thú được trang bị nhận hiệu ứng [Liên Trảm]: Có thể tấn công 2 lần trong mỗi lượt.
+Tru Tiên Kiếm-Kiếm Khí Hộ Thể
+Quái trang bị nhận được Tường Chắn Quái Thú, Ma Pháp và Cạm Bẫy liên tục trong thời gian trang bị.
+Tru Tiên Kiếm-Phệ Hồn Phản Phệ
+Sau mỗi lần quái thú trang bị tấn công: Giảm 1000 Điểm Tấn Công và Điểm Gốc phe ta chịu 1000 thiệt hại.
+Thú thần
+Thú thần
+Lá bài này không thể triệu hồi đặc biệt, chỉ có thể triệu hồi thường bằng cách hiến tế 3 quái thú.\nKĩ năng chủ động 1: 1 lượt 1 lần, chọn: lấy 1 quái thú nghi lễ có từ khóa “Tru tiên” từ bộ bài lên tay, sau đó lấy thêm 1 lá <Thần khiển> từ mộ bài/bộ bài lên tay.\nKĩ năng chủ động 2 (kĩ năng này và kĩ năng chủ động 1 chỉ có thể dùng 1 loại): Trong lượt này nhận atk bằng số LP của đối thủ hiện có.\nNhận khiên quái, phép, bẫy.\nKhi trên sân phe ta còn quái khác, lá bài này không thể bị chọn làm mục tiêu.
+Thú Thần-Hiến Tế Thần Thú
+Lá bài này không thể triệu hồi đặc biệt, chỉ có thể triệu hồi thường bằng cách hiến tế 3 quái thú.
+Thú Thần-Tru Tiên Nghi Lễ
+1 lượt 1 lần, chọn: lấy 1 quái thú nghi lễ có từ khóa “Tru tiên” từ bộ bài lên tay, sau đó lấy thêm 1 lá <Thần khiển> từ mộ bài/bộ bài lên tay.
+Thú Thần-Thần Lực Bất Diệt
+1 lượt 1 lần (dùng chung lượt với kỹ năng chủ động 1): Trong lượt này nhận ATK bằng số LP của đối thủ hiện có.
+Thú Thần-Tam Giới Tường Chắn
+Khi có mặt trên sân: Nhận tường chắn quái, phép và bẫy.
+Thú Thần-Thần Uy Hộ Thể
+Khi trên sân phe ta còn quái khác, lá bài này không thể bị chọn làm mục tiêu.
+Kỳ - Phàm
+[Quái vật Dung Hợp]\n<Quỷ Lệ> + <Kỳ Baby>\n[Kỹ năng chủ động bộ bài thêm]: Chọn nguyên liệu dung hợp từ bài trên tay/trên sân đưa vào Mộ -> Triệu hồi Dung Hợp lá bài này.\n[Kỹ năng chủ động trên sân - 1 lần/lượt]: Lấy 1 lá bài quái thú có từ khóa "Tru tiên" từ Bộ bài lên tay.\nKhi lên sân: Nhận 1 tầng Tường chắn Năng lượng Quái, Phép, Bẫy.\nKhi trên sân: Quái thú đối phương được Triệu Hồi/Triệu Hồi Đặc Biệt sẽ bị khóa trong thế phòng thủ 1 lượt; đồng thời phe ta hồi LP bằng [Số sao quái đó x 100].\nNếu LP phe ta < 8000: Lá bài này nhận Công bằng [8000 - LP hiện tại].\nQuỷ Lệ-Kim Cương Bất Hoại: Không thể bị phá hủy bởi chiến đấu, 1 lượt 1 lần bỏ qua 1 lần phá hủy bởi hiệu ứng thẻ bài.\nQuỷ Lệ-Hấp Huyết Vô Tình: Khi tiêu diệt quái thú hoặc gây sát thương chiến đấu, phe ta hồi LP tương ứng.\nKhi lá bài này bị đối phương phá hủy: Triệu Hồi Đặc Biệt <Quỷ Lệ> và <Kỳ Baby> từ Mộ lên sân.
+Kỳ - Phàm
+Kỳ Phàm-Dung Hợp Kỳ Linh
+Kỹ năng chủ động bộ bài thêm: Chọn nguyên liệu dung hợp (<Quỷ Lệ> + <Kỳ Baby>) từ bài trên tay hoặc trên sân đưa vào Mộ để Triệu Hồi Dung Hợp lá bài này.
+Kỳ Phàm-Triệu Tập Tru Tiên
+1 lượt 1 lần: Chọn và lấy 1 lá bài quái thú có từ khóa "Tru tiên" từ Bộ bài lên tay.
+Kỳ Phàm-Nghịch Cảnh Huyết Nộ
+Nếu LP phe ta thấp hơn 8000, lá bài này nhận thêm Công bằng 8000 - LP hiện tại của phe ta.
+Quỷ Lệ-Kim Cương Bất Hoại
+Không thể bị phá hủy bởi chiến đấu. 1 lượt 1 lần được bỏ qua 1 lần phá hủy bởi hiệu ứng thẻ bài.
+Kỳ Phàm-Thiên Linh Hóa Sinh
+Khi có mặt trên sân: Mỗi khi đối phương Triệu Hồi hoặc Triệu Hồi Đặc Biệt quái thú, phe ta hồi LP bằng số sao của quái thú đó x 100.
+Quỷ Lệ-Hấp Huyết Vô Tình
+Khi tiêu diệt quái thú đối phương trong chiến đấu hoặc gây sát thương chiến đấu, phe ta được hồi phục lượng LP tương ứng.
+Kỳ Phàm-Phục Sinh Tương Ứng
+Khi lá bài này bị đối phương phá hủy: Triệu Hồi Đặc Biệt <Quỷ Lệ> và <Kỳ Baby> từ Mộ lên sân.
+Bình Phàm
+[Bẫy Vĩnh Cửu]\n+ Kĩ năng chủ động 1 (kĩ năng này và kĩ năng chủ động 2 chỉ có thể kích hoạt 1 loại mỗi lượt): Lấy 1 lá bài có từ khóa "Tru tiên" từ bộ bài lên tay.\n+ Kĩ năng chủ động 2 (kĩ năng này và kĩ năng chủ động 1 chỉ có thể kích hoạt 1 loại mỗi lượt): Chọn và triệu hồi đặc biệt <Quỷ Lệ> hoặc <Kỳ Baby> từ Mộ hoặc bài trên tay lên sân.\n+ Khi lá bài này vào Mộ từ trên sân: Lấy 1 lá [Huyền Hỏa Giám] từ Bộ bài lên tay.
+Bình Phàm
+Bình Phàm-Tầm Đạo Tru Tiên
+1 lượt 1 lần (chỉ có thể chọn 1 trong 2 kĩ năng mỗi lượt): Lấy 1 lá bài có từ khóa "Tru tiên" từ bộ bài lên tay.
+Bình Phàm-Triệu Tập Tiên Ma
+1 lượt 1 lần (chỉ có thể chọn 1 trong 2 kĩ năng mỗi lượt): Chọn và triệu hồi đặc biệt <Quỷ Lệ> hoặc <Kỳ Baby> từ Mộ hoặc bài trên tay lên sân.
+Bình Phàm-Truyền Thừa Huyền Hỏa
+Khi lá bài này vào Mộ từ trên sân: Lấy 1 lá [Huyền Hỏa Giám] từ Bộ bài lên tay.
+Tiểu Bạch
+[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (trên tay hoặc trong mộ - 1 lượt 1 lần): Đưa 1 lá [Huyền Hỏa Giám] từ trên tay hoặc trên sân vào Mộ; Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi lên sân: Nhận 1 tầng Khiên Chắn Quái Thú.\n+ Kĩ năng chủ động (trên sân - 1 lượt 1 lần): Chiếm quyền điều khiển 1 quái thú trên sân đối thủ (xuyên thấu Khiên Chắn Quái).\n+ Khi lá bài này bị phá hủy: Loại bỏ 1 lá [Huyền Hỏa Giám] trong Mộ thay vì bị phá hủy.
+Tiểu Bạch
+Tiểu Bạch-Huyền Hỏa Giáng Thế
+1 lượt 1 lần (trên tay hoặc trong mộ): Đưa 1 lá [Huyền Hỏa Giám] trên tay hoặc trên sân vào Mộ; Triệu Hồi Đặc Biệt lá bài này lên sân.
+Tiểu Bạch-Cửu Vĩ Hộ Thể
+Khi lên sân: Nhận 1 tầng Khiên Chắn Quái Thú.
+Tiểu Bạch-Mị Hoặc Chúng Sinh
+1 lượt 1 lần: Chiếm quyền điều khiển 1 quái thú trên sân đối phương (xuyên thấu Khiên Chắn Quái).
+Tiểu Bạch-Huyền Hỏa Thế Thân
+Khi lá bài này bị phá hủy: Loại bỏ 1 lá [Huyền Hỏa Giám] trong Mộ thay vì bị phá hủy.
+Quỷ Lệ - Sát
+[Quái thú Xyz / Hiệu Ứng]\n2 quái thú 7 sao có từ khóa "Tru tiên"\n+ Huyết Đao: Khi tiêu diệt quái thú trong chiến đấu, bản thân tăng Công.\n+ Đoạt Ý Chí: Khi tiêu diệt quái thú trong chiến đấu, loại bỏ mục tiêu.\n+ Đòn Ảo Ảnh: Tăng sức tấn công khi giao chiến.\n+ Xuyên Phá: Tấn công quái thú ở thế thủ gây sát thương xuyên thấu.\n+ Khi lá bài này bị ảnh hưởng bởi hiệu quả của đối phương: Phe ta nhận 500 thiệt hại, bỏ qua hiệu ứng đó.\n+ Khi lá bài này còn chỉ thị Xyz: Không thể bị phá hủy.\n+ Khi lá bài này bị tấn công và nhận thiệt hại: Tiêu hao 1 chỉ thị Xyz, chuyển toàn bộ thiệt hại thành hồi phục LP x2 lần.
+Quỷ Lệ - Sát
+Q.Lệ Sát-Nghịch Mệnh Hộ Thân
+Khi lá bài này bị ảnh hưởng bởi hiệu quả của đối phương: Phe ta nhận 500 thiệt hại, bỏ qua hiệu ứng đó.
+Q.Lệ Sát-Bất Diệt Xyz
+Khi lá bài này còn chỉ thị Xyz: Không thể bị phá hủy.
+Q.Lệ Sát-Hóa Huyết Hồi Sinh
+Khi lá bài này bị tấn công và nhận thiệt hại: Tiêu hao 1 chỉ thị Xyz, chuyển toàn bộ thiệt hại thành hồi phục LP x2 lần.
+Lôi Oa
+[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (tay - mộ - 1 lượt 1 lần): Khi trên sân phe ta có quái thú có từ khóa "Tiên nghịch", có thể kích hoạt: Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ 1 lượt 1 lần: Khi đối phương Triệu Hồi hoặc Triệu Hồi Đặc Biệt quái thú, kích hoạt: Vô hiệu hóa toàn bộ hiệu ứng của quái thú đó trong 1 lượt.
+Lôi Oa
+Lôi Oa-Lôi Trạch Triệu Hồi
+1 lượt 1 lần: Trên sân phe ta có quái có từ khóa "Tiên nghịch" có thể kích hoạt, Triệu Hồi Đặc Biệt lá bài này từ tay hoặc mộ lên sân.
+Lôi Oa-Tê Liệt Định Thân
+1 lượt 1 lần: Khi đối phương Triệu Hồi/Triệu Hồi Đặc Biệt, kích hoạt: Vô hiệu hiệu ứng của quái đó trong 1 lượt.
+Lôi Thú
+[Quái thú Hiệu Ứng]\n+ Kĩ năng tay: 1 lượt 1 lần, khi lá bài này nằm trên tay, đối phương sử dụng bài Phép/Bẫy sẽ kích hoạt: Vô hiệu và phá hủy lá bài đó, sau đó Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi trên sân phe ta không có quái thú thuộc tính "Lôi", có thể Triệu Hồi Thường lá bài này không cần vật tế.\n+ Kĩ năng chủ động mộ: Lấy 1 quái thú chủng tộc "Sấm sét" có phẩm chất UR trở xuống từ Bộ Bài lên tay.
+Lôi Thú
+Lôi Thú-Lôi Đình Phản Kích
+1 lượt 1 lần: Khi trên tay, đối phương dùng Phép/Bẫy sẽ kích hoạt: Vô hiệu và phá hủy lá đó, sau đó Triệu Hồi Đặc Biệt lá bài này lên sân.
+Lôi Thú-Lôi Giáng Tự Nhiên
+Khi trên sân phe ta không có quái thuộc tính "Lôi", có thể Triệu Hồi Thường không cần vật tế.
+Lôi Thú-Dẫn Lôi Nhập Thủ
+Kĩ năng chủ động mộ: Lấy 1 quái thú chủng tộc "Sấm sét" có phẩm chất UR trở xuống từ Bộ Bài lên tay.
+Huyết Tổ
+[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (tay - mộ): Hi sinh 1 nửa LP, Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi lên sân: Nhận Điểm Tấn Công (ATK) bằng số LP hiện có của phe ta.\n+ Kĩ năng chủ động (trên sân - 1 lượt 1 lần): Chọn hiến tế tối đa 2 quái thú trên sân, phe ta hồi phục LP bằng tổng ATK của các quái thú bị hiến tế.\n+ Kĩ năng chủ động (mộ loại bỏ): Trả lá bài này về Bộ Bài, phe ta rút 1 lá.
+Huyết Tổ
+Huyết Tổ-Huyết Tế Trùng Sinh
+Kĩ năng chủ động tay - mộ: Hi sinh 1 nửa LP, Triệu Hồi Đặc Biệt lá bài này lên sân.
+Huyết Tổ-Huyết Khí Thao Thiên
+Khi lên sân: Nhận ATK bằng số LP hiện có của phe ta.
+Huyết Tổ-Huyết Năng Thôn Phệ
+Kĩ năng chủ động trên sân: 1 lượt 1 lần, chọn hiến tế tối đa 2 quái trên sân, phe ta nhận LP bằng ATK của quái bị hiến tế.
+Huyết Tổ-Huyết Hồn Quy Hoàn
+Kĩ năng chủ động mộ loại bỏ: Trả lá bài này về Bộ Bài, phe ta rút 1 lá.
+Độn Thiên
+[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động trên tay (1 lượt 1 lần): Hiến tế 1 quái thú Phù Thủy thuộc tính Ám trên sân phe ta, Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Kĩ năng chủ động trên sân (1 lượt 1 lần): Lấy 1 lá <Luyện hồn tông> từ Bộ Bài lên tay.\n+ Khi trên sân phe ta có <Luyện hồn tông>: Nhận Tường Chắn Quái, Phép, Bẫy.
+Độn Thiên
+Độn Thiên-Hiến Tế Xuất Thế
+Kĩ năng chủ động tay: 1 lượt 1 lần, hiến tế 1 quái Phù Thủy thuộc tính Ám trên sân phe ta, Triệu Hồi Đặc Biệt lá bài này lên sân.
+Độn Thiên-Luyện Hồn Tông Lệnh
+Kĩ năng chủ động trên sân: 1 lượt 1 lần, lấy 1 lá <Luyện hồn tông> từ Bộ Bài lên tay.
+Độn Thiên-Luyện Hồn Hộ Thể
+Khi trên sân phe ta có <Luyện hồn tông>: Nhận Tường Chắn Quái, Phép, Bẫy.
+Vương Lâm - bản tôn cổ thần
+[Quái thú Hiệu Ứng]\n+ Khi lên sân: Nhận Khiên Chắn Quái, Phép, Bẫy, [Miệt Thị] và 1 "chỉ thị cổ thần" (tối đa 9).\n+ Khi trở thành mục tiêu tấn công: Vô hiệu hóa hiệu ứng của quái tấn công.\n+ 1 lượt 1 lần, đối phương kích hoạt bài phép/bẫy sẽ kích hoạt: Vô hiệu và đưa lá bài đó vào mộ phe ta, nhận 1 "chỉ thị cổ thần".\n+ Kĩ năng chủ động: 1 lượt 1 lần, đưa 1 bài phép/bẫy trên tay phe ta vào mộ, nhận 1 "chỉ thị cổ thần".\n+ Tăng ATK/DEF bằng số "chỉ thị cổ thần" x 300.\n+ Nếu có từ 3 "chỉ thị cổ thần" trở lên: Nhận Tường Chắn Quái, Phép, Bẫy.\n+ Nếu có từ 5 "chỉ thị cổ thần" trở lên: Nhân đôi giá trị ATK/DEF nhận được từ "chỉ thị cổ thần".\n+ Nếu có từ 7 "chỉ thị cổ thần" trở lên: Đối phương triệu hồi/triệu hồi đặc biệt quái <= 4 sao sẽ bị mất hiệu quả quái.\n+ Nếu có 9 "chỉ thị cổ thần": Đối phương triệu hồi/triệu hồi đặc biệt quái có ATK <= 2000 sẽ lập tức bị tiêu diệt.
+Vương Lâm - bản tôn cổ thần
+Bản Tôn-Cổ Thần Hộ Thể
+Khi lên sân: Nhận Khiên Chắn Quái, Phép, Bẫy, 1 "chỉ thị cổ thần" (tối đa 9) và [Miệt Thị].
+Bản Tôn-Cổ Thần Chi Lực
+Tăng ATK/DEF bằng số "chỉ thị cổ thần" x 300 (từ 5 chỉ thị trở lên x2 thành x600). Từ 3 chỉ thị trở lên: Nhận Tường Chắn Quái, Phép, Bẫy.
+Bản Tôn-Cổ Thần Nghịch Phạt
+1 lượt 1 lần, khi đối phương dùng Phép/Bẫy: Vô hiệu và đưa lá đó vào Mộ phe ta, nhận 1 "chỉ thị cổ thần". Khi bị tấn công: Vô hiệu hiệu ứng của quái tấn công.
+Bản Tôn-Tế Thần Nạp Khí
+Kỹ năng chủ động (1 lượt 1 lần): Đưa 1 bài Phép/Bẫy trên tay phe ta vào Mộ, nhận 1 "chỉ thị cổ thần" (tối đa 9).
+Bản Tôn-Cổ Thần Uy Áp
+Từ 7 chỉ thị trở lên: Đối phương triệu hồi quái <= 4 sao bị mất hiệu ứng. Có 9 chỉ thị: Đối phương triệu hồi quái ATK <= 2000 lập tức bị tiêu diệt.
+Lăng Thiên Hậu
+2+ quái thú có từ khóa "Thánh Kỵ" (kể cả quái từ Bộ Bài Thêm)
+Lăng Thiên Hậu
+Lăng Thiên Hậu
+Lăng Thiên-Vương Khí
+Với mỗi bài Phép Trang Bị có từ khóa "Thánh Kỵ" được trang bị, tăng 500 ATK.
+Lăng Thiên-Liên Kích
+Có thể tấn công thêm 1 lần với mỗi lá Phép Trang Bị "Thánh Kỵ" được trang bị.
+Lăng Thiên-Khát Kiếm
+Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 2 Phép Trang Bị "Thánh Kỵ" khác nhau từ bộ bài lên tay.
+Lăng Thiên-Bản Mệnh Hàng Thế
+Khi lên sân: Thêm 3 lá <Lăng thiên kiếm khí - bản mệnh> lên tay.
+Lăng Thiên Kiếm Khí - Bản Mệnh
+[Phép Thường]\n+ 1 lượt tối đa 3 lần, khi lá bài này ở trên tay, quái thú có từ khóa "Thánh Kỵ" phe ta bị phá hủy sẽ kích hoạt: Đưa lá bài này vào Mộ: Phá hủy 1 quái trên sân đối thủ (xuyên qua Tường Chắn Quái); nếu trên sân đối thủ không có quái: Phá hủy 1 lá trên tay đối thủ; nếu đối thủ không có quái trên sân và không có bài trên tay: Đối thủ chịu 2000 thiệt hại.\n+ 1 lượt tối đa 3 lần: Chọn 1 quái thú có từ khóa "Thánh Kỵ" trong Mộ phe ta, triệu hồi đặc biệt lên sân ở tư thế phòng thủ (không thể đổi tư thế trong lượt này).
+Kiếm Khí-Bản Mệnh
+Lăng Thiên Kiếm Khí
+Kiếm Khí-Hộ Mệnh Phản Kích
+1 lượt tối đa 3 lần, khi quái "Thánh Kỵ" bị phá hủy: Đưa lá này vào Mộ, tiêu diệt 1 quái đối phương (xuyên tường) / hủy 1 bài trên tay / gây 2000 sát thương.
+Kiếm Khí-Trọng Chấn Hồi Quy
+1 lượt tối đa 3 lần: Triệu hồi đặc biệt 1 quái "Thánh Kỵ" từ Mộ ở tư thế thủ (không thể đổi tư thế lượt này).
+Đỗ kiến - tiên vệ
+[Quái thú Hiệu Ứng]\n+ Kỹ năng tay chủ động: Khi trên sân phe ta không có quái: Triệu Hồi Đặc Biệt lá bài này từ trên tay.\n+ Khi có mặt trên sân: Đối phương không thể tấn công quái thú khác ngoài lá bài này.\n+ Khi bị phá hủy trong chiến đấu và đưa vào Mộ: Đối phương bỏ ngẫu nhiên 1 lá bài trên tay.\n+ Khi bài này rời sân hoặc rời khỏi bài trên tay và đưa vào Mộ: Lá bài này sẽ bị loại bỏ.\n+ Bỏ qua hiệu ứng từ bài Quái thú, Phép thuật và Bẫy của đối thủ (Kháng Quái, Phép, Bẫy).
+Đỗ kiến - tiên vệ
+Tiên Vệ-Hàng Thế
+Kỹ năng tay chủ động: Khi trên sân phe ta không có quái sẽ có thể dùng; Triệu Hồi Đặc Biệt bài này từ bài trên tay.
+Tiên Vệ-Trụy Lạc
+Khi bị phá hủy trong chiến đấu và đưa vào Mộ; đối phương bỏ ngẫu nhiên 1 lá bài trên tay.
+Thác sâm
+[Thần - Hiệu Ứng - XYZ]\n3 quái 8 sao có từ khóa "Tiên nghịch"\n+ Lá bài này có "chỉ thị xyz": Bị vô hiệu (không thể tấn công và hành động), bị hiệu ứng trói.\n+ Lá bài này không thể bị hiến tế.\n+ Khi vào Mộ sẽ bị loại bỏ.\n+ 1 lượt tối đa 3 lần: Khi trở thành mục tiêu hiệu quả đối phương, xóa 1 "chỉ thị xyz" vô hiệu và phá hủy bài phát động của đối phương.\n+ Kỹ năng chủ động (1 lượt 1 lần): Bỏ 1 chỉ thị xyz, đưa toàn bộ bài trên tay vào Mộ.\n+ Khi lá bài này không còn "chỉ thị xyz": Nhân đôi ATK/DEF (16000/16000), xóa hiệu ứng trói và nhận Khiên Chắn Quái, Phép, Bẫy.
+Thác sâm
+Thác Sâm-Phong Ấn Cổ Thần
+Có chỉ thị XYZ: Bị vô hiệu (không thể tấn công), nhận hiệu ứng trói. Không thể bị hiến tế. Vào Mộ bị loại bỏ. Khi hết chỉ thị XYZ: x2 ATK/DEF, nhận Khiên Chắn Quái, Phép, Bẫy.
+Thác Sâm-Nghịch Chuyển Thần Uy
+1 lượt tối đa 3 lần: Khi trở thành mục tiêu hiệu quả đối phương, bỏ 1 chỉ thị XYZ, vô hiệu và phá hủy bài phát động của đối phương.
+Thác Sâm-Diệt Thế Táng Lạc
+Kỹ năng chủ động (1 lượt 1 lần): Bỏ 1 chỉ thị XYZ, đưa toàn bộ bài trên tay vào Mộ.
+Đạo hóa hoàng tuyền
+[Phép Vĩnh Cửu]\n+ Khi lá bài này trên sân, và trên sân phe ta có <Vương Lâm - phân thân>: Đối phương không thể kích hoạt hiệu quả quái thú trong Mộ hoặc Mộ loại bỏ.\n+ Kỹ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ, triệu hồi đặc biệt 1 <12328> từ Mộ lên sân.
+Đạo hóa hoàng tuyền
+Đạo Hóa Hoàng Tuyền-Phong Tỏa
+Khi lá bài này trên sân và trên sân phe ta có Vương Lâm: Đối phương không thể kích hoạt hiệu quả quái thú trong Mộ hoặc Mộ loại bỏ.
+Vương Lâm - phân thân
+[Phù Thủy - Hiệu Ứng]\n+ Khi lên sân: Lấy 1 lá <Đạo hóa hoàng tuyền> từ bộ bài lên tay.\n+ Kỹ năng chủ động 1: Chọn 1 quái trên sân đối phương để loại bỏ (xuyên qua Tường Chắn Quái 12008), đối phương chịu thiệt hại bằng số sao quái bị phá hủy x 300.\n+ Kỹ năng chủ động 2: Chọn 1 quái trong Mộ phe ta triệu hồi đặc biệt lên sân, phe ta rút 1 lá bài.\n(Kỹ năng chủ động 1 và 2 mỗi lượt chỉ được dùng 1 loại).
+Vương Lâm - phân thân
+Cực Cảnh-Tru Diệt Phá Trận
+Kỹ năng chủ động 1: Chọn 1 quái trên sân đối phương để loại bỏ (xuyên qua Tường Chắn Quái 12008), đối phương chịu thiệt hại bằng số sao quái bị phá hủy x 300 (dùng chung lượt với kỹ năng 2).
+Hoàng Tuyền-Luân Hồi Tái Sinh
+Kỹ năng chủ động 2: Chọn 1 quái trong Mộ phe ta triệu hồi đặc biệt lên sân, phe ta rút 1 lá bài (dùng chung lượt với kỹ năng 1).
+Phân Thân-Hoàng Tuyền Kêu Gọi
+Khi lên sân: Lấy 1 lá <Đạo hóa hoàng tuyền> từ Bộ bài lên tay.
+Tiên Nghịch Thần Thông-Hộ Mệnh
+Tường chắn Quái, Phép, Bẫy đặc biệt của hệ Tiên Nghịch.
+Phô Lô Ti Nô
+[Chiến Binh - Hiệu Ứng - Link 2]\n2 quái thú bất kì\n+ Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.\n+ Kỹ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Mặt ngửa: Nhận Cánh Bổ Nhào, Liên Trảm và tăng 500 ATK cho mỗi quái thú trên sân đối phương.\n- Mặt sấp: Nhận Khiên Chắn.
+Phô Lô Ti Nô
+Vũ Điệu Lãng Hoa
+Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.
+Thưởng Hoa Tung Xu
+Kỹ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Mặt ngửa: Nhận Cánh Bổ Nhào, Liên Trảm và tăng 500 ATK cho mỗi quái thú trên sân đối phương.\n- Mặt sấp: Nhận Khiên Chắn.
+Vương Lâm - Cổ yêu
+[Xác Sống - Hiệu Quả - Đồng Bộ]\n<Vương Lâm - Phân Thân> (12328) + 1 quái điều chỉnh có từ khóa "Tiên nghịch" trở lên.\n+ Kỹ năng chủ động bộ bài thêm: 1 lượt 1 lần, chọn 1 quái có từ khóa "Tiên nghịch" trên sân phe ta, quái đó nhận "Nhịp Điệu Synchron".\n+ Cánh Bổ Nhào: Khi tấn công, quái vật trên sân, tay hoặc mộ của đối thủ không thể kích hoạt hiệu ứng quái vật và đối thủ không thể kích hoạt hiệu ứng phép thuật hoặc bẫy trên sân.\n+ Không bị ảnh hưởng bởi hiệu ứng lá bài khác trong lượt được triệu hồi đồng bộ.\n+ Triệu hồi đồng bộ lá bài này không thể bị vô hiệu hóa.\n+ Khi bị phá hủy: Triệu hồi đặc biệt <Vương Lâm - Phân Thân> từ mộ bài lên sân.
+Vương Lâm - Cổ yêu
+Cổ Yêu-Đồng Bộ Kêu Gọi
+Kỹ năng chủ động bộ bài thêm (1 lượt 1 lần): Chọn 1 quái có từ khóa "Tiên nghịch" trên sân phe ta, quái đó nhận "Nhịp Điệu Synchron".
+Cổ Yêu-Phân Thân Trùng Sinh
+Khi bị phá hủy: Triệu hồi đặc biệt <Vương Lâm - Phân Thân> từ mộ bài lên sân.
+Lý Mộ Uyển
+[Phù Thủy - Hiệu Ứng - Điều Chỉnh]\n+ Kỹ năng chủ động trên tay: 1 lượt 1 lần, chọn lấy 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ bộ bài lên tay, sau đó triệu hồi đặc biệt bản thân lên sân.\n+ Kỹ năng chủ động trong Mộ: 1 lượt 1 lần, loại bỏ bản thân, chọn 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ trên tay, triệu hồi đặc biệt lên sân.
+Lý Mộ Uyển
+Uyển Nhi-Tương Phùng
+Kỹ năng chủ động trên tay (1 lượt 1 lần): Chọn lấy 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ bộ bài lên tay, sau đó triệu hồi đặc biệt bản thân lên sân.
+Uyển Nhi-Hồn Quy
+Kỹ năng chủ động trong Mộ (1 lượt 1 lần): Loại bỏ bản thân, chọn 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ trên tay, triệu hồi đặc biệt lên sân.
+Vương Lâm - Hợp Đạo
+[Huyễn Thần - Dung Hợp - Hiệu Ứng]\n<12326> + <12328>\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n+ Khi lá bài này bị phá hủy: Phe ta nhận Tường Chắn Sinh Mệnh.\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi ở trên sân: Hai bên không thể Triệu Hồi Đặc Biệt quái từ Mộ.\n+ Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị.\n+ Nhận 1 tầng Tường Chắn Chiến Đấu.
+Vương Lâm - Hợp Đạo
+Hợp Đạo - Thiên Đạo Trấn Áp
+Khi ở trên sân: Hai bên không thể triệu hồi đặc biệt quái từ Mộ. Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị. Nhận 1 tầng Tường Chắn Chiến Đấu.
+Hợp Đạo - Niết Bàn Sinh Mệnh
+Khi lá bài này bị phá hủy, phe ta nhận Tường Chắn Sinh Mệnh.
+Hợp Đạo
+[Ma Pháp Thông Thường]\n(Chỉ được chọn 1 trong các hiệu ứng sau mỗi lượt):\n1. Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Tay hoặc Sân vào Mộ.\n2. Loại bỏ lá bài này trong Mộ bài: Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Bộ bài vào Mộ.\n3. Gửi lá bài này và 1 quái thú có từ khóa \"Tiên nghịch\" từ Tay vào Mộ: Lấy 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài vào Tay.
+Hợp Đạo
+Hợp Đạo - Dung Hợp
+Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Tay hoặc Sân vào Mộ.
+Hợp Đạo - Mộ Dung Hợp
+Loại bỏ lá bài này trong Mộ bài: Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Bộ bài vào Mộ.
+Tiên Nghịch - Trao Đổi
+Gửi lá bài này và 1 quái thú có từ khóa \"Tiên nghịch\" từ Tay vào Mộ: Lấy 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài vào Tay.
+Đạo Hóa Hoàng Tuyền - Triệu Hồi
+Kĩ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ, triệu hồi đặc biệt 1 <12328> từ Mộ lên sân.
+Thần Âm Phủ - Phong Tỏa Bài Thêm
+Khi lá bài này trên sân: Phe ta không thể triệu hồi quái từ Bộ bài thêm.
+Mèo bắt tay
+[Thú - Hiệu Ứng]\n+ 1 lượt tối đa 3 lần: Khi lá bài này nằm trên tay, đối phương kích hoạt hiệu ứng từ bài trên tay, sẽ kích hoạt: Đưa lá bài này vào Mộ, vô hiệu hiệu ứng đó và đẩy lá bài đó về cuối bộ bài, đối phương rút 1 lá, lấy 1 lá <Mèo bắt tay> từ Bộ bài lên tay.
+Mèo bắt tay
+Mèo Bắt Tay - Chặn Tay
+1 lượt tối đa 3 lần: Khi ở trên tay, đối phương kích hoạt hiệu ứng từ bài trên tay: Đưa lá bài này vào Mộ, vô hiệu hiệu ứng đó và đẩy lá bài đó về cuối bộ bài, đối phương rút 1 lá, lấy 1 lá <Mèo bắt tay> từ Bộ bài lên tay.
+KMR-Zio
+[Chiến Binh - Hiệu Ứng]\n+ 1 lượt 1 lần, khi được triệu hồi/triệu hồi đặc biệt lên sân: Lấy 1 lá [Chuyển dạng] từ Bộ bài lên tay.\n+ Kỹ năng chủ động Mộ (1 lượt 1 lần): Chọn lấy 1 quái thú có từ khóa "Hiệp sĩ mặt nạ" từ Bộ bài lên tay.
+KMR-Zio
+KMR-Zio - Dẫn Đạo
+1 lượt 1 lần, khi được triệu hồi hoặc triệu hồi đặc biệt lên sân: Lấy 1 lá [Chuyển dạng] từ Bộ bài lên tay.
+KMR-Zio - Ký Ức Kỵ Sĩ
+Kỹ năng chủ động trong Mộ (1 lượt 1 lần): Chọn lấy 1 quái thú có từ khóa "Hiệp sĩ mặt nạ" từ Bộ bài lên tay.
+Chuyển dạng
+[Ma Pháp Thông Thường]\nChọn 1 quái Dung Hợp có từ khóa "Hiệp sĩ mặt nạ" trong Bộ bài thêm phe ta; hy sinh nguyên liệu dung hợp đang có mặt trên sân/trên tay phe ta; Triệu Hồi Dung Hợp quái đã chọn, sau đó trong lượt này chỉ có thể triệu hồi quái có từ khóa "Hiệp sĩ mặt nạ".
+Chuyển dạng
+Chuyển dạng - Henshin
+Chọn 1 quái Dung Hợp có từ khóa "Hiệp sĩ mặt nạ" trong Bộ bài thêm phe ta; hy sinh nguyên liệu dung hợp đang có mặt trên sân/trên tay phe ta; Triệu Hồi Dung Hợp quái đã chọn, sau đó trong lượt này chỉ có thể triệu hồi quái có từ khóa "Hiệp sĩ mặt nạ".
+KMR-W
+[Chiến Binh - Hiệu Ứng]\n+ Khi trên sân phe ta không có quái hoặc có quái có từ khóa "Hiệp sĩ mặt nạ", có thể triệu hồi thường quái lên sân không cần vật tế.\n+ Kỹ năng chủ động: Hy sinh bản thân, chọn Triệu Hồi Đặc Biệt [KMR-W-Fang] từ Bộ bài thêm lên sân.
+KMR-W
+KMR-W - Lộng Gió
+Khi trên sân phe ta không có quái hoặc có quái có từ khóa "Hiệp sĩ mặt nạ", có thể triệu hồi thường quái lên sân không cần vật tế.
+KMR-W - Fang Biến Thân
+Kỹ năng chủ động: Hy sinh bản thân, chọn Triệu Hồi Đặc Biệt [KMR-W-Fang] từ Bộ bài thêm lên sân.
+KMR-W-Fang
+[Chiến Binh - Dung Hợp - Hiệu Ứng]\n+ Phải dùng hiệu quả của KMR-W để triệu hồi.\n+ Thiên Sứ-Xung Kích: 1 lượt 1 lần, chọn 1 lá bài trên sân đối thủ đưa vào Mộ Loại Bỏ (bỏ qua Tường Chắn Quái).\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.
+KMR-W-Fang
+KMR-Zio-W
+[Chiến Binh - Dung Hợp - Hiệu Ứng]\n<KMR-Zio> + <KMR-W>\n+ Tấn công nhân đôi khi chiến đấu với quái thuộc tính Quang hoặc Ám (bỏ qua Tường Chắn Quái).\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi lá bài này trên sân, quái thuộc tính Quang/Ám trên sân đối phương không thể tấn công.
+KMR-Zio-W
+KMR-Zio-W - Vương Quyền Phong Ấn
+Khi lá bài này trên sân: Quái thuộc tính Quang và Ám trên sân đối phương không thể tấn công.
+KMR-Ozu
+[Chiến Binh - Hiệu Ứng]\n+ Kỹ năng chủ động tay (1 lượt 1 lần): Triệu hồi Đặc Biệt bản thân, sau đó tung 3 đồng xu. Phe ta rút số lá bài bằng số xu mặt ngửa. Sau đó trong lượt này, phe ta chỉ có thể Triệu Hồi/Triệu Hồi Đặc Biệt quái thú có từ khóa "Hiệp sĩ mặt nạ".
+KMR-Ozu
+KMR-Ozu - Giới Khởi Động
+Kỹ năng chủ động trên tay (1 lượt 1 lần): Triệu hồi Đặc Biệt bản thân, sau đó tung 3 đồng xu. Phe ta rút số lá bài bằng số xu mặt ngửa. Sau đó trong lượt này, phe ta chỉ có thể Triệu Hồi/Triệu Hồi Đặc Biệt quái thú có từ khóa "Hiệp sĩ mặt nạ".
+KMR-Wizard
+[Chiến Binh - Hiệu Ứng]\n+ Bỏ 1 lá bài trên tay: Triệu Hồi Đặc Biệt lá bài này từ trên tay.\n+ Kỹ năng chủ động (1 lượt 1 lần): Chọn lấy 1 lá bài Phép có từ khóa "Hiệp sĩ mặt nạ" từ Bộ bài hoặc Mộ lên tay.
+KMR-Wizard
+KMR-Wizard - Nhẫn Thuật Ma Pháp
+Kỹ năng chủ động (1 lượt 1 lần): Chọn lấy 1 lá bài Phép có từ khóa "Hiệp sĩ mặt nạ" từ Bộ bài hoặc Mộ lên tay.
+Rider kick
+[Ma Pháp Thông Thường]\nKhi trên sân phe ta có quái thú có từ khóa "Hiệp sĩ mặt nạ": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường chắn Quái (12008)). Sau đó trong lượt này, quái thú có từ khóa "Hiệp sĩ mặt nạ" phe ta không thể tấn công.
+Rider kick
+Rider kick - Toàn Lực Tất Sát
+Khi trên sân phe ta có quái thú có từ khóa "Hiệp sĩ mặt nạ": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường chắn Quái (12008)). Sau đó trong lượt này, quái thú có từ khóa "Hiệp sĩ mặt nạ" phe ta không thể tấn công.
+Chị Em Harpie Lady - Tam Giác Mê Hoặc
+[Thú Có Cánh - Dung Hợp - Hiệu Ứng]\n3 quái thú "Harpie Lady"\nPhải được Triệu hồi Dung hợp trước tiên.\n(1) Tên lá bài này được coi là "Harpie Lady" khi ở trên sân hoặc trong Mộ.\n(2) Tăng 500 Công cho mỗi "Harpie Lady" trong Mộ của bạn. Nhận Lá chắn quái vật (12008), Khiên ma thuật (12009), Lá chắn bẫy (12010).\n(3) Mỗi lượt 1 lần (Hiệu ứng Nhanh): Bạn có thể phá hủy toàn bộ Ma pháp và Cạm bẫy đối thủ điều khiển.
+Chị Em Harpie Lady - Tam Giác Mê Hoặc
+Tam Giác Mê Hoặc - Phong Bão Quét Sạch
+Mỗi lượt một lần: Phá hủy toàn bộ Ma pháp và Cạm bẫy mà đối thủ điều khiển.
+Tam Kính Kiều Diễm
+[Ma Pháp Thông Thường]\nBạn chỉ có thể sử dụng mỗi hiệu ứng (1) và (2) của lá bài này một lần mỗi lượt.\n(1) Thêm 1 quái thú "Harpie" từ Bộ bài lên tay, sau đó nếu chỉ có đối thủ điều khiển quái thú, bạn có thể Triệu hồi Đặc biệt 1 "Harpie Lady" từ trên tay hoặc Mộ lên sân.\n(2) Kỹ năng chủ động Mộ: Bạn có thể trục xuất lá bài này khỏi Mộ; Triệu hồi Dung hợp 1 quái thú Dung hợp thuộc tính ĐẤT hoặc GIÓ từ Bộ bài Phụ, sử dụng quái thú trên tay hoặc trên sân làm nguyên liệu.
+Tam Kính Kiều Diễm
+Tam Kính Kiều Diễm - Gương Kính Triệu Tập
+Thêm 1 quái thú "Harpie" từ Bộ bài lên tay, sau đó nếu chỉ có đối thủ điều khiển quái thú, bạn có thể Triệu hồi Đặc biệt 1 "Harpie Lady" từ trên tay hoặc Mộ lên sân.
+Tam Kính Kiều Diễm - Dung Hợp Kính Soi
+Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; Triệu hồi Dung hợp 1 quái thú Dung hợp thuộc tính ĐẤT hoặc GIÓ từ Bộ bài Phụ, sử dụng quái thú trên tay hoặc trên sân làm nguyên liệu.
+KMR-Zio-Wizard
+[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + "KMR-Wizard"\n(1) Đối phương không thể sử dụng bài Phép.\n(2) Nhận Tường Chắn Quái (12002), Tường Chắn Phép (12003), Tường Chắn Bẫy (12004).\n(3) Tất cả bài Phép/Bẫy trên sân phe ta không thể bị phá hủy.
+KMR-Zio-Wizard
+KMR-Zio-Wizard - Phong Tỏa Ma Thuật
+Khi có mặt: Đối phương không thể sử dụng bài Phép.
+Bức Tường Gương Mê Lạc
+[Cạm Bẫy Vĩnh Cửu]\n(1) Nhận được các hiệu ứng sau trong khi bạn đang điều khiển một quái thú "Amazoness" hoặc "Harpie Lady":\n• Tất cả quái thú ngửa mặt mà đối thủ đang điều khiển được chuyển sang Thế Tấn công và không thể đổi tư thế.\n• Mỗi trận chiến một lần, khi quái thú của đối thủ tuyên bố tấn công: Bạn có thể giảm một nửa chỉ số ATK của quái thú đó.\n(2) Kỹ năng chủ động Mộ: Bạn có thể trục xuất lá bài này khỏi Mộ; thêm 1 lá bài Phép/Bẫy có từ khóa "Harpie" từ Mộ hoặc đang bị trục xuất lên tay.
+Bức Tường Gương Mê Lạc
+Bức Tường Gương Mê Lạc - Mê Lực Gương Soi
+Khi điều khiển "Amazoness" hoặc "Harpie Lady": Toàn bộ quái thú đối thủ chuyển sang Thế Tấn công và không thể đổi tư thế. Mỗi trận chiến một lần khi quái thú đối thủ tấn công, giảm nửa ATK quái thú đó.
+Bức Tường Gương Mê Lạc - Hồi Phục Kính Vạn Hoa
+Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; thêm 1 lá bài Phép/Bẫy có từ khóa "Harpie" từ Mộ hoặc đang bị trục xuất lên tay.
+Trận Hình Harpie & Amazoness Rakshasa
+[Ma Pháp Tốc Độ Nhanh]\nBạn chỉ có thể kích hoạt 1 lá bài có tên này mỗi lượt. Kỹ năng (2), (3), (4) chỉ có thể kích hoạt 1 loại 1 lần mỗi lượt.\n(1) Chọn 1 quái thú "Harpie" hoặc "Amazoness" trong Mộ hoặc đang bị trục xuất; Triệu hồi Đặc biệt quái thú đó.\n(2) Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 1 quái thú "Harpie" hoặc "Amazoness" trở lên: Trục xuất lá này khỏi Mộ; đặt 1 lá "Bức Tường Gương Mê Lạc" từ Bộ bài ở trạng thái ngửa vào Vùng Phép/Bẫy (không thể kích hoạt nếu đã có trên sân).\n(3) Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 2 quái thú "Harpie" hoặc "Amazoness" trở lên: Trục xuất lá này khỏi Mộ; chọn 1 quái thú đối thủ điều khiển và giành quyền điều khiển.\n(4) Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 3 quái thú "Harpie" hoặc "Amazoness" trở lên: Trục xuất lá này khỏi Mộ; phá hủy tất cả quái thú trên sân đối thủ.
+Trận Hình Rakshasa
+Trận Hình Harpie & Amazoness Rakshasa
+Chọn 1 quái thú "Harpie" hoặc "Amazoness" từ Mộ hoặc đang bị trục xuất; Triệu hồi Đặc biệt lên sân.
+Giải Cứu Kịch Tính Amazoness
+[Cạm Bẫy Thông Thường]\nBạn chỉ có thể sử dụng mỗi hiệu ứng (1) và (2) của lá bài này một lần mỗi lượt.\n(1) Chọn mục tiêu là 1 quái thú trên sân; Triệu hồi Đặc biệt 1 quái thú "Harpie" hoặc "Amazoness" từ trên tay hoặc Bộ bài của bạn, và nếu làm vậy, hãy trả quái thú được chọn làm mục tiêu đó về tay.\n(2) Kỹ năng chủ động Mộ: Bạn có thể trục xuất lá bài này khỏi Mộ; thêm 1 quái thú "Harpie" hoặc "Amazoness" từ Mộ hoặc đang bị trục xuất lên tay.
+Giải Cứu Amazoness
+Giải Cứu Kịch Tính Amazoness
+Chọn 1 quái thú trên sân; Triệu hồi Đặc biệt 1 quái thú "Harpie" hoặc "Amazoness" từ tay hoặc Bộ bài, sau đó đưa quái thú mục tiêu về tay.
+Giải Cứu Kịch Tính - Chiêu Mộ Tái Sinh
+Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; thêm 1 quái thú "Harpie" hoặc "Amazoness" từ Mộ hoặc đang bị trục xuất lên tay.
+Trận Hình Rakshasa - Khai Bố Mê Lạc
+Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 1 quái thú "Harpie" hoặc "Amazoness" trở lên: Trục xuất lá này khỏi Mộ; đặt 1 lá "Bức Tường Gương Mê Lạc" từ Bộ bài ở trạng thái ngửa vào Vùng Phép/Bẫy (không thể kích hoạt nếu đã có trên sân). Kỹ năng này và các kỹ năng Mộ khác của lá bài này chỉ có thể kích hoạt 1 loại 1 lần mỗi lượt.
+Trận Hình Rakshasa - Đoạt Hồn Nhiễm Tâm
+Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 2 quái thú "Harpie" hoặc "Amazoness" trở lên: Trục xuất lá này khỏi Mộ, sau đó chọn 1 quái thú đối thủ điều khiển; giành quyền điều khiển quái thú đó. Kỹ năng này và các kỹ năng Mộ khác của lá bài này chỉ có thể kích hoạt 1 loại 1 lần mỗi lượt.
+Trận Hình Rakshasa - Vạn Trận Tận Diệt
+Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 3 quái thú "Harpie" hoặc "Amazoness" trở lên: Trục xuất lá này khỏi Mộ; phá hủy tất cả quái thú trên sân đối phương. Kỹ năng này và các kỹ năng Mộ khác của lá bài này chỉ có thể kích hoạt 1 loại 1 lần mỗi lượt.

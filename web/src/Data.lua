@@ -1805,7 +1805,11 @@ function var_0_0.getCityLevel(arg_11_0)
 end
 
 function var_0_0.getType(arg_12_0)
-	arg_12_0 = arg_12_0 and tonumber(arg_12_0)
+	if arg_12_0 == nil then
+		return 0
+	end
+
+	arg_12_0 = tonumber(arg_12_0) or 0
 
 	local var_12_0, var_12_1, var_12_2, var_12_3 = Data.removeAdditional(arg_12_0)
 
@@ -1839,6 +1843,34 @@ function var_0_0.getType(arg_12_0)
 end
 
 function var_0_0.getSkillType(arg_13_0)
+	if arg_13_0 == 14677 or arg_13_0 == 14714 or arg_13_0 == 14718 or arg_13_0 == 14721 or arg_13_0 == 14723 or arg_13_0 == 14724 or arg_13_0 == 14725 or arg_13_0 == 14728 or arg_13_0 == 14729 or arg_13_0 == 14731 or arg_13_0 == 14732 or arg_13_0 == 14738 or arg_13_0 == 14741 or arg_13_0 == 14742 or arg_13_0 == 14745 or arg_13_0 == 14747 or arg_13_0 == 14748 then
+		return var_0_0.SkillType.monsterSpell
+	end
+
+	if arg_13_0 == 14644 or arg_13_0 == 14743 or arg_13_0 == 14749 or arg_13_0 == 14752 or arg_13_0 == 14753 or arg_13_0 == 14757 or arg_13_0 == 14760 or arg_13_0 == 14761 or arg_13_0 == 14762 then
+		return var_0_0.SkillType.magicSpell
+	end
+
+	if arg_13_0 == 14652 or arg_13_0 == 14670 or arg_13_0 == 14716 or arg_13_0 == 14733 or arg_13_0 == 14734 or arg_13_0 == 14735 then
+		return var_0_0.SkillType.magicHalo
+	end
+
+	if arg_13_0 == 14755 then
+		return var_0_0.SkillType.trapHalo
+	end
+
+	if arg_13_0 == 14756 or arg_13_0 == 14758 or arg_13_0 == 14759 then
+		return var_0_0.SkillType.trapSpell
+	end
+
+	if arg_13_0 == 14744 or arg_13_0 == 14746 or arg_13_0 == 14754 then
+		return var_0_0.SkillType.monster4Halo
+	end
+
+	if arg_13_0 == 14682 or arg_13_0 == 14683 or arg_13_0 == 14690 or arg_13_0 == 14691 or arg_13_0 == 14692 or arg_13_0 == 14693 or arg_13_0 == 14717 or arg_13_0 == 14730 then
+		return var_0_0.SkillType.defend
+	end
+
 	if arg_13_0 >= 20000 then
 		return 9
 	end
@@ -1864,7 +1896,14 @@ function var_0_0.isGuardable(arg_16_0)
 end
 
 function var_0_0.getInfo(arg_17_0, arg_17_1)
-	arg_17_0 = arg_17_0 and tonumber(arg_17_0)
+	if arg_17_0 == nil then
+		return nil, 0
+	end
+
+	arg_17_0 = tonumber(arg_17_0)
+	if not arg_17_0 or arg_17_0 == 0 then
+		return nil, 0
+	end
 
 	local var_17_0 = Data.getType(arg_17_0)
 	local var_17_1 = false
@@ -1894,6 +1933,25 @@ function var_0_0.getInfo(arg_17_0, arg_17_1)
 		var_17_7 = arg_17_1 == nil and var_0_0._propsInfo[Data.PropsId.item_skill_base] or var_0_0._skillInfo[math.floor(arg_17_0 / Data.INFO_ID_FRAGMENT_SIZE_LARGE)]
 	end
 
+	if not var_17_7 and arg_17_0 and arg_17_0 > 0 then
+		if var_0_0._monsterInfo and var_0_0._monsterInfo[arg_17_0] then
+			var_17_7 = var_0_0._monsterInfo[arg_17_0]
+			var_17_0 = var_0_0.CardType.monster
+		elseif var_0_0._rareInfo and var_0_0._rareInfo[arg_17_0] then
+			var_17_7 = var_0_0._rareInfo[arg_17_0]
+			var_17_0 = var_0_0.CardType.rare
+		elseif var_0_0._magicInfo and var_0_0._magicInfo[arg_17_0] then
+			var_17_7 = var_0_0._magicInfo[arg_17_0]
+			var_17_0 = var_0_0.CardType.magic
+		elseif var_0_0._trapInfo and var_0_0._trapInfo[arg_17_0] then
+			var_17_7 = var_0_0._trapInfo[arg_17_0]
+			var_17_0 = var_0_0.CardType.trap
+		elseif var_0_0._propsInfo and var_0_0._propsInfo[arg_17_0] then
+			var_17_7 = var_0_0._propsInfo[arg_17_0]
+			var_17_0 = var_0_0.CardType.props
+		end
+	end
+
 	if not var_17_7 then
 		print("++++++++++++Info Nil:", arg_17_0)
 	end
@@ -1902,7 +1960,12 @@ function var_0_0.getInfo(arg_17_0, arg_17_1)
 end
 
 function var_0_0.getOriginId(arg_18_0)
-	local var_18_0 = Data.getInfo(arg_18_0)._originId
+	if not arg_18_0 or arg_18_0 == 0 then
+		return arg_18_0 or 0
+	end
+
+	local var_info = Data.getInfo(arg_18_0)
+	local var_18_0 = var_info and var_info._originId
 
 	if var_18_0 == nil or var_18_0 == 0 then
 		var_18_0 = arg_18_0
@@ -2215,6 +2278,12 @@ function var_0_0.setAdditional(arg_55_0, arg_55_1, arg_55_2, arg_55_3)
 end
 
 function var_0_0.getAdditionalProps(arg_56_0)
+	if arg_56_0 == nil then
+		return false, false, 0
+	end
+
+	arg_56_0 = tonumber(arg_56_0) or 0
+
 	local var_56_0 = Data.isFragment(arg_56_0)
 	local var_56_1 = Data.isGold(arg_56_0)
 	local var_56_2 = Data.getExtraSid(arg_56_0)
@@ -2223,6 +2292,12 @@ function var_0_0.getAdditionalProps(arg_56_0)
 end
 
 function var_0_0.removeAdditional(arg_57_0)
+	if arg_57_0 == nil then
+		return 0, false, false, 0
+	end
+
+	arg_57_0 = tonumber(arg_57_0) or 0
+
 	local var_57_0 = arg_57_0 % Data.INFO_ID_FRAGMENT_SIZE_LARGE
 
 	if arg_57_0 > Data.INFO_ID_CARD_SKILL_SIZE then
@@ -2239,6 +2314,12 @@ function var_0_0.removeAdditional(arg_57_0)
 end
 
 function var_0_0.isGold(arg_58_0)
+	if arg_58_0 == nil then
+		return false
+	end
+
+	arg_58_0 = tonumber(arg_58_0) or 0
+
 	if arg_58_0 > Data.INFO_ID_CARD_SKILL_SIZE then
 		local var_58_0 = arg_58_0 % Data.INFO_ID_FRAGMENT_SIZE_LARGE
 
@@ -2249,6 +2330,12 @@ function var_0_0.isGold(arg_58_0)
 end
 
 function var_0_0.isFragment(arg_59_0)
+	if arg_59_0 == nil then
+		return false
+	end
+
+	arg_59_0 = tonumber(arg_59_0) or 0
+
 	if arg_59_0 > Data.INFO_ID_CARD_SKILL_SIZE then
 		return false
 	end
@@ -2259,6 +2346,12 @@ function var_0_0.isFragment(arg_59_0)
 end
 
 function var_0_0.getExtraSid(arg_60_0)
+	if arg_60_0 == nil then
+		return 0
+	end
+
+	arg_60_0 = tonumber(arg_60_0) or 0
+
 	if arg_60_0 > Data.INFO_ID_CARD_SKILL_SIZE then
 		return math.floor(arg_60_0 / Data.INFO_ID_FRAGMENT_SIZE_LARGE)
 	else

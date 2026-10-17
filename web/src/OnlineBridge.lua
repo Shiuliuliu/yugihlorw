@@ -13,7 +13,7 @@ local function zeroMock(fields_str)
 	return pbMock(t)
 end
 
-function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
+function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins, effects_data)
 	local now_ms = os.time() * 1000
 
 	-- Build card lists
@@ -32,13 +32,13 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 	-- Build troops and deck marks (custom names) from decks with aggregated card counts
 	local troops_list = {}
 	local deck_marks = {}
-	for i = 1, 5 do
+	for i = 1, 10 do
 		troops_list[i] = pbMock({ troop_item = {} })
 		deck_marks[i] = (lc.UserDefault and lc.UserDefault:getStringForKey("troop_remark_" .. i, "")) or ""
 	end
 	for _, d in ipairs(decks or {}) do
 		local slot = tonumber(d.deck_slot) or 1
-		if slot >= 1 and slot <= 5 then
+		if slot >= 1 and slot <= 10 then
 			if d.deck_name and d.deck_name ~= "" and d.deck_name ~= "Deck" then
 				deck_marks[slot] = d.deck_name
 				if lc.UserDefault and lc.UserDefault.setStringForKey then
@@ -80,19 +80,10 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 	end
 
 	-- Resolve avatar and character
+	local char_id = tonumber(acc.character_id) or 3
 	local char_avatar = tonumber(acc.avatar)
 	if not char_avatar or char_avatar < 100 then
-		local uname = string.lower(tostring(acc.username or ""))
-		local cname = string.lower(tostring(acc.character_name or ""))
-		if string.find(uname, "yugi") or string.find(cname, "yugi") or uname == "admin" then
-			char_avatar = 301 -- Yugi Muto
-		elseif string.find(uname, "kaiba") or string.find(cname, "kaiba") then
-			char_avatar = 201 -- Seto Kaiba
-		elseif string.find(uname, "joey") or string.find(cname, "joey") or string.find(cname, "jonouchi") then
-			char_avatar = 501 -- Joey Wheeler / Jonouchi
-		else
-			char_avatar = 301
-		end
+		char_avatar = char_id * 100 + 1
 	end
 
 	local char_gold_c = tonumber(acc.gold_cup) or 0
@@ -123,12 +114,16 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 		vip_exp = 0,
 		trophy = tonumber(acc.trophy) or 800,
 		avatar = char_avatar,
+		character_id = char_id,
 		avatar_frame = 0,
 		guide = 20000,
 		guide1 = 20000,
 		guide2 = 20000,
-		union_id = 0,
-		union_title = 0,
+		union_id = tonumber(acc.union_id) or 0,
+		union_title = tonumber(acc.union_title) or 0,
+		union_name = tostring(acc.union_name or ""),
+		union_avatar = tonumber(acc.union_avatar) or 0,
+		union_tag = tostring(acc.union_tag or ""),
 		room_id = 0,
 		room_title = 0,
 		privilege = 0,
@@ -158,13 +153,167 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 	local user_count = zeroMock("invite_charge invite_count buy_chest1 buy_chest2 buy_chest3 buy_chest4 buy_hero_exp buy_equip_exp buy_horse_exp buy_book_exp buy_stone buy_remedy buy_gold buy_grain buy_refresh buy_refresh_pvp buy_refresh_union buy_refresh_ladder buy_expedition buy_elite buy_rob_exp buy_commander rob_gold donate worship challenge_elite challenge_commander trophy expedition send_mail gold collect_gold atk_boss buy_atk_boss reset_ladder next_sos re_check welfare edit_name next_share next_chat next_find buy_refresh_find atk_player atk_uboss grace month_card month_card_ex charge daily_charge")
 	user_count.next_spawn = now_ms
 
+	-- Build skin and effect data
+	local skin_list = {}
+	local unlocked_by_card = {}
+	local equipped_by_card = {}
+	local global_unlocked = {}
+
+	for _, eff in ipairs(effects_data or {}) do
+		local cid = tonumber(eff.card_id) or 0
+		local eid = tonumber(eff.effect_id) or 0
+		local is_eq = tonumber(eff.is_equipped) or 0
+		if eid > 0 then
+			if cid == 0 then
+				global_unlocked[eid] = true
+			else
+				unlocked_by_card[cid] = unlocked_by_card[cid] or {}
+				unlocked_by_card[cid][eid] = true
+				if is_eq == 1 then
+					equipped_by_card[cid] = equipped_by_card[cid] or {}
+					table.insert(equipped_by_card[cid], eid)
+				end
+			end
+		end
+	end
+
+	-- Also check local storage for offline / cached effect selections
+	if lc and lc.UserDefault and lc.UserDefault.getStringForKey then
+		for _, c in ipairs(cards or {}) do
+			local cid = tonumber(c.card_id)
+			if cid and cid > 0 then
+				local savedStr = lc.UserDefault:getStringForKey("card_effects_" .. cid, "")
+				if savedStr ~= "" then
+					local ok, sData = pcall(function() return json.decode(savedStr) end)
+					if ok and type(sData) == "table" then
+						equipped_by_card[cid] = equipped_by_card[cid] or {}
+						local existing = {}
+						for _, id in ipairs(equipped_by_card[cid]) do existing[id] = true end
+						for _, k in ipairs({ "toBoard", "onBoard", "attack" }) do
+							local eid = tonumber(sData[k])
+							if eid and eid > 0 and not existing[eid] then
+								table.insert(equipped_by_card[cid], eid)
+								existing[eid] = true
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	-- For every card owned, assemble its skin entry
+	local all_cids_seen = {}
+	for _, c in ipairs(cards or {}) do
+		local cid = tonumber(c.card_id)
+		if cid and cid > 0 and not all_cids_seen[cid] then
+			all_cids_seen[cid] = true
+			local cinfo = Data.getInfo(cid)
+			local cat = (cinfo and cinfo._category) or 0
+			local s_ids = {}
+			local s_exp = {}
+			local added = {}
+			-- Add card-specific unlocks
+			if unlocked_by_card[cid] then
+				for eid in pairs(unlocked_by_card[cid]) do
+					if not added[eid] then
+						table.insert(s_ids, eid)
+						table.insert(s_exp, 0)
+						added[eid] = true
+					end
+				end
+			end
+			-- Add global unlocks that match category or common
+			for eid in pairs(global_unlocked) do
+				local einfo = Data._skinInfo and Data._skinInfo[eid]
+				if einfo and (einfo._category == 0 or einfo._category == cat) and not added[eid] then
+					table.insert(s_ids, eid)
+					table.insert(s_exp, 0)
+					added[eid] = true
+				end
+			end
+			-- Equipped effects
+			local def_effs = equipped_by_card[cid] or {}
+			-- Also ensure equipped effects are marked available
+			for _, eid in ipairs(def_effs) do
+				if not added[eid] then
+					table.insert(s_ids, eid)
+					table.insert(s_exp, 0)
+					added[eid] = true
+				end
+			end
+
+			if #s_ids > 0 or #def_effs > 0 then
+				table.insert(skin_list, pbMock({
+					info_id = cid,
+					default_skin = 0,
+					skin_id = s_ids,
+					expire = s_exp,
+					default_effects = def_effs
+				}))
+			end
+		end
+	end
+
+	-- Also include card entries for cards with equipped effects or unlocked skins that might not be in cards list
+	for cid, def_effs in pairs(equipped_by_card) do
+		if not all_cids_seen[cid] and cid > 0 then
+			all_cids_seen[cid] = true
+			local s_ids = {}
+			local s_exp = {}
+			local added = {}
+			for _, eid in ipairs(def_effs) do
+				if not added[eid] then
+					table.insert(s_ids, eid)
+					table.insert(s_exp, 0)
+					added[eid] = true
+				end
+			end
+			if unlocked_by_card[cid] then
+				for eid in pairs(unlocked_by_card[cid]) do
+					if not added[eid] then
+						table.insert(s_ids, eid)
+						table.insert(s_exp, 0)
+						added[eid] = true
+					end
+				end
+			end
+			table.insert(skin_list, pbMock({
+				info_id = cid,
+				default_skin = 0,
+				skin_id = s_ids,
+				expire = s_exp,
+				default_effects = def_effs
+			}))
+		end
+	end
+	for cid, u_effs in pairs(unlocked_by_card) do
+		if not all_cids_seen[cid] and cid > 0 then
+			all_cids_seen[cid] = true
+			local s_ids = {}
+			local s_exp = {}
+			for eid in pairs(u_effs) do
+				table.insert(s_ids, eid)
+				table.insert(s_exp, 0)
+			end
+			local def_effs = equipped_by_card[cid] or {}
+			table.insert(skin_list, pbMock({
+				info_id = cid,
+				default_skin = 0,
+				skin_id = s_ids,
+				expire = s_exp,
+				default_effects = def_effs
+			}))
+		end
+	end
+
 	local card_data = pbMock({
-		extra_troop_count = 5,
+		extra_troop_count = 10,
 		levels = card_levels,
 		cards = card_list,
 		unlocked = card_unlocked,
 		collected = card_collected,
-		skin = {},
+		skin = skin_list,
 		dark_troops = {},
 		room_dark_troops = {},
 		troops = troops_list,
@@ -177,12 +326,13 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 	for cid, cinfo in pairs(Data._characterInfo or {}) do
 		local id_num = tonumber(type(cinfo) == "table" and (cinfo._id or cinfo.id) or cid)
 		if id_num and id_num > 0 then
+			local this_avatar = (id_num == char_id) and char_avatar or (id_num * 100 + 1)
 			table.insert(char_list, pbMock({
 				id = id_num,
 				level = tonumber(acc.level) or 50,
 				exp = 0,
 				skin = 0,
-				avatar = id_num * 100 + 1,
+				avatar = this_avatar,
 				break_out = 0
 			}))
 		end
@@ -200,9 +350,7 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins)
 			local did = tonumber(type(ck) == "table" and (ck.day_index or ck._day_index) or ck) or 0
 			if did > 0 then
 				table.insert(claimed_list, did)
-				if did <= 31 then table.insert(claimed_list, 6000 + did) end
 				if did <= 7 then table.insert(claimed_list, 3000 + did) end
-				if did >= 6001 and did <= 6031 then table.insert(claimed_list, did - 6000) end
 				if did >= 3001 and did <= 3007 then table.insert(claimed_list, did - 3000) end
 			end
 		end
@@ -394,46 +542,90 @@ end
 function OnlineBridge.syncCheckinBonuses(player, checkins)
 	if not player or not player._playerBonus then return end
 	local pb = player._playerBonus
-	local claimed_map = {}
-	if checkins and type(checkins) == "table" then
-		for _, ck in ipairs(checkins) do
-			local did = tonumber(type(ck) == "table" and (ck.day_index or ck._day_index) or ck) or 0
-			if did > 0 then
-				claimed_map[did] = true
-				if did <= 31 then claimed_map[6000 + did] = true end
-				if did <= 7 then claimed_map[3000 + did] = true end
-				if did >= 6001 and did <= 6031 then claimed_map[did - 6000] = true end
-				if did >= 3001 and did <= 3007 then claimed_map[did - 3000] = true end
-			end
+
+	local today_str = ClientData._serverDate
+	if not today_str or today_str == "" then
+		local y, m, d = nil, nil, nil
+		if ClientData and ClientData.getServerDate then
+			_, d, m, y = ClientData.getServerDate()
 		end
-	end
-	if ClientData._claimedCheckins then
-		for did, _ in pairs(ClientData._claimedCheckins) do
-			claimed_map[did] = true
-			local ndid = tonumber(did) or 0
-			if ndid <= 31 then claimed_map[6000 + ndid] = true end
-			if ndid <= 7 then claimed_map[3000 + ndid] = true end
-			if ndid >= 6001 and ndid <= 6031 then claimed_map[ndid - 6000] = true end
+		if y and m and d then
+			today_str = string.format("%04d-%02d-%02d", y, m, d)
+		else
+			today_str = os.date("%Y-%m-%d")
 		end
 	end
 
-	local function syncList(list, offset)
-		if not list then return end
-		local maxClaimed = 0
-		for _, b in ipairs(list) do
+	local claimed_ids = {}
+	local claimed_week_days = {}
+	local claimed_month_days = {}
+	local hasClaimedWeekToday = false
+	local hasClaimedMonthToday = false
+
+	if checkins and type(checkins) == "table" then
+		for _, ck in ipairs(checkins) do
+			if type(ck) == "table" then
+				local did = tonumber(ck.day_index or ck._day_index) or 0
+				local ctype = tonumber(ck.checkin_type or ck._checkin_type) or 1
+				local cdate = tostring(ck.claim_date or "")
+				if did > 0 then
+					claimed_ids[did] = true
+					if ctype == 2 or (did >= 3001 and did <= 3007) then
+						local wday = (did >= 3001 and did <= 3007) and (did - 3000) or did
+						if wday >= 1 and wday <= 7 then
+							claimed_week_days[wday] = true
+						end
+						if cdate == today_str then
+							hasClaimedWeekToday = true
+						end
+					elseif ctype == 1 or (did >= 6001 and did <= 6400) or (did <= 31) then
+						local mday = (did <= 31) and did or 0
+						if mday > 0 then
+							claimed_month_days[mday] = true
+						end
+						if cdate == today_str then
+							hasClaimedMonthToday = true
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if ClientData._claimedCheckinsToday then
+		for bid, info in pairs(ClientData._claimedCheckinsToday) do
+			claimed_ids[bid] = true
+			local ctype = type(info) == "table" and info.checkin_type or 1
+			local dval = type(info) == "table" and info.day_val or 0
+			if ctype == 2 or (bid >= 3001 and bid <= 3007) then
+				hasClaimedWeekToday = true
+				if dval > 0 then claimed_week_days[dval] = true end
+				if bid >= 3001 and bid <= 3007 then claimed_week_days[bid - 3000] = true end
+			else
+				hasClaimedMonthToday = true
+				if dval > 0 then claimed_month_days[dval] = true end
+			end
+		end
+	end
+
+	-- 1. Sync Week Checkin (pb._bonusWeekCheckin - 7 days)
+	if pb._bonusWeekCheckin then
+		local maxClaimedWeek = 0
+		for _, b in ipairs(pb._bonusWeekCheckin) do
 			local val = b._info and b._info._val or 0
-			local isClaimed = claimed_map[b._infoId] or (val > 0 and claimed_map[val]) or (val > 0 and claimed_map[offset + val])
+			local isClaimed = claimed_ids[b._infoId] or claimed_week_days[val] or (val > 0 and claimed_ids[3000 + val])
 			if isClaimed then
 				b._isClaimed = true
 				b._value = val > 0 and val or 1
-				if val > maxClaimed then maxClaimed = val end
+				b._isDefaultClaimable = false
+				if val > maxClaimedWeek then maxClaimedWeek = val end
 			end
 		end
-		local nextVal = maxClaimed + 1
-		for _, b in ipairs(list) do
+		local nextWeekDay = maxClaimedWeek + 1
+		for _, b in ipairs(pb._bonusWeekCheckin) do
 			if not b._isClaimed then
 				local val = b._info and b._info._val or 0
-				if val == nextVal then
+				if val == nextWeekDay and not hasClaimedWeekToday then
 					b._value = val
 					b._isDefaultClaimable = true
 				else
@@ -444,8 +636,33 @@ function OnlineBridge.syncCheckinBonuses(player, checkins)
 		end
 	end
 
-	syncList(pb._bonusWeekCheckin, 3000)
-	syncList(pb._bonusMonthCheckin, 6000)
+	-- 2. Sync Month Checkin (pb._bonusMonthCheckin)
+	if pb._bonusMonthCheckin then
+		local totalClaimedMonth = 0
+		for _, b in ipairs(pb._bonusMonthCheckin) do
+			local val = b._info and b._info._val or 0
+			local isClaimed = claimed_ids[b._infoId] or claimed_month_days[val]
+			if isClaimed then
+				b._isClaimed = true
+				b._value = val > 0 and val or 1
+				b._isDefaultClaimable = false
+				totalClaimedMonth = totalClaimedMonth + 1
+			end
+		end
+		local nextMonthDay = totalClaimedMonth + 1
+		for _, b in ipairs(pb._bonusMonthCheckin) do
+			if not b._isClaimed then
+				local val = b._info and b._info._val or 0
+				if val == nextMonthDay and not hasClaimedMonthToday then
+					b._value = val
+					b._isDefaultClaimable = true
+				else
+					b._value = 0
+					b._isDefaultClaimable = false
+				end
+			end
+		end
+	end
 
 	-- Sync player trophy
 	local accTrophy = (acc and acc.trophy) or (ClientData._account and ClientData._account.trophy) or 800

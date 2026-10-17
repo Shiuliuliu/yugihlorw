@@ -158,7 +158,7 @@ function var_0_0.skillCasted(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 		if (arg_2_2._id ~= 5064 and arg_2_2._id ~= 5069 and arg_2_2._id ~= 5118 and arg_2_2._id ~= 5259 and arg_2_2._id ~= 5306 and arg_2_2._id ~= 5309 and arg_2_2._id ~= 5471 and arg_2_2._id ~= 8018 and arg_2_2._id ~= 8019 and arg_2_2._id ~= 8020 and arg_2_2._id ~= 8021 and arg_2_2._id ~= 8042 and arg_2_2._id ~= 8046 and arg_2_2._id ~= 8054 and arg_2_2._id ~= 8056 and arg_2_2._id ~= 8059 and arg_2_2._id ~= 8068 and arg_2_2._id ~= 8081 and arg_2_2._id ~= 8083 and arg_2_2._id ~= 8094 and arg_2_2._id ~= 8095 and arg_2_2._id ~= 8102 and arg_2_2._id ~= 8116 and arg_2_2._id ~= 8117 and arg_2_2._id ~= 8124 and arg_2_2._id ~= 8125 and arg_2_2._id ~= 8126 and arg_2_2._id ~= 8130 and arg_2_2._id ~= 8132 or arg_2_3 ~= Data.SkillMode.using) and (arg_2_2._id ~= 3447 and arg_2_2._id ~= 3491 and arg_2_2._id ~= 6420 and arg_2_2._id ~= 6572 and arg_2_2._id ~= 6619 and arg_2_2._id ~= 6745 and arg_2_2._id ~= 2292 and arg_2_2._id ~= 2484 and arg_2_2._id ~= 2517 and arg_2_2._id ~= 2704 or arg_2_3 ~= Data.SkillMode.after_attack) and (arg_2_2._id ~= 7161 and arg_2_2._id ~= 7194 and arg_2_2._id ~= 7219 and arg_2_2._id ~= 7267 and arg_2_2._id ~= 7341 and arg_2_2._id ~= 7417 and arg_2_2._id ~= 7423 or arg_2_3 ~= Data.SkillMode.magic) and (arg_2_2._id ~= 4191 and arg_2_2._id ~= 4532 and arg_2_2._id ~= 4873 and arg_2_2._id ~= 4889 and arg_2_2._id ~= 4990 and arg_2_2._id ~= 7360 and arg_2_2._id ~= 7364 and arg_2_2._id ~= 7411 and arg_2_2._id ~= 7438 and arg_2_2._id ~= 7442 and arg_2_2._id ~= 7465 and arg_2_2._id ~= 7507 and arg_2_2._id ~= 7512 and arg_2_2._id ~= 7612 and arg_2_2._id ~= 7613 and arg_2_2._id ~= 7660 and arg_2_2._id ~= 7661 and arg_2_2._id ~= 7670 and arg_2_2._id ~= 7756 and arg_2_2._id ~= 7757 and arg_2_2._id ~= 7778 and arg_2_2._id ~= 5198 and arg_2_2._id ~= 5260 and arg_2_2._id ~= 5574 and arg_2_2._id ~= 8119 and arg_2_2._id ~= 6896 and arg_2_2._id ~= 2194 and arg_2_2._id ~= 2527 and arg_2_2._id ~= 2541 and arg_2_2._id ~= 2582 and arg_2_2._id ~= 2583 and arg_2_2._id ~= 2584 and arg_2_2._id ~= 2791 and arg_2_2._id ~= 2990 and arg_2_2._id ~= 2991 and arg_2_2._id ~= 2994 and arg_2_2._id ~= 9008 and arg_2_2._id ~= 9039 and arg_2_2._id ~= 9070 and arg_2_2._id ~= 9076 and arg_2_2._id ~= 9098 and arg_2_2._id ~= 9197 and arg_2_2._id ~= 9202 and arg_2_2._id ~= 9203 and arg_2_2._id ~= 9267 and arg_2_2._id ~= 9349 and arg_2_2._id ~= 9516 and arg_2_2._id ~= 9594 and arg_2_2._id ~= 9647 and arg_2_2._id ~= 9787 and arg_2_2._id ~= 9794 and arg_2_2._id ~= 9873 and arg_2_2._id ~= 9967 and arg_2_2._id ~= 13159 and arg_2_2._id ~= 13246 and arg_2_2._id ~= 13369 and arg_2_2._id ~= 13438 and arg_2_2._id ~= 13442 and arg_2_2._id ~= 13617 and arg_2_2._id ~= 13783 and arg_2_2._id ~= 14147 and arg_2_2._id ~= 14199 and arg_2_2._id ~= 14579 or arg_2_3 == Data.SkillMode.initiative_bcs) and (arg_2_2._id ~= 9061 and arg_2_2._id ~= 9376 and arg_2_2._id ~= 9833 and arg_2_2._id ~= 13363 and arg_2_2._id ~= 13537 or arg_2_3 == Data.SkillMode.initiative_hand) and (arg_2_2._id ~= 9249 or arg_2_3 == Data.SkillMode.initiative_hand or arg_2_3 == Data.SkillMode.initiative_grave) and (arg_2_2._id ~= 6720 and arg_2_2._id ~= 2190 and arg_2_2._id ~= 13956 and arg_2_2._id ~= 14525 and arg_2_2._id ~= 14527 and arg_2_2._id ~= 14531 or arg_2_3 == Data.SkillMode.initiative_grave) and (arg_2_2._id ~= 5455 or arg_2_3 == Data.SkillMode.initiative_leave) and (arg_2_2._id ~= 6901 or arg_2_3 == Data.SkillMode.round_end or arg_2_3 == Data.SkillMode.oppo_round_end) and (arg_2_2._id ~= 7280 or arg_2_3 == Data.SkillMode.initiative_bcs or arg_2_2._owner._owner._stepStatus == BattleData.Status.wait_opponent) and (arg_2_2._id ~= 2467 or arg_2_3 == Data.SkillMode.bcs2gl or arg_2_3 == Data.SkillMode.bcs2_) then
 			arg_2_0._castedSkillCounts[arg_2_2._id] = (arg_2_0._castedSkillCounts[arg_2_2._id] or 0) + 1
 
-			if arg_2_2._id == 3252 or arg_2_2._id == 6876 or arg_2_2._id == 3333 or arg_2_2._id == 4344 or arg_2_2._id == 4488 or arg_2_2._id == 4489 or arg_2_2._id == 6347 or arg_2_2._id == 6267 or arg_2_2._id == 6270 or arg_2_2._id == 6370 or arg_2_2._id == 6371 or arg_2_2._id == 6401 or arg_2_2._id == 6406 or arg_2_2._id == 6518 or arg_2_2._id == 6519 or arg_2_2._id == 6809 or arg_2_2._id == 6983 or arg_2_2._id == 6984 or arg_2_2._id == 7244 or arg_2_2._id == 7245 or arg_2_2._id == 3626 or arg_2_2._id == 13006 or arg_2_2._id == 3752 or arg_2_2._id == 9998 or arg_2_2._id == 3754 or arg_2_2._id == 13001 or arg_2_2._id == 6889 or arg_2_2._id == 6890 or arg_2_2._id >= 6955 and arg_2_2._id <= 6961 or arg_2_2._id >= 6966 and arg_2_2._id <= 6972 or arg_2_2._id == 2126 or arg_2_2._id == 2127 or arg_2_2._id == 2130 or arg_2_2._id == 2131 or arg_2_2._id == 2173 or arg_2_2._id == 2174 or arg_2_2._id == 2177 or arg_2_2._id == 2179 or arg_2_2._id == 2181 or arg_2_2._id == 2183 or arg_2_2._id == 4537 or arg_2_2._id == 4538 or arg_2_2._id == 4539 or arg_2_2._id == 4540 or arg_2_2._id == 2175 or arg_2_2._id == 2176 or arg_2_2._id == 2242 or arg_2_2._id == 2249 or arg_2_2._id == 2272 or arg_2_2._id == 2273 or arg_2_2._id == 2274 or arg_2_2._id == 2275 or arg_2_2._id == 2288 or arg_2_2._id == 2289 or arg_2_2._id == 2328 or arg_2_2._id == 2329 or arg_2_2._id == 2355 or arg_2_2._id == 2356 or arg_2_2._id == 2562 or arg_2_2._id == 2563 or arg_2_2._id == 2568 or arg_2_2._id == 2573 or arg_2_2._id == 2666 or arg_2_2._id == 2667 or arg_2_2._id == 2839 or arg_2_2._id == 4717 or arg_2_2._id == 2840 or arg_2_2._id == 4718 or arg_2_2._id == 2886 or arg_2_2._id == 9314 or arg_2_2._id == 2933 or arg_2_2._id == 2934 or arg_2_2._id == 2968 or arg_2_2._id == 2969 or arg_2_2._id == 2970 or arg_2_2._id == 4751 or arg_2_2._id == 2977 or arg_2_2._id == 2978 or arg_2_2._id == 3655 or arg_2_2._id == 9123 or arg_2_2._id == 4044 or arg_2_2._id == 4730 or arg_2_2._id == 4100 or arg_2_2._id == 4111 or arg_2_2._id == 4465 or arg_2_2._id == 4798 or arg_2_2._id == 4466 or arg_2_2._id == 4799 or arg_2_2._id == 4467 or arg_2_2._id == 4800 or arg_2_2._id == 4591 or arg_2_2._id == 4592 or arg_2_2._id == 4772 or arg_2_2._id == 4773 or arg_2_2._id == 4808 or arg_2_2._id == 4809 or arg_2_2._id == 4842 or arg_2_2._id == 7417 or arg_2_2._id == 4847 or arg_2_2._id == 7423 or arg_2_2._id == 4859 or arg_2_2._id == 7429 or arg_2_2._id == 4963 or arg_2_2._id == 4964 or arg_2_2._id == 4993 or arg_2_2._id == 5566 or arg_2_2._id == 4998 or arg_2_2._id == 13192 or arg_2_2._id == 5326 or arg_2_2._id == 5327 or arg_2_2._id == 5328 or arg_2_2._id == 5329 or arg_2_2._id == 5335 or arg_2_2._id == 5336 or arg_2_2._id == 5372 or arg_2_2._id == 5373 or arg_2_2._id == 5408 or arg_2_2._id == 5409 or arg_2_2._id == 5418 or arg_2_2._id == 5419 or arg_2_2._id == 5430 or arg_2_2._id == 5431 or arg_2_2._id == 5476 or arg_2_2._id == 5477 or arg_2_2._id == 5538 or arg_2_2._id == 5539 or arg_2_2._id == 5558 or arg_2_2._id == 5559 or arg_2_2._id == 5593 or arg_2_2._id == 5594 or arg_2_2._id == 5623 or arg_2_2._id == 7684 or arg_2_2._id == 5624 or arg_2_2._id == 5324 or arg_2_2._id == 5631 or arg_2_2._id == 5632 or arg_2_2._id == 5637 or arg_2_2._id == 5638 or arg_2_2._id == 5650 or arg_2_2._id == 5651 or arg_2_2._id == 7266 or arg_2_2._id == 7396 or arg_2_2._id == 7369 or arg_2_2._id == 7370 or arg_2_2._id == 7555 or arg_2_2._id == 7556 or arg_2_2._id == 7594 or arg_2_2._id == 7619 or arg_2_2._id == 7606 or arg_2_2._id == 7607 or arg_2_2._id == 7633 or arg_2_2._id == 7634 or arg_2_2._id == 7653 or arg_2_2._id == 7654 or arg_2_2._id == 7660 or arg_2_2._id == 7661 or arg_2_2._id == 7673 or arg_2_2._id == 7674 or arg_2_2._id == 7700 or arg_2_2._id == 7701 or arg_2_2._id == 7705 or arg_2_2._id == 7706 or arg_2_2._id == 7731 or arg_2_2._id == 7732 or arg_2_2._id == 7756 or arg_2_2._id == 7757 or arg_2_2._id == 7830 or arg_2_2._id == 7831 or arg_2_2._id == 8036 or arg_2_2._id == 8066 or arg_2_2._id == 8081 or arg_2_2._id == 8082 or arg_2_2._id == 8094 or arg_2_2._id == 8145 or arg_2_2._id == 9082 or arg_2_2._id == 9083 or arg_2_2._id == 9133 or arg_2_2._id == 9134 or arg_2_2._id == 9287 or arg_2_2._id == 9288 or arg_2_2._id == 9296 or arg_2_2._id == 9297 or arg_2_2._id == 9305 or arg_2_2._id == 9306 or arg_2_2._id == 9469 or arg_2_2._id == 9523 or arg_2_2._id == 9632 or arg_2_2._id == 9633 or arg_2_2._id == 9692 or arg_2_2._id == 9984 or arg_2_2._id == 9721 or arg_2_2._id == 9722 or arg_2_2._id == 9765 or arg_2_2._id == 4888 or arg_2_2._id == 9830 or arg_2_2._id == 9831 or arg_2_2._id == 13061 or arg_2_2._id == 13062 or arg_2_2._id == 13085 or arg_2_2._id == 13086 or arg_2_2._id == 13088 or arg_2_2._id == 13089 or arg_2_2._id == 13091 or arg_2_2._id == 13092 or arg_2_2._id == 13093 or arg_2_2._id == 13094 or arg_2_2._id == 13095 or arg_2_2._id == 13096 or arg_2_2._id == 13098 or arg_2_2._id == 13099 or arg_2_2._id == 13100 or arg_2_2._id == 13101 or arg_2_2._id == 13102 or arg_2_2._id == 13103 or arg_2_2._id == 13160 or arg_2_2._id == 13521 or arg_2_2._id == 13169 or arg_2_2._id == 13170 or arg_2_2._id == 13179 or arg_2_2._id == 13180 or arg_2_2._id == 13220 or arg_2_2._id == 13221 or arg_2_2._id == 13250 or arg_2_2._id == 13251 or arg_2_2._id == 13272 or arg_2_2._id == 13273 or arg_2_2._id == 13275 or arg_2_2._id == 13276 or arg_2_2._id == 13278 or arg_2_2._id == 13279 or arg_2_2._id == 13377 or arg_2_2._id == 13378 or arg_2_2._id == 13416 or arg_2_2._id == 13417 or arg_2_2._id == 13418 or arg_2_2._id == 13419 or arg_2_2._id == 13420 or arg_2_2._id == 13513 or arg_2_2._id == 13425 or arg_2_2._id == 13426 or arg_2_2._id == 13485 or arg_2_2._id == 13486 or arg_2_2._id == 13552 or arg_2_2._id == 13553 or arg_2_2._id == 13627 or arg_2_2._id == 13628 or arg_2_2._id == 13666 or arg_2_2._id == 14044 or arg_2_2._id == 13806 or arg_2_2._id == 13807 or arg_2_2._id == 13949 or arg_2_2._id == 13950 or arg_2_2._id == 14029 or arg_2_2._id == 14030 or arg_2_2._id == 14089 or arg_2_2._id == 14090 or arg_2_2._id == 14099 or arg_2_2._id == 14100 or arg_2_2._id == 14196 or arg_2_2._id == 14197 or arg_2_2._id == 14290 or arg_2_2._id == 14291 or arg_2_2._id == 14340 or arg_2_2._id == 14341 or arg_2_2._id == 14347 or arg_2_2._id == 14348 or arg_2_2._id == 14362 or arg_2_2._id == 14363 or arg_2_2._id == 14573 or arg_2_2._id == 14574 then
+			if arg_2_2._id == 3252 or arg_2_2._id == 6876 or arg_2_2._id == 3333 or arg_2_2._id == 4344 or arg_2_2._id == 4488 or arg_2_2._id == 4489 or arg_2_2._id == 6347 or arg_2_2._id == 6267 or arg_2_2._id == 6270 or arg_2_2._id == 6370 or arg_2_2._id == 6371 or arg_2_2._id == 6401 or arg_2_2._id == 6406 or arg_2_2._id == 6518 or arg_2_2._id == 6519 or arg_2_2._id == 6809 or arg_2_2._id == 6983 or arg_2_2._id == 6984 or arg_2_2._id == 7244 or arg_2_2._id == 7245 or arg_2_2._id == 3626 or arg_2_2._id == 13006 or arg_2_2._id == 3752 or arg_2_2._id == 9998 or arg_2_2._id == 3754 or arg_2_2._id == 13001 or arg_2_2._id == 6889 or arg_2_2._id == 6890 or arg_2_2._id >= 6955 and arg_2_2._id <= 6961 or arg_2_2._id >= 6966 and arg_2_2._id <= 6972 or arg_2_2._id == 2126 or arg_2_2._id == 2127 or arg_2_2._id == 2130 or arg_2_2._id == 2131 or arg_2_2._id == 2173 or arg_2_2._id == 2174 or arg_2_2._id == 2177 or arg_2_2._id == 2179 or arg_2_2._id == 2181 or arg_2_2._id == 2183 or arg_2_2._id == 4537 or arg_2_2._id == 4538 or arg_2_2._id == 4539 or arg_2_2._id == 4540 or arg_2_2._id == 2175 or arg_2_2._id == 2176 or arg_2_2._id == 2242 or arg_2_2._id == 2249 or arg_2_2._id == 2272 or arg_2_2._id == 2273 or arg_2_2._id == 2274 or arg_2_2._id == 2275 or arg_2_2._id == 2288 or arg_2_2._id == 2289 or arg_2_2._id == 2328 or arg_2_2._id == 2329 or arg_2_2._id == 2355 or arg_2_2._id == 2356 or arg_2_2._id == 2562 or arg_2_2._id == 2563 or arg_2_2._id == 2568 or arg_2_2._id == 2573 or arg_2_2._id == 2666 or arg_2_2._id == 2667 or arg_2_2._id == 2839 or arg_2_2._id == 4717 or arg_2_2._id == 2840 or arg_2_2._id == 4718 or arg_2_2._id == 2886 or arg_2_2._id == 9314 or arg_2_2._id == 2933 or arg_2_2._id == 2934 or arg_2_2._id == 2968 or arg_2_2._id == 2969 or arg_2_2._id == 2970 or arg_2_2._id == 4751 or arg_2_2._id == 2977 or arg_2_2._id == 2978 or arg_2_2._id == 3655 or arg_2_2._id == 9123 or arg_2_2._id == 4044 or arg_2_2._id == 4730 or arg_2_2._id == 4100 or arg_2_2._id == 4111 or arg_2_2._id == 4465 or arg_2_2._id == 4798 or arg_2_2._id == 4466 or arg_2_2._id == 4799 or arg_2_2._id == 4467 or arg_2_2._id == 4800 or arg_2_2._id == 4591 or arg_2_2._id == 4592 or arg_2_2._id == 4772 or arg_2_2._id == 4773 or arg_2_2._id == 4808 or arg_2_2._id == 4809 or arg_2_2._id == 4842 or arg_2_2._id == 7417 or arg_2_2._id == 4847 or arg_2_2._id == 7423 or arg_2_2._id == 4859 or arg_2_2._id == 7429 or arg_2_2._id == 4963 or arg_2_2._id == 4964 or arg_2_2._id == 4993 or arg_2_2._id == 5566 or arg_2_2._id == 4998 or arg_2_2._id == 13192 or arg_2_2._id == 5326 or arg_2_2._id == 5327 or arg_2_2._id == 5328 or arg_2_2._id == 5329 or arg_2_2._id == 5335 or arg_2_2._id == 5336 or arg_2_2._id == 5372 or arg_2_2._id == 5373 or arg_2_2._id == 5408 or arg_2_2._id == 5409 or arg_2_2._id == 5418 or arg_2_2._id == 5419 or arg_2_2._id == 5430 or arg_2_2._id == 5431 or arg_2_2._id == 5476 or arg_2_2._id == 5477 or arg_2_2._id == 5538 or arg_2_2._id == 5539 or arg_2_2._id == 5558 or arg_2_2._id == 5559 or arg_2_2._id == 5593 or arg_2_2._id == 5594 or arg_2_2._id == 5623 or arg_2_2._id == 7684 or arg_2_2._id == 5624 or arg_2_2._id == 5324 or arg_2_2._id == 5631 or arg_2_2._id == 5632 or arg_2_2._id == 5637 or arg_2_2._id == 5638 or arg_2_2._id == 5650 or arg_2_2._id == 5651 or arg_2_2._id == 7266 or arg_2_2._id == 7396 or arg_2_2._id == 7369 or arg_2_2._id == 7370 or arg_2_2._id == 7555 or arg_2_2._id == 7556 or arg_2_2._id == 7594 or arg_2_2._id == 7619 or arg_2_2._id == 7606 or arg_2_2._id == 7607 or arg_2_2._id == 7633 or arg_2_2._id == 7634 or arg_2_2._id == 7653 or arg_2_2._id == 7654 or arg_2_2._id == 7660 or arg_2_2._id == 7661 or arg_2_2._id == 7673 or arg_2_2._id == 7674 or arg_2_2._id == 7700 or arg_2_2._id == 7701 or arg_2_2._id == 7705 or arg_2_2._id == 7706 or arg_2_2._id == 7731 or arg_2_2._id == 7732 or arg_2_2._id == 7756 or arg_2_2._id == 7757 or arg_2_2._id == 7830 or arg_2_2._id == 7831 or arg_2_2._id == 8036 or arg_2_2._id == 8066 or arg_2_2._id == 8081 or arg_2_2._id == 8082 or arg_2_2._id == 8094 or arg_2_2._id == 8145 or arg_2_2._id == 9082 or arg_2_2._id == 9083 or arg_2_2._id == 9133 or arg_2_2._id == 9134 or arg_2_2._id == 9287 or arg_2_2._id == 9288 or arg_2_2._id == 9296 or arg_2_2._id == 9297 or arg_2_2._id == 9305 or arg_2_2._id == 9306 or arg_2_2._id == 9469 or arg_2_2._id == 9523 or arg_2_2._id == 9632 or arg_2_2._id == 9633 or arg_2_2._id == 9692 or arg_2_2._id == 9984 or arg_2_2._id == 9721 or arg_2_2._id == 9722 or arg_2_2._id == 9765 or arg_2_2._id == 4888 or arg_2_2._id == 9830 or arg_2_2._id == 9831 or arg_2_2._id == 13061 or arg_2_2._id == 13062 or arg_2_2._id == 13085 or arg_2_2._id == 13086 or arg_2_2._id == 13088 or arg_2_2._id == 13089 or arg_2_2._id == 13091 or arg_2_2._id == 13092 or arg_2_2._id == 13093 or arg_2_2._id == 13094 or arg_2_2._id == 13095 or arg_2_2._id == 13096 or arg_2_2._id == 13098 or arg_2_2._id == 13099 or arg_2_2._id == 13100 or arg_2_2._id == 13101 or arg_2_2._id == 13102 or arg_2_2._id == 13103 or arg_2_2._id == 13160 or arg_2_2._id == 13521 or arg_2_2._id == 13169 or arg_2_2._id == 13170 or arg_2_2._id == 13179 or arg_2_2._id == 13180 or arg_2_2._id == 13220 or arg_2_2._id == 13221 or arg_2_2._id == 13250 or arg_2_2._id == 13251 or arg_2_2._id == 13272 or arg_2_2._id == 13273 or arg_2_2._id == 13275 or arg_2_2._id == 13276 or arg_2_2._id == 13278 or arg_2_2._id == 13279 or arg_2_2._id == 13377 or arg_2_2._id == 13378 or arg_2_2._id == 13416 or arg_2_2._id == 13417 or arg_2_2._id == 13418 or arg_2_2._id == 13419 or arg_2_2._id == 13420 or arg_2_2._id == 13513 or arg_2_2._id == 13425 or arg_2_2._id == 13426 or arg_2_2._id == 13485 or arg_2_2._id == 13486 or arg_2_2._id == 13552 or arg_2_2._id == 13553 or arg_2_2._id == 13627 or arg_2_2._id == 13628 or arg_2_2._id == 13666 or arg_2_2._id == 14044 or arg_2_2._id == 13806 or arg_2_2._id == 13807 or arg_2_2._id == 13949 or arg_2_2._id == 13950 or arg_2_2._id == 14029 or arg_2_2._id == 14030 or arg_2_2._id == 14089 or arg_2_2._id == 14090 or arg_2_2._id == 14099 or arg_2_2._id == 14100 or arg_2_2._id == 14196 or arg_2_2._id == 14197 or arg_2_2._id == 14290 or arg_2_2._id == 14291 or arg_2_2._id == 14340 or arg_2_2._id == 14341 or arg_2_2._id == 14347 or arg_2_2._id == 14348 or arg_2_2._id == 14362 or arg_2_2._id == 14363 or arg_2_2._id == 14573 or arg_2_2._id == 14574 or arg_2_2._id == 14684 or arg_2_2._id == 14685 or arg_2_2._id == 14733 or arg_2_2._id == 14734 then
 				local var_2_0 = Data._skillInfo[arg_2_2._id]._refSkills[1]
 
 				arg_2_0._castedSkillCounts[var_2_0] = (arg_2_0._castedSkillCounts[var_2_0] or 0) + 1
@@ -272,6 +272,161 @@ function var_0_0.dealCard(arg_6_0, arg_6_1, arg_6_2, arg_6_3, arg_6_4)
 end
 
 function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_7_5, arg_7_6, arg_7_7)
+	if arg_7_1 == nil then
+		return
+	end
+	if (arg_7_1._type == Data.CardType.magic or arg_7_1._type == Data.CardType.trap) and arg_7_1._status == BattleData.CardStatus.board and arg_7_2 == BattleData.CardStatus.grave and (arg_7_6 == BattleData.CardStatusVal.b2g_destroy or arg_7_6 == BattleData.CardStatusVal.b2g_cost) then
+		if arg_7_1._owner and (arg_7_1._owner:hasBattleCardsBySkillFast("B", 7488) or #arg_7_1._owner:getBattleCardsByInfoId("B", 40737) > 0) then
+			if arg_7_4 ~= 0 and arg_7_4 ~= nil and arg_7_1._owner ~= arg_7_0 then
+				return
+			end
+		end
+	end
+	if (arg_7_1:hasSkillFast(14660) or arg_7_1:isInfoId(12318) or arg_7_1:hasSkillFast(14680) or arg_7_1:isInfoId(40727)) and arg_7_1:canCastMonsterSkill() and arg_7_1._status == BattleData.CardStatus.board and arg_7_2 == BattleData.CardStatus.grave and (arg_7_6 == BattleData.CardStatusVal.b2g_kill_by_attack or arg_7_4 == Data.ATTACKING_SKILL_ID) then
+		return
+	end
+
+	if (arg_7_1:hasSkillFast(14629) or arg_7_1:isInfoId(12313)) and arg_7_1:canCastMonsterSkill() and arg_7_1._status == BattleData.CardStatus.board and arg_7_2 == BattleData.CardStatus.grave and arg_7_6 ~= BattleData.CardStatusVal.b2g_kill_by_attack and arg_7_4 ~= Data.ATTACKING_SKILL_ID and arg_7_6 ~= BattleData.CardStatusVal.sacrifice and arg_7_6 ~= BattleData.CardStatusVal.x2gl_cost then
+		return
+	end
+
+	if (arg_7_1:hasSkillFast(14635) or arg_7_1:hasSkillFast(14680) or arg_7_1:isInfoId(12314) or arg_7_1:isInfoId(40727)) and arg_7_1:canCastMonsterSkill() and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost 
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp 
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		if not isCostOrSac then
+			local owner = arg_7_1._owner
+			local oppo = owner and owner._opponent
+			local turnId = (owner and owner._round or 0) * 1000 + (oppo and oppo._round or 0)
+			if arg_7_1._kcBHTurn ~= turnId then
+				arg_7_1._kcBHTurn = turnId
+				return
+			end
+		end
+	end
+
+	if (arg_7_1:hasSkillFast(14690) or arg_7_1:isInfoId(12321)) and arg_7_1:canCastMonsterSkill() and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost 
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp 
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		if not isCostOrSac then
+			local owner = arg_7_1._owner
+			local var_hhg_grave = owner and owner:getBattleCardsByInfoId("G", 30592)
+			if var_hhg_grave and #var_hhg_grave > 0 then
+				local hhg = var_hhg_grave[1]
+				owner:setCardStatus(hhg, BattleData.CardStatus.leave, 0, 14690, Data.SkillMode.g2l)
+				return
+			end
+		end
+	end
+
+	if (arg_7_1:isInfoId(40728) or arg_7_1:hasSkillFast(14692)) and arg_7_1:canCastMonsterSkill() and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost 
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp 
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		if not isCostOrSac and arg_7_1:getBuffValue(true, BattleData.PositiveType.xyzMark) > 0 then
+			return
+		end
+	end
+
+	if (arg_7_1:isInfoId(40728) or arg_7_1:hasSkillFast(14691)) and arg_7_1:canCastMonsterSkill() and arg_7_1._status == BattleData.CardStatus.board then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost 
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp 
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		local owner = arg_7_1._owner
+		local oppo = owner and owner._opponent
+		local isOppoTarget = false
+		if arg_7_6 == BattleData.CardStatusVal.b2b_oppo_forever then
+			isOppoTarget = true
+		elseif arg_7_2 ~= BattleData.CardStatus.board and not isCostOrSac then
+			if oppo and (arg_7_0 == oppo or oppo._macroStatus == BattleData.Status.use) then
+				if arg_7_4 ~= Data.ATTACKING_SKILL_ID and arg_7_6 ~= BattleData.CardStatusVal.b2g_kill_by_attack then
+					isOppoTarget = true
+				end
+			end
+		end
+		if isOppoTarget then
+			if owner and owner._fortress then
+				arg_7_0:addDamage(owner._fortress, 500, arg_7_3, arg_7_4, arg_7_5)
+			end
+			return
+		end
+	end
+
+	local isThacSam = (arg_7_1:isInfoId(40730) or arg_7_1:hasSkillFast(14719) or arg_7_1:hasSkillFast(14720)) and arg_7_1._status == BattleData.CardStatus.board
+	if isThacSam then
+		local owner = arg_7_1._owner
+		local oppo = owner and owner._opponent
+		local isAwakened = arg_7_1._tsAwakened or arg_7_1:hasSkillFast(12002) or (arg_7_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0
+		local isBattleKill = (arg_7_4 == Data.ATTACKING_SKILL_ID or arg_7_6 == BattleData.CardStatusVal.b2g_kill_by_attack)
+		local caster = (arg_7_0.getCardById and arg_7_0:getCardById(arg_7_3)) or arg_7_0._actionCard
+		local isFromOppo = (oppo and (arg_7_0 == oppo or oppo._macroStatus == BattleData.Status.use)) or (caster and caster._owner ~= owner)
+
+		if isAwakened then
+			if arg_7_2 ~= BattleData.CardStatus.board and not isBattleKill then
+				if isFromOppo or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice or arg_7_6 == BattleData.CardStatusVal.b2b_oppo_forever or arg_7_6 == BattleData.CardStatusVal.b2h_oppo or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo then
+					return
+				end
+			end
+		elseif (arg_7_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) > 0 then
+			local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
+				or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
+				or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice 
+				or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice 
+				or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice 
+				or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice 
+				or arg_7_6 == BattleData.CardStatusVal.x2gl_cost 
+				or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost 
+				or arg_7_6 == BattleData.CardStatusVal.h2l_temp 
+				or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+			local isOppoTarget = false
+			if arg_7_6 == BattleData.CardStatusVal.b2b_oppo_forever then
+				isOppoTarget = true
+			elseif arg_7_2 ~= BattleData.CardStatus.board and not isCostOrSac then
+				if oppo and (arg_7_0 == oppo or oppo._macroStatus == BattleData.Status.use) then
+					if not isBattleKill then
+						isOppoTarget = true
+					end
+				end
+			end
+			if isOppoTarget then
+				if caster and caster._owner ~= arg_7_1._owner then
+					if B.checkThacSamTargetNegate(arg_7_0, arg_7_1, caster) then
+						return
+					end
+				end
+			end
+		end
+	end
+
 	if arg_7_6 == BattleData.CardStatusVal.r2b_sync or arg_7_6 == BattleData.CardStatusVal.r2b_sync_attack_frozen then
 		arg_7_1._mark6387 = nil
 
@@ -280,8 +435,14 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 			6729,
 			9173,
 			14123
-		}) then
+		}) or arg_7_1:isInfoId(40732) then
 			arg_7_1._mark6387 = true
+			local turnId = (arg_7_0._round or 0) * 1000 + (arg_7_0._opponent and arg_7_0._opponent._round or 0)
+			arg_7_1._syncSummonTurn = turnId
+			arg_7_1._summonBySync = true
+			if arg_7_0._opponent then
+				arg_7_0._opponent._isSkillDisabled = true
+			end
 		end
 	elseif arg_7_6 == BattleData.CardStatusVal.r2b_compose then
 		arg_7_1._mark6387 = nil
@@ -290,6 +451,20 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 			14518
 		}) then
 			arg_7_1._mark6387 = true
+		end
+	elseif arg_7_6 == BattleData.CardStatusVal.h2b_ceremony or arg_7_6 == BattleData.CardStatusVal.h2b_ceremony_frozen then
+		arg_7_1._hasBeenCeremonySummoned = true
+	end
+
+	if (arg_7_1:isInfoId(12331) or arg_7_1:hasSkillFast(14741)) and arg_7_2 == BattleData.CardStatus.board then
+		local pOwner = arg_7_1._owner or arg_7_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if arg_7_1._zioSummonTurn ~= turnId then
+			arg_7_1._zioSummonTurn = turnId
+			local cd_cards = pOwner:getBattleCardsByInfoId("P", 21143)
+			if #cd_cards > 0 and #pOwner._handCards < Data.MAX_CARD_COUNT_IN_HAND then
+				pOwner:setCardStatus(cd_cards[1], BattleData.CardStatus.hand, arg_7_1._id, 14741, Data.SkillMode.using)
+			end
 		end
 	end
 
@@ -317,6 +492,47 @@ function var_0_0.addDamage(arg_9_0, arg_9_1, arg_9_2, arg_9_3, arg_9_4, arg_9_5)
 		return
 	end
 
+	if arg_9_1._type == Data.CardType.fortress and arg_9_2 > 0 then
+		local p_owner = arg_9_1._owner
+		if p_owner then
+			local var_trap_cover = p_owner:getBattleCardsByInfoId("C", 30592)
+			if #var_trap_cover > 0 then
+				local trap_card = var_trap_cover[1]
+				arg_9_0:setCardStatus(trap_card, BattleData.CardStatus.grave, 30592, 14653, Data.SkillMode.trap)
+				p_owner._mark13840 = true
+				return
+			end
+
+			local var_trap_hand = p_owner:getBattleCardsByInfoId("H", 30592)
+			if #var_trap_hand > 0 and #p_owner:getBoardCards() == 0 and #p_owner:getBattleCards("CSD") == 0 then
+				local is_oppo_damage = false
+				local src_card = (arg_9_3 and arg_9_0:getCardById(arg_9_3)) or arg_9_0._actionCard
+				if src_card and src_card._owner == p_owner._opponent then
+					is_oppo_damage = true
+				elseif p_owner._opponent and (p_owner._opponent._macroStatus == BattleData.Status.use or p_owner._round ~= p_owner._opponent._round) then
+					is_oppo_damage = true
+				end
+				if is_oppo_damage then
+					local trap_card = var_trap_hand[1]
+					arg_9_0:setCardStatus(trap_card, BattleData.CardStatus.grave, 30592, 14666, Data.SkillMode.hand)
+					p_owner._mark13840 = true
+					return
+				end
+			end
+
+			if not arg_9_0._inAntiHealLoop and arg_9_4 ~= 14693 and (arg_9_5 == Data.SkillMode.before_attack or arg_9_4 == Data.ATTACKING_SKILL_ID) then
+				local actionCard = arg_9_0:getActionCard()
+				local targetCard = (actionCard and actionCard._atkTargets and actionCard._atkTargets[1])
+				if targetCard and (targetCard:isInfoId(40728) or targetCard:hasSkillFast(14693)) and targetCard:canCastMonsterSkill() and targetCard._status == BattleData.CardStatus.board and targetCard:getBuffValue(true, BattleData.PositiveType.xyzMark) > 0 and targetCard._owner == p_owner then
+					targetCard:removeMark(BattleData.PositiveType.xyzMark, 1)
+					local healVal = arg_9_2 * 2
+					arg_9_0:incHp(p_owner._fortress, healVal, true, arg_9_3, 14693, arg_9_5, true)
+					return
+				end
+			end
+		end
+	end
+
 	if arg_9_1._type == Data.CardType.fortress and arg_9_2 > 0 and arg_9_0._isClient and ClientData._isAutoTesting then
 		arg_9_2 = 1
 	end
@@ -339,23 +555,54 @@ function var_0_0.addDamage(arg_9_0, arg_9_1, arg_9_2, arg_9_3, arg_9_4, arg_9_5)
 end
 
 function var_0_0.incAtk(arg_10_0, arg_10_1, arg_10_2, arg_10_3, arg_10_4, arg_10_5, arg_10_6)
+	if arg_10_2 < 0 and (arg_10_1:isInfoId(40728) or arg_10_1:hasSkillFast(14691)) and arg_10_1:canCastMonsterSkill() then
+		local caster = arg_10_0:getCardById(arg_10_4)
+		if caster and caster._owner ~= arg_10_1._owner then
+			local owner = arg_10_1._owner
+			if owner and owner._fortress then
+				arg_10_0:addDamage(owner._fortress, 500, arg_10_4, arg_10_5, arg_10_6)
+			end
+			return
+		end
+	end
+	local isIgnore = (arg_10_5 == 14673 or arg_10_4 == arg_10_1._id)
 	table.insert(arg_10_1._underSkills, {
 		_cid = arg_10_4,
 		_sid = arg_10_5,
 		_mode = arg_10_6,
 		_atkInc = arg_10_2,
-		_removable = arg_10_3
+		_removable = arg_10_3,
+		_ignoreDisable = isIgnore or nil
 	})
 	table.insert(arg_10_1._underSkills, {
 		_cid = arg_10_4,
 		_sid = arg_10_5,
 		_mode = arg_10_6,
 		_maxAtkInc = arg_10_2,
-		_removable = arg_10_3
+		_removable = arg_10_3,
+		_ignoreDisable = isIgnore or nil
 	})
 end
 
 function var_0_0.decAtk(arg_11_0, arg_11_1, arg_11_2, arg_11_3, arg_11_4, arg_11_5, arg_11_6)
+	if (arg_11_1:isInfoId(40728) or arg_11_1:hasSkillFast(14691)) and arg_11_1:canCastMonsterSkill() then
+		local caster = arg_11_0:getCardById(arg_11_4)
+		if caster and caster._owner ~= arg_11_1._owner then
+			local owner = arg_11_1._owner
+			if owner and owner._fortress then
+				arg_11_0:addDamage(owner._fortress, 500, arg_11_4, arg_11_5, arg_11_6)
+			end
+			return
+		end
+	end
+	if (arg_11_1:isInfoId(40730) or arg_11_1:hasSkillFast(14720)) and arg_11_1._status == BattleData.CardStatus.board and (arg_11_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) > 0 then
+		local caster = (arg_11_0.getCardById and arg_11_0:getCardById(arg_11_4)) or arg_11_0._actionCard
+		if caster and caster._owner ~= arg_11_1._owner then
+			if B.checkThacSamTargetNegate(arg_11_0, arg_11_1, caster) then
+				return
+			end
+		end
+	end
 	table.insert(arg_11_1._underSkills, {
 		_cid = arg_11_4,
 		_sid = arg_11_5,
@@ -390,15 +637,28 @@ function var_0_0.incAtkCount(arg_13_0, arg_13_1, arg_13_2, arg_13_3, arg_13_4, a
 end
 
 function var_0_0.incHp(arg_14_0, arg_14_1, arg_14_2, arg_14_3, arg_14_4, arg_14_5, arg_14_6, arg_14_7)
+	if arg_14_2 < 0 and (arg_14_1:isInfoId(40728) or arg_14_1:hasSkillFast(14691)) and arg_14_1:canCastMonsterSkill() then
+		local caster = arg_14_0:getCardById(arg_14_4)
+		if caster and caster._owner ~= arg_14_1._owner then
+			local owner = arg_14_1._owner
+			if owner and owner._fortress then
+				arg_14_0:addDamage(owner._fortress, 500, arg_14_4, arg_14_5, arg_14_6)
+			end
+			return
+		end
+	end
 	if arg_14_1._type == Data.CardType.fortress then
 		if arg_14_1._hp == 0 then
 			return
 		end
 
-		if not arg_14_7 and (arg_14_1._owner._opponent:hasBattleCardsBySkillFast("B", 6160) or #arg_14_1._owner._opponent:getCanEffectTrapCardsBySkills("S", {
+		if not arg_14_7 and not arg_14_0._inAntiHealLoop and (arg_14_1._owner._opponent:hasBattleCardsBySkillFast("B", 6160) or #arg_14_1._owner._opponent:getBattleCardsByInfoId("B", 12316) > 0 or arg_14_1._owner._opponent:hasBattleCardsBySkillFast("B", 14648) or #arg_14_1._owner._opponent:getCanEffectTrapCardsBySkills("S", {
 			8060
 		}) > 0) then
-			return arg_14_0:addDamage(arg_14_1, arg_14_1._owner:calcFortressDamage(arg_14_2, true), arg_14_4, arg_14_5, arg_14_6)
+			arg_14_0._inAntiHealLoop = true
+			local ret = arg_14_0:addDamage(arg_14_1, arg_14_1._owner:calcFortressDamage(arg_14_2, true), arg_14_4, arg_14_5, arg_14_6)
+			arg_14_0._inAntiHealLoop = nil
+			return ret
 		end
 	elseif arg_14_1:isLink() then
 		return
@@ -450,6 +710,24 @@ function var_0_0.incHp2(arg_15_0, arg_15_1, arg_15_2, arg_15_3, arg_15_4, arg_15
 end
 
 function var_0_0.decHp(arg_16_0, arg_16_1, arg_16_2, arg_16_3, arg_16_4, arg_16_5, arg_16_6)
+	if (arg_16_1:isInfoId(40728) or arg_16_1:hasSkillFast(14691)) and arg_16_1:canCastMonsterSkill() then
+		local caster = arg_16_0:getCardById(arg_16_4)
+		if caster and caster._owner ~= arg_16_1._owner then
+			local owner = arg_16_1._owner
+			if owner and owner._fortress then
+				arg_16_0:addDamage(owner._fortress, 500, arg_16_4, arg_16_5, arg_16_6)
+			end
+			return
+		end
+	end
+	if (arg_16_1:isInfoId(40730) or arg_16_1:hasSkillFast(14720)) and arg_16_1._status == BattleData.CardStatus.board and (arg_16_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) > 0 then
+		local caster = (arg_16_0.getCardById and arg_16_0:getCardById(arg_16_4)) or arg_16_0._actionCard
+		if caster and caster._owner ~= arg_16_1._owner then
+			if B.checkThacSamTargetNegate(arg_16_0, arg_16_1, caster) then
+				return
+			end
+		end
+	end
 	table.insert(arg_16_1._underSkills, {
 		_cid = arg_16_4,
 		_sid = arg_16_5,
@@ -489,6 +767,24 @@ function var_0_0.incSkillLevel(arg_18_0, arg_18_1, arg_18_2, arg_18_3, arg_18_4,
 end
 
 function var_0_0.incNegativeStatus(arg_19_0, arg_19_1, arg_19_2, arg_19_3, arg_19_4, arg_19_5, arg_19_6)
+	if (arg_19_1:isInfoId(40728) or arg_19_1:hasSkillFast(14691)) and arg_19_1:canCastMonsterSkill() then
+		local caster = arg_19_0:getCardById(arg_19_4)
+		if caster and caster._owner ~= arg_19_1._owner then
+			local owner = arg_19_1._owner
+			if owner and owner._fortress then
+				arg_19_0:addDamage(owner._fortress, 500, arg_19_4, arg_19_5, arg_19_6)
+			end
+			return
+		end
+	end
+	if (arg_19_1:isInfoId(40730) or arg_19_1:hasSkillFast(14720)) and arg_19_1._status == BattleData.CardStatus.board and (arg_19_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) > 0 then
+		local caster = (arg_19_0.getCardById and arg_19_0:getCardById(arg_19_4)) or arg_19_0._actionCard
+		if caster and caster._owner ~= arg_19_1._owner then
+			if B.checkThacSamTargetNegate(arg_19_0, arg_19_1, caster) then
+				return
+			end
+		end
+	end
 	if arg_19_1:hasBuff(true, BattleData.PositiveType.ignoreNegative) then
 		return
 	end
@@ -583,14 +879,17 @@ function var_0_0.incNegativeValue(arg_23_0, arg_23_1, arg_23_2, arg_23_3, arg_23
 		_aggregateType = arg_23_4
 	})
 
-	if not arg_23_8 then
-		arg_23_1._underSkills[#arg_23_1._underSkills - 1]._follower = arg_23_1._underSkills[#arg_23_1._underSkills]
+	if not arg_23_8 and #arg_23_1._underSkills > 1 then
+		local prevSkill = arg_23_1._underSkills[#arg_23_1._underSkills - 1]
+		if prevSkill then
+			prevSkill._follower = arg_23_1._underSkills[#arg_23_1._underSkills]
 
-		local var_23_0 = arg_23_1._underSkills[#arg_23_1._underSkills - 1]._incNegative[1]
+			local var_23_0 = prevSkill._incNegative and prevSkill._incNegative[1]
 
-		if arg_23_7 ~= Data.SkillMode.halo and var_23_0 >= BattleData.NegativeType.haloSkillBegin and var_23_0 <= BattleData.NegativeType.haloSkillEnd then
-			arg_23_1._underSkills[#arg_23_1._underSkills - 1]._ignoreDisable = true
-			arg_23_1._underSkills[#arg_23_1._underSkills]._ignoreDisable = true
+			if var_23_0 and arg_23_7 ~= Data.SkillMode.halo and var_23_0 >= BattleData.NegativeType.haloSkillBegin and var_23_0 <= BattleData.NegativeType.haloSkillEnd then
+				prevSkill._ignoreDisable = true
+				arg_23_1._underSkills[#arg_23_1._underSkills]._ignoreDisable = true
+			end
 		end
 	end
 end
@@ -606,14 +905,17 @@ function var_0_0.incPositiveValue(arg_24_0, arg_24_1, arg_24_2, arg_24_3, arg_24
 		_aggregateType = arg_24_4
 	})
 
-	if not arg_24_8 then
-		arg_24_1._underSkills[#arg_24_1._underSkills - 1]._follower = arg_24_1._underSkills[#arg_24_1._underSkills]
+	if not arg_24_8 and #arg_24_1._underSkills > 1 then
+		local prevSkill = arg_24_1._underSkills[#arg_24_1._underSkills - 1]
+		if prevSkill then
+			prevSkill._follower = arg_24_1._underSkills[#arg_24_1._underSkills]
 
-		local var_24_0 = arg_24_1._underSkills[#arg_24_1._underSkills - 1]._incPositive[1]
+			local var_24_0 = prevSkill._incPositive and prevSkill._incPositive[1]
 
-		if arg_24_7 ~= Data.SkillMode.halo and var_24_0 >= BattleData.PositiveType.haloSkillBegin and var_24_0 <= BattleData.PositiveType.haloSkillEnd then
-			arg_24_1._underSkills[#arg_24_1._underSkills - 1]._ignoreDisable = true
-			arg_24_1._underSkills[#arg_24_1._underSkills]._ignoreDisable = true
+			if var_24_0 and arg_24_7 ~= Data.SkillMode.halo and var_24_0 >= BattleData.PositiveType.haloSkillBegin and var_24_0 <= BattleData.PositiveType.haloSkillEnd then
+				prevSkill._ignoreDisable = true
+				arg_24_1._underSkills[#arg_24_1._underSkills]._ignoreDisable = true
+			end
 		end
 	end
 end
@@ -656,6 +958,26 @@ function var_0_0.changePosture(arg_27_0, arg_27_1, arg_27_2, arg_27_3, arg_27_4,
 	end
 
 	if arg_27_2 then
+		if not arg_27_6 and arg_27_0._opponent then
+			local oppo = arg_27_0._opponent
+			local var_mirrorTraps = oppo:getBattleCardsByInfoId("S", 30594)
+			if #var_mirrorTraps == 0 then
+				var_mirrorTraps = oppo:getBattleCardsBySkillFast("S", 14755)
+			end
+			if #var_mirrorTraps > 0 then
+				local hasAzOrHarpie = false
+				for _, c in ipairs(oppo:getBoardCards()) do
+					if c:isMonsterRare() and (c:isKeyword(6) or c:isKeyword(15) or c._infoId == 10083 or c._infoId == 10213 or c._infoId == 10287 or c._infoId == 10548 or c._infoId == 40726 or c._infoId == 40736) then
+						hasAzOrHarpie = true
+						break
+					end
+				end
+				if hasAzOrHarpie then
+					return false
+				end
+			end
+		end
+
 		if arg_27_1:hasBuff(true, BattleData.PositiveType.defendPosture) then
 			return false
 		end
@@ -732,6 +1054,13 @@ function var_0_0.changeCardCountry(arg_33_0, arg_33_1, arg_33_2, arg_33_3, arg_3
 end
 
 function var_0_0.bindCard(arg_34_0, arg_34_1, arg_34_2, arg_34_3, arg_34_4, arg_34_5)
+	if (arg_34_2 and (arg_34_2:isInfoId(40730) or arg_34_2:hasSkillFast(14720)) and arg_34_2._status == BattleData.CardStatus.board and (arg_34_2:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) > 0) then
+		if arg_34_1 and arg_34_1._owner ~= arg_34_2._owner then
+			if B.checkThacSamTargetNegate(arg_34_0, arg_34_2, arg_34_1) then
+				return
+			end
+		end
+	end
 	if B.isAlive(arg_34_2) then
 		arg_34_1:addBind(arg_34_2)
 		arg_34_2:addBind(arg_34_1)
@@ -925,9 +1254,12 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 		return true
 	end
 
+	local var_halo_dead_cache = {}
+
 	for iter_38_5 = 1, #arg_38_1._underSkills do
 		local var_38_19 = arg_38_1._underSkills[iter_38_5]
 		local var_is_halo_dead_19 = var_is_halo_under_skill_dead(var_38_19)
+		var_halo_dead_cache[iter_38_5] = var_is_halo_dead_19
 
 		if var_38_19._disabled ~= true and not var_is_halo_dead_19 then
 			for iter_38_6, iter_38_7 in pairs(var_38_19) do
@@ -968,7 +1300,10 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 
 	for iter_38_13 = 1, #arg_38_1._underSkills do
 		local var_38_20 = arg_38_1._underSkills[iter_38_13]
-		local var_is_halo_dead_20 = var_is_halo_under_skill_dead(var_38_20)
+		local var_is_halo_dead_20 = var_halo_dead_cache[iter_38_13]
+		if var_is_halo_dead_20 == nil then
+			var_is_halo_dead_20 = var_is_halo_under_skill_dead(var_38_20)
+		end
 
 		if var_38_20._disabled ~= true and not var_is_halo_dead_20 and not arg_38_0:isHaloUnderSkillDisabledByShield(arg_38_1, var_38_20) then
 			for iter_38_14, iter_38_15 in pairs(var_38_20) do
@@ -1081,6 +1416,16 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 					var_38_9[BattleData.PositiveType.defendPosture] = true
 					var_38_8[BattleData.PositiveType.defendPosture] = false
 				end
+			end
+		end
+
+		if (arg_38_1._infoId == 40730 or arg_38_1:hasSkillFast(14719)) and arg_38_1._status == BattleData.CardStatus.board then
+			if not arg_38_1._tsAwakened then
+				arg_38_1._negativeStatus[BattleData.NegativeType.manacle] = true
+				arg_38_1._negativeStatus[BattleData.NegativeType.atkFrozen] = true
+			else
+				arg_38_1._negativeStatus[BattleData.NegativeType.manacle] = false
+				arg_38_1._negativeStatus[BattleData.NegativeType.atkFrozen] = false
 			end
 		end
 	end
@@ -1199,6 +1544,20 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 				end
 
 				arg_38_1._hp = var_38_29 + Data._skillInfo[13722]._val[1]
+			elseif (arg_38_1._infoId == 12326 or arg_38_1:hasSkillFast(14707)) and arg_38_1._status == BattleData.CardStatus.board then
+				local marks = arg_38_1:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+				local rate = (marks >= 5) and 600 or 300
+				local bonus = marks * rate
+				arg_38_1._maxHp = 2800
+				arg_38_1._hp = math.max(1, 2800 + bonus + var_38_3)
+			elseif (arg_38_1._infoId == 40730 or arg_38_1:hasSkillFast(14719)) and arg_38_1._status == BattleData.CardStatus.board then
+				if arg_38_1._tsAwakened then
+					arg_38_1._maxHp = 16000
+					arg_38_1._hp = math.max(1, 16000 + var_38_3)
+				else
+					arg_38_1._maxHp = 8000
+					arg_38_1._hp = math.max(1, 8000 + var_38_3)
+				end
 			elseif arg_38_1:hasBuff(true, BattleData.PositiveType.lockDef) then
 				arg_38_1._hp = arg_38_1:getBuffValue(true, BattleData.PositiveType.lockDef)
 			end
@@ -1214,12 +1573,60 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 		arg_38_1._atk = math.max(math.min(var_38_32, var_38_31 + var_38_4), var_38_24)
 		arg_38_1._atkInc = arg_38_1._atkInc + (arg_38_1._atk - var_38_32)
 
-		if arg_38_1:isV12() then
+		if (arg_38_1._infoId == 12324 or arg_38_1:hasSkillFast(14700)) and arg_38_1._status == BattleData.CardStatus.board then
+			local owner = arg_38_1._owner or arg_38_0
+			local ht_val = math.max(0, (owner and owner._fortress and owner._fortress._hp) or arg_38_1._htAtk or 0)
+			arg_38_1._htAtk = ht_val
+			arg_38_1._maxAtk = 0
+			arg_38_1._atk = math.max(0, ht_val + var_38_5)
+		elseif (arg_38_1._infoId == 12326 or arg_38_1:hasSkillFast(14707)) and arg_38_1._status == BattleData.CardStatus.board then
+			local marks = arg_38_1:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+			local rate = (marks >= 5) and 600 or 300
+			local bonus = marks * rate
+			arg_38_1._maxAtk = 2000
+			arg_38_1._atk = math.max(0, 2000 + bonus + var_38_5)
+		elseif (arg_38_1._infoId == 40729 or arg_38_1:hasSkillFast(14711)) and arg_38_1._status == BattleData.CardStatus.board then
+			local eqCount = 0
+			if arg_38_1._binds then
+				for _, b in ipairs(arg_38_1._binds) do
+					if b and (b:isKeyword(13) or b:isKeyword(61) or (b._info and (b._info._keyword == 13 or b._info._keyword == 61))) then
+						eqCount = eqCount + 1
+					end
+				end
+			end
+			arg_38_1._maxAtk = 4000
+			arg_38_1._atk = math.max(0, 4000 + eqCount * 500 + var_38_5)
+		elseif (arg_38_1._infoId == 40730 or arg_38_1:hasSkillFast(14719)) and arg_38_1._status == BattleData.CardStatus.board then
+			if arg_38_1._tsAwakened then
+				arg_38_1._maxAtk = 16000
+				arg_38_1._atk = math.max(0, 16000 + var_38_5)
+			else
+				arg_38_1._maxAtk = 8000
+				arg_38_1._atk = math.max(0, 8000 + var_38_5)
+			end
+		elseif arg_38_1:isV12() then
 			arg_38_1._atk = arg_38_1._hp
 		elseif arg_38_1:hasCanCastMonsterSkillFast(13722) then
 			arg_38_1._atk = arg_38_1._hp
 		elseif arg_38_1:hasBuff(true, BattleData.PositiveType.lockAtk) then
 			arg_38_1._atk = arg_38_1:getBuffValue(true, BattleData.PositiveType.lockAtk)
+		end
+
+		if arg_38_1._status == BattleData.CardStatus.board and (arg_38_1:isMonsterRare() or arg_38_1._type == Data.CardType.monster) then
+			local c_cat = arg_38_1._category or (arg_38_1._info and arg_38_1._info._category)
+			local c_nat = arg_38_1._nature or (arg_38_1._info and arg_38_1._info._nature)
+			if c_cat == 1 and c_nat == 2 then
+				local c_owner = arg_38_1._owner or arg_38_0
+				local f_card = c_owner and c_owner._fieldCard
+				if f_card and f_card._status == BattleData.CardStatus.field and (f_card._infoId == 21134 or f_card:hasSkillFast(7834)) then
+					local my_g = #c_owner:getBattleCardsByType("G", Data.CardType.monster)
+					local opp_g = (c_owner._opponent and #c_owner._opponent:getBattleCardsByType("G", Data.CardType.monster)) or 0
+					local lht_atk = (my_g + opp_g) * 100
+					if lht_atk > 0 then
+						arg_38_1._atk = arg_38_1._atk + lht_atk
+					end
+				end
+			end
 		end
 
 		arg_38_1._haloedMaxAtkInc = var_38_4
@@ -1270,7 +1677,11 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 		arg_38_1._lastAttackDamage = 0
 	end
 
-	if var_38_11 ~= 0 then
+	local fortressHpDropped = arg_38_1._type == Data.CardType.fortress and arg_38_1._old._hp ~= nil and arg_38_1._hp < arg_38_1._old._hp
+	if var_38_11 ~= 0 or fortressHpDropped then
+		if var_38_11 == 0 and fortressHpDropped then
+			var_38_11 = arg_38_1._old._hp - arg_38_1._hp
+		end
 		arg_38_1._changed._damage = var_38_11
 
 		if arg_38_1._type == Data.CardType.fortress then
@@ -1341,6 +1752,17 @@ function var_0_0.genAttackTarget(arg_40_0, arg_40_1)
 		arg_40_1._atkTargets = {
 			arg_40_1._atkTarget
 		}
+		if (arg_40_1._atkTarget:isInfoId(12326) or arg_40_1._atkTarget:hasSkillFast(14708)) and arg_40_1:isMonsterRare() then
+			arg_40_1._mark9617 = true
+			arg_40_1._isCardSkillDisabledInRound = true
+			if arg_40_1.disableUnderSkills then
+				arg_40_1:disableUnderSkills()
+			end
+			arg_40_0:incNegativeStatus(arg_40_1, {
+				BattleData.NegativeType.disableSkill
+			}, false, arg_40_1._atkTarget._id, 14708, Data.SkillMode.once)
+			arg_40_0:incNegativeValue(arg_40_1, BattleData.NegativeType.disableSkill, 2, Data.AggregateType.max, arg_40_1._atkTarget._id, 14708, Data.SkillMode.once)
+		end
 
 		return
 	end
@@ -1513,6 +1935,18 @@ function var_0_0.genAttackTarget(arg_40_0, arg_40_1)
 	arg_40_1._atkTargets = {
 		var_40_8
 	}
+
+	if var_40_8 and (var_40_8:isInfoId(12326) or var_40_8:hasSkillFast(14708)) and arg_40_1:isMonsterRare() then
+		arg_40_1._mark9617 = true
+		arg_40_1._isCardSkillDisabledInRound = true
+		if arg_40_1.disableUnderSkills then
+			arg_40_1:disableUnderSkills()
+		end
+		arg_40_0:incNegativeStatus(arg_40_1, {
+			BattleData.NegativeType.disableSkill
+		}, false, var_40_8._id, 14708, Data.SkillMode.once)
+		arg_40_0:incNegativeValue(arg_40_1, BattleData.NegativeType.disableSkill, 2, Data.AggregateType.max, var_40_8._id, 14708, Data.SkillMode.once)
+	end
 end
 
 function var_0_0.getActionPlayer(arg_41_0)
@@ -1719,20 +2153,37 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 		return false
 	end
 
-	if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend == 1 or Data._skillInfo[arg_51_2._sid]._isIgnoreDefend == 9 then
+	local isThacSamAwakened = (arg_51_1:isInfoId(40730) or arg_51_1:hasSkillFast(14719)) and (arg_51_1._tsAwakened or arg_51_1:hasSkillFast(12002) or (arg_51_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
+
+	if not isThacSamAwakened and (Data._skillInfo[arg_51_2._sid]._isIgnoreDefend == 1 or Data._skillInfo[arg_51_2._sid]._isIgnoreDefend == 9) then
 		return false
 	end
 
 	local var_51_0 = arg_51_0:getCardById(arg_51_2._cid)
 
 	if var_51_0 == nil then
+		if isThacSamAwakened and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMonster) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMagic) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoTrap)) then
+			return true
+		end
+		return false
+	end
+
+	if var_51_0 == arg_51_1 or arg_51_2._cid == arg_51_1._id or arg_51_2._sid == 14632 or arg_51_2._sid == 14719 or (arg_51_2._sid >= 14706 and arg_51_2._sid <= 14710) then
 		return false
 	end
 
 	local isFromOppo = (arg_51_1._owner ~= var_51_0._owner)
 
+	if (arg_51_1:isInfoId(40728) or arg_51_1:hasSkillFast(14691)) and arg_51_1:canCastMonsterSkill() and isFromOppo then
+		local owner = arg_51_1._owner
+		if owner and owner._fortress then
+			arg_51_0:addDamage(owner._fortress, 500, arg_51_2._cid, arg_51_2._sid, arg_51_2._mode)
+		end
+		return true
+	end
+
 	if var_51_0._type == Data.CardType.monster or var_51_0._type == Data.CardType.rare then
-		if arg_51_1:hasBuff(true, BattleData.PositiveType.shieldMonster) then
+		if isFromOppo and arg_51_1:hasBuff(true, BattleData.PositiveType.shieldMonster) then
 			return true
 		end
 
@@ -1741,7 +2192,7 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 				return true
 			end
 
-			if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMonster) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoMonster)) then
+			if (isThacSamAwakened or (Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8)) and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMonster) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoMonster)) then
 				return true
 			end
 		end
@@ -1755,7 +2206,7 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 				return true
 			end
 
-			if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMagic) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoMagic)) then
+			if (isThacSamAwakened or (Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8)) and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoMagic) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoMagic)) then
 				return true
 			end
 		end
@@ -1769,7 +2220,7 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 				return true
 			end
 
-			if Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8 and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoTrap) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoTrap)) then
+			if (isThacSamAwakened or (Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 7 and Data._skillInfo[arg_51_2._sid]._isIgnoreDefend ~= 8)) and (arg_51_1:hasBuff(true, BattleData.PositiveType.shieldOppoTrap) or arg_51_1:hasBuff(true, BattleData.PositiveType.shieldHaloOppoTrap)) then
 				return true
 			end
 		end
@@ -1791,7 +2242,7 @@ function var_0_0.addRoundDuration(arg_52_0)
 
 	local var_52_0 = arg_52_0._round == 1 and arg_52_0._roundTimeDelta1 or arg_52_0._roundTimeDelta
 	if not var_52_0 or var_52_0 <= 0 then
-		var_52_0 = 2
+		var_52_0 = 6
 	end
 
 	local var_52_1 = arg_52_0._round == 1 and arg_52_0._roundTimeMax1 or arg_52_0._roundTimeMax
@@ -1810,6 +2261,10 @@ function var_0_0.addRoundDuration(arg_52_0)
 	if battleUi and battleUi._isOnlinePvp and type(battleUi.addPvpRoundSeconds) == "function" then
 		battleUi:addPvpRoundSeconds(var_52_0, var_52_1)
 	end
+end
+
+function var_0_0.getCardFromPile(arg_53_0)
+	return arg_53_0._pileCards and arg_53_0._pileCards[1]
 end
 
 return var_0_0

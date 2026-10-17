@@ -184,7 +184,7 @@ function var_0_0.onEnter(arg_11_0)
 	table.insert(arg_11_0._listeners, var_11_0)
 
 	local var_11_1 = lc.addEventListener(Data.Event.bonus_dirty, function(arg_13_0)
-		if arg_13_0._data._info._type == Data.BonusType.fund_all then
+		if arg_13_0._data and arg_13_0._data._info and arg_13_0._data._info._type == Data.BonusType.fund_all then
 			arg_11_0._buyCount:setString(P._playerBonus._bonusFundAll[1]._value)
 			arg_11_0:checkBuyFund()
 		end

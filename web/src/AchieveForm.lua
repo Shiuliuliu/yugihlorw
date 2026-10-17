@@ -308,7 +308,7 @@ function var_0_0.onEnter(arg_8_0)
 	table.insert(arg_8_0._listeners, var_8_2)
 
 	local var_8_3 = lc.addEventListener(Data.Event.bonus_dirty, function(arg_12_0)
-		if arg_12_0._data._info._type == Data.BonusType.grain then
+		if arg_12_0._data and arg_12_0._data._info and arg_12_0._data._info._type == Data.BonusType.grain then
 			arg_8_0:showTabFlag()
 		end
 	end)

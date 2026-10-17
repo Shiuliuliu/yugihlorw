@@ -18,6 +18,11 @@ function var_0_0.create(arg_2_0)
 end
 
 function var_0_0.onCleanup(arg_4_0)
+	-- In battle scenes, retain particle textures in cache to eliminate micro-stutters
+	if lc._runningScene and (lc._runningScene._sceneId == ClientData.SceneId.battle or lc._runningScene._sceneId == ClientData.SceneId.battle_test) then
+		return
+	end
+
 	if arg_4_0._data == nil then
 		return
 	end
@@ -38,13 +43,22 @@ function var_0_0.onCleanup(arg_4_0)
 end
 
 function var_0_0.init(arg_5_0, arg_5_1)
-	local var_5_0
+	if not Data._particleInfoByName and Data._particleInfo then
+		Data._particleInfoByName = {}
+		for _, iter_5_1 in pairs(Data._particleInfo) do
+			if iter_5_1 and iter_5_1.name then
+				Data._particleInfoByName[iter_5_1.name] = iter_5_1
+			end
+		end
+	end
 
-	for iter_5_0, iter_5_1 in pairs(Data._particleInfo) do
-		if arg_5_1 == iter_5_1.name then
-			var_5_0 = iter_5_1
-
-			break
+	local var_5_0 = Data._particleInfoByName and Data._particleInfoByName[arg_5_1]
+	if var_5_0 == nil and Data._particleInfo then
+		for iter_5_0, iter_5_1 in pairs(Data._particleInfo) do
+			if arg_5_1 == iter_5_1.name then
+				var_5_0 = iter_5_1
+				break
+			end
 		end
 	end
 

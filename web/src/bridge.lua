@@ -21,6 +21,7 @@ local OP_GET      = 5
 local OP_INDEX    = 6
 local OP_SETINDEX = 7
 local OP_BINCALL  = 8
+local OP_ALIVE    = 9
 
 local jsb = __jsb
 
@@ -62,7 +63,18 @@ instmt.__index = function(self, key)
 	if hit == nil then
 		if jsb(OP_MEMBER, rawget(self, "__h"), key) == "f" then
 			hit = function(this, ...)
-				return jsb(OP_CALL, rawget(this, "__h"), key, this, ...)
+				if type(this) == "table" and rawget(this, "__h") ~= nil then
+					return jsb(OP_CALL, rawget(this, "__h"), key, this, ...)
+				else
+					local self_h = type(self) == "table" and rawget(self, "__h") or nil
+					if self_h then
+						if this == nil then
+							return jsb(OP_CALL, self_h, key, self, ...)
+						else
+							return jsb(OP_CALL, self_h, key, self, this, ...)
+						end
+					end
+				end
 			end
 		else
 			hit = false
@@ -83,6 +95,15 @@ instmt.__tostring = function(self)
 		.. tostring(rawget(self, "__h")) .. ">"
 end
 
+-- Is the JS object behind a proxy still there? A node is held weakly on the
+-- JS side (lua.js), the way the device frees a node that left the scene graph
+-- without a retain; tolua.isnull asks this.
+function __jsb_alive(p)
+	local h = rawget(p, "__h")
+
+	return h ~= nil and jsb(OP_ALIVE, h) == true
+end
+
 -- live proxies, weak so a node dropped by Lua can be released on the JS side
 local proxies = setmetatable({}, { __mode = "v" })
 
@@ -100,7 +121,13 @@ function __jsb_newproxy(h, cls)
 	local sentinel = newproxy(true)
 
 	getmetatable(sentinel).__gc = function()
-		jsb(OP_RELEASE, h)
+		-- The dead proxy leaves `proxies` before this runs, and JS may have
+		-- handed the same object over again in between: that made a new
+		-- proxy under the same handle, which releasing now would kill (a
+		-- touch read inside a battle drag then came back as a dead handle).
+		if proxies[h] == nil then
+			jsb(OP_RELEASE, h)
+		end
 	end
 
 	rawset(p, "__gcs", sentinel)

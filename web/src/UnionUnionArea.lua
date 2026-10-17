@@ -125,7 +125,9 @@ function var_0_0.initTopArea(arg_4_0)
 	local var_4_15 = ClientView.createTTF("", ClientView.FontSize.S2, nil, cc.size(300, 0), cc.TEXT_ALIGNMENT_LEFT)
 
 	var_4_15:setAnchorPoint(0, 1)
-	var_4_15:setLineBreakWithoutSpace(true)
+	if var_4_15.setLineBreakWithoutSpace then
+		var_4_15:setLineBreakWithoutSpace(true)
+	end
 	lc.addChildToPos(var_4_1, var_4_15, cc.p(math.floor(lc.left(var_4_12) + 20), lc.bottom(var_4_13) - 10))
 
 	arg_4_0._desc = var_4_15
@@ -206,7 +208,7 @@ function var_0_0.updateMemberList(arg_8_0, arg_8_1)
 
 	var_8_0:bindData(arg_8_1, function(arg_10_0, arg_10_1)
 		arg_8_0:setOrCreateMemberItem(arg_10_0, arg_10_1)
-	end, math.min(6, #arg_8_1))
+	end, #arg_8_1)
 
 	for iter_8_0 = 1, var_8_0._cacheCount do
 		local var_8_1 = arg_8_0:setOrCreateMemberItem(nil, arg_8_1[iter_8_0])

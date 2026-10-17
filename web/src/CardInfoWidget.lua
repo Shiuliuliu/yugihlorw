@@ -69,7 +69,7 @@ function var_0_0.updateList(arg_3_0)
 		var_3_0:pushBackCustomItem(arg_3_0:createMerge())
 	end
 
-	if not arg_3_0._isBrief and ClientData._userRegion and #Str(var_3_1._guideSid) > 1 then
+	if not arg_3_0._isBrief and ClientData._userRegion and var_3_1._guideSid and var_3_1._guideSid ~= 0 and var_3_1._guideSid ~= var_3_1._descSid and Str(var_3_1._guideSid) ~= "0" and Str(var_3_1._guideSid) ~= Str(var_3_1._descSid) and #Str(var_3_1._guideSid) > 1 then
 		var_3_0:pushBackCustomItem(arg_3_0:createGuide())
 	end
 
@@ -179,7 +179,19 @@ end
 function var_0_0.createKeyword(arg_9_0)
 	local var_9_0, var_9_1, var_9_2, var_9_3 = arg_9_0:createItemBegin(Str(STR.CARD_KEYWORD))
 	local var_9_4 = Data.getInfo(var_9_1)
-	local var_9_5 = var_9_0:createText(Str(STR.CARD_KEYWORD_BEGIN + var_9_4._keyword), ClientView.COLOR_TEXT_LIGHT, var_9_2 - 10)
+	local kwStr
+	if var_9_4._id == 21146 or var_9_4._id == 30594 or var_9_4._id == 30595 then
+		kwStr = Str(STR.CARD_KEYWORD_BEGIN + 6) .. ", " .. Str(STR.CARD_KEYWORD_BEGIN + 7)
+	elseif var_9_4._keyword == 300 then
+		kwStr = "Tru tiên"
+	elseif var_9_4._keyword == 301 then
+		kwStr = "Tiên nghịch"
+	elseif var_9_4._keyword == 302 then
+		kwStr = "Hiệp sĩ mặt nạ"
+	else
+		kwStr = Str(STR.CARD_KEYWORD_BEGIN + var_9_4._keyword)
+	end
+	local var_9_5 = var_9_0:createText(kwStr, ClientView.COLOR_TEXT_LIGHT, var_9_2 - 10)
 
 	lc.addChildToPos(var_9_0, var_9_5, cc.p(var_9_2 / 2, var_9_3))
 

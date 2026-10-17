@@ -369,25 +369,18 @@ function var_0_0.composeCardByFragment(arg_10_0, arg_10_1, arg_10_2, arg_10_3, a
 end
 
 function var_0_0.decomposeCard(arg_11_0, arg_11_1, arg_11_2, arg_11_3)
-	local var_11_0 = arg_11_0:getDecomposeGold(arg_11_1) * arg_11_2
-
-	if not P:hasResource(Data.ResType.gold, var_11_0) then
-		return Data.ErrorType.need_more_gold
-	end
-
 	local var_11_1 = Data.getType(arg_11_1)
 
-	if arg_11_2 > arg_11_0._cards[var_11_1][arg_11_1] then
+	if not arg_11_0._cards[var_11_1] or arg_11_2 > (arg_11_0._cards[var_11_1][arg_11_1] or 0) then
 		return Data.ErrorType.need_more_samecard
 	end
 
 	local var_11_2, var_11_3 = arg_11_0:getDecomposeDust(arg_11_1)
-	local var_11_4 = var_11_3 * arg_11_2
+	local var_11_4 = (var_11_3 or 0) * arg_11_2
 
 	if not arg_11_3 then
 		arg_11_0:removeCard(arg_11_1, arg_11_2)
-		P:changeResource(Data.ResType.gold, -var_11_0)
-		P:changeResource(var_11_2, var_11_4)
+		P:changeResource(Data.ResType.gold, var_11_4)
 	end
 
 	return Data.ErrorType.ok, var_11_4
@@ -601,19 +594,17 @@ function var_0_0.getComposeGold(arg_21_0, arg_21_1)
 end
 
 function var_0_0.getDecomposeDust(arg_22_0, arg_22_1)
-	local var_22_0, var_22_1 = Data.getInfo(arg_22_1)
-	local var_22_2 = 1
-	local var_22_3 = math.min(20, math.max(1, ((var_22_0 and var_22_0._quality or 1) - 1) * Data.CARD_MAX_LEVEL + var_22_2))
-
-	if var_22_1 == Data.CardType.monster then
-		return Data.ResType.gold, Data._globalInfo._monsterDecomposeDust[var_22_3]
-	elseif var_22_1 == Data.CardType.magic then
-		return Data.ResType.gold, Data._globalInfo._magicDecomposeDust[var_22_3]
-	elseif var_22_1 == Data.CardType.trap then
-		return Data.ResType.gold, Data._globalInfo._trapDecomposeDust[var_22_3]
-	elseif var_22_1 == Data.CardType.rare then
-		return Data.ResType.gold, (Data._globalInfo._rareDecomposeDust and Data._globalInfo._rareDecomposeDust[var_22_3]) or Data._globalInfo._trapDecomposeDust[var_22_3]
+	local var_22_0 = Data.getInfo(arg_22_1)
+	local q = var_22_0 and var_22_0._quality or 1
+	local val = 5
+	if q >= Data.CardQuality.HR then val = 200
+	elseif q >= Data.CardQuality.GR then val = 150
+	elseif q >= Data.CardQuality.UR then val = 100
+	elseif q >= Data.CardQuality.SR then val = 50
+	elseif q >= Data.CardQuality.R then val = 10
+	else val = 5
 	end
+	return Data.ResType.gold, val
 end
 
 function var_0_0.getRecoveryDust(arg_23_0, arg_23_1)
@@ -639,19 +630,7 @@ function var_0_0.getSmeltDust(arg_25_0)
 end
 
 function var_0_0.getDecomposeGold(arg_26_0, arg_26_1)
-	local var_26_0, var_26_1 = Data.getInfo(arg_26_1)
-	local var_26_2 = 1
-	local var_26_3 = math.min(20, math.max(1, ((var_26_0 and var_26_0._quality or 1) - 1) * Data.CARD_MAX_LEVEL + var_26_2))
-
-	if var_26_1 == Data.CardType.monster then
-		return Data._globalInfo._monsterDecomposeGold[var_26_3]
-	elseif var_26_1 == Data.CardType.magic then
-		return Data._globalInfo._magicDecomposeGold[var_26_3]
-	elseif var_26_1 == Data.CardType.trap then
-		return Data._globalInfo._trapDecomposeGold[var_26_3]
-	elseif var_26_1 == Data.CardType.rare then
-		return Data._globalInfo._rareDecomposeGold[var_26_3]
-	end
+	return 0
 end
 
 function var_0_0.getCards(arg_27_0, arg_27_1)

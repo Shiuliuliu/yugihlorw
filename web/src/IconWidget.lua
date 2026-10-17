@@ -259,7 +259,8 @@ function var_0_0.resetIcon(arg_9_0)
 			end
 		elseif arg_10_1 == ccui.TouchEventType.ended or arg_10_1 == ccui.TouchEventType.canceled then
 			if arg_9_0._touchHandles and arg_9_0._touchHandles._endHandle then
-				arg_9_0._touchHandles._endHandle(arg_10_0, arg_10_2)
+				local _ok, _err = pcall(arg_9_0._touchHandles._endHandle, arg_10_0, arg_10_2)
+				if not _ok then print("[IconWidget] _endHandle error: " .. tostring(_err)) end
 			end
 
 			arg_9_0:cancelLongPress()

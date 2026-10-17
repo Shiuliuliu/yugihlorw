@@ -74,7 +74,7 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 		arg_1_0:efcDragonBones3("guanchuan", "effect2", 1, true, arg_1_1, true, cc.p(0, 20)):setRotation(var_1_11)
 	elseif var_1_0 == 2002 or var_1_0 == 2006 or var_1_0 == 9718 then
 		arg_1_0:efcDragonBones3("wlfy", "effect", 2.4, true, arg_1_1, false, cc.p(0, -10))
-	elseif var_1_0 == 1095 or var_1_0 == 2013 or var_1_0 == 3001 or var_1_0 == 3100 or var_1_0 >= 3279 and var_1_0 <= 3287 or var_1_0 == 3918 or var_1_0 == 6343 or var_1_0 == 8063 or var_1_0 == 8146 or var_1_0 == 9821 or var_1_0 == 13509 or var_1_0 == 2036 and var_1_3._lastCount ~= nil then
+	elseif var_1_0 == 1095 or var_1_0 == 2013 or var_1_0 == 3001 or var_1_0 == 3100 or var_1_0 >= 3279 and var_1_0 <= 3287 or var_1_0 == 3918 or var_1_0 == 6343 or var_1_0 == 8063 or var_1_0 == 8146 or var_1_0 == 9821 or var_1_0 == 13509 or var_1_0 == 14728 or var_1_0 == 2036 and var_1_3._lastCount ~= nil then
 		local var_1_12 = "effect"
 		local var_1_13 = var_1_3._lastCount == 0 and "back" or "positive"
 		local var_1_14 = arg_1_0:efcDragonBones(nil, "touyingbi", cc.p(ClientView.SCR_CW, lc.h(arg_1_0._battleUi) / 2), false, false, var_1_12, 1)
@@ -205,7 +205,7 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 
 		lc.addChildToCenter(arg_1_0._battleUi, var_1_42)
 		var_1_42:setRotation(arg_1_0._isController and 0 or 180)
-	elseif var_1_0 == 4048 or var_1_0 == 4171 or var_1_0 == 4186 or var_1_0 == 4207 or var_1_0 == 4290 or var_1_0 == 4305 or var_1_0 == 4454 or var_1_0 == 4497 or var_1_0 == 4511 or var_1_0 == 4514 or var_1_0 == 4521 or var_1_0 == 4526 or var_1_0 == 4530 or var_1_0 == 4735 or var_1_0 == 4736 or var_1_0 == 4740 or var_1_0 == 4748 or var_1_0 == 4836 or var_1_0 == 4861 or var_1_0 == 4957 or var_1_0 == 4978 or var_1_0 == 4979 or var_1_0 == 4980 or var_1_0 == 5244 or var_1_0 == 5280 or var_1_0 == 5298 or var_1_0 == 5430 or var_1_0 == 5431 or var_1_0 == 5452 or var_1_0 == 5470 or var_1_0 == 5485 or var_1_0 == 5544 or var_1_0 == 5549 or var_1_0 == 7144 or var_1_0 == 7373 or var_1_0 == 7544 or var_1_0 == 7579 or var_1_0 == 7622 or var_1_0 == 7631 or var_1_0 == 7673 or var_1_0 == 7674 or var_1_0 == 7693 or var_1_0 == 7731 or var_1_0 == 7732 or var_1_0 == 7753 or var_1_0 == 7785 or var_1_0 == 7831 or var_1_0 == 9796 or var_1_0 == 9868 then
+	elseif var_1_0 == 4048 or var_1_0 == 4171 or var_1_0 == 4186 or var_1_0 == 4207 or var_1_0 == 4290 or var_1_0 == 4305 or var_1_0 == 4454 or var_1_0 == 4497 or var_1_0 == 4511 or var_1_0 == 4514 or var_1_0 == 4521 or var_1_0 == 4526 or var_1_0 == 4530 or var_1_0 == 4735 or var_1_0 == 4736 or var_1_0 == 4740 or var_1_0 == 4748 or var_1_0 == 4836 or var_1_0 == 4861 or var_1_0 == 4957 or var_1_0 == 4978 or var_1_0 == 4979 or var_1_0 == 4980 or var_1_0 == 5244 or var_1_0 == 5280 or var_1_0 == 5298 or var_1_0 == 5430 or var_1_0 == 5431 or var_1_0 == 5452 or var_1_0 == 5470 or var_1_0 == 5485 or var_1_0 == 5544 or var_1_0 == 5549 or var_1_0 == 7144 or var_1_0 == 7373 or var_1_0 == 7544 or var_1_0 == 7579 or var_1_0 == 7622 or var_1_0 == 7631 or var_1_0 == 7673 or var_1_0 == 7674 or var_1_0 == 7693 or var_1_0 == 7731 or var_1_0 == 7732 or var_1_0 == 7753 or var_1_0 == 7785 or var_1_0 == 7831 or var_1_0 == 9796 or var_1_0 == 9868 or var_1_0 == 14733 or var_1_0 == 14734 or var_1_0 == 14743 or var_1_0 == 14753 then
 		local var_1_43 = cc.Node:create()
 
 		lc.addChildToCenter(arg_1_0._battleUi, var_1_43, BattleUi.ZOrder.effect)
@@ -279,7 +279,7 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 				0
 			}
 		end
-	elseif var_1_0 == 3201 or var_1_0 == 3398 or var_1_0 == 3452 or var_1_0 == 3453 or var_1_0 == 3472 or var_1_0 == 6567 then
+	elseif var_1_0 == 3201 or var_1_0 == 3398 or var_1_0 == 3452 or var_1_0 == 3453 or var_1_0 == 3472 or var_1_0 == 6567 or var_1_0 == 14747 then
 		for iter_1_6 = 1, 3 do
 			local var_1_63 = "effect"
 			local var_1_64 = band(var_1_3._lastCount, 2^(iter_1_6 - 1)) == 0 and "back" or "positive"

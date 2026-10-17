@@ -130,6 +130,7 @@ function var_0_25.init(arg_3_0, arg_3_1)
 	arg_3_0._vipExp = arg_3_1.user_info.vip_exp
 	arg_3_0._trophy = arg_3_1.user_info.trophy
 	arg_3_0._avatar = arg_3_1.user_info.avatar
+	arg_3_0._characterId = (arg_3_1.user_info and arg_3_1.user_info.character_id) or (arg_3_0._avatar >= 52000 and (Data._skinInfo[arg_3_0._avatar] and Data._skinInfo[arg_3_0._avatar]._infoId)) or math.floor(arg_3_0._avatar / 100)
 	arg_3_0._loginTime = arg_3_1.user_info.last_login / 1000
 	arg_3_0._regTime = arg_3_1.user_info.reg_date / 1000
 	arg_3_0._timeOffset = arg_3_1.time_offset / 1000
@@ -226,6 +227,8 @@ function var_0_25.init(arg_3_0, arg_3_1)
 	arg_3_0._dailyCopyBoss = arg_3_1.user_count.rob_gold
 	arg_3_0._dailyDonate = band(arg_3_1.user_count.donate, 128) / 128
 	arg_3_0._dailyIngotDonate = band(arg_3_1.user_count.donate, 127)
+	arg_3_0._dailyFreeDonate = 0
+	arg_3_0._dailyGoldDonate = 0
 	arg_3_0._dailyWorship = arg_3_1.user_count.worship
 	arg_3_0._dailyChallengeElite = arg_3_1.user_count.challenge_elite
 	arg_3_0._dailyChallengeCommander = arg_3_1.user_count.challenge_commander
@@ -432,12 +435,40 @@ function var_0_25.init(arg_3_0, arg_3_1)
 		arg_3_0._chatBanList[iter_3_17] = true
 	end
 
-	arg_3_0._curTroopIndex = lc.readConfig(ClientData.ConfigKey.cur_troop, 1)
+	local savedTroop = nil
+	if lc.UserDefault ~= nil then
+		local pTroop = lc.UserDefault:getIntegerForKey("last_used_troop_" .. tostring(arg_3_0._id or 0), 0)
+		if pTroop and pTroop > 0 then
+			savedTroop = pTroop
+		else
+			local gTroop = lc.UserDefault:getIntegerForKey("last_used_troop", 0)
+			if gTroop and gTroop > 0 then
+				savedTroop = gTroop
+			end
+		end
+	end
+
+	if not savedTroop or savedTroop < 1 then
+		savedTroop = lc.readConfig(ClientData.ConfigKey.cur_troop, 1)
+	end
+
+	arg_3_0._curTroopIndex = savedTroop
 
 	if arg_3_0._curTroopIndex < 1 or arg_3_0._curTroopIndex > arg_3_0:getMaxTroopCount() then
 		arg_3_0._curTroopIndex = 1
+	end
 
-		lc.writeConfig(ClientData.ConfigKey.cur_troop, arg_3_0._curTroopIndex)
+	if arg_3_0._curTroopIndex > 1 and arg_3_0._playerCard and arg_3_0._playerCard:isTroopEmpty(arg_3_0._curTroopIndex) and not arg_3_0._playerCard:isTroopEmpty(1) then
+		arg_3_0._curTroopIndex = 1
+	end
+
+	lc.writeConfig(ClientData.ConfigKey.cur_troop, arg_3_0._curTroopIndex)
+	if lc.UserDefault ~= nil then
+		lc.UserDefault:setIntegerForKey("last_used_troop_" .. tostring(arg_3_0._id or 0), arg_3_0._curTroopIndex)
+		lc.UserDefault:setIntegerForKey("last_used_troop", arg_3_0._curTroopIndex)
+		if lc.UserDefault.flush then
+			pcall(function() lc.UserDefault:flush() end)
+		end
 	end
 
 	if lc.readConfig(ClientData.ConfigKey.lock_level_city) == nil then
@@ -530,6 +561,13 @@ function var_0_25.setCurrentTroopIndex(arg_8_0, arg_8_1, arg_8_2)
 	arg_8_0._curTroopIndex = arg_8_1
 
 	lc.writeConfig(ClientData.ConfigKey.cur_troop, arg_8_1)
+	if lc.UserDefault ~= nil then
+		lc.UserDefault:setIntegerForKey("last_used_troop_" .. tostring(arg_8_0._id or 0), arg_8_1)
+		lc.UserDefault:setIntegerForKey("last_used_troop", arg_8_1)
+		if lc.UserDefault.flush then
+			pcall(function() lc.UserDefault:flush() end)
+		end
+	end
 
 	return true
 end
@@ -1116,7 +1154,10 @@ function var_0_25.changeIcon(arg_37_0, arg_37_1)
 	end
 
 	arg_37_0._avatar = arg_37_1
-	arg_37_0._characters[arg_37_0:getCharacterId()]._avatar = arg_37_1
+	local curChar = arg_37_0:getCharacterId()
+	if arg_37_0._characters[curChar] then
+		arg_37_0._characters[curChar]._avatar = arg_37_1
+	end
 
 	arg_37_0:sendIconDirty()
 
@@ -1140,9 +1181,13 @@ function var_0_25.changeCharacter(arg_39_0, arg_39_1, arg_39_2)
 		return false
 	end
 
-	arg_39_0:changeIcon(arg_39_0._characters[arg_39_1]._avatar)
+	arg_39_0._characterId = arg_39_1
+
+	local targetAvatar = (arg_39_0._characters[arg_39_1] and arg_39_0._characters[arg_39_1]._avatar) or (arg_39_1 * 100 + 1)
+	arg_39_0:changeIcon(targetAvatar)
 
 	if arg_39_0:getCharacterId() ~= arg_39_1 then
+		arg_39_0._characterId = arg_39_1
 		arg_39_0:changeIcon(arg_39_1 * 100 + 1)
 	end
 
@@ -1391,7 +1436,7 @@ function var_0_25.filterByOption(arg_56_0, arg_56_1, arg_56_2)
 	for iter_56_0, iter_56_1 in ipairs(arg_56_1) do
 		local var_56_1 = type(iter_56_1) == "number" and Data.getInfo(iter_56_1) or iter_56_1
 
-		if band(var_56_1._option, arg_56_2) > 0 then
+		if var_56_1 and type(var_56_1) == "table" and var_56_1._option and band(var_56_1._option, arg_56_2) > 0 then
 			table.insert(var_56_0, iter_56_1)
 		end
 	end
@@ -1403,7 +1448,8 @@ function var_0_25.filterByCategory(arg_57_0, arg_57_1, arg_57_2)
 	local var_57_0 = {}
 
 	for iter_57_0, iter_57_1 in ipairs(arg_57_1) do
-		if (type(iter_57_1) == "number" and Data.getInfo(iter_57_1) or iter_57_1)._category == arg_57_2 then
+		local var_info = type(iter_57_1) == "number" and Data.getInfo(iter_57_1) or iter_57_1
+		if var_info and type(var_info) == "table" and var_info._category == arg_57_2 then
 			table.insert(var_57_0, iter_57_1)
 		end
 	end
@@ -1415,7 +1461,8 @@ function var_0_25.filterByQuality(arg_58_0, arg_58_1, arg_58_2)
 	local var_58_0 = {}
 
 	for iter_58_0, iter_58_1 in ipairs(arg_58_1) do
-		if (type(iter_58_1) == "number" and Data.getInfo(iter_58_1) or iter_58_1)._quality == arg_58_2 then
+		local var_info = type(iter_58_1) == "number" and Data.getInfo(iter_58_1) or iter_58_1
+		if var_info and type(var_info) == "table" and var_info._quality == arg_58_2 then
 			table.insert(var_58_0, iter_58_1)
 		end
 	end
@@ -1427,7 +1474,8 @@ function var_0_25.filterByNature(arg_59_0, arg_59_1, arg_59_2)
 	local var_59_0 = {}
 
 	for iter_59_0, iter_59_1 in ipairs(arg_59_1) do
-		if (type(iter_59_1) == "number" and Data.getInfo(iter_59_1) or iter_59_1)._nature == arg_59_2 then
+		local var_info = type(iter_59_1) == "number" and Data.getInfo(iter_59_1) or iter_59_1
+		if var_info and type(var_info) == "table" and var_info._nature == arg_59_2 then
 			table.insert(var_59_0, iter_59_1)
 		end
 	end
@@ -1439,7 +1487,8 @@ function var_0_25.filterByLevel(arg_60_0, arg_60_1, arg_60_2)
 	local var_60_0 = {}
 
 	for iter_60_0, iter_60_1 in ipairs(arg_60_1) do
-		if (type(iter_60_1) == "number" and Data.getInfo(iter_60_1) or iter_60_1)._star == arg_60_2 then
+		local var_info = type(iter_60_1) == "number" and Data.getInfo(iter_60_1) or iter_60_1
+		if var_info and type(var_info) == "table" and var_info._star == arg_60_2 then
 			table.insert(var_60_0, iter_60_1)
 		end
 	end
@@ -1451,7 +1500,8 @@ function var_0_25.filterByType(arg_61_0, arg_61_1, arg_61_2)
 	local var_61_0 = {}
 
 	for iter_61_0, iter_61_1 in ipairs(arg_61_1) do
-		if (arg_61_2(iter_61_1) == "number" and Data.getType(iter_61_1) or Data.getType(iter_61_1._infoId)) == arg_61_2 then
+		local card_type = type(iter_61_1) == "number" and Data.getType(iter_61_1) or (iter_61_1 and type(iter_61_1) == "table" and iter_61_1._infoId and Data.getType(iter_61_1._infoId))
+		if card_type == arg_61_2 then
 			table.insert(var_61_0, iter_61_1)
 		end
 	end
@@ -1659,13 +1709,16 @@ function var_0_25.filterBySearch(arg_67_0, arg_67_1, arg_67_2)
 
 		if arg_67_2 == "" then
 			table.insert(var_67_0, iter_67_1)
-		else
-			local cardName = Str(var_67_1._nameSid)
+		elseif var_67_1 and type(var_67_1) == "table" then
+			local cardName = Str(var_67_1._nameSid or 0)
 			if matchCardSearch(cardName, arg_67_2) then
 				table.insert(var_67_0, iter_67_1)
 			elseif var_67_1._category ~= nil and matchCardSearch(Str(STR.CARD_CATEGORY_BEGIN + var_67_1._category), arg_67_2) then
 				table.insert(var_67_0, iter_67_1)
-			elseif var_67_1._keyword ~= nil and matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + var_67_1._keyword), arg_67_2) then
+			elseif var_67_1._keyword ~= nil and (
+				((var_67_1._id == 21146 or var_67_1._id == 30594 or var_67_1._id == 30595) and (matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + 6), arg_67_2) or matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + 7), arg_67_2)))
+				or matchCardSearch(((var_67_1._keyword == 300 and "Tru tiên") or (var_67_1._keyword == 301 and "Tiên nghịch") or (var_67_1._keyword == 302 and "Hiệp sĩ mặt nạ") or Str(STR.CARD_KEYWORD_BEGIN + var_67_1._keyword)), arg_67_2)
+			) then
 				table.insert(var_67_0, iter_67_1)
 			else
 				local matchedSkill = false
@@ -2432,16 +2485,31 @@ function var_0_25.getDailyGoldFlag(arg_147_0)
 end
 
 function var_0_25.getCharacterId(arg_148_0)
+	if arg_148_0._characterId and arg_148_0._characterId > 0 and arg_148_0._characterId <= 19 and Data._characterInfo and Data._characterInfo[arg_148_0._characterId] then
+		return arg_148_0._characterId
+	end
+
 	local var_148_0
 
 	if arg_148_0._avatar >= 52000 then
-		var_148_0 = Data._skinInfo[arg_148_0._avatar]._infoId
+		local sInfo = Data._skinInfo and Data._skinInfo[arg_148_0._avatar]
+		local infoId = sInfo and sInfo._infoId
+		if infoId and infoId <= 19 and Data._characterInfo and Data._characterInfo[infoId] then
+			var_148_0 = infoId
+		else
+			var_148_0 = (arg_148_0._characterId and arg_148_0._characterId > 0 and arg_148_0._characterId <= 19) and arg_148_0._characterId or 2
+		end
 	elseif arg_148_0._avatar >= 100 then
-		var_148_0 = math.floor(arg_148_0._avatar / 100)
+		local candidate = math.floor(arg_148_0._avatar / 100)
+		if candidate <= 19 and Data._characterInfo and Data._characterInfo[candidate] then
+			var_148_0 = candidate
+		else
+			var_148_0 = (arg_148_0._characterId and arg_148_0._characterId > 0 and arg_148_0._characterId <= 19) and arg_148_0._characterId or 2
+		end
 	else
 		var_148_0 = arg_148_0._avatar
 
-		if not Data._characterInfo[var_148_0] then
+		if not Data._characterInfo[var_148_0] or var_148_0 > 19 then
 			var_148_0 = 2
 		end
 	end

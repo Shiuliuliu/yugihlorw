@@ -771,6 +771,18 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14624] = nil
 	arg_2_0._opponent._castedSkillCounts[14625] = nil
 	arg_2_0._opponent._castedSkillCounts[14626] = nil
+	arg_2_0._opponent._castedSkillCounts[14637] = nil
+	arg_2_0._opponent._castedSkillCounts[14638] = nil
+	arg_2_0._opponent._castedSkillCounts[14662] = nil
+	arg_2_0._opponent._castedSkillCounts[14663] = nil
+	arg_2_0._opponent._castedSkillCounts[14665] = nil
+	arg_2_0._opponent._castedSkillCounts[14709] = nil
+	arg_2_0._opponent._castedSkillCounts[14731] = nil
+	arg_2_0._opponent._castedSkillCounts[14732] = nil
+	arg_2_0._opponent._castedSkillCounts[14747] = nil
+	arg_2_0._castedSkillCounts[14747] = nil
+	arg_2_0._opponent._castedSkillCounts[14748] = nil
+	arg_2_0._castedSkillCounts[14748] = nil
 	arg_2_0._opponent._castedSkillCounts[3] = nil
 	arg_2_0._summonedMonsterCounts = {}
 	arg_2_0._isSummonDisabledByInfoId = nil
@@ -1074,6 +1086,8 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._mark13445 = nil
 	arg_2_0._mark13790 = nil
 	arg_2_0._mark13840 = nil
+	arg_2_0._mark2948 = nil
+	arg_2_0._isSummonDisabledBy9627 = nil
 	arg_2_0._mark14055_1 = nil
 	arg_2_0._mark14055_2 = nil
 	arg_2_0._mark14068 = nil
@@ -1123,6 +1137,8 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._mark13445 = nil
 	arg_2_0._opponent._mark13790 = nil
 	arg_2_0._opponent._mark13840 = nil
+	arg_2_0._opponent._mark2948 = nil
+	arg_2_0._opponent._isSummonDisabledBy9627 = nil
 	arg_2_0._opponent._mark13878 = nil
 	arg_2_0._opponent._mark13878_2 = nil
 	arg_2_0._opponent._mark13941 = nil
@@ -1228,6 +1244,45 @@ function var_0_0.resume(arg_12_0)
 	end
 end
 
+local function checkExodia(player)
+	if not player or not player._handCards then return false end
+	local found = { [10356] = false, [10318] = false, [10319] = false, [10354] = false, [10355] = false }
+	local count = 0
+	local hCards = player:getBattleCards("H")
+	if not hCards then return false end
+	for _, c in ipairs(hCards) do
+		local id = c._originInfoId or c._infoId
+		if found[id] == false then
+			found[id] = true
+			count = count + 1
+		end
+	end
+	return count == 5
+end
+
+local function checkGodWin(player)
+	if not player then return false end
+	local hasHarakti = player:hasBattleCardsBySkillFast("PHBGE", 3798)
+		or #player:getBattleCardsByInfoId("PHBGE", 10895) > 0
+		or (player._troopCards and table.contains and table.contains(player._troopCards, 10895))
+	if not hasHarakti then return false end
+
+	local godsFound = { [10270] = false, [10293] = false, [10763] = false }
+	local bCards = player:getBattleCards("B") or {}
+	for _, card in ipairs(bCards) do
+		if B.isAlive(card) then
+			local cid = card._infoId
+			local oid = card._info and card._info._originId or 0
+			for godId, _ in pairs(godsFound) do
+				if cid == godId or oid == godId or (card.isInfoId and card:isInfoId(godId)) then
+					godsFound[godId] = true
+				end
+			end
+		end
+	end
+	return godsFound[10270] and godsFound[10293] and godsFound[10763]
+end
+
 function var_0_0.checkFinish(arg_13_0)
 	if arg_13_0._isClient and ClientData._isAutoTesting then
 		return false
@@ -1237,12 +1292,37 @@ function var_0_0.checkFinish(arg_13_0)
 		return false
 	end
 
-	if arg_13_0._round <= 0 or not arg_13_0._isInitialDealed then
-		return false
+	if arg_13_0._isFinished or (arg_13_0._opponent and arg_13_0._opponent._isFinished) then
+		return true
 	end
 
-	if arg_13_0._isFinished or arg_13_0._opponent._isFinished then
+	-- Instant win check for Exodia (Skill 3190 / 5 Forbidden cards)
+	if checkExodia(arg_13_0) then
+		arg_13_0._winBy3190 = true
 		return true
+	end
+	if arg_13_0._opponent and checkExodia(arg_13_0._opponent) then
+		arg_13_0._opponent._winBy3190 = true
+		return true
+	end
+
+	-- Instant win check for Horakhty (Skill 3798 / 3 Egyptian Gods on board)
+	if checkGodWin(arg_13_0) then
+		arg_13_0._winBy3798 = true
+		return true
+	end
+	if arg_13_0._opponent and checkGodWin(arg_13_0._opponent) then
+		arg_13_0._opponent._winBy3798 = true
+		return true
+	end
+
+	-- Instant loss check for fortress destruction (battle damage or effect burn)
+	if (arg_13_0._fortress and arg_13_0._fortress._hp <= 0) or (arg_13_0._opponent and arg_13_0._opponent._fortress and arg_13_0._opponent._fortress._hp <= 0) then
+		return true
+	end
+
+	if not arg_13_0._isInitialDealed or (arg_13_0._opponent and not arg_13_0._opponent._isInitialDealed) then
+		return false
 	end
 
 	local var_13_0 = false
@@ -1263,9 +1343,6 @@ function var_0_0.getIsWin(arg_14_0)
 end
 
 function var_0_0.getIsLose(arg_15_0)
-	if arg_15_0._round <= 0 or not arg_15_0._isInitialDealed then
-		return false
-	end
 	if arg_15_0._fortress._type == Data.CardType.boss then
 		if arg_15_0._fortress._info._isDeamon == 1 then
 			return not B.isAlive(arg_15_0._fortress)
@@ -1294,47 +1371,16 @@ function var_0_0.getIsLose(arg_15_0)
 		return true
 	end
 
-	if #arg_15_0._opponent:getBattleCardsBySkillFast("H", 3190) > 0 then
-		local var_15_0 = Data._skillInfo[3190]
-		local var_15_1 = 0
-		local var_15_2 = {}
-		local var_15_3 = arg_15_0._opponent:getBattleCardsByType("H", Data.CardType.monster)
+	if checkExodia(arg_15_0._opponent) then
+		arg_15_0._opponent._winBy3190 = true
 
-		for iter_15_0 = 1, #var_15_3 do
-			local var_15_4 = var_15_3[iter_15_0]._infoId
-
-			for iter_15_1 = 1, #var_15_0._refCards do
-				if var_15_4 == var_15_0._refCards[iter_15_1] and var_15_2[iter_15_1] == nil then
-					var_15_2[iter_15_1] = true
-					var_15_1 = var_15_1 + 1
-				end
-			end
-		end
-
-		if var_15_1 == #var_15_0._refCards then
-			arg_15_0._opponent._winBy3190 = true
-
-			return true
-		end
+		return true
 	end
 
-	if arg_15_0._opponent:hasBattleCardsBySkillFast("PH", 3798) then
-		local var_15_5 = Data._skillInfo[3798]._refCards
-		local var_15_6 = true
+	if checkGodWin(arg_15_0._opponent) then
+		arg_15_0._opponent._winBy3798 = true
 
-		for iter_15_2 = 1, #var_15_5 do
-			if #arg_15_0._opponent:getBattleCardsByInfoId("B", var_15_5[iter_15_2]) == 0 then
-				var_15_6 = false
-
-				break
-			end
-		end
-
-		if var_15_6 then
-			arg_15_0._opponent._winBy3798 = true
-
-			return true
-		end
+		return true
 	end
 
 	if arg_15_0._opponent._macroStatus == BattleData.Status.round_end then
@@ -1384,7 +1430,7 @@ function var_0_0.getIsFortressDied(arg_18_0)
 end
 
 function var_0_0.getIsAllCardsDied(arg_19_0)
-	if arg_19_0._round <= 0 or not arg_19_0._isInitialDealed then
+	if not arg_19_0._isInitialDealed then
 		return false
 	end
 	-- In online PvP, the remote opponent's defeat cannot be unilaterally assumed by local client heuristics
@@ -1693,24 +1739,34 @@ function var_0_0.finish(arg_24_0)
 		end
 
 		local var_24_0 = Data.BattleResult.draw
-		local var_24_1 = arg_24_0:getIsLose()
+		local selfFortressDead = (arg_24_0._fortress and arg_24_0._fortress._hp <= 0)
+		local oppoFortressDead = (arg_24_0._opponent and arg_24_0._opponent._fortress and arg_24_0._opponent._fortress._hp <= 0)
 
-		local isRealOnlinePvp = (arg_24_0._isOnlinePvp == true) or (ClientData and ClientData._currentMatchId and ClientData._currentMatchId ~= "")
-		if var_24_1 ~= arg_24_0._opponent:getIsLose() then
-			var_24_0 = var_24_1 and Data.BattleResult.lose or Data.BattleResult.win
-		elseif var_24_1 then
-			if not isRealOnlinePvp then
-				if arg_24_0._fortress._hp <= 0 and arg_24_0._opponent._fortress._hp <= 0 then
-					var_24_0 = Data.BattleResult.win
-				else
+		if arg_24_0._winBy3190 or arg_24_0._winBy3798 then
+			var_24_0 = Data.BattleResult.win
+		elseif arg_24_0._opponent and (arg_24_0._opponent._winBy3190 or arg_24_0._opponent._winBy3798) then
+			var_24_0 = Data.BattleResult.lose
+		elseif not selfFortressDead and oppoFortressDead then
+			var_24_0 = Data.BattleResult.win
+		elseif selfFortressDead and not oppoFortressDead then
+			var_24_0 = Data.BattleResult.lose
+		elseif selfFortressDead and oppoFortressDead then
+			var_24_0 = Data.BattleResult.win
+		else
+			local var_24_1 = arg_24_0:getIsLose()
+			local isRealOnlinePvp = (arg_24_0._isOnlinePvp == true) or (ClientData and ClientData._currentMatchId and ClientData._currentMatchId ~= "")
+			if var_24_1 ~= arg_24_0._opponent:getIsLose() then
+				var_24_0 = var_24_1 and Data.BattleResult.lose or Data.BattleResult.win
+			elseif var_24_1 then
+				if not isRealOnlinePvp then
 					var_24_0 = arg_24_0._isAttacker and Data.BattleResult.lose or Data.BattleResult.win
 				end
+			elseif not isRealOnlinePvp then
+				var_24_0 = arg_24_0._isAttacker and Data.BattleResult.win or Data.BattleResult.lose
 			end
-		elseif not isRealOnlinePvp then
-			var_24_0 = arg_24_0._isAttacker and Data.BattleResult.win or Data.BattleResult.lose
 		end
 
-		if arg_24_0._isUseCardFinish or arg_24_0._opponent._isUseCardFinish then
+		if (arg_24_0._isUseCardFinish or arg_24_0._opponent._isUseCardFinish) and not oppoFortressDead and not arg_24_0._winBy3190 and not arg_24_0._winBy3798 then
 			var_24_0 = Data.BattleResult.illegal
 		end
 
@@ -1798,6 +1854,12 @@ function var_0_0.initialDeal(arg_25_0)
 			end
 		end
 	elseif arg_25_0._initialDealIndex == 4 then
+		if arg_25_0:checkFinish() then
+			arg_25_0._stepStatus = BattleData.Status.before_account_finish
+
+			return arg_25_0:step()
+		end
+
 		if arg_25_0._opponent._isInitialDealed then
 			arg_25_0._opponent._stepStatus = BattleData.Status.round_begin
 			arg_25_0._stepStatus = BattleData.Status.wait_opponent
@@ -2555,13 +2617,24 @@ function var_0_0.roundEnd(arg_30_0)
 							var_30_7._isBorrowed = false
 						end
 					else
-						arg_30_0:decNegativeStatus(var_30_7, BattleData.NEGATIVE_CLEAR_WHEN_ROUND_END, false, var_30_7._id, 0, Data.SkillMode.once)
+						local isThacSamLocked = (var_30_7._infoId == 40730 or var_30_7:hasSkillFast(14719)) and not var_30_7._tsAwakened
+						if not isThacSamLocked then
+							arg_30_0:decNegativeStatus(var_30_7, BattleData.NEGATIVE_CLEAR_WHEN_ROUND_END, false, var_30_7._id, 0, Data.SkillMode.once)
+						else
+							local clearList = {}
+							for _, negType in ipairs(BattleData.NEGATIVE_CLEAR_WHEN_ROUND_END) do
+								if negType ~= BattleData.NegativeType.manacle and negType ~= BattleData.NegativeType.atkFrozen then
+									table.insert(clearList, negType)
+								end
+							end
+							arg_30_0:decNegativeStatus(var_30_7, clearList, false, var_30_7._id, 0, Data.SkillMode.once)
+						end
 
 						if var_30_7._negativeStatus[BattleData.NegativeType.haloSkillFrozen] then
 							arg_30_0._haloDone = false
 						end
 
-						if var_30_7:hasBuff(false, BattleData.NegativeType.atkFrozen) then
+						if not isThacSamLocked and var_30_7:hasBuff(false, BattleData.NegativeType.atkFrozen) then
 							local var_30_8 = var_30_7:getBuffValue(false, BattleData.NegativeType.atkFrozen)
 
 							if var_30_8 <= 1 then
@@ -2661,6 +2734,27 @@ function var_0_0.roundEnd(arg_30_0)
 			for iter_30_13 = 1, #var_30_18 do
 				var_30_18[iter_30_13]:removeSkillById(14068)
 			end
+
+			local var_overload_cards = {}
+			for _, c in ipairs(arg_30_0:getBoardCards()) do
+				if c:isMonsterRare() and (c:hasSkillFast(14668) or c:isBinded(21139) or c:isBindedSkill(14668)) then
+					table.insert(var_overload_cards, c)
+				end
+			end
+			for _, c in ipairs(var_overload_cards) do
+				arg_30_0:changeCardStatus(c, BattleData.CardStatus.board, BattleData.CardStatus.leave)
+			end
+			local function clean_orphan_ttk(player)
+				if not player then return end
+				local ttk_cards = player:getBattleCardsByInfoId("S", 21139)
+				for _, ttk in ipairs(ttk_cards) do
+					if not ttk._binds or #ttk._binds == 0 or not B.isAlive(ttk._binds[1]) then
+						player:changeCardStatus(ttk, ttk._status, BattleData.CardStatus.grave)
+					end
+				end
+			end
+			clean_orphan_ttk(arg_30_0)
+			clean_orphan_ttk(arg_30_0._opponent)
 
 			arg_30_0:account()
 			arg_30_0:removeDeadCards()
@@ -2842,10 +2936,26 @@ function var_0_0.beforeAccountStatus(arg_32_0)
 
 	table.remove(arg_32_0._cardStatusToChange, 1)
 
+	while (var_32_0 == nil or var_32_0._card == nil) and #arg_32_0._cardStatusToChange > 0 do
+		var_32_0 = arg_32_0._cardStatusToChange[1]
+		table.remove(arg_32_0._cardStatusToChange, 1)
+	end
+
 	if not var_32_0 or not var_32_0._card then
-		arg_32_0._stepStatus = BattleData.Status.account_status
 		arg_32_0._normalStatus = BattleData.Status.default
-		return arg_32_0:step()
+		if arg_32_0._saved and next(arg_32_0._saved) ~= nil then
+			return arg_32_0:loadStatus()
+		else
+			if arg_32_0:checkFinish() then
+				arg_32_0._stepStatus = BattleData.Status.before_account_finish
+				return arg_32_0:step()
+			end
+			if arg_32_0._macroStatus then
+				arg_32_0._stepStatus = arg_32_0._macroStatus
+				return arg_32_0:step()
+			end
+			return
+		end
 	end
 
 	local var_32_1 = var_32_0._card
@@ -2874,6 +2984,12 @@ function var_0_0.beforeAccountStatus(arg_32_0)
 end
 
 function var_0_0.afterAccountStatus(arg_33_0)
+	if arg_33_0:checkFinish() then
+		arg_33_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_33_0:step()
+	end
+
 	if arg_33_0._normalStatus ~= BattleData.Status.after_account_status then
 		arg_33_0._normalStatus = BattleData.Status.after_account_status
 		arg_33_0._eventDone = false
@@ -3050,7 +3166,7 @@ function var_0_0.afterAccountStatus(arg_33_0)
 				arg_33_0._stepStatus = BattleData.Status.before_account_spell
 
 				return arg_33_0:step()
-			elseif (var_33_8 == BattleData.CardStatus.show or var_33_8 == BattleData.CardStatus.field) and (var_33_9 == BattleData.CardStatus.grave or var_33_9 == BattleData.CardStatus.leave) and not var_33_3:isStatusValSacrifice() and var_33_3._statusVal ~= BattleData.CardStatusVal.d2g_replace and not var_33_3:isStatusValCost() then
+			elseif (var_33_8 == BattleData.CardStatus.show or var_33_8 == BattleData.CardStatus.field) and (var_33_9 == BattleData.CardStatus.grave or var_33_9 == BattleData.CardStatus.leave) and not var_33_3:isStatusValSacrifice() and (var_33_3._statusVal ~= BattleData.CardStatusVal.d2g_replace or var_33_3._infoId == 21134 or var_33_3:hasSkillFast(7836)) and not var_33_3:isStatusValCost() then
 				arg_33_0._spellType = Data.SkillMode.bcs2gl
 				arg_33_0._stepStatus = BattleData.Status.before_account_spell
 
@@ -3272,6 +3388,12 @@ end
 function var_0_0.afterAccountSpell(arg_37_0)
 	arg_37_0._normalStatus = BattleData.Status.default
 
+	if arg_37_0:checkFinish() then
+		arg_37_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_37_0:step()
+	end
+
 	return arg_37_0:loadStatus()
 end
 
@@ -3332,6 +3454,12 @@ end
 function var_0_0.afterAccountEvent(arg_41_0)
 	arg_41_0._normalStatus = BattleData.Status.default
 
+	if arg_41_0:checkFinish() then
+		arg_41_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_41_0:step()
+	end
+
 	return arg_41_0:loadStatus()
 end
 
@@ -3390,6 +3518,12 @@ function var_0_0.afterAccountTrapWhenAttack(arg_47_0)
 end
 
 function var_0_0.tryUseCard(arg_48_0)
+	if arg_48_0:checkFinish() then
+		arg_48_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_48_0:step()
+	end
+
 	if arg_48_0._isPaused then
 		return
 	end
@@ -3568,6 +3702,14 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.cover)
 			end
 		else
+			local turnId = (arg_52_0._round or 0) * 1000 + (arg_52_0._opponent and arg_52_0._opponent._round or 0)
+			if arg_52_0._onlySummonMaskedRiderTurn == turnId and not (arg_52_1:isKeyword(302) or (arg_52_1._info and arg_52_1._info._keyword == 302)) then
+				if ToastManager then
+					ToastManager.push("Trong lượt này chỉ có thể triệu hồi quái có từ khóa 'Hiệp sĩ mặt nạ'!")
+				end
+				return
+			end
+
 			local var_52_7 = arg_52_3 % BattleData.ChoiceId.stage_size_1
 
 			if not arg_52_3 or not (math.floor(arg_52_3 / BattleData.ChoiceId.stage_3) % BattleData.ChoiceId.stage_size_3) then
@@ -3693,6 +3835,33 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				if arg_52_1:hasSkillFast(14621) or arg_52_1._infoId == 11364 then
 					arg_52_0._castedSkillCounts[14621] = (arg_52_0._castedSkillCounts[14621] or 0) + 1
 				end
+
+				if arg_52_1:hasSkillFast(14731) or arg_52_1._infoId == 12329 then
+					local var_52_c_id = arg_52_1._choice and math.floor(arg_52_1._choice / BattleData.ChoiceId.stage_2) % BattleData.ChoiceId.stage_size_2
+					local var_52_target = arg_52_0:getCardById(var_52_c_id)
+					if var_52_target == nil or var_52_target._status ~= BattleData.CardStatus.pile then
+						local pileTargets = B.filterInInfoIdGroupCards(arg_52_0:getBattleCards("P"), { 12326, 12327, 12328 })
+						var_52_target = pileTargets[1]
+					end
+					if var_52_target ~= nil and var_52_target._status == BattleData.CardStatus.pile then
+						arg_52_0:changeCardStatus(var_52_target, BattleData.CardStatus.pile, BattleData.CardStatus.hand)
+					end
+					local pOwner = arg_52_1._owner or arg_52_0
+					local turnId = (arg_52_0._round or 0) * 1000 + (pOwner._round or arg_52_0._round or 0)
+					arg_52_1._lmuHandTurn = turnId
+					arg_52_0._castedSkillCounts[14731] = (arg_52_0._castedSkillCounts[14731] or 0) + 1
+				end
+
+				if arg_52_1:hasSkillFast(14741) or arg_52_1._infoId == 12331 then
+					local turnId = (arg_52_0._round or 0) * 1000 + (arg_52_0._opponent and arg_52_0._opponent._round or 0)
+					if arg_52_1._zioSummonTurn ~= turnId then
+						arg_52_1._zioSummonTurn = turnId
+						local cd_cards = arg_52_0:getBattleCardsByInfoId("P", 21143)
+						if #cd_cards > 0 and #arg_52_0._handCards < Data.MAX_CARD_COUNT_IN_HAND then
+							arg_52_0:changeCardStatus(cd_cards[1], BattleData.CardStatus.pile, BattleData.CardStatus.hand)
+						end
+					end
+				end
 			else
 				if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and (var_52_7 == 1 and not arg_52_0:canUseMonsterNormal(arg_52_1) or var_52_7 == 4 and not arg_52_0:canUseMonsterNormalToOppo(arg_52_1)) then
 					arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> canUseMonsterNormalToOppo")
@@ -3787,6 +3956,17 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				end
 
 				arg_52_1._mark3515 = nil
+
+				if arg_52_1:hasSkillFast(14741) or arg_52_1._infoId == 12331 then
+					local turnId = (arg_52_0._round or 0) * 1000 + (arg_52_0._opponent and arg_52_0._opponent._round or 0)
+					if arg_52_1._zioSummonTurn ~= turnId then
+						arg_52_1._zioSummonTurn = turnId
+						local cd_cards = arg_52_0:getBattleCardsByInfoId("P", 21143)
+						if #cd_cards > 0 and #arg_52_0._handCards < Data.MAX_CARD_COUNT_IN_HAND then
+							arg_52_0:changeCardStatus(cd_cards[1], BattleData.CardStatus.pile, BattleData.CardStatus.hand)
+						end
+					end
+				end
 			end
 		end
 	elseif arg_52_1._type == Data.CardType.boss or arg_52_1._status == BattleData.CardStatus.board then
@@ -3984,7 +4164,7 @@ function var_0_0.accountStatus(arg_57_0)
 
 	arg_57_0:battleLog("[BATTLE] %s\t%s->%s%s", arg_57_0:cardName(var_57_2), var_57_3[var_57_2._sourceStatus], var_57_3[var_57_2._destStatus], var_57_2:statusValToStr())
 
-	if var_57_2._type == Data.CardType.fortress and var_57_2._statusVal == BattleData.CardStatusVal.f2f_fortress_damaged and arg_57_0:checkFinish() then
+	if (var_57_2 and var_57_2._type == Data.CardType.fortress and (var_57_2._hp <= 0 or arg_57_0:checkFinish())) or arg_57_0:checkFinish() then
 		arg_57_0._stepStatus = BattleData.Status.before_account_finish
 
 		return arg_57_0:step()
@@ -3992,6 +4172,8 @@ function var_0_0.accountStatus(arg_57_0)
 
 	if var_57_2._sourceStatus == BattleData.CardStatus.board and (var_57_2._destStatus == BattleData.CardStatus.grave or var_57_2._destStatus == BattleData.CardStatus.leave) and not var_57_2:isStatusValSacrifice() then
 		var_57_2:getOriginOwner()._opponent:addDestroyCardScore(var_57_2)
+
+
 	end
 
 	if var_57_2._sourceStatus == BattleData.CardStatus.pile then
@@ -4032,6 +4214,12 @@ function var_0_0.accountStatus(arg_57_0)
 		var_57_2._owner:addCardToShow(var_57_2)
 	elseif var_57_2._destStatus == BattleData.CardStatus.field then
 		var_57_2._owner:addCardToField(var_57_2)
+	end
+
+	if arg_57_0:checkFinish() then
+		arg_57_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_57_0:step()
 	end
 
 	arg_57_0._stepStatus = BattleData.Status.after_account_status
@@ -4351,6 +4539,12 @@ function var_0_0.accountSpell(arg_61_0)
 		end
 	end
 
+	if arg_61_0:checkFinish() then
+		arg_61_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_61_0:step()
+	end
+
 	if not arg_61_0._haloDone then
 		arg_61_0._haloDone = true
 		arg_61_0._stepStatus = BattleData.Status.before_account_halo
@@ -4371,6 +4565,12 @@ function var_0_0.accountSpell(arg_61_0)
 end
 
 function var_0_0.afterSpell(arg_62_0)
+	if arg_62_0:checkFinish() then
+		arg_62_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_62_0:step()
+	end
+
 	if arg_62_0._normalStatus ~= BattleData.Status.after_spell then
 		arg_62_0._normalStatus = BattleData.Status.after_spell
 		arg_62_0._afterSpellIndex = 0
@@ -4404,6 +4604,12 @@ function var_0_0.afterSpell(arg_62_0)
 		arg_62_0:removeDeadCards()
 	end
 
+	if arg_62_0:checkFinish() then
+		arg_62_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_62_0:step()
+	end
+
 	arg_62_0._stepStatus = BattleData.Status.after_spell
 
 	if var_62_0._needAccount and not arg_62_0._isReviewing then
@@ -4414,6 +4620,12 @@ function var_0_0.afterSpell(arg_62_0)
 end
 
 function var_0_0.endSpell(arg_63_0)
+	if arg_63_0:checkFinish() then
+		arg_63_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_63_0:step()
+	end
+
 	if arg_63_0._normalStatus ~= BattleData.Status.end_spell then
 		arg_63_0._normalStatus = BattleData.Status.end_spell
 
@@ -4535,6 +4747,11 @@ function var_0_0.attacking(arg_65_0)
 				}) or not not var_65_2:hasShieldInType(BattleData.PositiveType.shieldMonster)) and (not var_65_3 or not var_65_2:hasSkillFast(2062) or not not var_65_0:isCeremonyMonster()) and (not var_65_3 or not var_65_2:hasSkillFast(2067) or not var_65_0:isMonsterRare() or not var_65_0:isNature(Data._skillInfo[2067]._refCards[1])) and (not var_65_2:hasSkillFast(5184) or not var_65_0:isKeyword(Data._skillInfo[5184]._refCards[1])) and (not var_65_3 or not var_65_2:hasCanCastMonsterSkillFast(9430) or not (var_65_0:getStar() < var_65_2:getStar())) and (not var_65_3 or not var_65_2:hasCanCastMonsterSkillFast(9795) or not not var_65_0:isNormalMonster()) then
 					arg_65_0:setCardStatus(var_65_2, arg_65_0:getDieByAttackDestStatus(var_65_0, var_65_2), var_65_0._id, Data.ATTACKING_SKILL_ID, Data.SkillMode.before_attack, BattleData.CardStatusVal.b2g_kill_by_attack)
 				end
+
+				if var_65_1 > var_65_2._hp and (var_65_0:hasSkillFast(3210) or var_65_0:hasSkillFast(14668) or var_65_0:isBinded(21139) or var_65_0:isBindedSkill(14668)) then
+					local pierceDamage = var_65_1 - var_65_2._hp
+					arg_65_0:addDamage(var_65_2._owner._fortress, var_65_2._owner:calcFortressDamage(arg_65_0:getDamageByAttack(var_65_2._owner._fortress, pierceDamage, var_65_0, var_65_2)), var_65_0._id, Data.ATTACKING_SKILL_ID, Data.SkillMode.before_attack)
+				end
 			else
 				var_65_2._hpWhileAttacking = nil
 
@@ -4547,7 +4764,8 @@ function var_0_0.attacking(arg_65_0)
 					end
 
 					if var_65_1 > var_65_2._atk then
-						if var_65_2._owner._mark13041 then
+						local hasBaoLocDef = not var_65_2._owner._isSkillDisabled and (var_65_2._owner:hasBattleCardsBySkillFast("S", 8007) or #var_65_2._owner:getBattleCardsByInfoId("S", 30171) > 0) and var_65_2:isKeyword(6)
+						if var_65_2._owner._mark13041 or hasBaoLocDef then
 							var_65_2._owner._mark13041 = nil
 
 							arg_65_0:addDamage(var_65_2._owner._opponent._fortress, var_65_2._owner._opponent:calcFortressDamage(arg_65_0._opponent:getDamageByAttack(var_65_2._owner._opponent._fortress, var_65_1 - var_65_2._atk, var_65_0, var_65_2)), var_65_0._id, Data.ATTACKING_SKILL_ID, Data.SkillMode.before_attack)
@@ -4672,7 +4890,12 @@ function var_0_0.underAttackDamage(arg_67_0)
 					}) or var_67_2:hasShieldInType(BattleData.PositiveType.shieldMonster) or not var_67_2:hasBuff(true, BattleData.PositiveType.defendPosture)) and (not var_67_0:hasSkills({
 						1093
 					}) or not not var_67_2:hasShieldInType(BattleData.PositiveType.shieldMonster)) then
-						arg_67_0:addDamage(var_67_0._owner._fortress, var_67_0._owner:calcFortressDamage(arg_67_0:getDamageByAttack(var_67_0._owner._fortress, var_67_3 - var_67_1, var_67_2, var_67_0)), var_67_2._id, Data.ATTACKING_SKILL_ID, Data.SkillMode.under_attack_damage)
+						local hasBaoLocAtk = not var_67_0._owner._isSkillDisabled and (var_67_0._owner:hasBattleCardsBySkillFast("S", 8007) or #var_67_0._owner:getBattleCardsByInfoId("S", 30171) > 0) and var_67_0:isKeyword(6)
+						if hasBaoLocAtk then
+							arg_67_0:addDamage(var_67_0._owner._opponent._fortress, var_67_0._owner._opponent:calcFortressDamage(arg_67_0._opponent:getDamageByAttack(var_67_0._owner._opponent._fortress, var_67_3 - var_67_1, var_67_2, var_67_0)), var_67_2._id, Data.ATTACKING_SKILL_ID, Data.SkillMode.under_attack_damage)
+						else
+							arg_67_0:addDamage(var_67_0._owner._fortress, var_67_0._owner:calcFortressDamage(arg_67_0:getDamageByAttack(var_67_0._owner._fortress, var_67_3 - var_67_1, var_67_2, var_67_0)), var_67_2._id, Data.ATTACKING_SKILL_ID, Data.SkillMode.under_attack_damage)
+						end
 
 						if var_67_2:hasCanCastMonsterSkillFast(9475) or var_67_2:isBindedSkill(7473) then
 							arg_67_0:addDamage(var_67_0._owner._opponent._fortress, var_67_0._owner._opponent:calcFortressDamage(arg_67_0._opponent:getDamageByAttack(var_67_0._owner._opponent._fortress, var_67_3 - var_67_1, var_67_2, var_67_0)), var_67_2._id, Data.ATTACKING_SKILL_ID, Data.SkillMode.under_attack_damage)
@@ -4836,6 +5059,14 @@ function var_0_0.endAttack(arg_70_0)
 
 		if var_70_0._mark5629 then
 			var_70_0._mark5629 = nil
+		end
+
+		if var_70_0:isBinded(21139) or var_70_0:hasSkillFast(14652) or var_70_0:hasSkillFast(14671) or var_70_0:isBindedSkill(14671) then
+			arg_70_0:decAtk(var_70_0, 1000, false, 21139, 14671, Data.SkillMode.attacking)
+			if var_70_0._owner and var_70_0._owner._fortress then
+				arg_70_0:addDamage(var_70_0._owner._fortress, 1000, 21139, 14671, Data.SkillMode.attacking)
+			end
+			var_70_0._needAccount = true
 		end
 
 		if var_70_0:hasBuff(false, BattleData.NegativeType.chaos) then
@@ -5099,7 +5330,55 @@ function var_0_0.saveStatus(arg_75_0)
 end
 
 function var_0_0.loadStatus(arg_76_0)
-	assert(arg_76_0._saved ~= nil and next(arg_76_0._saved) ~= nil, "ERROR : can not load empty status")
+	if arg_76_0._saved == nil or next(arg_76_0._saved) == nil then
+		arg_76_0:battleLog("[BATTLE WARN] loadStatus called with empty saved status, recovering gracefully")
+		arg_76_0._saved = {}
+		arg_76_0._normalStatus = BattleData.Status.default
+
+		if arg_76_0:checkFinish() then
+			arg_76_0._stepStatus = BattleData.Status.before_account_finish
+			return arg_76_0:step()
+		end
+
+		if arg_76_0._macroStatus == BattleData.Status.battle_start then
+			arg_76_0._stepStatus = BattleData.Status.battle_start
+			return arg_76_0:step()
+		elseif arg_76_0._macroStatus == BattleData.Status.battle_end then
+			arg_76_0._stepStatus = BattleData.Status.battle_end
+			return arg_76_0:step()
+		elseif arg_76_0._macroStatus == BattleData.Status.round_begin then
+			arg_76_0._stepStatus = BattleData.Status.round_begin
+			return arg_76_0:step()
+		elseif arg_76_0._macroStatus == BattleData.Status.deal then
+			arg_76_0._stepStatus = BattleData.Status.deal
+			return arg_76_0:step()
+		elseif arg_76_0._macroStatus == BattleData.Status.use then
+			arg_76_0._stepStatus = BattleData.Status.use
+			return arg_76_0:step()
+		elseif arg_76_0._macroStatus == BattleData.Status.action then
+			arg_76_0._stepStatus = BattleData.Status.action
+			return arg_76_0:step()
+		elseif arg_76_0._macroStatus == BattleData.Status.round_end then
+			arg_76_0._stepStatus = BattleData.Status.round_end
+			return arg_76_0:step()
+		elseif arg_76_0._macroStatus == BattleData.Status.initial_deal then
+			arg_76_0._stepStatus = BattleData.Status.initial_deal
+			return arg_76_0:step()
+		elseif arg_76_0._macroStatus == BattleData.Status.drop then
+			arg_76_0._stepStatus = BattleData.Status.drop
+			return arg_76_0:step()
+		else
+			arg_76_0._stepStatus = BattleData.Status.round_begin
+			return arg_76_0:step()
+		end
+	end
+
+	if arg_76_0:checkFinish() then
+		arg_76_0._saved = {}
+		arg_76_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_76_0:step()
+	end
 
 	local var_76_0 = arg_76_0._saved
 
@@ -5125,14 +5404,21 @@ function var_0_0.loadStatus(arg_76_0)
 
 	if var_76_0._actionCard ~= nil then
 		arg_76_0._actionCard = var_76_0._actionCard
-		arg_76_0._actionCard._needAccount = var_76_0._actionStatus._needAccount
-		arg_76_0._actionCard._spellingSkill = var_76_0._actionStatus._spellingSkill
+		arg_76_0._actionCard._needAccount = var_76_0._actionStatus and var_76_0._actionStatus._needAccount
+		arg_76_0._actionCard._spellingSkill = var_76_0._actionStatus and var_76_0._actionStatus._spellingSkill
 	end
 
 	if var_76_0._actionEvent ~= nil then
 		arg_76_0._actionEvent = var_76_0._actionEvent
-		arg_76_0._eventIdnex = var_76_0._actionStatus._eventIndex
-		arg_76_0._effectIndex = var_76_0._actionStatus._effectIndex
+		arg_76_0._eventIdnex = var_76_0._actionStatus and var_76_0._actionStatus._eventIndex
+		arg_76_0._effectIndex = var_76_0._actionStatus and var_76_0._actionStatus._effectIndex
+	end
+
+	if arg_76_0:checkFinish() then
+		arg_76_0._saved = {}
+		arg_76_0._stepStatus = BattleData.Status.before_account_finish
+
+		return arg_76_0:step()
 	end
 
 	if arg_76_0._normalStatus == BattleData.Status.after_account_status then

@@ -31,8 +31,20 @@ function var_0_0.removeCardFromBoard(arg_4_0, arg_4_1)
 
 		arg_4_0._pBoardCards[var_4_1] = nil
 
-		if arg_4_1:isV12() and #arg_4_1._owner:getBattleCardsByInfoId("B", arg_4_1._infoId) + #arg_4_1._owner._opponent:getBattleCardsByInfoId("B", arg_4_1._infoId) == 0 then
-			lc.Audio.playAudio(AUDIO.M_BATTLE1)
+		local floCount = #arg_4_1._owner:getBattleCardsByInfoId("B", 40731) + #arg_4_1._owner._opponent:getBattleCardsByInfoId("B", 40731)
+		local v12Count = #arg_4_1._owner:getBattleCardsByInfoId("B", 12142) + #arg_4_1._owner._opponent:getBattleCardsByInfoId("B", 12142)
+		if arg_4_1._infoId == 40731 and floCount == 0 then
+			if v12Count > 0 then
+				pcall(function() lc.Audio.playAudio(AUDIO.M_BATTLE2) end)
+			else
+				pcall(function() lc.Audio.playAudio(AUDIO.M_BATTLE1) end)
+			end
+		elseif arg_4_1:isV12() and v12Count == 0 then
+			if floCount > 0 then
+				pcall(function() lc.Audio.playAudio(AUDIO.M_BATTLE_FLO) end)
+			else
+				pcall(function() lc.Audio.playAudio(AUDIO.M_BATTLE1) end)
+			end
 		end
 
 		if arg_4_1:isLink() then
@@ -62,11 +74,22 @@ end
 function var_0_0.removeCardFromRare(arg_6_0, arg_6_1)
 	local var_6_0, var_6_1 = arg_6_0:getRareCardSprite(arg_6_1)
 
-	table.remove(arg_6_0._pRareCards, var_6_1)
-	var_6_0:setVisible(true)
-	var_6_0:setScale(1 / CardSprite.Scale.normal)
-	var_6_0:updateZOrder(true)
-	arg_6_0:updateRareArea(#arg_6_0._pGraveCards)
+	if var_6_0 == nil and arg_6_0._opponentUi then
+		var_6_0, var_6_1 = arg_6_0._opponentUi:getRareCardSprite(arg_6_1)
+		if var_6_0 ~= nil then
+			table.remove(arg_6_0._opponentUi._pRareCards, var_6_1)
+			var_6_0:setVisible(true)
+			var_6_0:setScale(1 / CardSprite.Scale.normal)
+			var_6_0:updateZOrder(true)
+			arg_6_0._opponentUi:updateRareArea(#arg_6_0._opponentUi._pGraveCards)
+		end
+	elseif var_6_0 ~= nil then
+		table.remove(arg_6_0._pRareCards, var_6_1)
+		var_6_0:setVisible(true)
+		var_6_0:setScale(1 / CardSprite.Scale.normal)
+		var_6_0:updateZOrder(true)
+		arg_6_0:updateRareArea(#arg_6_0._pGraveCards)
+	end
 end
 
 function var_0_0.removeCardFromCover(arg_7_0, arg_7_1)
@@ -200,13 +223,23 @@ end
 function var_0_0.addCardToBoard(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 	local var_13_0 = arg_13_0:getCardSprite(arg_13_1)
 
+	if var_13_0 == nil then
+		arg_13_1._originOwner = arg_13_1._originOwner or arg_13_1._owner or arg_13_0._player
+		var_13_0 = arg_13_0:createCardSprite(arg_13_1)
+		if arg_13_0._battleUi and var_13_0:getParent() == nil then
+			arg_13_0._battleUi:addChild(var_13_0)
+		end
+	end
+
 	if arg_13_1:isMonsterRare() then
 		arg_13_0._pBoardCards[arg_13_1._pos] = var_13_0
 
 		arg_13_0:calBoardCardPos(var_13_0)
 
-		if arg_13_1:isV12() then
-			lc.Audio.playAudio(AUDIO.M_BATTLE2)
+		if arg_13_1._infoId == 40731 then
+			pcall(function() lc.Audio.playAudio(AUDIO.M_BATTLE_FLO) end)
+		elseif arg_13_1:isV12() then
+			pcall(function() lc.Audio.playAudio(AUDIO.M_BATTLE2) end)
 		end
 
 		if arg_13_1:isLink() then
@@ -1175,13 +1208,19 @@ function var_0_0.replaceHandCards(arg_58_0, arg_58_1, arg_58_2)
 			arg_58_0:calHandCardPosAndRot(iter_58_1)
 
 			if iter_58_1._status ~= CardSprite.Status.large and iter_58_1._status ~= CardSprite.Status.info then
-				local var_58_1 = cc.p(iter_58_1:getPosition())
 				local var_58_2 = iter_58_1._default._position
+				local var_58_3 = iter_58_1._targetPosition
 
-				if var_58_1.x ~= var_58_2.x or var_58_1.y ~= var_58_2.y then
-					iter_58_1:stopAllActions()
+				if var_58_3 == nil or math.abs(var_58_3.x - var_58_2.x) > 1 or math.abs(var_58_3.y - var_58_2.y) > 1 then
+					iter_58_1._targetPosition = cc.p(var_58_2.x, var_58_2.y)
 
-					var_58_0 = arg_58_0:playAction(iter_58_1, var_0_0.Action.replace_hand_card, arg_58_1, iter_58_0)
+					local var_58_1 = cc.p(iter_58_1:getPosition())
+
+					if math.abs(var_58_1.x - var_58_2.x) > 1 or math.abs(var_58_1.y - var_58_2.y) > 1 then
+						iter_58_1:stopAllActions()
+
+						var_58_0 = arg_58_0:playAction(iter_58_1, var_0_0.Action.replace_hand_card, arg_58_1, iter_58_0)
+					end
 				end
 			end
 		end

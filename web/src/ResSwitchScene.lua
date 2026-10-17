@@ -172,6 +172,7 @@ function var_0_0.loadBattleRes(arg_9_0)
 	arg_9_0:updateLoadingBar()
 	ClientData.unloadCityUnionRes()
 	ClientData.loadLCRes("res/battle.lcres")
+	ClientData.loadLCRes("res/cards_back.lcres")
 end
 
 function var_0_0.loadCityUnionRes(arg_10_0)
@@ -262,6 +263,8 @@ function var_0_0.preloadBattleAudio(arg_17_0)
 	end
 
 	local var_17_0 = {
+		"e_vs",
+		"e_round",
 		"e_card_deal",
 		"e_card_using",
 		"e_card_board",
@@ -280,15 +283,27 @@ end
 
 function var_0_0.preloadBattleDragonBones(arg_18_0)
 	local var_18_0 = {
+		"vs",
+		"hhdb",
 		"xuanzhong",
 		"kapaisiwang",
-		"beiji"
+		"beiji",
+		"zh",
+		"szfs",
+		"tuika",
+		"cmdlbz",
+		"qbd",
+		"tsgj",
+		"tsgf",
+		"tssh",
+		"gqbb"
 	}
 
 	for iter_18_0, iter_18_1 in ipairs(var_18_0) do
-		local var_18_1 = cc.DragonBonesNode:createWithDecrypt(string.format("res/effects/%s.lcres", iter_18_1), iter_18_1, iter_18_1)
-
-		ClientData._dragonBonesTexture[iter_18_1] = 1
+		pcall(function()
+			local var_18_1 = cc.DragonBonesNode:createWithDecrypt(string.format("res/effects/%s.lcres", iter_18_1), iter_18_1, iter_18_1)
+			ClientData._dragonBonesTexture[iter_18_1] = 999999
+		end)
 	end
 
 	lc.log("preload dragonbones")

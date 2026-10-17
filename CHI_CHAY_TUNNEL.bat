@@ -31,5 +31,5 @@ echo   Domain Online : https://yugihlor.online
 echo   Domain WWW    : https://www.yugihlor.online
 echo ===================================================================
 echo.
-cloudflared.exe tunnel --config config.yml run
+cloudflared.exe --edge-ip-version 4 tunnel --config config.yml --protocol http2 run
 pause

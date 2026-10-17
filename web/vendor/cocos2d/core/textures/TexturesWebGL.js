@@ -81,9 +81,13 @@ cc._tmp.WebGLTexture2D = function () {
          * release texture
          */
         releaseTexture: function () {
-            if (this._webTextureObj)
-                cc._renderContext.deleteTexture(this._webTextureObj);
-            cc.loader.release(this.url);
+            if (this._webTextureObj) {
+                if (cc._renderContext)
+                    cc._renderContext.deleteTexture(this._webTextureObj);
+                this._webTextureObj = null;
+            }
+            if (this.url)
+                cc.loader.release(this.url);
         },
 
         /**

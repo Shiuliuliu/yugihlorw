@@ -573,9 +573,10 @@ function var_0_0.refreshItemList(arg_18_0)
 	var_18_2:removeChildrenByTag(var_0_10)
 	var_18_2:setVisible(true)
 	arg_18_0:addSelfRankAreas()
+	local rankTotal = (var_18_1 and (var_18_1._count or #var_18_1)) or 0
 	var_18_0:bindData(var_18_1, function(arg_19_0, arg_19_1)
 		arg_18_0:setOrCreateItem(arg_19_0, arg_19_1, var_18_0._rankType)
-	end, math.min(10, var_18_1._count or 0))
+	end, rankTotal)
 
 	for iter_18_0 = 1, var_18_0._cacheCount do
 		local var_18_3 = var_18_1[iter_18_0]

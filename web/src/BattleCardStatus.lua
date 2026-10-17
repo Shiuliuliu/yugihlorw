@@ -5,18 +5,42 @@ function var_0_0.changeCardStatus(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4, a
 		arg_1_3 = BattleData.CardStatus.rare
 	end
 
+	if (arg_1_1._infoId == 12324 or arg_1_1:hasSkillFast(14700)) and arg_1_3 ~= BattleData.CardStatus.board then
+		arg_1_1._htAtk = nil
+		arg_1_1._maxAtk = 0
+		arg_1_1._atk = 0
+	end
+
 	if arg_1_3 == BattleData.CardStatus.grave and (not arg_1_1._isTroopCard or arg_1_1._owner:hasBattleCardsBySkillFast("B", 6046) or not arg_1_1._owner._opponent._isSkillDisabled and arg_1_1._owner._opponent:hasBattleCardsBySkillFast("B", 6046) or not arg_1_1._owner._opponent._isSkillDisabled and arg_1_1._owner._opponent:hasBattleCardsByCanCastMonsterSkillFast("B", 2707) or arg_1_1:isMonsterRare() and arg_1_1._owner._opponent:hasBattleCardsByCanCastMonsterSkillFast("S", 8129) and #B.filterUniqueInfoIdCards(arg_1_1._owner._opponent:getBattleCardsByInfoIdGroup("B", Data._skillInfo[8129]._refCards)) >= 3) then
 		arg_1_3 = BattleData.CardStatus.leave
 	elseif arg_1_2 == BattleData.CardStatus.board and (arg_1_3 == BattleData.CardStatus.hand or arg_1_3 == BattleData.CardStatus.pile) and not arg_1_1._isTroopCard then
 		arg_1_3 = arg_1_1._type == Data.CardType.rare and BattleData.CardStatus.rare or BattleData.CardStatus.leave
 	end
 
-	if (arg_1_4 == BattleData.CardStatusVal.x2gl_cost or arg_1_4 == BattleData.CardStatusVal.x2gl_oppo_cost) and arg_1_2 == BattleData.CardStatus.board and (arg_1_1:hasSkillFast(3210) or arg_1_1:hasSkillFast(13975)) then
+	if (arg_1_4 == BattleData.CardStatusVal.x2gl_cost or arg_1_4 == BattleData.CardStatusVal.x2gl_oppo_cost) and arg_1_2 == BattleData.CardStatus.board and (arg_1_1:hasSkillFast(3210) or arg_1_1:hasSkillFast(13975) or arg_1_1._infoId == 40730 or arg_1_1:hasSkillFast(14719) or arg_1_1._infoId == 12327) then
 		arg_1_3 = BattleData.CardStatus.leave
 	end
 
-	if arg_1_2 ~= BattleData.CardStatus.board and arg_1_2 ~= BattleData.CardStatus.leave and arg_1_3 == BattleData.CardStatus.grave and (arg_1_1:hasSkillFast(3210) or arg_1_1:hasSkillFast(13975)) then
+	if arg_1_2 ~= BattleData.CardStatus.leave and arg_1_3 == BattleData.CardStatus.grave and (arg_1_1:hasSkillFast(3210) or arg_1_1:hasSkillFast(13975) or arg_1_1._infoId == 40730 or arg_1_1:hasSkillFast(14719) or arg_1_1._infoId == 12327) then
 		arg_1_3 = BattleData.CardStatus.leave
+	end
+
+	local has40733 = #arg_1_0:getBattleCardsByInfoId("B", 40733) > 0 or (arg_1_0._opponent and #arg_1_0._opponent:getBattleCardsByInfoId("B", 40733) > 0)
+	if has40733 and arg_1_2 == BattleData.CardStatus.grave and arg_1_3 == BattleData.CardStatus.board then
+		return
+	end
+
+	local isThacSamAwakened = (arg_1_1._infoId == 40730 or arg_1_1:hasSkillFast(14719)) and (arg_1_1._tsAwakened or arg_1_1:hasSkillFast(12002) or (arg_1_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
+	if isThacSamAwakened and arg_1_2 == BattleData.CardStatus.board and arg_1_3 ~= BattleData.CardStatus.board then
+		local isBattleKill = (arg_1_4 == BattleData.CardStatusVal.b2g_kill_by_attack)
+		if not isBattleKill then
+			local owner = arg_1_1._owner
+			local oppo = owner and owner._opponent
+			local isOppoAction = (arg_1_0 == oppo) or (arg_1_5 and arg_1_5._owner ~= owner) or (arg_1_4 == BattleData.CardStatusVal.b2g_oppo_sacrifice or arg_1_4 == BattleData.CardStatusVal.b2b_oppo_forever or arg_1_4 == BattleData.CardStatusVal.b2h_oppo or arg_1_4 == BattleData.CardStatusVal.x2gl_oppo_cost or arg_1_4 == BattleData.CardStatusVal.x2l_temp_oppo)
+			if isOppoAction then
+				return
+			end
+		end
 	end
 
 	local var_1_0 = {
@@ -90,6 +114,9 @@ function var_0_0.changeCardStatus(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4, a
 			arg_1_1._prevBindCard = nil
 		end
 	elseif arg_1_1._type == Data.CardType.magic and arg_1_3 == BattleData.CardStatus.field then
+		if arg_1_1._infoId == 21134 or arg_1_1:hasSkillFast(7836) then
+			arg_1_1._mark7836_triggered = nil
+		end
 		local var_1_5 = arg_1_1._owner._fieldCard
 
 		if var_1_5 ~= nil then
@@ -214,6 +241,10 @@ function var_0_0.removeCardFromBoard(arg_6_0, arg_6_1)
 
 	if B._mark9972 and arg_6_1:hasSkillFast(9972) then
 		B._mark9972[arg_6_1._id] = nil
+	end
+
+	if arg_6_1._infoId == 40729 or arg_6_1:hasSkillFast(14714) then
+		arg_6_1._trigger14714 = nil
 	end
 
 	arg_6_1._prevAtk = arg_6_1._atk
@@ -495,7 +526,7 @@ end
 function var_0_0.addCardToPile(arg_13_0, arg_13_1)
 	if arg_13_1._triggerCard and (arg_13_1._triggerCard:hasSkillFast(9310) or arg_13_1._triggerCard:hasSkillFast(9694) or arg_13_1._triggerCard:hasSkillFast(7405)) then
 		arg_13_1._saved._pos = 1
-	elseif arg_13_1._triggerCard and (arg_13_1._triggerCard:hasSkillFast(9343) or arg_13_1._triggerCard:hasSkillFast(4853) or arg_13_1._triggerCard:hasSkillFast(8139)) then
+	elseif arg_13_1._triggerCard and (arg_13_1._triggerCard:hasSkillFast(9343) or arg_13_1._triggerCard:hasSkillFast(4853) or arg_13_1._triggerCard:hasSkillFast(8139) or arg_13_1._triggerCard:hasSkillFast(14740) or arg_13_1._triggerCard:isInfoId(12330)) then
 		arg_13_1._saved._pos = #arg_13_0._pileCards + 1
 	end
 
@@ -589,7 +620,9 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 	if arg_15_1:isMonsterRare() then
 		local var_15_0
 
-		if arg_15_1:isStatusValLinkSummon() then
+		if arg_15_1._infoId == 40729 or arg_15_1._infoId == 40731 then
+			var_15_0 = arg_15_1._saved._pos and (arg_15_0:isLinkPosEmpty(arg_15_1._saved._pos) or arg_15_0:isBoardPosEmpty(arg_15_1._saved._pos)) and arg_15_1._saved._pos or (arg_15_0:getEmptyLinkPos(arg_15_1) or arg_15_0:getEmptyBoardPos(arg_15_1))
+		elseif arg_15_1:isStatusValLinkSummon() then
 			var_15_0 = arg_15_1._saved._pos and arg_15_0:isLinkPosEmpty(arg_15_1._saved._pos) and arg_15_1._saved._pos or arg_15_0:getEmptyLinkPos(arg_15_1)
 		else
 			var_15_0 = arg_15_1._saved._pos and arg_15_0:isBoardPosEmpty(arg_15_1._saved._pos) and arg_15_1._saved._pos or arg_15_0:getEmptyBoardPos(arg_15_1)
@@ -644,6 +677,135 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				var_15_1 = true
 			end
 
+			if arg_15_0._opponent and not arg_15_1:isStatusValNotSummon() and arg_15_1:isMonsterRare() then
+				local var_opp_kybaby = #arg_15_0._opponent:getBattleCardsByInfoId("B", 12315) > 0 or arg_15_0._opponent:hasBattleCardsBySkillFast("B", 14639)
+				if var_opp_kybaby then
+					var_15_1 = true
+					var_15_2 = true
+					var_15_kybaby = true
+					arg_15_0:incNegativeStatus(arg_15_1, {
+						BattleData.NegativeType.disablePosture,
+						BattleData.NegativeType.cold
+					}, false, arg_15_1._id, 14639, Data.SkillMode.once)
+					arg_15_0:incNegativeValue(arg_15_1, BattleData.NegativeType.disablePosture, 2, Data.AggregateType.max, arg_15_1._id, 14639, Data.SkillMode.once)
+				end
+
+				local var_opp_dragons = arg_15_0._opponent:getBattleCardsByInfoId("B", 12316)
+				if #var_opp_dragons > 0 or arg_15_0._opponent:hasBattleCardsBySkillFast("B", 14648) then
+					local dmg = (arg_15_0._fortress._hp > 8000) and 400 or 200
+					local dragon_id = #var_opp_dragons > 0 and var_opp_dragons[1]._id or 12316
+					arg_15_0._opponent:addDamage(arg_15_0._fortress, dmg, dragon_id, 14648, Data.SkillMode.magic)
+				end
+
+				local var_opp_kypham = arg_15_0._opponent:getBattleCardsByInfoId("B", 40727)
+				if #var_opp_kypham == 0 then
+					var_opp_kypham = arg_15_0._opponent:getBattleCardsBySkillFast("B", 14681)
+				end
+				if #var_opp_kypham > 0 then
+					local opp_star = arg_15_1:getStar() or 0
+					if opp_star > 0 then
+						local heal_amt = opp_star * 100
+						local kp_id = var_opp_kypham[1]._id
+						arg_15_0._opponent:incHp(arg_15_0._opponent._fortress, heal_amt, false, kp_id, 14681, Data.SkillMode.once, true)
+					end
+				end
+
+				local var_opp_loioa = arg_15_0._opponent:getBattleCardsByInfoId("B", 12322)
+				if #var_opp_loioa == 0 then
+					var_opp_loioa = arg_15_0._opponent:getBattleCardsBySkillFast("B", 14695)
+				end
+				if #var_opp_loioa > 0 and (arg_15_1:isEffectMonster() or (not arg_15_1:isNormalMonster() and arg_15_1:isMonsterRare())) then
+					local loioa = var_opp_loioa[1]
+					local owner = loioa._owner
+					local oppo = owner and owner._opponent
+					local turnId = (owner and owner._round or 0) * 1000 + (oppo and oppo._round or 0)
+					if loioa._loioaNegateTurn ~= turnId then
+						loioa._loioaNegateTurn = turnId
+						arg_15_1._mark9617 = true
+						arg_15_1._isCardSkillDisabledInRound = true
+						if arg_15_1.disableUnderSkills then
+							arg_15_1:disableUnderSkills()
+						end
+						arg_15_0:incNegativeStatus(arg_15_1, {
+							BattleData.NegativeType.disableSkill
+						}, false, loioa._id, 14695, Data.SkillMode.once)
+						arg_15_0:incNegativeValue(arg_15_1, BattleData.NegativeType.disableSkill, 2, Data.AggregateType.max, loioa._id, 14695, Data.SkillMode.once)
+					end
+				end
+
+				local var_opp_vl = arg_15_0._opponent:getBattleCardsByInfoId("B", 12326)
+				if #var_opp_vl == 0 then
+					var_opp_vl = arg_15_0._opponent:getBattleCardsBySkillFast("B", 14710)
+				end
+				if #var_opp_vl > 0 and var_opp_vl[1]:canCastMonsterSkill() then
+					local vl = var_opp_vl[1]
+					local vl_marks = vl:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+					local targetStar = arg_15_1:getStar() or (arg_15_1._info and (type(arg_15_1._info._star) == "table" and arg_15_1._info._star[1] or arg_15_1._info._star)) or 0
+					if vl_marks >= 7 and targetStar <= 4 then
+						arg_15_1._isRemoveSkill = true
+						arg_15_1._skills = {}
+					end
+				end
+			end
+
+			if arg_15_1._infoId == 12324 or arg_15_1:hasSkillFast(14700) then
+				local cur_lp = math.max(0, (arg_15_0._fortress and arg_15_0._fortress._hp) or arg_15_0._hp or 8000)
+				arg_15_1._htAtk = cur_lp
+				arg_15_1._maxAtk = 0
+				arg_15_1._atk = cur_lp
+			end
+
+			if arg_15_1._infoId == 12325 or arg_15_1:hasSkillFast(14705) then
+				local has_lht = #arg_15_0:getBattleCardsByInfoId("BCSD", 21134) > 0
+				if has_lht then
+					arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14705, Data.SkillMode.using)
+				end
+			end
+			if arg_15_1._infoId == 12326 or arg_15_1:hasSkillFast(14706) then
+				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14706, Data.SkillMode.using)
+				local curGod = arg_15_1:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+				if curGod < 9 then
+					arg_15_1:addGodMark(1, false, arg_15_1._id, 14706, Data.SkillMode.using)
+				end
+				local marks = arg_15_1:getBuffValue(true, BattleData.PositiveType.godMark) or 1
+				local rate = (marks >= 5) and 600 or 300
+				local bonus = marks * rate
+				arg_15_1._atk = 2000 + bonus
+				arg_15_1._hp = 2800 + bonus
+				arg_15_1._maxAtk = 2000
+				arg_15_1._maxHp = 2800
+			end
+			if arg_15_1._infoId == 12327 or arg_15_1:hasSkillFast(14717) then
+				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14717, Data.SkillMode.using)
+			end
+			if arg_15_1._infoId == 40731 or arg_15_1:hasSkillFast(14727) then
+				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14727, Data.SkillMode.using)
+			end
+			if arg_15_1._infoId == 40730 or arg_15_1:hasSkillFast(14719) then
+				if not arg_15_1._tsAwakened then
+					arg_15_1._negativeStatus[BattleData.NegativeType.manacle] = true
+					arg_15_1._negativeStatus[BattleData.NegativeType.atkFrozen] = true
+					arg_15_1._atk = 8000
+					arg_15_1._hp = 8000
+					arg_15_1._maxAtk = 8000
+					arg_15_1._maxHp = 8000
+				else
+					arg_15_1._negativeStatus[BattleData.NegativeType.manacle] = false
+					arg_15_1._negativeStatus[BattleData.NegativeType.atkFrozen] = false
+					arg_15_1._atk = 16000
+					arg_15_1._hp = 16000
+					arg_15_1._maxAtk = 16000
+					arg_15_1._maxHp = 16000
+				end
+			end
+
+			if arg_15_1._infoId == 21134 then
+				local donthiens = arg_15_0:getBattleCardsByInfoId("B", 12325)
+				for _, dt in ipairs(donthiens) do
+					arg_15_0:incShield(dt, { 12008, 12009, 12010 }, false, false, dt._id, 14705, Data.SkillMode.using)
+				end
+			end
+
 			if var_15_4 then
 				arg_15_1._negativeStatus[BattleData.NegativeType.atkFrozen] = true
 			end
@@ -658,6 +820,9 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 
 			if var_15_2 then
 				arg_15_1._negativeStatus[BattleData.NegativeType.disablePosture] = true
+				if var_15_kybaby then
+					arg_15_1._negativeStatus[BattleData.NegativeType.cold] = true
+				end
 			end
 
 			if var_15_3 then
@@ -739,7 +904,7 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 			end
 
 			if arg_15_1:isV13() and arg_15_1._sourceStatus ~= BattleData.CardStatus.board and not arg_15_1:isStatusValNotSummon() then
-				arg_15_1._round3273 = arg_15_1._owner._round + 3
+				arg_15_1._round3273 = arg_15_1._owner._round + 2
 			end
 
 			arg_15_1._onBoardRound = arg_15_0._round
@@ -1009,6 +1174,22 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 			var_owner:account()
 		end
 	end
+
+	if arg_15_0._opponent and arg_15_1:isMonsterRare() and not arg_15_1:isStatusValNotSummon() then
+		local var_opp_vl = arg_15_0._opponent:getBattleCardsByInfoId("B", 12326)
+		if #var_opp_vl == 0 then
+			var_opp_vl = arg_15_0._opponent:getBattleCardsBySkillFast("B", 14710)
+		end
+		if #var_opp_vl > 0 and var_opp_vl[1]:canCastMonsterSkill() then
+			local vl = var_opp_vl[1]
+			local vl_marks = vl:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+			local targetAtk = arg_15_1._atk or arg_15_1._maxAtk or (arg_15_1._info and (type(arg_15_1._info._atk) == "table" and arg_15_1._info._atk[arg_15_1._level or 1] or arg_15_1._info._atk)) or 0
+			if vl_marks >= 9 and targetAtk <= 2000 then
+				arg_15_0:changeCardStatus(arg_15_1, BattleData.CardStatus.board, BattleData.CardStatus.grave, BattleData.CardStatusVal.b2g_skill, vl)
+				arg_15_0:account()
+			end
+		end
+	end
 end
 
 function var_0_0.addCardToGrave(arg_16_0, arg_16_1)
@@ -1099,6 +1280,9 @@ function var_0_0.addCardToGrave(arg_16_0, arg_16_1)
 		7674,
 		7693,
 		7731,
+		14733,
+		14734,
+		14743,
 		7753,
 		7831,
 		2318,
@@ -1123,6 +1307,7 @@ function var_0_0.addCardToGrave(arg_16_0, arg_16_1)
 	arg_16_1._pos = #arg_16_0._graveCards
 
 	lc.clearTable(arg_16_1._saved)
+	arg_16_1._ltkkDiscardQueued = nil
 
 	arg_16_0._toGraveCardsInRound[#arg_16_0._toGraveCardsInRound + 1] = arg_16_1
 

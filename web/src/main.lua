@@ -1,6 +1,6 @@
 local function var_0_0()
-	collectgarbage("setpause", 100)
-	collectgarbage("setstepmul", 5000)
+	collectgarbage("setpause", 160)
+	collectgarbage("setstepmul", 200)
 end
 
 local function var_0_1(arg_2_0, arg_2_1)

@@ -95,7 +95,7 @@ function var_0_0.createItem(arg_4_0, arg_4_1)
 		var_4_5 = Data._globalInfo._donateGetUnionCrystal[var_4_6]
 
 		if var_4_6 == 3 then
-			var_4_4 = var_4_4 + P._dailyIngotDonate * Data._globalInfo._donateIngotCostIncremental
+			var_4_4 = var_4_4 + (P._dailyIngotDonate or 0) * Data._globalInfo._donateIngotCostIncremental
 		end
 	else
 		var_4_6 = arg_4_1 / 2
@@ -141,10 +141,12 @@ function var_0_0.createItem(arg_4_0, arg_4_1)
 	lc.addChildToPos(var_4_0, var_4_12, cc.p(var_0_2.width - 40 - lc.w(var_4_12) / 2, lc.ch(var_4_0)))
 	var_4_12:setDisabledShader(ClientView.SHADER_DISABLE)
 
-	if arg_4_1 ~= 3 then
-		var_4_12:setEnabled(P._dailyDonate < Data._globalInfo._dailyDonateCount)
+	if var_4_6 == 1 then
+		var_4_12:setEnabled((P._dailyFreeDonate or 0) < 1)
+	elseif var_4_6 == 2 then
+		var_4_12:setEnabled((P._dailyGoldDonate or 0) < 1)
 	else
-		var_4_12:setEnabled(P._dailyIngotDonate < Data._globalInfo._ingotDonateUpLimit)
+		var_4_12:setEnabled(true)
 	end
 
 	var_4_12._resLabel:setColor((var_4_7 == -1 or P:hasResource(var_4_7, var_4_4)) and ClientView.COLOR_TEXT_WHITE or ClientView.COLOR_TEXT_RED)
@@ -154,7 +156,11 @@ function var_0_0.createItem(arg_4_0, arg_4_1)
 	end
 
 	if var_4_10 == nil then
-		var_4_12._resLabel:setString(Str(STR.FREE))
+		if (P._dailyFreeDonate or 0) >= 1 then
+			var_4_12._resLabel:setString("Đã nhận")
+		else
+			var_4_12._resLabel:setString(Str(STR.FREE))
+		end
 	end
 
 	var_4_0._btn = var_4_12
@@ -164,28 +170,45 @@ function var_0_0.createItem(arg_4_0, arg_4_1)
 end
 
 function var_0_0.updateContribution(arg_6_0)
-	local var_6_0 = P._playerUnion:getMyUnion():getContribution(P._id)
-
-	arg_6_0._act:setString(var_6_0[Data.ResType.union_act])
+	local myUnion = P and P._playerUnion and P._playerUnion:getMyUnion()
+	if myUnion then
+		local var_6_0 = myUnion:getContribution(P._id)
+		if var_6_0 and var_6_0[Data.ResType.union_act] then
+			arg_6_0._act:setString(var_6_0[Data.ResType.union_act])
+		end
+	end
 
 	if arg_6_0._acts and #arg_6_0._acts == 3 then
 		local var_6_1 = arg_6_0._acts[3]
 		local var_6_2 = var_6_1._btn._resLabel
-		local var_6_3 = Data._globalInfo._donateCost[3] + P._dailyIngotDonate * Data._globalInfo._donateIngotCostIncremental
+		local currentGemCost = Data._globalInfo._donateCost[3] + (P._dailyIngotDonate or 0) * Data._globalInfo._donateIngotCostIncremental
 
-		var_6_1._resNum = var_6_3
-
-		var_6_2:setString(var_6_3)
+		var_6_1._resNum = currentGemCost
+		var_6_2:setString(currentGemCost)
 
 		for iter_6_0 = 1, 3 do
 			local var_6_4 = arg_6_0._acts[iter_6_0]
 			local var_6_5 = var_6_4._btn
 			local var_6_6 = var_6_5._resLabel
 
-			if iter_6_0 ~= 3 then
-				var_6_5:setEnabled(P._dailyDonate < Data._globalInfo._dailyDonateCount)
+			if iter_6_0 == 1 then
+				local freeDone = (P._dailyFreeDonate or 0) >= 1
+				var_6_5:setEnabled(not freeDone)
+				if freeDone then
+					var_6_6:setString("Đã nhận")
+				else
+					var_6_6:setString(Str(STR.FREE))
+				end
+			elseif iter_6_0 == 2 then
+				local goldDone = (P._dailyGoldDonate or 0) >= 1
+				var_6_5:setEnabled(not goldDone)
+				if goldDone then
+					var_6_6:setString("Đã xong")
+				else
+					var_6_6:setString(Data._globalInfo._donateCost[2])
+				end
 			else
-				var_6_5:setEnabled(P._dailyIngotDonate < Data._globalInfo._ingotDonateUpLimit)
+				var_6_5:setEnabled(true)
 			end
 
 			var_6_6:setColor((var_6_4._resType == -1 or P:hasResource(var_6_4._resType, var_6_4._resNum)) and ClientView.COLOR_TEXT_WHITE or ClientView.COLOR_TEXT_RED)
@@ -194,9 +217,11 @@ function var_0_0.updateContribution(arg_6_0)
 end
 
 function var_0_0.contribute(arg_7_0, arg_7_1, arg_7_2, arg_7_3)
-	if P._dailyDonate >= Data._globalInfo._dailyDonateCount and arg_7_1 ~= 3 or P._dailyIngotDonate >= Data._globalInfo._ingotDonateUpLimit and arg_7_1 == 3 then
-		ToastManager.push(Str(STR.CANNOT_UNION_CONTRIBUTE))
-
+	if arg_7_1 == 1 and (P._dailyFreeDonate or 0) >= 1 then
+		ToastManager.push("Hôm nay bạn đã nhận mốc đóng góp miễn phí rồi!")
+		return
+	elseif arg_7_1 == 2 and (P._dailyGoldDonate or 0) >= 1 then
+		ToastManager.push("Mốc đóng góp 600 Vàng chỉ có thể thực hiện duy nhất 1 lần trong ngày!")
 		return
 	end
 
@@ -223,10 +248,12 @@ function var_0_0.contribute(arg_7_0, arg_7_1, arg_7_2, arg_7_3)
 	P._playerUnion:getMyUnion():contribute(P._id, arg_7_2, var_7_0._unionResNum)
 	P._playerUnion:changeResource(arg_7_2, var_7_0._unionResNum)
 
-	if arg_7_1 == 3 then
-		P._dailyIngotDonate = P._dailyIngotDonate + 1
+	if arg_7_1 == 1 then
+		P._dailyFreeDonate = (P._dailyFreeDonate or 0) + 1
+	elseif arg_7_1 == 2 then
+		P._dailyGoldDonate = (P._dailyGoldDonate or 0) + 1
 	else
-		P._dailyDonate = P._dailyDonate + 1
+		P._dailyIngotDonate = (P._dailyIngotDonate or 0) + 1
 	end
 
 	P:changeResource(var_7_0._resType, -var_7_0._resNum)
@@ -265,6 +292,9 @@ function var_0_0.onEnter(arg_9_0)
 		arg_9_0:updateContribution()
 	end))
 	table.insert(arg_9_0._listeners, lc.addEventListener(Data.Event.ingot_dirty, function(arg_11_0)
+		arg_9_0:updateContribution()
+	end))
+	table.insert(arg_9_0._listeners, lc.addEventListener(Data.Event.union_dirty, function(arg_12_0)
 		arg_9_0:updateContribution()
 	end))
 end

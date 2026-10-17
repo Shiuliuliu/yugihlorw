@@ -23,9 +23,15 @@ function var_0_0.init(arg_2_0, arg_2_1)
 	local var_2_0 = {}
 	local var_2_1 = {}
 
-	for iter_2_0, iter_2_1 in ipairs(Data.getSkinEffectId(arg_2_0._cardCategory, arg_2_0._skinEffectType)) do
+	local effIds = Data.getSkinEffectId(arg_2_0._cardCategory, arg_2_0._skinEffectType)
+	local racialCount = #effIds - 1
+	for iter_2_0, iter_2_1 in ipairs(effIds) do
 		if iter_2_0 > 1 then
-			var_2_0[#var_2_0 + 1] = Str(STR.CARD_CATEGORY_BEGIN + arg_2_0._cardCategory) .. iter_2_0 - 1
+			if racialCount > 1 then
+				var_2_0[#var_2_0 + 1] = Str(STR.CARD_CATEGORY_BEGIN + arg_2_0._cardCategory) .. " " .. (iter_2_0 - 1)
+			else
+				var_2_0[#var_2_0 + 1] = Str(STR.CARD_CATEGORY_BEGIN + arg_2_0._cardCategory)
+			end
 		else
 			var_2_0[#var_2_0 + 1] = Str(STR.COMMON)
 		end
@@ -140,6 +146,7 @@ end
 function var_0_0.buyEffect(arg_10_0)
 	local var_10_0 = arg_10_0._effectId
 	local var_10_1 = Data._skinInfo[var_10_0]
+	if not var_10_1 then return end
 	local var_10_2 = var_10_1._resType
 	local var_10_3 = ClientData.getPropIconName(var_10_2)
 	local var_10_4 = var_10_1._price
@@ -148,10 +155,9 @@ function var_0_0.buyEffect(arg_10_0)
 		return ToastManager.push(string.format(Str(STR.NOT_ENOUGH), ClientData.getNameByInfoId(var_10_2)))
 	end
 
-	if P._playerCard:buySkinId(var_10_0, 0, arg_10_0._infoId) then
+	local var_10_5 = Data.removeAdditional(arg_10_0._infoId)
+	if P._playerCard:buySkinId(var_10_0, 0, var_10_5) then
 		P:addResource(var_10_2, 1, -var_10_4)
-
-		local var_10_5 = Data.removeAdditional(arg_10_0._infoId)
 
 		ClientData.sendBuyEffect(var_10_5, var_10_0, 0)
 		arg_10_0:updateButtonArea()
@@ -165,9 +171,10 @@ end
 
 function var_0_0.resetEffect(arg_12_0)
 	local var_12_0 = arg_12_0._effectId
+	local var_12_5 = Data.removeAdditional(arg_12_0._infoId)
 
-	if P._playerCard:setSkinId(arg_12_0._infoId, 0, arg_12_0._skinEffectType) then
-		ClientData.sendSetSkin(arg_12_0._infoId, -var_12_0)
+	if P._playerCard:setSkinId(var_12_5, 0, arg_12_0._skinEffectType) then
+		ClientData.sendSetSkin(var_12_5, -var_12_0)
 		arg_12_0:updateButtonArea()
 		ToastManager.push(Str(STR.SET_EFFECT_SUCCEED))
 	else
@@ -177,9 +184,10 @@ end
 
 function var_0_0.setEffect(arg_13_0)
 	local var_13_0 = arg_13_0._effectId
+	local var_13_5 = Data.removeAdditional(arg_13_0._infoId)
 
-	if P._playerCard:setSkinId(arg_13_0._infoId, var_13_0, arg_13_0._skinEffectType) then
-		ClientData.sendSetSkin(arg_13_0._infoId, var_13_0)
+	if P._playerCard:setSkinId(var_13_5, var_13_0, arg_13_0._skinEffectType) then
+		ClientData.sendSetSkin(var_13_5, var_13_0)
 		arg_13_0:updateButtonArea()
 		ToastManager.push(Str(STR.SET_EFFECT_SUCCEED))
 	else
@@ -188,8 +196,9 @@ function var_0_0.setEffect(arg_13_0)
 end
 
 function var_0_0.updateEffectShowArea(arg_14_0)
-	local var_14_0 = arg_14_0._contentBg._focusTabIndex
-	local var_14_1 = Data.getSkinEffectId(arg_14_0._categaryType, arg_14_0._skinEffectType)[var_14_0]
+	local var_14_0 = (arg_14_0._contentBg and arg_14_0._contentBg._focusTabIndex) or 1
+	local effList = Data.getSkinEffectId(arg_14_0._categaryType or arg_14_0._cardCategory or 0, arg_14_0._skinEffectType)
+	local var_14_1 = effList[var_14_0] or effList[1] or 53001
 
 	arg_14_0._effectId = var_14_1
 
@@ -296,21 +305,23 @@ function var_0_0.createEffectShowArea(arg_18_0)
 
 			if tonumber(string.sub(var_20_2, -2, -2)) == 0 then
 				local var_20_4 = Particle.create(var_20_2)
-
-				var_20_4:setCameraMask(ClientData.CAMERA_3D_FLAG)
-				lc.addChildToPos(arg_20_0._image, var_20_4, var_20_0, var_20_3 and -1 or 1)
+				if var_20_4 then
+					var_20_4:setCameraMask(ClientData.CAMERA_3D_FLAG)
+					lc.addChildToPos(arg_20_0._image, var_20_4, var_20_0, var_20_3 and -1 or 1)
+				end
 			else
 				local var_20_5 = DragonBones.create(var_20_2)
-
-				var_20_5:setCameraMask(ClientData.CAMERA_3D_FLAG)
-				var_20_5:gotoAndPlay("effect")
-				lc.addChildToPos(arg_20_0._image, var_20_5, var_20_0, var_20_3 and -1 or 1)
+				if var_20_5 then
+					var_20_5:setCameraMask(ClientData.CAMERA_3D_FLAG)
+					var_20_5:gotoAndPlay("effect")
+					lc.addChildToPos(arg_20_0._image, var_20_5, var_20_0, var_20_3 and -1 or 1)
+				end
 			end
 		end
 
 		local var_20_6 = Data._skinInfo[arg_20_1]
 
-		if var_20_6._category == 3 and var_20_6._type == Data.SkinEffectType.toBoard then
+		if var_20_6 and var_20_6._category == 3 and var_20_6._type == Data.SkinEffectType.toBoard then
 			(arg_20_0._bones or arg_20_0._image):runAction(lc.sequence(lc.fadeOut(0), 0.3, lc.fadeIn(0.8)))
 		end
 	end
@@ -333,20 +344,23 @@ function var_0_0.createEffectShowArea(arg_18_0)
 			var_18_11:setScale(1)
 
 			local var_22_0 = Particle.create("par_kprc01")
-
-			var_22_0:setCameraMask(ClientData.CAMERA_3D_FLAG)
-			lc.addChildToCenter(var_18_11, var_22_0, 100)
-			var_22_0:setScale(var_18_9)
+			if var_22_0 then
+				var_22_0:setCameraMask(ClientData.CAMERA_3D_FLAG)
+				lc.addChildToCenter(var_18_11, var_22_0, 100)
+				var_22_0:setScale(var_18_9)
+			end
 
 			local var_22_1 = Particle.create("par_kprc02")
-
-			var_22_1:setCameraMask(ClientData.CAMERA_3D_FLAG)
-			lc.addChildToCenter(var_18_11, var_22_1, 100)
-			var_22_1:setScale(var_18_9)
+			if var_22_1 then
+				var_22_1:setCameraMask(ClientData.CAMERA_3D_FLAG)
+				lc.addChildToCenter(var_18_11, var_22_1, 100)
+				var_22_1:setScale(var_18_9)
+			end
 		end, lc.delay(var_18_7), lc.ease(lc.spawn(lc.moveTo(var_18_6, var_18_4), lc.rotateTo(var_18_6, 0, 0, 0), lc.scaleTo(var_18_6, var_18_8)), "O", 0.4), lc.call(function()
 			local var_23_0 = Particle.create("par_yhcx")
-
-			lc.addChildToCenter(var_18_11, var_23_0, CardSprite.ZOrder.efc)
+			if var_23_0 then
+				lc.addChildToCenter(var_18_11, var_23_0, CardSprite.ZOrder.efc)
+			end
 			var_18_11:setStatus(true, true)
 			var_18_11:setCameraMask(ClientData.CAMERA_3D_FLAG)
 			var_18_11._image:setScale(0.6)
@@ -373,7 +387,7 @@ function var_0_0.createEffectShowArea(arg_18_0)
 		local var_25_4 = var_25_0:getParent():convertToNodeSpace(var_25_3:getParent():convertToWorldSpace(cc.p(var_25_3:getPosition())))
 
 		var_25_0:stopAllActions()
-		var_25_0:runAction(lc.sequence(delay, lc.ease(lc.moveTo(0.2, var_25_4), "I", 2.5), function()
+		var_25_0:runAction(lc.sequence(lc.delay(0.2), lc.ease(lc.moveTo(0.2, var_25_4), "I", 2.5), function()
 			var_18_11.efcSkinEffect(var_18_10, arg_25_0)
 		end, lc.ease(lc.moveTo(0.2, var_25_2), "BackO", 2.5), function()
 			var_25_0:startFloat()

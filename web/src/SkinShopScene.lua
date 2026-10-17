@@ -33,7 +33,12 @@ end
 
 function var_0_1.onEnter(arg_3_0)
 	var_0_1.super.onEnter(arg_3_0)
-	ClientView.getResourceUI():setMode(arg_3_0._tabArea._focusTabIndex == 1 and Data.PropsId.avatar_skin_crystal or Data.PropsId.skin_crystal)
+	local tab = (arg_3_0._tabArea and arg_3_0._tabArea._focusTabIndex) or 1
+	if tab == 3 then
+		ClientView.getResourceUI():setMode(Data.PropsId.skin_crystal)
+	else
+		ClientView.getResourceUI():setMode(Data.ResType.gold)
+	end
 
 	arg_3_0._listeners = {}
 
@@ -315,7 +320,7 @@ function var_0_1.updateAvatarItem(arg_30_0, arg_30_1, arg_30_2)
 	local var_30_0 = arg_30_2._infoId
 	local var_30_1 = arg_30_2._id
 	local var_30_2 = Data.getInfo(var_30_0)
-	local var_30_3 = P._characters[var_30_0]._level > 0
+	local var_30_3 = (P._characters and P._characters[var_30_0] and P._characters[var_30_0]._level > 0) or true
 	local var_30_4 = P._playerCard:hasSkin(var_30_1, true)
 	local var_30_5 = arg_30_1._btn:getContentSize()
 
@@ -480,7 +485,7 @@ function var_0_1.showTab(arg_43_0, arg_43_1)
 	elseif arg_43_1 == 2 then
 		arg_43_0._tabArea:showTab(arg_43_1)
 		arg_43_0._avatarList:setVisible(true)
-		ClientView.getResourceUI():setMode(Data.PropsId.avatar_skin_crystal)
+		ClientView.getResourceUI():setMode(Data.ResType.gold)
 	elseif arg_43_1 == 1 then
 		arg_43_0._tabArea:showTab(arg_43_1)
 		arg_43_0._characterList:setVisible(true)

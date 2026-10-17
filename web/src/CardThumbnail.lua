@@ -23,7 +23,15 @@ function var_0_0.createComponent(arg_2_0, arg_2_1, arg_2_2)
 
 	arg_2_0._cardId = var_2_0
 	arg_2_0._isGold = Data.isGold(arg_2_1)
-	arg_2_0._skinId = arg_2_2
+	local rawSkin = arg_2_2
+	if type(rawSkin) == "table" then
+		if type(rawSkin.getCurrentId) == "function" then
+			rawSkin = rawSkin:getCurrentId(Data.SkinEffectType and Data.SkinEffectType.skin) or 0
+		else
+			rawSkin = 0
+		end
+	end
+	arg_2_0._skinId = (type(rawSkin) == "number" and rawSkin > 0) and rawSkin or nil
 	arg_2_0._frame = ClientView.createCardFrame(arg_2_0._infoId, nil, arg_2_0._skinId)
 
 	lc.addChildToCenter(arg_2_0, arg_2_0._frame, 1)
@@ -40,7 +48,15 @@ function var_0_0.updateComponent(arg_3_0, arg_3_1, arg_3_2)
 
 	arg_3_0._cardId = var_3_0
 	arg_3_0._isGold = Data.isGold(arg_3_1)
-	arg_3_0._skinId = arg_3_2
+	local rawSkin = arg_3_2
+	if type(rawSkin) == "table" then
+		if type(rawSkin.getCurrentId) == "function" then
+			rawSkin = rawSkin:getCurrentId(Data.SkinEffectType and Data.SkinEffectType.skin) or 0
+		else
+			rawSkin = 0
+		end
+	end
+	arg_3_0._skinId = (type(rawSkin) == "number" and rawSkin > 0) and rawSkin or nil
 
 	arg_3_0._frame:update(arg_3_0._infoId, arg_3_0._skinId)
 	arg_3_0._shadow:update(arg_3_0._infoId)
@@ -607,8 +623,13 @@ function var_0_0.updateVoteShopFlag(arg_25_0, arg_25_1)
 end
 
 function var_0_0.setGray(arg_26_0, arg_26_1)
-	arg_26_0._frame._frame:setEffect(arg_26_1 and ClientView.SHADER_DISABLE or arg_26_0._infoId and ClientView.getCardShader(arg_26_0._infoId) or nil)
-	arg_26_0._frame:setEffect(arg_26_1 and ClientView.SHADER_DISABLE or nil)
+	if arg_26_0._frame and arg_26_0._frame._frame then
+		local var_shader = arg_26_1 and ClientView.SHADER_DISABLE or (arg_26_0._infoId and ClientView.getCardShader(arg_26_0._infoId) or nil)
+		arg_26_0._frame._frame:setEffect(var_shader)
+	end
+	if arg_26_0._frame then
+		arg_26_0._frame:setEffect(arg_26_1 and ClientView.SHADER_DISABLE or nil)
+	end
 end
 
 function var_0_0.setSelected(arg_27_0, arg_27_1, arg_27_2)

@@ -295,6 +295,27 @@ local function patchData()
 
 		local a, b, c = parseData(name, buf)
 
+		if current == "skill.bin" and Data._skillInfo then
+			if Data._skillInfo[14655] then
+				Data._skillInfo[14655]._modes = { [1] = 2, [2] = 9 }
+			end
+			if Data._skillInfo[14658] then
+				Data._skillInfo[14658]._modes = { [1] = 2, [2] = 9 }
+			end
+			if Data._skillInfo[14673] then
+				Data._skillInfo[14673]._isIgnoreDefend = 8
+				Data._skillInfo[14673]._removeMode = { [1] = 42 }
+			end
+			if Data._skillInfo[14743] then
+				Data._skillInfo[14743]._modes = { [1] = 61, [2] = 2 }
+				Data._skillInfo[14743]._isIgnoreDefend = 1
+			end
+			if Data._skillInfo[14749] then
+				Data._skillInfo[14749]._modes = { [1] = 61, [2] = 2 }
+				Data._skillInfo[14749]._isIgnoreDefend = 0
+			end
+		end
+
 		current = nil
 
 		return a, b, c
@@ -329,6 +350,7 @@ end
 
 -- SYNC_DECK_TO_WEB: Save deck changes directly to MySQL via jdzcApi:saveDeck
 local _lastSyncTime = 0
+local _savedDeckHashes = {}
 local function syncPlayerDecksToWeb()
 	local now = os.time()
 	if now - _lastSyncTime < 2 then return end
@@ -339,7 +361,7 @@ local function syncPlayerDecksToWeb()
 	if not (api and api.saveDeck) then return end
 
 	local jsonMod = require("json")
-	for slot = 1, 5 do
+	for slot = 1, 10 do
 		local cloneTroop = ClientData and ClientData._cloneTroops and ClientData._cloneTroops[slot]
 		local pTroop = P._playerCard and P._playerCard._troops and P._playerCard._troops[slot]
 		local troop = (cloneTroop and #cloneTroop > 0 and cloneTroop) or pTroop
@@ -365,7 +387,11 @@ local function syncPlayerDecksToWeb()
 			local cStr = jsonMod.encode(cards)
 			local eStr = jsonMod.encode(extra)
 			local deckName = (P and P._troopRemarks and P._troopRemarks[slot] and P._troopRemarks[slot] ~= "") and P._troopRemarks[slot] or ("Bộ Bài " .. tostring(slot))
-			api:saveDeck(accId, slot, deckName, cStr, eStr)
+			local deckHash = deckName .. "|" .. cStr .. "|" .. eStr
+			if _savedDeckHashes[slot] ~= deckHash then
+				_savedDeckHashes[slot] = deckHash
+				api:saveDeck(accId, slot, deckName, cStr, eStr)
+			end
 		end
 	end
 end
@@ -559,103 +585,159 @@ function patchClientData()
 				if res and res.ranks then
 					ClientData._cachedLeaderboard = res.ranks
 				end
+				local isUnionRank = (rankType == SglMsgType_pb.PB_TYPE_RANK_UNION_TROPHY or rankType == SglMsgType_pb.PB_TYPE_RANK_UNION_LEVEL)
 				local rankList = {}
 				local myId = (P and P._id) or 0
 				local selfInList = false
-				if res and res.ranks then
-					for i, r in ipairs(res.ranks) do
-						local crownObj = nil
-						local r_gc = tonumber(r.gold_cup) or 0
-						local r_sc = tonumber(r.silver_cup) or 0
-						local r_bc = tonumber(r.bronze_cup) or 0
-						if r_gc > 0 then crownObj = { info_id = 7204, num = r_gc }
-						elseif r_sc > 0 then crownObj = { info_id = 7205, num = r_sc }
-						elseif r_bc > 0 then crownObj = { info_id = 7206, num = r_bc }
-						end
-						local uInfo = {
-							id = r.id or i,
-							name = r.name or "Duelist",
-							level = r.level or 1,
-							avatar = r.avatar or 201,
-							trophy = r.trophy or 800,
-							gold = r.gold or 100000,
-							grain = 0,
-							ingot = 1000,
-							exp = r.exp or 0,
-							vip = r.vip or 0,
-							shield = 0,
-							union_id = 0,
-							union_name = "",
-							union_title = 0,
-							union_avatar = 0,
-							union_tag = "",
-							last_login = 0,
-							rid = 1,
-							privilege = 0,
-							month_card = 0
-						}
-						if crownObj then uInfo.crown = crownObj end
-						local val = r.value or r.trophy or 800
-						if rankType == SglMsgType_pb.PB_TYPE_RANK_CHAR_LEVEL then
-							val = r.value or r.level or 1
-						end
-						table.insert(rankList, {
-							rank = r.rank or i,
-							value = val,
-							user_info = uInfo
-						})
-						if r.id == myId then
-							selfInList = true
+				local selfEntry = nil
+
+				if isUnionRank then
+					if res and res.ranks then
+						for i, r in ipairs(res.ranks) do
+							local uInfo = {
+								id = r.id or i,
+								name = r.name or "Công Hội",
+								level = r.level or 1,
+								avatar = r.avatar or 1,
+								tag = r.tag or "",
+								member = r.member or 1,
+								max_member = r.max_member or 20,
+								required_level = r.required_level or 1,
+								type = r.type or 1,
+								gold = r.gold or 0,
+								wood = r.wood or 0,
+								announcement = r.announcement or ""
+							}
+							table.insert(rankList, {
+								rank = r.rank or i,
+								value = r.value or r.total_trophy or r.level or 1,
+								union_info = uInfo
+							})
+							if P and P._unionId and r.id == P._unionId then
+								selfInList = true
+							end
 						end
 					end
-				end
+					local myUnion = P and P._playerUnion and P._playerUnion:getMyUnion()
+					local sr = (res and res.self_rank) or {}
+					local s_uInfo = {
+						id = (myUnion and myUnion._id) or sr.id or (P and P._unionId) or 0,
+						name = (myUnion and myUnion._name) or sr.name or "",
+						level = (myUnion and myUnion._level) or sr.level or 1,
+						avatar = (myUnion and myUnion._badge) or sr.avatar or 1,
+						tag = (myUnion and myUnion._word) or sr.tag or "",
+						member = (myUnion and myUnion._memberNum) or sr.member or (P and P:hasUnion() and 1 or 0),
+						max_member = (myUnion and myUnion._memberCapacity) or sr.max_member or 20,
+						required_level = (myUnion and myUnion._reqLevel) or sr.required_level or 1,
+						type = (myUnion and myUnion._joinType) or sr.type or 1,
+						gold = (myUnion and myUnion._gold) or sr.gold or 0,
+						wood = (myUnion and myUnion._wood) or sr.wood or 0,
+						announcement = (myUnion and myUnion._announce) or sr.announcement or ""
+					}
+					selfEntry = {
+						rank = sr.rank or (P and P:hasUnion() and 1 or 999),
+						value = sr.value or (myUnion and (rankType == SglMsgType_pb.PB_TYPE_RANK_UNION_LEVEL and myUnion._level or 800)) or 0,
+						union_info = s_uInfo
+					}
+					if not selfInList and P and P:hasUnion() and selfEntry.union_info.id > 0 then
+						table.insert(rankList, selfEntry)
+					end
+				else
+					if res and res.ranks then
+						for i, r in ipairs(res.ranks) do
+							local crownObj = nil
+							local r_gc = tonumber(r.gold_cup) or 0
+							local r_sc = tonumber(r.silver_cup) or 0
+							local r_bc = tonumber(r.bronze_cup) or 0
+							if r_gc > 0 then crownObj = { info_id = 7204, num = r_gc }
+							elseif r_sc > 0 then crownObj = { info_id = 7205, num = r_sc }
+							elseif r_bc > 0 then crownObj = { info_id = 7206, num = r_bc }
+							end
+							local uInfo = {
+								id = r.id or i,
+								name = r.name or "Duelist",
+								level = r.level or 1,
+								avatar = r.avatar or 201,
+								trophy = r.trophy or 800,
+								gold = r.gold or 100000,
+								grain = 0,
+								ingot = 1000,
+								exp = r.exp or 0,
+								vip = r.vip or 0,
+								shield = 0,
+								union_id = 0,
+								union_name = "",
+								union_title = 0,
+								union_avatar = 0,
+								union_tag = "",
+								last_login = 0,
+								rid = 1,
+								privilege = 0,
+								month_card = 0
+							}
+							if crownObj then uInfo.crown = crownObj end
+							local val = r.value or r.trophy or 800
+							if rankType == SglMsgType_pb.PB_TYPE_RANK_CHAR_LEVEL then
+								val = r.value or r.level or 1
+							end
+							table.insert(rankList, {
+								rank = r.rank or i,
+								value = val,
+								user_info = uInfo
+							})
+							if r.id == myId then
+								selfInList = true
+							end
+						end
+					end
 
-				local sr = (res and res.self_rank) or {}
-				local myRankNum = sr.rank or 999
-				local myVal = sr.value or sr.trophy or (P and P._playerFindClash and P._playerFindClash._trophy) or (P and P._trophy) or 800
-				if rankType == SglMsgType_pb.PB_TYPE_RANK_CHAR_LEVEL then
-					myVal = sr.value or sr.level or (P and P:getMaxCharacterLevel()) or (P and P._level) or 1
-				end
-				local myGc = tonumber(sr.gold_cup or (P and P._goldCup) or 0) or 0
-				local mySc = tonumber(sr.silver_cup or (P and P._silverCup) or 0) or 0
-				local myBc = tonumber(sr.bronze_cup or (P and P._bronzeCup) or 0) or 0
-				local myCrown = nil
-				if myGc > 0 then myCrown = { info_id = 7204, num = myGc }
-				elseif mySc > 0 then myCrown = { info_id = 7205, num = mySc }
-				elseif myBc > 0 then myCrown = { info_id = 7206, num = myBc }
-				end
-				local myUInfo = {
-					id = myId,
-					name = (P and P._name) or sr.name or "Duelist",
-					level = (P and P._level) or sr.level or 1,
-					avatar = (P and P._avatar) or sr.avatar or 201,
-					trophy = (P and P._trophy) or sr.trophy or 800,
-					gold = (P and P._gold) or 100000,
-					grain = 0,
-					ingot = 1000,
-					exp = (P and P._exp) or 0,
-					vip = (P and P._vip) or 0,
-					shield = 0,
-					union_id = 0,
-					union_name = "",
-					union_title = 0,
-					union_avatar = 0,
-					union_tag = "",
-					last_login = 0,
-					rid = 1,
-					privilege = 0,
-					month_card = 0
-				}
-				if myCrown then myUInfo.crown = myCrown end
+					local sr = (res and res.self_rank) or {}
+					local myRankNum = sr.rank or 999
+					local myVal = sr.value or sr.trophy or (P and P._playerFindClash and P._playerFindClash._trophy) or (P and P._trophy) or 800
+					if rankType == SglMsgType_pb.PB_TYPE_RANK_CHAR_LEVEL then
+						myVal = sr.value or sr.level or (P and P:getMaxCharacterLevel()) or (P and P._level) or 1
+					end
+					local myGc = tonumber(sr.gold_cup or (P and P._goldCup) or 0) or 0
+					local mySc = tonumber(sr.silver_cup or (P and P._silverCup) or 0) or 0
+					local myBc = tonumber(sr.bronze_cup or (P and P._bronzeCup) or 0) or 0
+					local myCrown = nil
+					if myGc > 0 then myCrown = { info_id = 7204, num = myGc }
+					elseif mySc > 0 then myCrown = { info_id = 7205, num = mySc }
+					elseif myBc > 0 then myCrown = { info_id = 7206, num = myBc }
+					end
+					local myUInfo = {
+						id = myId,
+						name = (P and P._name) or sr.name or "Duelist",
+						level = (P and P._level) or sr.level or 1,
+						avatar = (P and P._avatar) or sr.avatar or 201,
+						trophy = (P and P._trophy) or sr.trophy or 800,
+						gold = (P and P._gold) or 100000,
+						grain = 0,
+						ingot = 1000,
+						exp = (P and P._exp) or 0,
+						vip = (P and P._vip) or 0,
+						shield = 0,
+						union_id = 0,
+						union_name = "",
+						union_title = 0,
+						union_avatar = 0,
+						union_tag = "",
+						last_login = 0,
+						rid = 1,
+						privilege = 0,
+						month_card = 0
+					}
+					if myCrown then myUInfo.crown = myCrown end
 
-				local selfEntry = {
-					rank = myRankNum,
-					value = myVal,
-					user_info = myUInfo
-				}
+					selfEntry = {
+						rank = myRankNum,
+						value = myVal,
+						user_info = myUInfo
+					}
 
-				if not selfInList and myId > 0 then
-					table.insert(rankList, selfEntry)
+					if not selfInList and myId > 0 then
+						table.insert(rankList, selfEntry)
+					end
 				end
 
 				local rankMsg = {
@@ -673,14 +755,14 @@ function patchClientData()
 				if P and P._playerRank then
 					local ranksObj = P._playerRank:getRanks(rankType or SglMsgType_pb.PB_TYPE_RANK_LADDER, subType)
 					if ranksObj then
-						if not ranksObj._selfRank then
+						if not ranksObj._selfRank and selfEntry then
 							local rankCls = require("Rank")
 							local sRankObj = rankCls.new()
 							sRankObj:set(selfEntry, rankType or SglMsgType_pb.PB_TYPE_RANK_LADDER, subType)
 							ranksObj._selfRank = sRankObj
-						elseif sr.rank then
-							ranksObj._selfRank._rank = sr.rank
-							ranksObj._selfRank._value = myVal
+						elseif ranksObj._selfRank and selfEntry then
+							if selfEntry.rank then ranksObj._selfRank._rank = selfEntry.rank end
+							if selfEntry.value then ranksObj._selfRank._value = selfEntry.value end
 						end
 					end
 				end
@@ -893,16 +975,16 @@ function patchClientData()
 					pData._level = pData._level or (P and P._level) or 50
 					pData._vip = pData._vip or (P and P._vip) or 0
 					pData._trophy = pData._trophy or (P and P._trophy) or 800
-					pData._cardBackId = pData._cardBackId or 1
+					pData._cardBackId = (pData._cardBackId and pData._cardBackId >= 7600) and pData._cardBackId or Data.PropsId.card_back
 					pData._region = pData._region or 1
 					pData._regionId = pData._regionId or 1
 					pData._privilege = pData._privilege or 0
 					pData._monthCardType = pData._monthCardType or 0
 					pData._isNpc = false
 					pData._isNewRound = (P and P._isNewRound) or false
-					pData._roundTimeInit = 90
+					pData._roundTimeInit = 60
 					pData._roundTimeMax = 120
-					pData._roundTimeDelta = (pData._isNewRound and 5) or 0
+					pData._roundTimeDelta = (pData._isNewRound and 6) or 6
 					pData._fortressHp = (pData._fortressHp and pData._fortressHp > 0) and pData._fortressHp or 8000
 					pData._bossId = 0
 					pData._bossLevel = 1
@@ -918,16 +1000,16 @@ function patchClientData()
 					oData._level = oData._level or 50
 					oData._vip = oData._vip or 0
 					oData._trophy = oData._trophy or 800
-					oData._cardBackId = oData._cardBackId or 1
+					oData._cardBackId = (oData._cardBackId and oData._cardBackId >= 7600) and oData._cardBackId or Data.PropsId.card_back
 					oData._region = oData._region or 1
 					oData._regionId = oData._regionId or 1
 					oData._privilege = oData._privilege or 0
 					oData._monthCardType = oData._monthCardType or 0
 					oData._isNpc = false
 					oData._isNewRound = (P and P._isNewRound) or false
-					oData._roundTimeInit = 90
+					oData._roundTimeInit = 60
 					oData._roundTimeMax = 120
-					oData._roundTimeDelta = (oData._isNewRound and 5) or 0
+					oData._roundTimeDelta = (oData._isNewRound and 6) or 6
 					oData._fortressHp = (oData._fortressHp and oData._fortressHp > 0) and oData._fortressHp or 8000
 					oData._bossId = 0
 					oData._bossLevel = 1
@@ -1040,6 +1122,23 @@ function patchClientData()
 
 						if P and P._playerLog then
 							P._playerLog:sendLogDirty(require("PlayerLog").Event.log_item_dirty, logId)
+						end
+
+						local m = res.message
+						local bPayload = res.battle_payload
+						if _G.addRawChatMessage and (m or bPayload) then
+							local mid = (m and m.id) or os.time()
+							local mts = (m and m.timestamp) or (os.time() * 1000)
+							local mName = (m and m.name) or (P and P._name) or "Duelist"
+							local mLvl = (m and m.level) or (P and P._level) or 50
+							local mAvatar = (m and m.avatar) or (P and P._avatar) or 101
+							local mContent = bPayload or (m and m.battle_data) or (m and m.content) or text
+							local mCId = (m and m.client_msg_id) or string.format("share_%s_%s", tostring(logId), tostring(os.time()))
+							_G.addRawChatMessage(mid, mts, accId, mName, mLvl, mAvatar, mContent, 3, 0, mCId)
+							local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
+							if cp and cp._isPop then
+								cp:resetList()
+							end
 						end
 					end)
 					ToastManager.push(Str(STR.SHARE_SUCCESS))
@@ -1243,6 +1342,475 @@ function patchClientData()
 		end
 	end
 
+	---------------------------------------------------------------------------
+	-- GUILD / UNION FEATURE HOOKS (H5 PROTOCOL BRIDGING)
+	---------------------------------------------------------------------------
+	local function formatUnionPbPayload(data)
+		if not data or not data.union_info then return nil end
+		local uInfo = data.union_info
+		local mList = data.member_info or {}
+		local uDetail = {
+			union_info = uInfo,
+			member_info = mList
+		}
+		local payload = {
+			info = {
+				id = uInfo.id,
+				name = uInfo.name,
+				avatar = uInfo.avatar,
+				tag = uInfo.tag,
+				level = uInfo.level,
+				exp = uInfo.exp,
+				gold = uInfo.gold,
+				wood = uInfo.wood,
+				announcement = uInfo.announcement,
+				member = uInfo.member,
+				required_level = uInfo.required_level,
+				type = uInfo.type,
+				detail = uDetail
+			},
+			detail = uDetail,
+			weekly_donates = data.weekly_donates or {},
+			daily_donates = data.daily_donates or {},
+			lets = {},
+			data = {
+				bosses = {},
+				techs = {},
+				props = {},
+				team_info = { masswar_score = 500 }
+			},
+			impeaches = {}
+		}
+		makeProtobufCompatible(payload)
+		return payload
+	end
+
+	local function handleGetMyUnionDetail()
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_mine", { account_id = accId }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 and res.union_info then
+					if res.daily_donate_free ~= nil and P then P._dailyFreeDonate = res.daily_donate_free end
+					if res.daily_donate_gold ~= nil and P then P._dailyGoldDonate = res.daily_donate_gold end
+					if res.daily_donate_gem ~= nil and P then P._dailyIngotDonate = res.daily_donate_gem end
+					local pbData = formatUnionPbPayload(res)
+					P._unionId = res.union_info.id
+					P._unionName = res.union_info.name
+					P._unionBadge = res.union_info.avatar
+					P._unionWord = res.union_info.tag
+					P._unionType = res.union_info.type
+					local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_MINE, Union_pb.SglUnionMsg.union_mine_resp, pbData)
+					deliverDraftMsg(msg, function()
+						lc.sendEvent(Data.Event.union_dirty)
+					end)
+				else
+					P._unionId = 0
+					P._unionName = ""
+					if P._playerUnion then
+						P._playerUnion:clear()
+					end
+					pcall(function()
+						local ind = ClientView.getActiveIndicator()
+						if ind and ind.hide then ind:hide() end
+					end)
+					local curScene = lc._runningScene
+					if curScene and curScene.updateTabs then
+						pcall(function() curScene:updateTabs() end)
+					end
+				end
+			end)
+		else
+			pcall(function()
+				local ind = ClientView.getActiveIndicator()
+				if ind and ind.hide then ind:hide() end
+			end)
+		end
+		return true
+	end
+	ClientData.sendGetMyUnionDetail = handleGetMyUnionDetail
+	ClientData.sendGetUnionMine = handleGetMyUnionDetail
+
+	ClientData.sendGetUnionDetail = function(unionId)
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_detail", { union_id = unionId }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 and res.union_info then
+					local detailData = {
+						union_info = res.union_info,
+						member_info = res.member_info or {}
+					}
+					makeProtobufCompatible(detailData)
+					local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_DETAIL, Union_pb.SglUnionMsg.union_detail_resp, detailData)
+					deliverDraftMsg(msg)
+				else
+					pcall(function()
+						local ind = ClientView.getActiveIndicator()
+						if ind and ind.hide then ind:hide() end
+					end)
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendGetRecommandUnions = function()
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_recommend", { account_id = (P and P._id) or 0 }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				local uList = (res and res.unions) or {}
+				makeProtobufCompatible(uList)
+				local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_RECOMMEND, Union_pb.SglUnionMsg.union_recommend_resp, uList)
+				deliverDraftMsg(msg)
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendGetSearchUnions = function(field, query)
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_search", { field = field, query = query }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				local uList = (res and res.unions) or {}
+				makeProtobufCompatible(uList)
+				local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_SEARCH, Union_pb.SglUnionMsg.union_search_resp, uList)
+				deliverDraftMsg(msg)
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendCreateUnion = function(name, announcement, reqLevel, joinType, avatar, tag)
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_create", {
+				account_id = accId,
+				name = name,
+				announcement = announcement,
+				required_level = reqLevel,
+				join_type = joinType,
+				avatar = avatar,
+				tag = tag
+			}, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 and res.union_info then
+					local pbData = formatUnionPbPayload(res)
+					local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_CREATE, Union_pb.SglUnionMsg.union_create_resp, pbData)
+					deliverDraftMsg(msg, function()
+						ToastManager.push(res.msg or "Tạo công hội thành công!")
+					end)
+				else
+					pcall(function()
+						local ind = ClientView.getActiveIndicator()
+						if ind and ind.hide then ind:hide() end
+					end)
+					ToastManager.push((res and res.msg) or "Tạo công hội thất bại!")
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendUnionApply = function(unionId, message)
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		if P and P._unionLeaveCd and os.time() < P._unionLeaveCd then
+			local rem = P._unionLeaveCd - os.time()
+			local hours = math.floor(rem / 3600)
+			local mins = math.floor((rem % 3600) / 60)
+			ToastManager.push(string.format("Sau khi rời công hội phải chờ 1 ngày mới có thể tham gia công hội khác! (Còn lại %d giờ %d phút)", hours, mins))
+			return true
+		end
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_join", {
+				account_id = accId,
+				union_id = unionId
+			}, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 and res.union_info then
+					local pbData = formatUnionPbPayload(res)
+					local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_JOIN, Union_pb.SglUnionMsg.union_join_resp, pbData)
+					deliverDraftMsg(msg, function()
+						ToastManager.push(res.msg or "Gia nhập công hội thành công!")
+					end)
+				else
+					pcall(function()
+						local ind = ClientView.getActiveIndicator()
+						if ind and ind.hide then ind:hide() end
+					end)
+					ToastManager.push((res and res.msg) or "Gia nhập công hội thất bại!")
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendUnionLeave = function()
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_leave", { account_id = accId }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 then
+					if P then
+						P._unionLeaveCd = os.time() + 86400
+					end
+					local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_LEAVE, nil, nil)
+					deliverDraftMsg(msg, function()
+						ToastManager.push(res.msg or "Đã rời công hội!")
+					end)
+				else
+					pcall(function()
+						local ind = ClientView.getActiveIndicator()
+						if ind and ind.hide then ind:hide() end
+					end)
+					ToastManager.push((res and res.msg) or "Rời công hội thất bại!")
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendUnionKickout = function(targetId)
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_kick", { account_id = accId, target_id = targetId }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 then
+					if P and P._playerUnion then
+						P._playerUnion:removeMember(targetId)
+					end
+					ToastManager.push(res.msg or "Đã trục xuất thành viên!")
+					lc.sendEvent(Data.Event.union_member_dirty)
+				else
+					ToastManager.push((res and res.msg) or "Không thể trục xuất!")
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendUnionPromote = function(targetId)
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_set_job", { account_id = accId, target_id = targetId, job = 2 }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 then
+					local myU = P and P._playerUnion and P._playerUnion:getMyUnion()
+					if myU then
+						local mem = myU:findMember(targetId)
+						if mem then mem._unionJob = 2 end
+					end
+					ToastManager.push(res.msg or "Bổ nhiệm thành công!")
+					lc.sendEvent(Data.Event.union_member_dirty)
+				else
+					ToastManager.push((res and res.msg) or "Bổ nhiệm thất bại!")
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendUnionDemote = function(targetId)
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_set_job", { account_id = accId, target_id = targetId, job = 1 }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 then
+					local myU = P and P._playerUnion and P._playerUnion:getMyUnion()
+					if myU then
+						local mem = myU:findMember(targetId)
+						if mem then mem._unionJob = 1 end
+					end
+					ToastManager.push(res.msg or "Hạ chức thành công!")
+					lc.sendEvent(Data.Event.union_member_dirty)
+				else
+					ToastManager.push((res and res.msg) or "Hạ chức thất bại!")
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendUnionGiveLeader = function(targetId)
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_set_job", { account_id = accId, target_id = targetId, job = 3 }, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 then
+					P._unionJob = 2
+					local myU = P and P._playerUnion and P._playerUnion:getMyUnion()
+					if myU then
+						local oldLead = myU:findMember(accId)
+						if oldLead then oldLead._unionJob = 2 end
+						local newLead = myU:findMember(targetId)
+						if newLead then newLead._unionJob = 3 end
+					end
+					ToastManager.push(res.msg or "Chuyển giao quyền bang chủ thành công!")
+					lc.sendEvent(Data.Event.union_member_dirty)
+				else
+					ToastManager.push((res and res.msg) or "Chuyển giao thất bại!")
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendChangeUnion = function(name, announcement, reqLevel, joinType, avatar, tag)
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_edit", {
+				account_id = accId,
+				name = name,
+				announcement = announcement,
+				required_level = reqLevel,
+				join_type = joinType,
+				avatar = avatar,
+				tag = tag
+			}, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.code == 200 then
+					local myU = P and P._playerUnion and P._playerUnion:getMyUnion()
+					if myU then
+						myU._name = name
+						myU._announce = announcement
+						myU._reqLevel = reqLevel
+						myU._joinType = joinType
+						myU._badge = avatar
+						myU._word = tag
+						P._unionName = name
+						P._unionBadge = avatar
+						P._unionWord = tag
+						P._unionType = joinType
+					end
+					local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_EDIT, nil, nil)
+					deliverDraftMsg(msg)
+				else
+					pcall(function()
+						local ind = ClientView.getActiveIndicator()
+						if ind and ind.hide then ind:hide() end
+					end)
+					ToastManager.push((res and res.msg) or "Sửa thông tin thất bại!")
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendUnionContribute = function(grade, donateType)
+		local accId = (P and P._id) or (ClientData._account and ClientData._account.id) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("union_contribute", {
+				account_id = accId,
+				res_type = grade
+			}, function(rawRes)
+				local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+				if res and res.code == 200 then
+					if res.daily_donate_free ~= nil and P then P._dailyFreeDonate = res.daily_donate_free end
+					if res.daily_donate_gold ~= nil and P then P._dailyGoldDonate = res.daily_donate_gold end
+					if res.daily_donate_gem ~= nil and P then P._dailyIngotDonate = res.daily_donate_gem end
+					if res.yubi and P and P._propBag then
+						P._propBag:setProps(7024, tonumber(res.yubi) or 0)
+						if lc and lc.Dispatcher and Data and Data.Event then
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.prop_dirty, { _infoId = 7024 }))
+						end
+					end
+					if res.gold and P then P._gold = res.gold end
+					if res.gem and P then P._ingot = res.gem end
+					if P and P.sendResourceDirty then P:sendResourceDirty() end
+					if lc and lc.sendEvent and Data and Data.Event then
+						lc.sendEvent(Data.Event.union_dirty)
+					end
+				elseif res and res.msg then
+					ToastManager.push(res.msg)
+				end
+			end)
+		end
+		return true
+	end
+
+	ClientData.sendGetUnionLog = function()
+		local emptyLogs = {}
+		makeProtobufCompatible(emptyLogs)
+		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_UNION_LOG, Union_pb.SglUnionMsg.union_message_resp, emptyLogs)
+		deliverDraftMsg(msg)
+		return true
+	end
+
+	ClientData.sendStartUnionBattle = function() return true end
+	ClientData.sendQuitUnionBattle = function() return true end
+	ClientData.sendFindUnionBattle = function() return true end
+	ClientData.sendFindUnionBattleCancle = function() return true end
+	ClientData.sendUnionWorship = function() return true end
+	ClientData.sendUnionAddHire = function() return true end
+	ClientData.sendUnionHire = function() return true end
+	ClientData.sendUnionHireClaim = function() return true end
+	ClientData.sendUnionHireRecall = function() return true end
+	ClientData.sendUnionBossUnlock = function() return true end
+	ClientData.sendUnionBossChallenge = function() return true end
+	ClientData.sendUnionUpgradeTech = function() return true end
+	ClientData.sendUnionUpgradeTechSelf = function() return true end
+	ClientData.sendUnionImpeach = function() return true end
+
 	-- Safe guard Data.getCharacterBoneName
 	if Data and Data.getCharacterBoneName then
 		local _origGetBone = Data.getCharacterBoneName
@@ -1262,6 +1830,125 @@ function patchClientData()
 	end
 
 	-- 1. SURVIVAL EX (Sinh Tử Chiến)
+	local function saveSurvivalExStateToBackend()
+		if not P or not P._playerFindSurvivalEx then return end
+		local sEx = P._playerFindSurvivalEx
+		local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if not (api and api.post) then return end
+
+		local cList = {}
+		if sEx._troopCards then
+			for _, c in ipairs(sEx._troopCards) do
+				local cid = c._infoId or c.info_id or c
+				local cnum = c._num or c.num or 1
+				table.insert(cList, { info_id = cid, num = cnum })
+			end
+		end
+
+		local exList = {}
+		if sEx._troopCardsEx then
+			for _, c in ipairs(sEx._troopCardsEx) do
+				local cid = c._infoId or c.info_id or c
+				local cnum = c._num or c.num or 1
+				table.insert(exList, { info_id = cid, num = cnum })
+			end
+		end
+
+		local payload = {
+			account_id = accId,
+			has_ticket = sEx._hasTicket and 1 or 0,
+			character_id = sEx._characterId or 2,
+			step = sEx._step or 1,
+			win_count = sEx._win or 0,
+			lose_count = sEx._lose or 0,
+			trophy = sEx._trophy or 600,
+			cards = cList,
+			extra_cards = exList,
+			pool = sEx._cardsPool or {},
+			selected = sEx._selected or {}
+		}
+		api:post("survival_save_state", payload)
+	end
+
+	local function clearSurvivalExStateInBackend()
+		local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if not (api and api.post) then return end
+		api:post("survival_save_state", {
+			account_id = accId,
+			has_ticket = 0,
+			character_id = 0,
+			step = 0,
+			win_count = 0,
+			lose_count = 0,
+			trophy = 600,
+			cards = {},
+			extra_cards = {},
+			pool = {},
+			selected = {}
+		})
+	end
+
+	local function restoreSurvivalExStateFromBackend(callback)
+		local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if not (api and api.post) then
+			if callback then callback(false) end
+			return
+		end
+
+		api:post("survival_get_state", { account_id = accId }, function(rawRes)
+			local res = rawRes
+			if type(res) == "string" then
+				local ok, parsed = pcall(function() return require("json").decode(res) end)
+				if ok and parsed then res = parsed end
+			end
+			if res and res.code == 200 and res.has_state and res.has_ticket == 1 and P and P._playerFindSurvivalEx then
+				local sEx = P._playerFindSurvivalEx
+				sEx._hasTicket = true
+				sEx._characterId = res.character_id or 2
+				sEx._step = res.step or 1
+				sEx._win = res.win_count or 0
+				sEx._lose = res.lose_count or 0
+				sEx._trophy = res.trophy or 600
+				sEx._cardsPool = res.pool or {}
+				sEx._selected = res.selected or {}
+
+				sEx._troopCards = {}
+				sEx._troopCardsEx = {}
+				if res.cards and #res.cards > 0 then
+					for _, c in ipairs(res.cards) do
+						local cid = tonumber(type(c) == "table" and (c.info_id or c._infoId) or c) or 0
+						local cnum = tonumber(type(c) == "table" and (c.num or c._num) or 1) or 1
+						if cid > 0 then
+							sEx:addToCards(sEx._troopCards, cid, cnum)
+						end
+					end
+				end
+				if res.extra_cards and #res.extra_cards > 0 then
+					for _, c in ipairs(res.extra_cards) do
+						local cid = tonumber(type(c) == "table" and (c.info_id or c._infoId) or c) or 0
+						local cnum = tonumber(type(c) == "table" and (c.num or c._num) or 1) or 1
+						if cid > 0 then
+							sEx:addToCards(sEx._troopCardsEx, cid, cnum)
+						end
+					end
+				end
+				table.sort(sEx._troopCards, sEx.sortFunc)
+				table.sort(sEx._troopCardsEx, sEx.sortFunc)
+				pcall(function() lc.sendEvent(Data.Event.survival_privilege_dirty) end)
+				if callback then callback(true) end
+			else
+				if callback then callback(false) end
+			end
+		end)
+	end
+
+	ClientData.saveSurvivalExState = saveSurvivalExStateToBackend
+	ClientData.clearSurvivalExState = clearSurvivalExStateInBackend
+	ClientData.restoreSurvivalExState = restoreSurvivalExStateFromBackend
+
 	ClientData.sendSurvivalExBuyTicket = function(ticketType)
 		local chars = pickDraftCharacters()
 		if P and P._playerFindSurvivalEx then
@@ -1279,6 +1966,7 @@ function patchClientData()
 		end
 		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_BUY_TICKET_SURVIVAL_EX, World_pb.SglWorldMsg.world_buy_ticket_resp, chars)
 		deliverDraftMsg(msg)
+		saveSurvivalExStateToBackend()
 	end
 
 	ClientData.sendSurvivalReselectCharacter = function()
@@ -1291,6 +1979,7 @@ function patchClientData()
 		end
 		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_ROLL_CHAR_SURVIVAL_EX, World_pb.SglWorldMsg.world_roll_char_resp, chars)
 		deliverDraftMsg(msg)
+		saveSurvivalExStateToBackend()
 	end
 
 	ClientData.sendSurvivalExSelectCharacter = function(charId)
@@ -1302,6 +1991,7 @@ function patchClientData()
 		end
 		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CHAR_SURVIVAL_EX, World_pb.SglWorldMsg.world_select_char_resp, pool)
 		deliverDraftMsg(msg)
+		saveSurvivalExStateToBackend()
 	end
 
 	ClientData.sendSurvivalExSelectCard = function(cardIdx)
@@ -1312,6 +2002,7 @@ function patchClientData()
 		end
 		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SELECT_CARD_SURVIVAL_EX, World_pb.SglWorldMsg.world_select_card_resp, nextStep)
 		deliverDraftMsg(msg)
+		saveSurvivalExStateToBackend()
 	end
 
 	ClientData.sendSurvivalExQuit = function()
@@ -1327,7 +2018,376 @@ function patchClientData()
 		end
 		local msg = makeDraftSglMsg(SglMsgType_pb.PB_TYPE_WORLD_SURVIVAL_EX_GAME_OVER, World_pb.SglWorldMsg.world_survival_ex_end_resp, rewards)
 		deliverDraftMsg(msg)
+		clearSurvivalExStateInBackend()
 	end
+
+	-- ==========================================================
+	-- EXPEDITION EX (Thám hiểm EX - 10 Opponent Clones from Top 10)
+	-- ==========================================================
+	ClientData.sendGetExpeditionEx = function()
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		local function fallbackExpedition()
+			local curTs = math.floor(ClientData.getCurrentTime() * 1000)
+			local troopsList = {}
+			for i = 1, 9 do
+				table.insert(troopsList, {
+					chanllenge_count = 0,
+					level = math.min(3, math.floor((i - 1) / 3)),
+					troop_data = {
+						info = { id = 3000 + i, name = string.format("Đối thủ Top %d", 11 - i), avatar = 101 + (i % 5) * 100 }
+					},
+					random_position = i,
+					next_refresh = curTs + 86400000
+				})
+			end
+			local bossData = {
+				boss = {
+					id = 3010,
+					info = { id = 3010, name = "Quán Quân Top 1", avatar = 201 }
+				},
+				chanllenge_count = 0,
+				random_position = 10,
+				next_refresh = curTs + 86400000
+			}
+			local resp = {
+				type = SglMsgType_pb.PB_TYPE_WORLD_GET_EXPEDITION_EX,
+				status = 0,
+				Extensions = {
+					[World_pb.SglWorldMsg.world_get_expedition_ex_resp] = {
+						lottery_power = 100,
+						cur_npc = 0,
+						troops = troopsList,
+						boss = bossData,
+						last_npc_update_time = curTs,
+						last_boss_update_time = curTs,
+						last_lottery_power_update_time = curTs,
+						next_refresh = curTs + 86400000
+					}
+				}
+			}
+			ClientData.onMsg(resp)
+		end
+
+		local accId = (P and P._id) or (ClientData and ClientData._account and ClientData._account.id) or 1
+		if api and api.post then
+			api:post("expedition_get_opponents", { account_id = accId }, function(rawRes)
+				local res = nil
+				if type(rawRes) == "string" then
+					local ok, parsed = pcall(function()
+						if json and json.decode then return json.decode(rawRes) end
+						return require("json").decode(rawRes)
+					end)
+					if ok and parsed then res = parsed end
+				elseif type(rawRes) == "table" then
+					res = rawRes
+				end
+				if res and res.code == 200 and res.opponents and #res.opponents > 0 then
+					ClientData._expeditionOpponents = res.opponents
+					ClientData._lotteryPower = res.lottery_power or 0
+					if res.defeated_ids then
+						ClientData._defeatedExpeditionIds = res.defeated_ids
+					end
+					local curTs = math.floor(ClientData.getCurrentTime() * 1000)
+					local nextRef = res.next_refresh or (curTs + 86400000)
+					local troopsList = {}
+					local bossData = nil
+
+					for _, opp in ipairs(res.opponents) do
+						local isDef = opp.is_defeated
+						if not isDef and ClientData._defeatedExpeditionIds then
+							for _, did in ipairs(ClientData._defeatedExpeditionIds) do
+								if tostring(did) == tostring(opp.id) or tostring(did) == tostring(opp.rank) then
+									isDef = true
+									break
+								end
+							end
+						end
+
+						if not isDef then
+							if opp.is_boss or opp.rank == 1 then
+								bossData = {
+									boss = {
+										id = opp.id or 1,
+										info = {
+											id = opp.id or 1,
+											name = opp.name or "Quán Quân Top 1",
+											avatar = opp.avatar or 201
+										}
+									},
+									chanllenge_count = 0,
+									random_position = 10,
+									next_refresh = nextRef
+								}
+							else
+								table.insert(troopsList, {
+									chanllenge_count = 0,
+									level = opp.mark_level or 1,
+									troop_data = {
+										info = {
+											id = opp.id or 2,
+											name = opp.name or "Duelist",
+											avatar = opp.avatar or 101
+										}
+									},
+									random_position = opp.rank or #troopsList,
+									next_refresh = nextRef
+								})
+							end
+						end
+					end
+
+					local resp = {
+						type = SglMsgType_pb.PB_TYPE_WORLD_GET_EXPEDITION_EX,
+						status = 0,
+						Extensions = {
+							[World_pb.SglWorldMsg.world_get_expedition_ex_resp] = {
+								lottery_power = ClientData._lotteryPower,
+								cur_npc = 0,
+								troops = troopsList,
+								boss = bossData,
+								last_npc_update_time = curTs,
+								last_boss_update_time = curTs,
+								last_lottery_power_update_time = curTs,
+								next_refresh = nextRef,
+								HasField = function(self, fieldName) return rawget(self, fieldName) ~= nil or self[fieldName] ~= nil end
+							}
+						}
+					}
+					ClientData.onMsg(resp)
+
+					local oppNpcIdx = 1
+					for _, opp in ipairs(res.opponents) do
+						local isDef = opp.is_defeated
+						if not isDef and ClientData._defeatedExpeditionIds then
+							for _, did in ipairs(ClientData._defeatedExpeditionIds) do
+								if tostring(did) == tostring(opp.id) or tostring(did) == tostring(opp.rank) then
+									isDef = true
+									break
+								end
+							end
+						end
+
+						if not isDef then
+							if opp.is_boss or opp.rank == 1 then
+								if ClientData._expeditionBossInfo then
+									ClientData._expeditionBossInfo._rank = 1
+									ClientData._expeditionBossInfo._rewardCount = opp.reward_count or 300
+								end
+							else
+								if ClientData._expeditionNpcInfos and ClientData._expeditionNpcInfos[oppNpcIdx] then
+									ClientData._expeditionNpcInfos[oppNpcIdx]._rank = opp.rank
+									ClientData._expeditionNpcInfos[oppNpcIdx]._rewardCount = opp.reward_count or 100
+									oppNpcIdx = oppNpcIdx + 1
+								end
+							end
+						end
+					end
+
+					local curScene = lc._runningScene
+					if curScene and curScene.updatePlayers then
+						pcall(function() curScene:updatePlayers() end)
+					end
+				else
+					fallbackExpedition()
+				end
+			end)
+		else
+			fallbackExpedition()
+		end
+	end
+
+	local function buildSkinEntryForCard(cid)
+		cid = tonumber(cid) or 0
+		local sId = 0
+		local effs = {}
+		local sObj = P and P._playerCard and P._playerCard._skins and P._playerCard._skins[cid]
+		if sObj then
+			sId = sObj:getCurrentId(Data.SkinEffectType.skin) or 0
+			for _, effType in ipairs({ Data.SkinEffectType.toBoard, Data.SkinEffectType.onBoard, Data.SkinEffectType.attack }) do
+				local eid = sObj:getCurrentId(effType)
+				if eid and eid > 0 then
+					table.insert(effs, eid)
+				end
+			end
+		end
+		if #effs == 0 and cid > 0 and lc and lc.UserDefault and lc.UserDefault.getStringForKey then
+			local savedStr = lc.UserDefault:getStringForKey("card_effects_" .. cid, "")
+			if savedStr ~= "" then
+				local ok, sData = pcall(function() return json.decode(savedStr) end)
+				if ok and type(sData) == "table" then
+					for _, k in ipairs({ "toBoard", "onBoard", "attack" }) do
+						local eid = tonumber(sData[k])
+						if eid and eid > 0 then
+							table.insert(effs, eid)
+						end
+					end
+				end
+			end
+		end
+		return { skin_id = sId, info_id = cid, effect_ids = effs }
+	end
+
+	local function buildOppoSkinEntryForCard(cid)
+		cid = tonumber(cid) or 0
+		local sId = 0
+		local effs = {}
+		local cinfo = Data.getInfo(cid)
+		local cat = (cinfo and cinfo._category) or 0
+		if cat > 0 and Data.getSkinEffectId then
+			local toBoardList = Data.getSkinEffectId(cat, Data.SkinEffectType.toBoard)
+			if toBoardList and #toBoardList > 1 then
+				table.insert(effs, toBoardList[#toBoardList])
+			end
+			local onBoardList = Data.getSkinEffectId(cat, Data.SkinEffectType.onBoard)
+			if onBoardList and #onBoardList > 1 then
+				table.insert(effs, onBoardList[#onBoardList])
+			end
+		end
+		return { skin_id = sId, info_id = cid, effect_ids = effs }
+	end
+
+	ClientData.sendWorldExpeditionEx = function(troopIndex, npcId, isBoss, infoId, rank)
+		local oppInfo = nil
+		if ClientData._expeditionOpponents and #ClientData._expeditionOpponents > 0 then
+			if infoId then
+				for _, op in ipairs(ClientData._expeditionOpponents) do
+					if op.id == infoId then oppInfo = op; break end
+				end
+			end
+			if not oppInfo and rank then
+				for _, op in ipairs(ClientData._expeditionOpponents) do
+					if op.rank == rank then oppInfo = op; break end
+				end
+			end
+			if not oppInfo then
+				if isBoss then
+					for _, op in ipairs(ClientData._expeditionOpponents) do
+						if op.is_boss or op.rank == 1 then oppInfo = op; break end
+					end
+				else
+					local targetRank = (npcId or 0) + 2
+					for _, op in ipairs(ClientData._expeditionOpponents) do
+						if op.rank == targetRank then oppInfo = op; break end
+					end
+					if not oppInfo and ClientData._expeditionOpponents[2] then
+						oppInfo = ClientData._expeditionOpponents[2]
+					end
+				end
+			end
+		end
+
+		local oppName = (oppInfo and oppInfo.name) or (isBoss and "Quán Quân Top 1" or "Đối thủ Top 2")
+		local oppAvatar = (oppInfo and oppInfo.avatar) or (isBoss and 201 or 101)
+		local oppReward = (oppInfo and oppInfo.reward_count) or (isBoss and 300 or 100)
+		ClientData._curExpeditionReward = oppReward
+		ClientData._curExpeditionOppId = oppInfo and oppInfo.id
+		ClientData._curExpeditionOppRank = oppInfo and oppInfo.rank
+
+		-- Player real deck from P._playerCard._troops
+		local curTroopIndex = troopIndex or (P and P._curTroopIndex) or 1
+		local troopData = P and P._playerCard and P._playerCard._troops and P._playerCard._troops[curTroopIndex]
+		local pCards = {}
+		local pLevels = {}
+		local pSkins = {}
+		if troopData then
+			for _, item in ipairs(troopData) do
+				local cid = type(item) == "table" and (item._infoId or item.info_id) or item
+				local num = type(item) == "table" and (item._num or item.num) or 1
+				local lvl = type(item) == "table" and (item._level or item.level) or 1
+				if cid and tonumber(cid) then
+					cid = tonumber(cid)
+					num = math.max(1, tonumber(num) or 1)
+					lvl = tonumber(lvl) or 1
+					table.insert(pCards, { info_id = cid, num = num })
+					table.insert(pLevels, { info_id = cid, level = lvl })
+					table.insert(pSkins, buildSkinEntryForCard(cid))
+				end
+			end
+		end
+		if #pCards == 0 then
+			pCards = { { info_id = 10001, num = 3 }, { info_id = 10002, num = 3 }, { info_id = 20001, num = 3 } }
+		end
+
+		local pTroop = {
+			id = (P and P._id) or 1,
+			info = { id = (P and P._id) or 1, name = (P and P._name) or "Duelist", avatar = (P and P._avatar) or 201, is_npc = false },
+			cards = pCards,
+			levels = pLevels,
+			card_extra_skills = {},
+			skins = pSkins,
+			troop = { cards = pCards },
+			hp = 8000,
+			fortress_hp = 8000
+		}
+
+		-- Opponent deck
+		local oCards = {}
+		local oLevels = {}
+		local oSkins = {}
+		if oppInfo and oppInfo.cards and #oppInfo.cards > 0 then
+			local countMap = {}
+			for _, c in ipairs(oppInfo.cards) do
+				local cid = type(c) == "table" and (c.info_id or c._infoId) or c
+				if cid and tonumber(cid) then
+					cid = tonumber(cid)
+					countMap[cid] = (countMap[cid] or 0) + 1
+				end
+			end
+			for cid, num in pairs(countMap) do
+				table.insert(oCards, { info_id = cid, num = num })
+				table.insert(oLevels, { info_id = cid, level = 1 })
+				table.insert(oSkins, buildOppoSkinEntryForCard(cid))
+			end
+		end
+		if #oCards == 0 then
+			oCards = { { info_id = 10001, num = 3 }, { info_id = 10002, num = 3 }, { info_id = 20001, num = 3 } }
+		end
+
+		local oTroop = {
+			id = (oppInfo and oppInfo.id) or 2000,
+			info = { id = (oppInfo and oppInfo.id) or 2000, name = oppName, avatar = oppAvatar, is_npc = true },
+			cards = oCards,
+			levels = oLevels,
+			card_extra_skills = {},
+			skins = oSkins,
+			troop = { cards = oCards },
+			hp = 8000,
+			fortress_hp = 8000
+		}
+
+		local bType = isBoss and Battle_pb.PB_BATTLE_EXPEDITION_EX_BOSS or Battle_pb.PB_BATTLE_EXPEDITION_EX
+		local battleInput = {
+			level_id = 0,
+			is_watcher = false,
+			is_op_online = false,
+			copy_id = 0,
+			is_attacker = true,
+			type = bType,
+			timestamp = math.floor(ClientData.getCurrentTime() * 1000),
+			player_troop = pTroop,
+			opponent_troop = oTroop,
+			player_used_cards = {},
+			opponent_used_cards = {},
+			random_seq = { math.random(1, 65535) },
+			rule_type = Data.BattleRuleType.normal,
+			_offlineMarker = true,
+			_offlineKind = "expedition_ex"
+		}
+
+		local sglType = isBoss and SglMsgType_pb.PB_TYPE_WORLD_EXPEDITION_EX_BOSS or SglMsgType_pb.PB_TYPE_WORLD_EXPEDITION_EX
+		local resp = {
+			type = sglType,
+			status = 0,
+			Extensions = {
+				[World_pb.SglWorldMsg.world_expedition_ex_resp] = battleInput
+			},
+			HasExtension = function(self, extId)
+				return self.Extensions ~= nil and self.Extensions[extId] ~= nil
+			end
+		}
+		ClientData.onMsg(resp)
+	end
+
 
 	-- 2. REGULAR SURVIVAL
 	ClientData.sendSurvivalBuyTicket = function(ticketType)
@@ -1476,6 +2536,10 @@ function patchClientData()
 						if r.leya_ticket and tonumber(r.leya_ticket) > 0 then
 							table.insert(extraBonus, { _infoId = 7143, _count = tonumber(r.leya_ticket), _level = 1, _isFragment = false })
 						end
+						if (r.yubi and tonumber(r.yubi) > 0) or (r[7024] and tonumber(r[7024]) > 0) or (r["7024"] and tonumber(r["7024"]) > 0) then
+							local ycnt = tonumber(r.yubi or r[7024] or r["7024"])
+							table.insert(extraBonus, { _infoId = 7024, _count = ycnt, _level = 1, _isFragment = false })
+						end
 						if r.card_id and tonumber(r.card_id) > 0 then
 							local cid = tonumber(r.card_id)
 							local cnt = tonumber(r.card_count or r.count or 1)
@@ -1510,8 +2574,7 @@ function patchClientData()
 							_extraBonus = extraBonus,
 							canClaim = function(self) return not self._isClaimed end,
 							sendBonusDirty = function(self)
-								local ev = cc.EventCustom:new(Data.Event.bonus_dirty)
-								ev._data = self
+								local ev = cc.EventCustom:new(Data.Event.server_bonus_list_dirty)
 								lc.Dispatcher:dispatchEvent(ev)
 							end
 						}
@@ -1553,6 +2616,12 @@ function patchClientData()
 							if res.account.gold ~= nil then P._gold = res.account.gold end
 							if res.account.gem ~= nil then P._ingot = res.account.gem end
 							if res.account.gold_cup ~= nil then P._goldCup = res.account.gold_cup end
+							if res.account.yubi ~= nil and P._propBag then
+								P._propBag:setProps(7024, tonumber(res.account.yubi) or 0)
+								if lc and lc.Dispatcher and Data and Data.Event then
+									lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.prop_dirty, { _infoId = 7024 }))
+								end
+							end
 						end
 						if ClientData._account then
 							for k, v in pairs(res.account) do
@@ -1596,6 +2665,41 @@ function patchClientData()
 		end
 	end)
 
+	ClientData.getReputation = function()
+		local acc = ClientData._account
+		local rep = tonumber((acc and acc.reputation) or (P and P._reputation) or 50)
+		local updatedAt = tonumber((acc and acc.reputation_updated_at) or 0)
+		if rep >= 55 or updatedAt <= 0 then
+			return rep
+		end
+		local now = math.floor(ClientData.getCurrentTime())
+		local elapsed = math.max(0, now - updatedAt)
+		local add = math.floor(elapsed / 900)
+		if add > 0 then
+			rep = math.min(55, rep + add)
+			if acc then
+				acc.reputation = rep
+				if rep >= 55 then
+					acc.reputation_updated_at = now
+				else
+					acc.reputation_updated_at = updatedAt + add * 900
+				end
+			end
+			if P then P._reputation = rep end
+		end
+		return rep
+	end
+
+	ClientData.getNextReputationIn = function()
+		local acc = ClientData._account
+		local rep = ClientData.getReputation()
+		if rep >= 55 then return 0 end
+		local updatedAt = tonumber((acc and acc.reputation_updated_at) or math.floor(ClientData.getCurrentTime()))
+		local now = math.floor(ClientData.getCurrentTime())
+		local elapsed = math.max(0, now - updatedAt)
+		return math.max(0, 900 - (elapsed % 900))
+	end
+
 	-- Arena Matchmaking
 	ClientData.sendWorldFindEx = function(troopIndex, battleType)
 		local matchType = Data.FindMatchType.clash
@@ -1629,6 +2733,20 @@ function patchClientData()
 			sType = Data.BattleType.PVP_clash_npc
 		end
 
+		-- Block ranked clash if reputation < 45
+		if matchType == Data.FindMatchType.clash or matchType == Data.FindMatchType.clash_ex or matchType == Data.FindMatchType.ladder then
+			local myRep = ClientData.getReputation and ClientData.getReputation() or ((P and P._reputation) or 50)
+			if myRep < 45 then
+				local nextIn = ClientData.getNextReputationIn and ClientData.getNextReputationIn() or 900
+				local mins = math.floor(nextIn / 60)
+				local secs = nextIn % 60
+				ToastManager.push(string.format("Điểm uy tín của bạn là %d/55 (< 45). Bạn bị cấm đấu hạng! Hồi 1 điểm sau %dp%02ds (15 phút/điểm).", myRep, mins, secs))
+				local panel = ClientView._findMatchPanel
+				if panel and panel.hide then panel:hide() end
+				return
+			end
+		end
+
 		ClientData._battleFromFindIndex = matchType
 		ClientData.setBattleFromSceneId(ClientData.SceneId.find)
 		ClientData._isOppoOnline = false
@@ -1659,7 +2777,7 @@ function patchClientData()
 				lvl = tonumber(lvl) or 1
 				table.insert(playerCards, { info_id = cid, num = num })
 				table.insert(playerLevels, { info_id = cid, level = lvl })
-				table.insert(playerSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
+				table.insert(playerSkins, buildSkinEntryForCard(cid))
 				for _ = 1, num do
 					table.insert(rawCardIds, cid)
 					totalPlayerCards = totalPlayerCards + 1
@@ -1673,7 +2791,7 @@ function patchClientData()
 				if totalPlayerCards >= 40 then break end
 				table.insert(playerCards, { info_id = cid, num = 1 })
 				table.insert(playerLevels, { info_id = cid, level = 1 })
-				table.insert(playerSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
+				table.insert(playerSkins, buildSkinEntryForCard(cid))
 				table.insert(rawCardIds, cid)
 				totalPlayerCards = totalPlayerCards + 1
 			end
@@ -1688,7 +2806,7 @@ function patchClientData()
 					if cid and cid >= 40000 then
 						table.insert(playerCards, { info_id = cid, num = 1 })
 						table.insert(playerLevels, { info_id = cid, level = 1 })
-						table.insert(playerSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
+						table.insert(playerSkins, buildSkinEntryForCard(cid))
 					end
 				end
 			end
@@ -1697,7 +2815,7 @@ function patchClientData()
 		local grade = (P and P._playerFindClash and P._playerFindClash._grade) or 1
 		local sceneType = 10 + math.max(1, math.min(6, tonumber(grade) or 1))
 
-		local function startWithOppo(oppoName, oppoLevel, oppoAvatar, oppoCardIds, seed, isRealHuman, matchId, isAttacker, isOppoOnline, oppoCrown)
+		local function startWithOppo(oppoName, oppoLevel, oppoAvatar, oppoCardIds, seed, isRealHuman, matchId, isAttacker, isOppoOnline, oppoCrown, oppoTrophy)
 			local oppoCards = {}
 			local oppoLevels = {}
 			local oppoSkins = {}
@@ -1708,7 +2826,7 @@ function patchClientData()
 					cid = tonumber(cid)
 					table.insert(oppoCards, { info_id = cid, num = 1 })
 					table.insert(oppoLevels, { info_id = cid, level = 1 })
-					table.insert(oppoSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
+					table.insert(oppoSkins, buildOppoSkinEntryForCard(cid))
 					oppoCount = oppoCount + 1
 				end
 			end
@@ -1733,7 +2851,7 @@ function patchClientData()
 					if oppoCount >= 40 then break end
 					table.insert(oppoCards, { info_id = cid, num = 1 })
 					table.insert(oppoLevels, { info_id = cid, level = 1 })
-					table.insert(oppoSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
+					table.insert(oppoSkins, buildOppoSkinEntryForCard(cid))
 					oppoCount = oppoCount + 1
 				end
 			end
@@ -1747,7 +2865,7 @@ function patchClientData()
 						if cid and cid >= 40000 then
 							table.insert(oppoCards, { info_id = cid, num = 1 })
 							table.insert(oppoLevels, { info_id = cid, level = 1 })
-							table.insert(oppoSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
+							table.insert(oppoSkins, buildOppoSkinEntryForCard(cid))
 						end
 					end
 				end
@@ -1790,9 +2908,9 @@ function patchClientData()
 					_region = 1,
 					_level = (P and P._level) or 50,
 					_monthCardType = 0,
-					_roundTimeInit = isOnlinePvp and 90 or 0,
+					_roundTimeInit = isOnlinePvp and 60 or 0,
 					_roundTimeMax = isOnlinePvp and 120 or 0,
-					_roundTimeDelta = isOnlinePvp and ((P and P._isNewRound and 5) or 0) or 0,
+					_roundTimeDelta = isOnlinePvp and ((P and P._isNewRound and 6) or 6) or 0,
 					_fortressHp = 8000,
 					_avatarFrameId = 0,
 					_isNewRound = isOnlinePvp and ((P and P._isNewRound) or false) or false,
@@ -1810,7 +2928,9 @@ function patchClientData()
 						if myChar and myChar > 0 then
 							return myChar * 100 + 1
 						end
-						return ((P and P._avatar) or 2) * 100 + 1
+						local av = (P and P._avatar) or 301
+						if av < 100 then av = av * 100 + 1 end
+						return av
 					end)(),
 					_crown = (P and P._crown) or (function()
 						if ClientData and ClientData._account then
@@ -1836,9 +2956,9 @@ function patchClientData()
 					_region = 1,
 					_level = oppoLevel or 50,
 					_monthCardType = 0,
-					_roundTimeInit = isOnlinePvp and 90 or 0,
+					_roundTimeInit = isOnlinePvp and 60 or 0,
 					_roundTimeMax = isOnlinePvp and 120 or 0,
-					_roundTimeDelta = isOnlinePvp and ((P and P._isNewRound and 5) or 0) or 0,
+					_roundTimeDelta = isOnlinePvp and ((P and P._isNewRound and 6) or 6) or 0,
 					_fortressHp = 8000,
 					_avatarFrameId = 0,
 					_isNewRound = isOnlinePvp and ((P and P._isNewRound) or false) or false,
@@ -1859,7 +2979,7 @@ function patchClientData()
 					_troopLevels = oppoLevels,
 					_troopSkins = oppoSkins,
 					_usedCards = {},
-					_trophy = ((P and P._playerFindClash and P._playerFindClash._trophy) or 800) + math.random(-20, 20)
+					_trophy = tonumber(oppoTrophy) or ((P and P._playerFindClash and P._playerFindClash._trophy) or 800)
 				}
 			}
 
@@ -1867,12 +2987,12 @@ function patchClientData()
 				local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
 				if pvpNet then
 					local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
-					pvpNet:connect(matchId, myId, function(intsJson, addTime, maxTime, timeLeft)
+					pvpNet:connect(matchId, myId, myIsAttacker, function(intsJson, addTime, maxTime, timeLeft)
 						local ok, ints = pcall(json.decode, intsJson)
 						if ok and type(ints) == "table" and #ints > 0 then
 							local card_val = tonumber(ints[1]) or 0
 							local isCardAction = (card_val ~= BattleData.UseCardId.round and card_val ~= BattleData.UseCardId.retreat and card_val ~= 0)
-							local bonusSec = tonumber(addTime) or (isCardAction and 2 or 0)
+							local bonusSec = tonumber(addTime) or (isCardAction and 6 or 0)
 							local maxSec = tonumber(maxTime) or 120
 							local exactTime = tonumber(timeLeft)
 
@@ -1892,8 +3012,9 @@ function patchClientData()
 							for _, val in ipairs(ints) do
 								table.insert(ClientData._usedCardsToAdd, tonumber(val) or 0)
 							end
+							local handled = false
 							if bUi and type(bUi.oppoTryUseCard) == "function" then
-								bUi:oppoTryUseCard()
+								handled = bUi:oppoTryUseCard()
 							end
 						end
 					end, function()
@@ -1913,7 +3034,14 @@ function patchClientData()
 						local scene = lc._runningScene or ClientView._scene
 						local bUi = scene and scene._battleUi
 						if bUi and not bUi._isBattleEndSended then
+							local oppoHp = bUi._opponent and bUi._opponent._fortress and bUi._opponent._fortress._hp
+							local playerHp = bUi._player and bUi._player._fortress and bUi._player._fortress._hp
 							local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
+							if oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0) then
+								myRes = Data.BattleResult.win
+							elseif playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0) then
+								myRes = Data.BattleResult.lose
+							end
 							bUi._forceResult = myRes
 							bUi:sendBattleEnd(false, myRes)
 						end
@@ -1944,7 +3072,9 @@ function patchClientData()
 			if myChar and myChar > 0 then
 				return myChar * 100 + 1
 			end
-			return ((P and P._avatar) or 2) * 100 + 1
+			local av = (P and P._avatar) or 301
+			if av < 100 then av = av * 100 + 1 end
+			return av
 		end)()
 		local myId = tonumber((ClientData._account and ClientData._account.id) or (P and P._id) or 1)
 
@@ -1957,7 +3087,7 @@ function patchClientData()
 				account_id = myId,
 				name = (P and P._name) or "Player",
 				level = (P and P._level) or 50,
-				avatar = (myChar > 0 and (myChar * 100 + 1)) or (((P and P._avatar) or 2) * 100 + 1),
+				avatar = myAvatar,
 				cards = rawCardIds,
 				extra_cards = {},
 				character_id = myChar,
@@ -1988,7 +3118,7 @@ function patchClientData()
 
 						if res.status == "matched" and res.oppo then
 							local oppo = res.oppo
-							startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, nil)
+							startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, nil, oppo.trophy)
 							return
 						end
 
@@ -2020,7 +3150,7 @@ function patchClientData()
 										isFinished = true
 										if pollEntry then lc.Scheduler:unscheduleScriptEntry(pollEntry) end
 										local oppo = pRes.oppo
-										startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, pRes.seed, pRes.is_real_player, pRes.match_id, pRes.is_attacker, pRes.oppo_online, nil)
+										startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, pRes.seed, pRes.is_real_player, pRes.match_id, pRes.is_attacker, pRes.oppo_online, nil, oppo.trophy)
 									end
 								end
 							end)
@@ -2040,7 +3170,8 @@ function patchClientData()
 			avatar = myAvatar,
 			cards = rawCardIds,
 			mode = offlineKind,
-			battle_type = battleType
+			battle_type = battleType,
+			find_strong = (ClientData._findStrongOpponent == true)
 		}
 
 		if api and api.post then
@@ -2050,6 +3181,20 @@ function patchClientData()
 					return
 				end
 				local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+				if res and (res.code == 403 or res.status == "reputation_low") then
+					print("[PVP] Blocked by reputation ban.")
+					ClientData._isFindingMatch = false
+					local panel = ClientView._findMatchPanel
+					if panel and panel.hide then
+						panel:hide()
+					end
+					if res.reputation then
+						if P then P._reputation = tonumber(res.reputation) end
+						if ClientData._account then ClientData._account.reputation = tonumber(res.reputation) end
+					end
+					ToastManager.push(res.msg or "Điểm uy tín dưới 45, bạn bị cấm đấu hạng!")
+					return
+				end
 				if res and res.status == "cancelled" then
 					print("[PVP] Server confirmed matchmaking cancelled.")
 					ClientData._isFindingMatch = false
@@ -2071,7 +3216,7 @@ function patchClientData()
 						elseif obc > 0 then oppoCrown = { _infoId = 7206, _num = obc }
 						end
 					end
-					startWithOppo(o.name, o.level, o.avatar, o.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, oppoCrown)
+					startWithOppo(o.name, o.level, o.avatar, o.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, oppoCrown, o.trophy)
 				else
 					local isSurv = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX or battleType == Battle_pb.PB_BATTLE_SURVIVAL)
 					local botChars = { 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
@@ -2079,7 +3224,7 @@ function patchClientData()
 					local botAvatar = botChar * 100 + 1
 					local botNames = isSurv and { "Đấu Sĩ Sinh Tử", "Thợ Săn Bài", "Kẻ Thách Thức", "Hiệp Sĩ Hoàng Gia", "Chiến Binh Sinh Tồn" } or { "Vua Trò Chơi" }
 					local botName = botNames[math.random(1, #botNames)]
-					startWithOppo(botName, 50, botAvatar, nil, nil, false, nil, true, false, nil)
+					startWithOppo(botName, 50, botAvatar, nil, nil, false, nil, true, false, nil, 800)
 				end
 			end)
 		else
@@ -2089,7 +3234,7 @@ function patchClientData()
 			local botAvatar = botChar * 100 + 1
 			local botNames = isSurv and { "Đấu Sĩ Sinh Tử", "Thợ Săn Bài", "Kẻ Thách Thức", "Hiệp Sĩ Hoàng Gia", "Chiến Binh Sinh Tồn" } or { "Vua Trò Chơi" }
 			local botName = botNames[math.random(1, #botNames)]
-			startWithOppo(botName, 50, botAvatar, nil, nil, false, nil, true, false, nil)
+			startWithOppo(botName, 50, botAvatar, nil, nil, false, nil, true, false, nil, 800)
 		end
 	end
 
@@ -2122,6 +3267,14 @@ function patchClientData()
 	-- PVP REAL-TIME ACTION HOOK & MOVE RECORDER FOR REPLAYS
 	local orig_sendBattleUseCard = ClientData.sendBattleUseCard
 	ClientData.sendBattleUseCard = function(player, card_id, target_id, choice, extra)
+		local isCardAction = (card_id ~= BattleData.UseCardId.round and card_id ~= BattleData.UseCardId.retreat)
+		local scene = lc._runningScene or ClientView._scene
+		local bUi = scene and scene._battleUi
+		if isCardAction and bUi and bUi._isOnlinePvp and type(bUi.addPvpRoundSeconds) == "function" then
+			bUi:addPvpRoundSeconds(6, 120)
+		elseif isCardAction and player and player._isOnlinePvp and type(player.addRoundDuration) == "function" then
+			player:addRoundDuration()
+		end
 
 		if (ClientData._isOppoOnline or ClientData._currentMatchId) and ClientData._currentMatchId then
 			local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
@@ -2155,24 +3308,13 @@ function patchClientData()
 					end
 				end
 				local curTimeLeft = nil
-				local scene = lc._runningScene or ClientView._scene
-				local bUi = scene and scene._battleUi
 				if bUi and bUi._roundRealStartTime then
-					local totalDur = bUi._roundDuration or 90
+					local totalDur = bUi._roundDuration or 60
 					curTimeLeft = math.max(0, totalDur - (os.time() - bUi._roundRealStartTime))
 				end
 				pcall(function()
 					pvpNet:sendAction(ClientData._currentMatchId, json.encode(ints), curTimeLeft)
 				end)
-			end
-		end
-		if card_id ~= BattleData.UseCardId.round and card_id ~= BattleData.UseCardId.retreat then
-			local scene = lc._runningScene or ClientView._scene
-			local bUi = scene and scene._battleUi
-			if bUi and bUi._isOnlinePvp and type(bUi.addPvpRoundSeconds) == "function" then
-				bUi:addPvpRoundSeconds(2, 120)
-			elseif player and player._isOnlinePvp and type(player.addRoundDuration) == "function" then
-				player:addRoundDuration()
 			end
 		end
 		if type(orig_sendBattleUseCard) == "function" then
@@ -2234,15 +3376,20 @@ function patchClientData()
 				cardId = prod and (prod._cardId or prod._infoId) or 0
 				cost = prod and (prod._price or prod._cost) or 0
 				costType = prod and prod._resType or 3
+				if cardId == 12330 or productId == 546 or productId == 12330 then
+					cardId = 12330
+					cost = 7000
+					costType = 3
+				end
 			elseif shopType == "union" then
 				local prod = Data._unionProductsExInfo and (Data._unionProductsExInfo[productId] or (function()
 					for _, item in pairs(Data._unionProductsExInfo) do
 						if item._id == productId then return item end
 					end
 				end)())
-				cardId = prod and (prod._cardId or prod._infoId) or 0
-				cost = prod and (prod._price or prod._cost) or 0
-				costType = prod and prod._resType or 1
+				cardId = prod and (prod._cardId or prod._infoId) or 20230
+				cost = prod and (prod._price or prod._cost) or 20000
+				costType = prod and prod._resType or 7024
 			elseif shopType == "collect" then
 				local prod = Data._collectProducts and (Data._collectProducts[productId] or (function()
 					for _, item in pairs(Data._collectProducts) do
@@ -2288,6 +3435,11 @@ function patchClientData()
 				cardId = prod and (prod._cardId or prod._infoId) or 0
 				cost = prod and (prod._price or prod._cost) or 0
 				costType = prod and prod._resType or 3
+				if cardId == 12330 or productId == 15 or productId == 12330 then
+					cardId = 12330
+					cost = 7000
+					costType = 3
+				end
 			end
 
 			local totalCost = cost * count
@@ -2307,8 +3459,24 @@ function patchClientData()
 				}, function(rawRes)
 					local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
 					if res and res.code == 200 then
+						local retCardId = res.card_id or cardId
+						if retCardId and retCardId > 0 and P and P._playerCard and res.count then
+							local curC = P._playerCard:getCardCount(retCardId)
+							if curC < res.count then
+								P._playerCard:addCard(retCardId, res.count - curC)
+							end
+						end
 						if res.gold ~= nil and P then P._gold = res.gold end
-						if res.gem ~= nil and P then P._gem = res.gem end
+						if res.gem ~= nil and P then
+							P._gem = res.gem
+							P._ingot = res.gem
+						end
+						if res.yubi ~= nil and P and P._propBag then
+							P._propBag:setProps(7024, tonumber(res.yubi) or 0)
+							if lc and lc.Dispatcher and Data and Data.Event then
+								lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.prop_dirty, { _infoId = 7024 }))
+							end
+						end
 						if lc and lc.Dispatcher and Data and Data.Event then
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.ingot_dirty))
@@ -2330,8 +3498,33 @@ function patchClientData()
 	ClientData.sendBuyVote = function(id) return doBuyShopCard("vote", id, 1) end
 	ClientData.sendBuyGoods = function(id, count) return doBuyShopCard("goods", id, count) end
 	ClientData.sendBuyMonthCard5Product = function(id) return doBuyShopCard("privilege", id, 1) end
-	ClientData.sendBuySkin = function(skinId, skinType) return true end
-	ClientData.sendProductBuy = function(prod) return true end
+	ClientData.sendBuyPrivilege = function(id) return doBuyShopCard("privilege", id, 1) end
+	ClientData.sendBuySkin = function(skinId, skinType)
+		local myAccId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+		local sid = tonumber(skinId) or 0
+		local sInfo = Data._skinInfo and Data._skinInfo[sid]
+		local price = (sInfo and sInfo._price) or 100
+		local cardId = (sInfo and sInfo._infoId) or 0
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post then
+			api:post("buy_skin", {
+				account_id = myAccId,
+				skin_id = sid,
+				skin_type = skinType or 0,
+				price = price,
+				card_id = cardId
+			}, function(rawRes)
+				local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+				if res and res.code == 200 then
+					if res.gem ~= nil and P then
+						P._ingot = tonumber(res.gem) or P._ingot
+						P:sendIngotDirty()
+					end
+				end
+			end)
+		end
+		return true
+	end
 	ClientData.sendBuyPackage = function(packageId, count) return true end
 
 	local PACK_TITLES = {
@@ -2459,6 +3652,8 @@ function patchClientData()
 		[208001] = "Gói Mở Rộng: Extra Deck Tổng Hợp III", [208010] = "Gói Mở Rộng: Extra Deck Tổng Hợp III", [208050] = "Gói Mở Rộng: Extra Deck Tổng Hợp III",
 		[209001] = "Gói Mở Rộng: Extra Deck Tổng Hợp IV", [209010] = "Gói Mở Rộng: Extra Deck Tổng Hợp IV", [209050] = "Gói Mở Rộng: Extra Deck Tổng Hợp IV",
 		[210001] = "Gói Mở Rộng: Extra Deck Tổng Hợp V", [210010] = "Gói Mở Rộng: Extra Deck Tổng Hợp V", [210050] = "Gói Mở Rộng: Extra Deck Tổng Hợp V",
+		[221001] = "Gói bài Tru Tiên", [221010] = "Gói bài Tru Tiên", [221050] = "Gói bài Tru Tiên",
+		[222001] = "Gói bài Tiên Nghịch", [222010] = "Gói bài Tiên Nghịch", [222050] = "Gói bài Tiên Nghịch",
 	}
 	ClientData._packTitles = PACK_TITLES
 	ClientData.getPackTitle = function(boxId)
@@ -2591,6 +3786,8 @@ function patchClientData()
 		[208001] = "lottery_109001", [208010] = "lottery_109001", [208050] = "lottery_109001",
 		[209001] = "lottery_110001", [209010] = "lottery_110001", [209050] = "lottery_110001",
 		[210001] = "lottery_101001", [210010] = "lottery_101001", [210050] = "lottery_101001",
+		[221001] = "lottery_221001", [221010] = "lottery_221001", [221050] = "lottery_221001",
+		[222001] = "lottery_222001", [222010] = "lottery_222001", [222050] = "lottery_222001",
 	}
 	ClientData._packImages = PACK_IMAGES
 	ClientData.getPackImageName = function(boxId)
@@ -2613,8 +3810,8 @@ function patchClientData()
 		[10701] = {40168, 40169, 12078, 40167, 11248, 11249, 11250, 11251, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 11245, 11246, 11247, 10198, 10199, 10200, 10201, 10202, 10203, 10207, 40534, 40646, 10112, 10114, 10119}, [10710] = {40168, 40169, 12078, 40167, 11248, 11249, 11250, 11251, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 11245, 11246, 11247, 10198, 10199, 10200, 10201, 10202, 10203, 10207, 40534, 40646, 10112, 10114, 10119}, [10750] = {40168, 40169, 12078, 40167, 11248, 11249, 11250, 11251, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 11245, 11246, 11247, 10198, 10199, 10200, 10201, 10202, 10203, 10207, 40534, 40646, 10112, 10114, 10119},
 		[7] = {20631, 40069, 40070, 40071, 40072, 40074, 40289, 30205, 30225, 30251, 30288, 30305, 30465, 30562, 40068, 20398, 20400, 20431, 20526, 20628, 20887, 21055, 21056, 21059, 21060, 21061, 21062, 21072, 30201, 30202, 10098, 10102, 10103, 10107, 10113, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10205, 10947, 10948, 10949, 10950, 10957, 10997, 11106, 11171, 11172, 11206, 12106, 12107, 20357, 30033, 30034, 10018, 10020, 10027, 10040, 10047, 10082, 10101, 10104, 10106, 10134, 10136, 10137, 10138, 10141, 10142, 10144, 10145, 10152, 10156, 10039, 10043, 10060, 10271, 10557, 10677, 10951, 10952, 10973, 10977, 11009, 11958, 12129, 40015, 40067, 40073, 40082, 40086, 40095, 40145, 40151, 40271, 40461, 40462, 40530, 40629},
 		[10801] = {20631, 40069, 40070, 40071, 40072, 40074, 40289, 30205, 30225, 30251, 30288, 30305, 30465, 30562, 40068, 20398, 20400, 20431, 20526, 20628, 20887, 21055, 21056, 21059, 21060, 21061, 21062, 21072, 30201, 30202, 10098, 10102, 10103, 10107, 10113, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10205, 10947, 10948, 10949, 10950, 10957, 10997, 11106, 11171, 11172, 11206, 12106, 12107, 20357, 30033, 30034, 10018, 10020, 10027, 10040, 10047, 10082, 10101, 10104, 10106, 10134, 10136, 10137, 10138, 10141, 10142, 10144, 10145, 10152, 10156, 10039, 10043, 10060, 10271, 10557, 10677, 10951, 10952, 10973, 10977, 11009, 11958, 12129, 40015, 40067, 40073, 40082, 40086, 40095, 40145, 40151, 40271, 40461, 40462, 40530, 40629}, [10810] = {20631, 40069, 40070, 40071, 40072, 40074, 40289, 30205, 30225, 30251, 30288, 30305, 30465, 30562, 40068, 20398, 20400, 20431, 20526, 20628, 20887, 21055, 21056, 21059, 21060, 21061, 21062, 21072, 30201, 30202, 10098, 10102, 10103, 10107, 10113, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10205, 10947, 10948, 10949, 10950, 10957, 10997, 11106, 11171, 11172, 11206, 12106, 12107, 20357, 30033, 30034, 10018, 10020, 10027, 10040, 10047, 10082, 10101, 10104, 10106, 10134, 10136, 10137, 10138, 10141, 10142, 10144, 10145, 10152, 10156, 10039, 10043, 10060, 10271, 10557, 10677, 10951, 10952, 10973, 10977, 11009, 11958, 12129, 40015, 40067, 40073, 40082, 40086, 40095, 40145, 40151, 40271, 40461, 40462, 40530, 40629}, [10850] = {20631, 40069, 40070, 40071, 40072, 40074, 40289, 30205, 30225, 30251, 30288, 30305, 30465, 30562, 40068, 20398, 20400, 20431, 20526, 20628, 20887, 21055, 21056, 21059, 21060, 21061, 21062, 21072, 30201, 30202, 10098, 10102, 10103, 10107, 10113, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10205, 10947, 10948, 10949, 10950, 10957, 10997, 11106, 11171, 11172, 11206, 12106, 12107, 20357, 30033, 30034, 10018, 10020, 10027, 10040, 10047, 10082, 10101, 10104, 10106, 10134, 10136, 10137, 10138, 10141, 10142, 10144, 10145, 10152, 10156, 10039, 10043, 10060, 10271, 10557, 10677, 10951, 10952, 10973, 10977, 11009, 11958, 12129, 40015, 40067, 40073, 40082, 40086, 40095, 40145, 40151, 40271, 40461, 40462, 40530, 40629},
-		[8] = {11156, 40157, 40140, 40141, 40173, 30153, 30267, 30389, 30554, 11151, 11153, 11154, 11157, 11158, 11252, 11632, 20433, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10218, 10656, 11129, 11147, 11148, 11149, 11150, 10203, 10207, 10209, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 40186, 40207, 40228, 40229, 40311, 40460},
-		[10901] = {11156, 40157, 40140, 40141, 40173, 30153, 30267, 30389, 30554, 11151, 11153, 11154, 11157, 11158, 11252, 11632, 20433, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10218, 10656, 11129, 11147, 11148, 11149, 11150, 10203, 10207, 10209, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 40186, 40207, 40228, 40229, 40311, 40460}, [10910] = {11156, 40157, 40140, 40141, 40173, 30153, 30267, 30389, 30554, 11151, 11153, 11154, 11157, 11158, 11252, 11632, 20433, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10218, 10656, 11129, 11147, 11148, 11149, 11150, 10203, 10207, 10209, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 40186, 40207, 40228, 40229, 40311, 40460}, [10950] = {11156, 40157, 40140, 40141, 40173, 30153, 30267, 30389, 30554, 11151, 11153, 11154, 11157, 11158, 11252, 11632, 20433, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10218, 10656, 11129, 11147, 11148, 11149, 11150, 10203, 10207, 10209, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 40186, 40207, 40228, 40229, 40311, 40460},
+		[8] = {11156, 40157, 40140, 40141, 40173, 30153, 30267, 30389, 30554, 11151, 11153, 11154, 11157, 11158, 11252, 11632, 20433, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10218, 10656, 11129, 11147, 11148, 11149, 11150, 10203, 10207, 10209, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 40186, 40207, 40228, 40229, 40311, 40460, 20664, 30388, 40142, 40143, 40664, 40617},
+		[10901] = {11156, 40157, 40140, 40141, 40173, 30153, 30267, 30389, 30554, 11151, 11153, 11154, 11157, 11158, 11252, 11632, 20433, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10218, 10656, 11129, 11147, 11148, 11149, 11150, 10203, 10207, 10209, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 40186, 40207, 40228, 40229, 40311, 40460, 20664, 30388, 40142, 40143, 40664, 40617}, [10910] = {11156, 40157, 40140, 40141, 40173, 30153, 30267, 30389, 30554, 11151, 11153, 11154, 11157, 11158, 11252, 11632, 20433, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10218, 10656, 11129, 11147, 11148, 11149, 11150, 10203, 10207, 10209, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 40186, 40207, 40228, 40229, 40311, 40460, 20664, 30388, 40142, 40143, 40664, 40617}, [10950] = {11156, 40157, 40140, 40141, 40173, 30153, 30267, 30389, 30554, 11151, 11153, 11154, 11157, 11158, 11252, 11632, 20433, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10218, 10656, 11129, 11147, 11148, 11149, 11150, 10203, 10207, 10209, 10250, 10251, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 40186, 40207, 40228, 40229, 40311, 40460, 20664, 30388, 40142, 40143, 40664, 40617},
 		[9] = {11558, 11645, 20700, 40669, 40670, 40671, 40672, 40700, 40723, 30380, 30396, 40318, 40319, 40320, 40323, 40345, 40516, 40556, 12207, 12217, 12257, 12293, 20678, 20680, 20682, 20683, 20698, 20699, 20703, 20704, 20759, 20771, 21102, 21104, 10031, 10034, 10036, 10037, 10041, 10046, 10049, 10051, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10135, 10146, 10148, 10162, 10324, 11536, 11537, 11538, 11539, 11540, 11541, 11542, 11544, 11545, 11647, 11692, 12205, 10040, 10047, 10082, 10101, 10104, 10106, 10134, 10136, 10137, 10138, 10141, 10142, 10144, 10145, 10152, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 40321},
 		[11001] = {11558, 11645, 20700, 40669, 40670, 40671, 40672, 40700, 40723, 30380, 30396, 40318, 40319, 40320, 40323, 40345, 40516, 40556, 12207, 12217, 12257, 12293, 20678, 20680, 20682, 20683, 20698, 20699, 20703, 20704, 20759, 20771, 21102, 21104, 10031, 10034, 10036, 10037, 10041, 10046, 10049, 10051, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10135, 10146, 10148, 10162, 10324, 11536, 11537, 11538, 11539, 11540, 11541, 11542, 11544, 11545, 11647, 11692, 12205, 10040, 10047, 10082, 10101, 10104, 10106, 10134, 10136, 10137, 10138, 10141, 10142, 10144, 10145, 10152, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 40321}, [11010] = {11558, 11645, 20700, 40669, 40670, 40671, 40672, 40700, 40723, 30380, 30396, 40318, 40319, 40320, 40323, 40345, 40516, 40556, 12207, 12217, 12257, 12293, 20678, 20680, 20682, 20683, 20698, 20699, 20703, 20704, 20759, 20771, 21102, 21104, 10031, 10034, 10036, 10037, 10041, 10046, 10049, 10051, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10135, 10146, 10148, 10162, 10324, 11536, 11537, 11538, 11539, 11540, 11541, 11542, 11544, 11545, 11647, 11692, 12205, 10040, 10047, 10082, 10101, 10104, 10106, 10134, 10136, 10137, 10138, 10141, 10142, 10144, 10145, 10152, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 40321}, [11050] = {11558, 11645, 20700, 40669, 40670, 40671, 40672, 40700, 40723, 30380, 30396, 40318, 40319, 40320, 40323, 40345, 40516, 40556, 12207, 12217, 12257, 12293, 20678, 20680, 20682, 20683, 20698, 20699, 20703, 20704, 20759, 20771, 21102, 21104, 10031, 10034, 10036, 10037, 10041, 10046, 10049, 10051, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 10097, 10098, 10102, 10103, 10107, 10113, 10135, 10146, 10148, 10162, 10324, 11536, 11537, 11538, 11539, 11540, 11541, 11542, 11544, 11545, 11647, 11692, 12205, 10040, 10047, 10082, 10101, 10104, 10106, 10134, 10136, 10137, 10138, 10141, 10142, 10144, 10145, 10152, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 40321},
 		[10] = {40523, 40522, 40185, 40188, 40189, 40519, 40520, 40521, 21004, 21095, 21111, 21116, 21117, 30289, 30297, 40181, 11922, 11923, 11924, 11925, 11926, 11927, 11928, 11929, 12238, 12239, 20506, 20507, 20508, 20512, 20717, 30061, 30073, 30239, 10007, 10012, 10014, 10024, 10030, 10031, 10034, 10036, 10037, 10041, 10046, 10049, 10051, 10055, 10067, 10071, 10079, 10080, 10088, 10090, 11277, 11278, 11279, 11280, 11281, 11282, 11283, 11284, 11285, 11570, 11828, 11829, 11830, 10252, 10253, 10254, 10255, 10256, 10257, 10258, 10302, 10303, 10510, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 12204, 20016, 20045, 20060},
@@ -2625,8 +3822,8 @@ function patchClientData()
 		[11301] = {30128, 30083, 20324, 30082, 10312, 10313, 20119, 20220, 20188, 20215, 20245, 20432, 20456, 20493, 20871, 10309, 10310, 10311, 10257, 10258, 10302, 10303, 10510, 10759, 11146, 40025, 40026, 10230, 10237, 10238}, [11310] = {30128, 30083, 20324, 30082, 10312, 10313, 20119, 20220, 20188, 20215, 20245, 20432, 20456, 20493, 20871, 10309, 10310, 10311, 10257, 10258, 10302, 10303, 10510, 10759, 11146, 40025, 40026, 10230, 10237, 10238}, [11350] = {30128, 30083, 20324, 30082, 10312, 10313, 20119, 20220, 20188, 20215, 20245, 20432, 20456, 20493, 20871, 10309, 10310, 10311, 10257, 10258, 10302, 10303, 10510, 10759, 11146, 40025, 40026, 10230, 10237, 10238},
 		[13] = {21028, 40135, 40191, 40242, 40591, 40592, 40593, 40594, 20126, 21026, 21027, 21085, 21086, 21087, 21088, 30576, 40134, 10928, 11011, 11012, 11193, 11418, 12049, 12158, 12159, 12160, 12161, 12162, 12163, 12164, 12165, 12171, 12172, 20069, 20077, 20090, 20092, 20093, 20102, 20108, 20130, 20188, 20215, 20245, 20432, 20456, 20493, 20871, 30003, 30006, 30013, 30014, 30017, 30026, 30041, 30042, 30045, 10095, 10096, 10364, 10365, 10379, 10394, 10735, 10747, 10764, 10765, 10793, 10873, 10874, 10875, 10141, 10142, 10144, 10145, 10152, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 10172, 10173, 10174, 10175, 10176, 10178, 10179, 10180, 10188, 10190, 10191, 40085, 40699},
 		[11401] = {21028, 40135, 40191, 40242, 40591, 40592, 40593, 40594, 20126, 21026, 21027, 21085, 21086, 21087, 21088, 30576, 40134, 10928, 11011, 11012, 11193, 11418, 12049, 12158, 12159, 12160, 12161, 12162, 12163, 12164, 12165, 12171, 12172, 20069, 20077, 20090, 20092, 20093, 20102, 20108, 20130, 20188, 20215, 20245, 20432, 20456, 20493, 20871, 30003, 30006, 30013, 30014, 30017, 30026, 30041, 30042, 30045, 10095, 10096, 10364, 10365, 10379, 10394, 10735, 10747, 10764, 10765, 10793, 10873, 10874, 10875, 10141, 10142, 10144, 10145, 10152, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 10172, 10173, 10174, 10175, 10176, 10178, 10179, 10180, 10188, 10190, 10191, 40085, 40699}, [11410] = {21028, 40135, 40191, 40242, 40591, 40592, 40593, 40594, 20126, 21026, 21027, 21085, 21086, 21087, 21088, 30576, 40134, 10928, 11011, 11012, 11193, 11418, 12049, 12158, 12159, 12160, 12161, 12162, 12163, 12164, 12165, 12171, 12172, 20069, 20077, 20090, 20092, 20093, 20102, 20108, 20130, 20188, 20215, 20245, 20432, 20456, 20493, 20871, 30003, 30006, 30013, 30014, 30017, 30026, 30041, 30042, 30045, 10095, 10096, 10364, 10365, 10379, 10394, 10735, 10747, 10764, 10765, 10793, 10873, 10874, 10875, 10141, 10142, 10144, 10145, 10152, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 10172, 10173, 10174, 10175, 10176, 10178, 10179, 10180, 10188, 10190, 10191, 40085, 40699}, [11450] = {21028, 40135, 40191, 40242, 40591, 40592, 40593, 40594, 20126, 21026, 21027, 21085, 21086, 21087, 21088, 30576, 40134, 10928, 11011, 11012, 11193, 11418, 12049, 12158, 12159, 12160, 12161, 12162, 12163, 12164, 12165, 12171, 12172, 20069, 20077, 20090, 20092, 20093, 20102, 20108, 20130, 20188, 20215, 20245, 20432, 20456, 20493, 20871, 30003, 30006, 30013, 30014, 30017, 30026, 30041, 30042, 30045, 10095, 10096, 10364, 10365, 10379, 10394, 10735, 10747, 10764, 10765, 10793, 10873, 10874, 10875, 10141, 10142, 10144, 10145, 10152, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 10172, 10173, 10174, 10175, 10176, 10178, 10179, 10180, 10188, 10190, 10191, 40085, 40699},
-		[14] = {20711, 30134, 30313, 30314, 20128, 20149, 20284, 20554, 10497, 10548, 11162, 11354, 11355, 11516, 20042, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 20077, 10083, 10084, 10213, 10281, 10282, 10287, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 11364, 11884, 20046, 20116, 21071, 30115, 40230, 40473, 40517},
-		[11501] = {20711, 30134, 30313, 30314, 20128, 20149, 20284, 20554, 10497, 10548, 11162, 11354, 11355, 11516, 20042, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 20077, 10083, 10084, 10213, 10281, 10282, 10287, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 11364, 11884, 20046, 20116, 21071, 30115, 40230, 40473, 40517}, [11510] = {20711, 30134, 30313, 30314, 20128, 20149, 20284, 20554, 10497, 10548, 11162, 11354, 11355, 11516, 20042, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 20077, 10083, 10084, 10213, 10281, 10282, 10287, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 11364, 11884, 20046, 20116, 21071, 30115, 40230, 40473, 40517}, [11550] = {20711, 30134, 30313, 30314, 20128, 20149, 20284, 20554, 10497, 10548, 11162, 11354, 11355, 11516, 20042, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 20077, 10083, 10084, 10213, 10281, 10282, 10287, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 11364, 11884, 20046, 20116, 21071, 30115, 40230, 40473, 40517},
+		[14] = {20711, 30134, 30313, 30314, 20128, 20149, 20284, 20554, 10497, 10548, 11162, 11354, 11355, 11516, 20042, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 20077, 10083, 10084, 10213, 10281, 10282, 10287, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 11364, 11884, 20046, 20116, 21071, 30115, 40230, 40473, 40517, 21145, 21146, 30594, 30595, 40726, 40736},
+		[11501] = {20711, 30134, 30313, 30314, 20128, 20149, 20284, 20554, 10497, 10548, 11162, 11354, 11355, 11516, 20042, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 20077, 10083, 10084, 10213, 10281, 10282, 10287, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 11364, 11884, 20046, 20116, 21071, 30115, 40230, 40473, 40517, 21145, 21146, 30594, 30595, 40726, 40736}, [11510] = {20711, 30134, 30313, 30314, 20128, 20149, 20284, 20554, 10497, 10548, 11162, 11354, 11355, 11516, 20042, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 20077, 10083, 10084, 10213, 10281, 10282, 10287, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 11364, 11884, 20046, 20116, 21071, 30115, 40230, 40473, 40517, 21145, 21146, 30594, 30595, 40726, 40736}, [11550] = {20711, 30134, 30313, 30314, 20128, 20149, 20284, 20554, 10497, 10548, 11162, 11354, 11355, 11516, 20042, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 20077, 10083, 10084, 10213, 10281, 10282, 10287, 10759, 11146, 11152, 11155, 11159, 11340, 11510, 11512, 11665, 11364, 11884, 20046, 20116, 21071, 30115, 40230, 40473, 40517, 21145, 21146, 30594, 30595, 40726, 40736},
 		[15] = {20995, 20378, 20996, 30139, 30140, 30141, 11986, 20023, 20202, 20203, 20204, 20205, 10652, 10653, 10654, 11221, 11290, 11291, 11292, 11716, 11717, 11729, 11985, 11730, 11895, 11896, 11946, 12043, 12093, 12130, 12284, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 10045, 10644, 10645, 10646, 10647, 10648, 10649, 10650, 10651, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 10172, 10173, 10174, 10175, 10176, 10178, 10179, 10180},
 		[11601] = {20995, 20378, 20996, 30139, 30140, 30141, 11986, 20023, 20202, 20203, 20204, 20205, 10652, 10653, 10654, 11221, 11290, 11291, 11292, 11716, 11717, 11729, 11985, 11730, 11895, 11896, 11946, 12043, 12093, 12130, 12284, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 10045, 10644, 10645, 10646, 10647, 10648, 10649, 10650, 10651, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 10172, 10173, 10174, 10175, 10176, 10178, 10179, 10180}, [11610] = {20995, 20378, 20996, 30139, 30140, 30141, 11986, 20023, 20202, 20203, 20204, 20205, 10652, 10653, 10654, 11221, 11290, 11291, 11292, 11716, 11717, 11729, 11985, 11730, 11895, 11896, 11946, 12043, 12093, 12130, 12284, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 10045, 10644, 10645, 10646, 10647, 10648, 10649, 10650, 10651, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 10172, 10173, 10174, 10175, 10176, 10178, 10179, 10180}, [11650] = {20995, 20378, 20996, 30139, 30140, 30141, 11986, 20023, 20202, 20203, 20204, 20205, 10652, 10653, 10654, 11221, 11290, 11291, 11292, 11716, 11717, 11729, 11985, 11730, 11895, 11896, 11946, 12043, 12093, 12130, 12284, 20004, 20007, 20008, 20017, 20018, 20022, 20033, 20057, 20069, 10045, 10644, 10645, 10646, 10647, 10648, 10649, 10650, 10651, 10156, 10164, 10165, 10167, 10168, 10169, 10170, 10171, 10172, 10173, 10174, 10175, 10176, 10178, 10179, 10180},
 		[16] = {21022, 20235, 20644, 20761, 11488, 20170, 20234, 10348, 10349, 10350, 10351, 11487, 10777, 10953, 10984, 11072, 11615, 11619, 11622, 10344, 10345, 10346, 10347, 11340, 11510, 11512, 11665, 12204, 20016, 20045},
@@ -2637,8 +3834,8 @@ function patchClientData()
 		[11901] = {11145, 11513, 10704, 11033, 30426, 30369, 30427, 30467, 30469, 40470, 40471, 30119, 30164, 30191, 30258, 30366, 30367, 30368, 11293, 11294, 11313, 11552, 11553, 11848, 11883, 12074, 12113, 12264, 20222, 20240, 10223, 10244, 10245, 10247, 10248, 10249, 10261, 10275, 10276, 10357, 10441, 10504, 10575, 10587, 10628, 10722, 10777, 10953, 10984, 11072, 10085, 10246, 10265, 10289, 10420, 10560, 10766, 11030, 11031, 11032, 20016, 20045, 20060, 20062, 20063, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033}, [11910] = {11145, 11513, 10704, 11033, 30426, 30369, 30427, 30467, 30469, 40470, 40471, 30119, 30164, 30191, 30258, 30366, 30367, 30368, 11293, 11294, 11313, 11552, 11553, 11848, 11883, 12074, 12113, 12264, 20222, 20240, 10223, 10244, 10245, 10247, 10248, 10249, 10261, 10275, 10276, 10357, 10441, 10504, 10575, 10587, 10628, 10722, 10777, 10953, 10984, 11072, 10085, 10246, 10265, 10289, 10420, 10560, 10766, 11030, 11031, 11032, 20016, 20045, 20060, 20062, 20063, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033}, [11950] = {11145, 11513, 10704, 11033, 30426, 30369, 30427, 30467, 30469, 40470, 40471, 30119, 30164, 30191, 30258, 30366, 30367, 30368, 11293, 11294, 11313, 11552, 11553, 11848, 11883, 12074, 12113, 12264, 20222, 20240, 10223, 10244, 10245, 10247, 10248, 10249, 10261, 10275, 10276, 10357, 10441, 10504, 10575, 10587, 10628, 10722, 10777, 10953, 10984, 11072, 10085, 10246, 10265, 10289, 10420, 10560, 10766, 11030, 11031, 11032, 20016, 20045, 20060, 20062, 20063, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033},
 		[19] = {40046, 30152, 20826, 20253, 20254, 20825, 11745, 11746, 11749, 20251, 20252, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10205, 10695, 10696, 10697, 10698, 10174, 10175, 10176, 10178, 10179, 10180, 10188, 10335, 10336, 10337},
 		[12001] = {40046, 30152, 20826, 20253, 20254, 20825, 11745, 11746, 11749, 20251, 20252, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10205, 10695, 10696, 10697, 10698, 10174, 10175, 10176, 10178, 10179, 10180, 10188, 10335, 10336, 10337}, [12010] = {40046, 30152, 20826, 20253, 20254, 20825, 11745, 11746, 11749, 20251, 20252, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10205, 10695, 10696, 10697, 10698, 10174, 10175, 10176, 10178, 10179, 10180, 10188, 10335, 10336, 10337}, [12050] = {40046, 30152, 20826, 20253, 20254, 20825, 11745, 11746, 11749, 20251, 20252, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10205, 10695, 10696, 10697, 10698, 10174, 10175, 10176, 10178, 10179, 10180, 10188, 10335, 10336, 10337},
-		[20] = {20054, 20301, 30171, 40047, 30066, 40052, 40659, 40662, 20117, 20333, 21094, 30064, 30065, 10284, 10285, 10783, 10784, 10785, 10786, 11694, 12192, 20053, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033},
-		[12101] = {20054, 20301, 30171, 40047, 30066, 40052, 40659, 40662, 20117, 20333, 21094, 30064, 30065, 10284, 10285, 10783, 10784, 10785, 10786, 11694, 12192, 20053, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033}, [12110] = {20054, 20301, 30171, 40047, 30066, 40052, 40659, 40662, 20117, 20333, 21094, 30064, 30065, 10284, 10285, 10783, 10784, 10785, 10786, 11694, 12192, 20053, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033}, [12150] = {20054, 20301, 30171, 40047, 30066, 40052, 40659, 40662, 20117, 20333, 21094, 30064, 30065, 10284, 10285, 10783, 10784, 10785, 10786, 11694, 12192, 20053, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033},
+		[20] = {20054, 20301, 30171, 40047, 30066, 40052, 40659, 40662, 20117, 20333, 21094, 30064, 30065, 10284, 10285, 10783, 10784, 10785, 10786, 11694, 12192, 20053, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033, 21146, 30594, 30595},
+		[12101] = {20054, 20301, 30171, 40047, 30066, 40052, 40659, 40662, 20117, 20333, 21094, 30064, 30065, 10284, 10285, 10783, 10784, 10785, 10786, 11694, 12192, 20053, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033, 21146, 30594, 30595}, [12110] = {20054, 20301, 30171, 40047, 30066, 40052, 40659, 40662, 20117, 20333, 21094, 30064, 30065, 10284, 10285, 10783, 10784, 10785, 10786, 11694, 12192, 20053, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033, 21146, 30594, 30595}, [12150] = {20054, 20301, 30171, 40047, 30066, 40052, 40659, 40662, 20117, 20333, 21094, 30064, 30065, 10284, 10285, 10783, 10784, 10785, 10786, 11694, 12192, 20053, 10135, 10146, 10148, 10149, 10150, 10151, 10153, 10177, 10181, 10182, 10183, 10184, 10186, 10187, 10204, 10075, 10076, 10077, 10119, 10120, 10121, 10122, 10123, 20064, 20067, 20078, 20113, 20125, 20145, 20157, 20158, 20174, 20228, 20229, 20439, 21098, 30019, 30033, 21146, 30594, 30595},
 	}
 	ClientData._charCardsMap = CHAR_CARDS_MAP
 
@@ -2862,6 +4059,62 @@ function patchClientData()
 	}
 	ClientData._expansionCardsMap = EXPANSION_CARDS_MAP
 
+	local FAIRY_HERO_CARDS_MAP = {
+		[1] = {
+			12314, 12315, 12316, 12317, 12318, 12319, 12320,
+			21135, 21136, 21137, 21138, 21139,
+			30244, 12321, 30593, 40728,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[221001] = {
+			12314, 12315, 12316, 12317, 12318, 12319, 12320,
+			21135, 21136, 21137, 21138, 21139,
+			30244, 12321, 30593, 40728,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[221010] = {
+			12314, 12315, 12316, 12317, 12318, 12319, 12320,
+			21135, 21136, 21137, 21138, 21139,
+			30244, 12321, 30593, 40728,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[221050] = {
+			12314, 12315, 12316, 12317, 12318, 12319, 12320,
+			21135, 21136, 21137, 21138, 21139,
+			30244, 12321, 30593, 40728,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[2] = {
+			40730,
+			12322, 12323, 12324, 12325, 12326, 12327, 12328, 12329, 12330, 21141, 21134, 40732, 21142, 40733,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[222001] = {
+			40730,
+			12322, 12323, 12324, 12325, 12326, 12327, 12328, 12329, 12330, 21141, 21134, 40732, 21142, 40733,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[222010] = {
+			40730,
+			12322, 12323, 12324, 12325, 12326, 12327, 12328, 12329, 12330, 21141, 21134, 40732, 21142, 40733,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[222050] = {
+			40730,
+			12322, 12323, 12324, 12325, 12326, 12327, 12328, 12329, 12330, 21141, 21134, 40732, 21142, 40733,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		}
+	}
+	ClientData._fairyHeroCardsMap = FAIRY_HERO_CARDS_MAP
+
 	-- Card Box Info & Reset (Tavern / draw)
 	local function injectPacks()
 		if not rawget(_G, "Data") or not Data._recruitInfo then return end
@@ -2884,12 +4137,14 @@ function patchClientData()
 					_param = { [1] = Data.ResType.gold, [2] = pcost, [3] = 0, [4] = 0, [5] = 0 },
 					_pid = pidTbl,
 					_rid = cardList,
-					_cards = cardList
+					_cards = cardList,
+					_showRes = { 0 }
 				}
 			else
 				item._rid = cardList
 				item._cards = cardList
 				item._pid = pidTbl
+				if not item._showRes then item._showRes = { 0 } end
 				if not item._param then item._param = {} end
 				item._param[1] = Data.ResType.gold
 				item._param[2] = pcost
@@ -2937,6 +4192,91 @@ function patchClientData()
 			registerPack(prefix + 50, cList, 1001, 28500)
 		end
 
+		-- Inject Fairy Hero theme pack (Gói bài tiên hiệp)
+		local fhList = (FAIRY_HERO_CARDS_MAP and FAIRY_HERO_CARDS_MAP[1]) or {}
+		registerPack(221001, fhList, 1001, 600)
+		registerPack(221010, fhList, 1001, 6000)
+		registerPack(221050, fhList, 1001, 28500)
+		registerPack(1, fhList, 1001, 600)
+
+		local tnList = (FAIRY_HERO_CARDS_MAP and FAIRY_HERO_CARDS_MAP[2]) or {}
+		registerPack(222001, tnList, 1001, 600)
+		registerPack(222010, tnList, 1001, 6000)
+		registerPack(222050, tnList, 1001, 28500)
+		registerPack(2, tnList, 1001, 600)
+
+		if rawget(_G, "Data") and Data._magicInfo and Data._magicInfo[21134] then
+			Data._magicInfo[21134]._keyword = 301
+		end
+
+		-- Amazoness & Harpie Pack & Keyword Synchronizer
+		if rawget(_G, "Data") then
+			local amazonPids = { 10123, 11694, 12192, 20054, 20301, 21094, 21146, 30171, 30594, 30595, 40047, 40659, 40662 }
+			local harpiePids = { 10084, 10287, 20711, 21145, 21146, 30134, 30312, 30594, 30595, 40473, 40517, 40726, 40736 }
+
+			local function appendPidsToDrop(dropId, pids)
+				local drop = (Data._dropInfo and Data._dropInfo[dropId]) or (Data._recruitInfo and Data._recruitInfo[dropId])
+				if drop and drop._pid then
+					local existing = {}
+					for _, item in ipairs(drop._pid) do
+						if item and item[1] then existing[item[1]] = true end
+					end
+					for _, cid in ipairs(pids) do
+						if not existing[cid] then
+							table.insert(drop._pid, { cid })
+							existing[cid] = true
+						end
+					end
+				end
+			end
+
+			appendPidsToDrop(744, amazonPids)
+			appendPidsToDrop(745, amazonPids)
+			appendPidsToDrop(760, harpiePids)
+			appendPidsToDrop(761, harpiePids)
+			for _, bid in ipairs({ 12101, 12110, 12150 }) do
+				appendPidsToDrop(bid, amazonPids)
+			end
+			for _, bid in ipairs({ 11501, 11510, 11550 }) do
+				appendPidsToDrop(bid, harpiePids)
+			end
+			if Data._recruitInfo then
+				if Data._recruitInfo[311001] then appendPidsToDrop(311001, amazonPids) end
+				if Data._recruitInfo[311301] then appendPidsToDrop(311301, amazonPids) end
+				if Data._recruitInfo[319001] then appendPidsToDrop(319001, harpiePids) end
+				if Data._recruitInfo[319301] then appendPidsToDrop(319301, harpiePids) end
+			end
+
+			local function setPack(t, id, pids)
+				if t and t[id] then
+					t[id]._packageId = pids
+				end
+			end
+			setPack(Data._magicInfo, 20054, {12101, 311001})
+			setPack(Data._magicInfo, 20301, {12101, 311001})
+			setPack(Data._magicInfo, 20711, {11501, 319001})
+			setPack(Data._magicInfo, 21094, {12101, 311001})
+			setPack(Data._magicInfo, 21145, {11501, 319001})
+			setPack(Data._magicInfo, 21146, {11501, 12101, 319001, 311001})
+			setPack(Data._trapInfo, 30134, {11501, 319001})
+			setPack(Data._trapInfo, 30171, {12101, 311001})
+			setPack(Data._trapInfo, 30312, {11501, 319001})
+			setPack(Data._trapInfo, 30594, {11501, 12101, 311001, 319001})
+			setPack(Data._trapInfo, 30595, {11501, 12101, 311001, 319001})
+			setPack(Data._monsterInfo, 10084, {11501, 319001, 10601})
+			setPack(Data._monsterInfo, 10123, {12101, 311001})
+			setPack(Data._monsterInfo, 10287, {11501, 319001})
+			setPack(Data._monsterInfo, 11694, {12101, 311001})
+			setPack(Data._monsterInfo, 12192, {12101, 311001})
+			setPack(Data._rareInfo, 40047, {12101, 311001})
+			setPack(Data._rareInfo, 40473, {11501, 319001})
+			setPack(Data._rareInfo, 40517, {11501, 319001})
+			setPack(Data._rareInfo, 40659, {12101, 311001})
+			setPack(Data._rareInfo, 40662, {12101, 311001})
+			setPack(Data._rareInfo, 40726, {11501, 319001})
+			setPack(Data._rareInfo, 40736, {11501, 319001})
+		end
+
 		if rawget(_G, "Data") and Data._productsExInfo then
 			if not Data._productsExInfo[59] then
 				Data._productsExInfo[59] = {
@@ -2945,6 +4285,31 @@ function patchClientData()
 					_cost = 200000,
 					_resType = 1,
 					_date = "20170101.0"
+				}
+			end
+		end
+
+		if rawget(_G, "Data") and Data._diamondProductsInfo then
+			if not Data._diamondProductsInfo[546] then
+				Data._diamondProductsInfo[546] = {
+					_id = 546,
+					_cardId = 12330,
+					_cost = 7000,
+					_resType = 3,
+					_type = 0,
+					_date = "20240101.0"
+				}
+			end
+		end
+
+		if rawget(_G, "Data") and Data._monthCard5ProductsInfo then
+			if not Data._monthCard5ProductsInfo[15] then
+				Data._monthCard5ProductsInfo[15] = {
+					_id = 15,
+					_cardId = 12330,
+					_cost = 7000,
+					_resType = 3,
+					_date = "20240101.0"
 				}
 			end
 		end
@@ -2959,7 +4324,11 @@ function patchClientData()
 		local cList = nil
 
 		if boxId then
-			if boxId >= 181001 and boxId <= 210050 then
+			if boxId >= 221001 and boxId <= 230050 then
+				local fhIdx = math.floor((boxId - 220000) / 1000)
+				local fhm = ClientData._fairyHeroCardsMap or FAIRY_HERO_CARDS_MAP
+				cList = fhm and (fhm[boxId] or fhm[fhIdx])
+			elseif boxId >= 181001 and boxId <= 210050 then
 				local expIdx = math.floor((boxId - 180000) / 1000)
 				local xpm = ClientData._expansionCardsMap or EXPANSION_CARDS_MAP
 				cList = xpm and (xpm[boxId] or xpm[expIdx])
@@ -2975,6 +4344,8 @@ function patchClientData()
 				local cIdx = math.floor((boxId - 10100) / 100)
 				local cm = ClientData._charCardsMap or CHAR_CARDS_MAP
 				cList = cm and (cm[boxId] or cm[cIdx])
+			elseif FAIRY_HERO_CARDS_MAP and FAIRY_HERO_CARDS_MAP[boxId] then
+				cList = FAIRY_HERO_CARDS_MAP[boxId]
 			elseif EXPANSION_CARDS_MAP and EXPANSION_CARDS_MAP[boxId] then
 				cList = EXPANSION_CARDS_MAP[boxId]
 			elseif EXTRA_CARDS_MAP and EXTRA_CARDS_MAP[boxId] then
@@ -3398,7 +4769,34 @@ function patchClientData()
 		[51457] = "Chủ động: Xóa 2 Chỉ Thị XYZ đang có; tất cả quái có từ khóa “Ánh Sáng” và “Ngân Hà” trên sân phe ta nhận được “Khiên Chắn Quái/Phép/Bẫy”. Kỹ năng chỉ kích hoạt 1 lần.",
 		[52113] = "Khi có mặt; khiến tất cả quái có từ khóa “Amazon” trên sân phe ta ngoài bản thân bài này nhận được “Khiên Chắn Quái/Phép/Bẫy”/“Khiên Chắn Hiệu Quả”.",
 		[46091] = "Khi có mặt; quái có từ khóa “Amazon” phe ta nhận thêm kỹ năng “Tấn Công Tăng Cường”, đồng thời nhận thêm 100 công cho mỗi quái “Amazon” trên sân và trong mộ phe ta.",
-		[47769] = "Khi ở trên sân; Quái Vật có từ khóa “Amazon” ở bên sân của bạn nhận được “Tâm hồn tan vỡ”, đồng thời khi quái “Amazon” phe ta nhận sát thương chiến đấu thì người chơi không bị trừ LP.",
+		-- Wicked Gods (Ta Than - Hoa Than 12142, Ac Than - Chua Nhap The 10407, Skill 3231)
+		[39265] = "Bài này không thể Triệu Hồi Đặc Biệt. Cần có 3 Quái thú hiến tế mới có thể Triệu Hồi Thường.",
+		-- Amazoness Balance Update (Kiếm Sĩ Amazoness 10076, Hổ Sư Tử Amazon 40052, Vua Hổ Sư Tử Amazon 40659, Bão Lốc Amazon 30171)
+		-- 1. Kiếm Sĩ Amazoness (10076, Skill 2006)
+		[22356] = "Kiếm Sĩ Amazoness",
+		[22357] = "Sát thương chiến đấu mà bản thân phải chịu từ trận chiến có lá bài này sẽ do đối thủ gánh chịu (nhân đôi x2 sát thương phản đòn nếu LP đối thủ > 10,000).",
+		[22358] = "|Mô tả|\nKiếm Sĩ Amazoness sở hữu kỹ năng phản toàn bộ sát thương chiến đấu sang cho đối thủ. Đặc biệt, khi LP của đối phương vượt quá 10,000, lượng sát thương phản lại sẽ được nhân đôi (x2), khắc chế cực mạnh các bộ bài hồi máu hoặc pháo đài LP cao.",
+		[36818] = "Phản Sát Thương",
+		[36819] = "Sát thương chiến đấu mà bản thân phải chịu từ trận chiến có lá bài này sẽ do đối thủ gánh chịu. Nếu LP của đối thủ lớn hơn 10,000, sát thương phản lại sẽ được nhân đôi (x2).",
+
+		-- 2. Hổ Sư Tử Amazon (40052) & Vua Hổ Sư Tử Amazon (40659)
+		[33723] = "Hổ Sư Tử Amazon",
+		[33724] = "<Hổ Rừng Amazon> + Quái có từ khóa “Amazon”.\nKhi bị đối thủ tiêu diệt trong chiến đấu, đối thủ không thể tiếp tục tấn công trong lượt đó.",
+		[33725] = "|Mô tả|\nHổ Sư Tử Amazon sở hữu sức mạnh chiến đấu uy mãnh và khả năng đoạn hậu hoàn hảo. Khi bị tiêu diệt trong chiến đấu, toàn bộ các đòn tấn công tiếp theo của đối phương trong lượt đó sẽ bị ngắt đứng hoàn toàn.",
+		[36147] = "Vua Hổ Sư Tử Amazon",
+		[36148] = "Quái có từ khóa “Amazon” x2.\nKhi bị đối thủ tiêu diệt trong chiến đấu, đối thủ không thể tiếp tục tấn công trong lượt đó.",
+		[36149] = "|Mô tả|\nVua Hổ Sư Tử Amazon - chúa sơn lâm tối cao của bộ tộc Amazoness. Chốt chặn phòng ngự tuyệt đối: Khi bị đối thủ tiêu diệt trong chiến đấu, đối phương lập tức bị khóa, không thể tiếp tục tấn công trong lượt đó.",
+
+		-- 3. Bão Lốc Amazon (30171, Skills 8007, 5116, 5117)
+		[54436] = "Bão Lốc Amazon",
+		[54437] = "Cạm bẫy vĩnh cửu Amazon: Chủ động (1 lượt 1 lần): Triệu Hồi Đặc Biệt 1 quái “Amazon” từ bài trên tay. Khi có lá này trên sân, tất cả quái thú mang từ khóa “Amazon” khi giao chiến sẽ triệt tiêu toàn bộ sát thương chiến đấu về 0 (người chơi không bị trừ LP), đồng thời tối ưu cơ chế phản sát thương khi công/thủ. Khi bị phá hủy từ trên sân, Triệu Hồi Đặc Biệt 1 quái “Amazon” từ mộ.",
+		[54438] = "|Mô tả|\nBão Lốc Amazon: Cạm bẫy vĩnh cửu cốt lõi của bộ tộc Amazoness. Triệu hồi quái thú từ tay, bảo hộ toàn diện quái thú Amazon khi giao chiến, triệt tiêu toàn bộ sát thương chiến đấu về 0 và tối ưu phản sát thương khi công/thủ.",
+		[47768] = "Bảo Hộ Chiến Đấu",
+		[47769] = "Khi có lá này trên sân, tất cả quái thú mang từ khóa “Amazon” khi giao chiến sẽ triệt tiêu toàn bộ sát thương chiến đấu về 0 (người chơi không bị trừ LP), đồng thời tối ưu cơ chế phản sát thương khi giao chiến với quái thú đối phương.",
+		[42994] = "Bão Lốc Amazon - Triệu Hồi",
+		[42995] = "Chủ động: Mỗi lượt 1 lần, Triệu Hồi Đặc Biệt 1 quái có từ khóa “Amazon” từ bài trên tay; quái nhận được “Bóng Ma Đột Kích”.",
+		[42996] = "Hồi Sinh Amazon",
+		[42997] = "Khi bị phá hủy và đưa vào mộ từ trên sân; Triệu Hồi Đặc Biệt 1 quái có từ khóa “Amazon” từ mộ phe ta.",
 		[46379] = "Quái có từ khóa “Amazon” trên sân phe ta tăng 500 tấn công và nhận được “Tường Chắn Quái/Phép/Bẫy”.",
 		[18733] = "Tất cả quái “Amazon” trên sân phe ta tăng 500 công và nhận “Tường Chắn Quái/Phép/Bẫy”. Kĩ năng chủ động: 1 lượt 1 lần, lấy 1 quái “Amazon” từ bộ bài lên tay.",
 		[56678] = "Bộ Lạc-Chiêu Mộ",
@@ -3414,34 +4812,539 @@ function patchClientData()
 		[36968] = "Hộ Thể Mắt Đỏ",
 		[36969] = "Khi lá bài này trên sân, tất cả quái có từ khóa “Mắt Đỏ” sẽ nhận “Tường Chắn Quái/Phép/Bẫy”.",
 		[34292] = "Khi lá bài này trên sân, tất cả quái có từ khóa “Mắt Đỏ” sẽ nhận “Tường Chắn Quái/Phép/Bẫy”.",
+		-- Keyword "Tru tiên"
+		[2231] = "Tru tiên",
+		-- Keyword "Tiên nghịch"
+		[2232] = "Tiên nghịch",
+		[34087] = "Chim Ánh Sao Nothung",
+		-- Harpie 5 Sisters (40726, skills 14624, 14625, 14626)
+		[56801] = "5 Chị Em Harpie",
+		[56802] = "Quái thú Liên Kết [Link-3]: <3 Chị Em Harpie> + 2 quái thú mang từ khóa “Harpie”.",
+		[56803] = "Quái thú Liên Kết [Link-3]: <3 Chị Em Harpie> + 2 quái thú mang từ khóa “Harpie”.",
+		[56804] = "5 Chị Em Harpie",
+		[56805] = "Harpie-Trừng Phạt Trục Xuất",
+		[56806] = "Khi lá bài này ở Vùng Trục Xuất (Mộ Loại Bỏ): Mỗi lượt 1 lần, khi đối phương Triệu Hồi Thường hoặc Triệu Hồi Đặc Biệt quái thú, kích hoạt: Trục xuất quái thú đó khỏi trận đấu (xuyên Tường Chắn Quái, không xuyên Khiên Chắn Hào Quang), sau đó thêm ngẫu nhiên 1 lá bài mang từ khóa “Harpie” từ Bộ Bài lên tay.",
+		[56807] = "Harpie-Tụ Hội Tỷ Muội",
+		[56808] = "Kỹ năng chủ động: Mỗi lượt 1 lần, chọn tối đa 2 quái thú mang từ khóa “Harpie” từ Mộ phe ta, Triệu Hồi Đặc Biệt lên sân ở Thế Thủ (quái thú không thể đổi tư thế chiến đấu trong lượt này).",
+		[56809] = "Harpie-Phong Dực Hộ Mệnh",
+		[56810] = "Kỹ năng mộ chủ động: Mỗi lượt 1 lần, trục xuất bản thân lá bài này khỏi Mộ; tất cả quái thú Tộc Thú Có Cánh trên sân phe ta nhận được [Khiên Chắn Quái / Phép / Bẫy (Hào Quang)] trong 1 lượt.",
+		-- Custom new cards (A Lương, Lệ Quỷ, Đọa Nhập Ma Đạo, Kỳ Baby, Vua Hổ)
+		[56811] = "Cửu Thiên Huyền Sát-Tru Tiên",
+		[56812] = "Kĩ năng chủ động mộ: 1 lượt 1 lần, khi trên sân phe ta có <Kỳ Baby>, loại bỏ bản thân khỏi mộ để thêm 1 lá <Cửu Thiên Huyền Sát> từ bộ bài lên tay.",
+		[56813] = "A Lương",
+		[56814] = "Không thể Triệu Hồi Đặc Biệt. Lá bài này trên sân không thể bị phá hủy bởi bất kỳ hiệu ứng nào. Khi lên sân, nhận [Khiên Chắn Quái]. 1 lượt 1 lần, khi đối phương kích hoạt bài Phép/Bẫy: Vô hiệu hóa và phá hủy lá bài đó. Tăng ATK/DEF bằng [Số Sao x 200]. Bắt đầu mỗi lượt, tăng 1 sao (tối đa 14 sao). [Thập Tam Cảnh]: Khi đạt 13 sao trở lên, đối phương không thể kích hoạt hiệu ứng bài trên sân. [Thập Tứ Cảnh]: Khi đạt 14 sao, đối phương không thể kích hoạt bất kỳ hiệu ứng bài nào.",
+		[56815] = "A Lương-Cấm Đoán",
+		[56816] = "Không thể Triệu Hồi Đặc Biệt.",
+		[56817] = "A Lương-Bất Hoại",
+		[56818] = "Lá bài này trên sân không thể bị phá hủy bởi bất kỳ hiệu ứng nào.",
+		[56819] = "A Lương-Hộ Thể",
+		[56820] = "Khi lên sân nhận [Khiên Chắn Quái].",
+		[56821] = "A Lương-Trảm Pháp",
+		[56822] = "1 lượt 1 lần, khi đối phương kích hoạt bài Phép/Bẫy: Vô hiệu hóa và phá hủy lá bài đó.",
+		[56823] = "A Lương-Vô Thượng Kiếm Đạo",
+		[56824] = "Tăng ATK/DEF bằng [Số Sao x 200]. Bắt đầu mỗi lượt, tăng 1 sao (tối đa 14 sao). [Thập Tam Cảnh]: Khi đạt 13 sao trở lên, đối phương không thể kích hoạt hiệu ứng bài trên sân. [Thập Tứ Cảnh]: Khi đạt 14 sao, đối phương không thể kích hoạt bất kỳ hiệu ứng bài nào.",
+		[56825] = "Quỷ Lệ",
+		[56826] = "Kháng Phật - Kháng Đạo - Kháng Ma: Khi lên sân, nhận [Tường Chắn Quái / Phép / Bẫy]. Đạo Pháp - Thái Cực Huyền Thanh (Kỹ năng chủ động): 1 lượt 1 lần, chọn 1 bài Phép mang từ khóa “Tru tiên” từ Bộ Bài thêm vào tay. Phật Pháp - Kim Cương Bất Hoại: 1 lượt 1 lần, bỏ qua 1 lần lá bài này bị phá hủy. Ma Pháp - Hấp Huyết Vô Tình: 1 lượt 1 lần, khi đối phương kích hoạt bài Phép/Bẫy: Hi sinh 1000 LP, vô hiệu hóa và phá hủy lá bài đó.",
+		[56827] = "Quỷ Lệ-Tam Giới Chướng",
+		[56828] = "Khi lên sân nhận [Tường Chắn Quái / Phép / Bẫy].",
+		[56829] = "Quỷ Lệ-Tìm Kiếm Pháp Bảo",
+		[56830] = "Kỹ năng chủ động: 1 lượt 1 lần, chọn 1 bài Phép mang từ khóa “Tru tiên” từ Bộ Bài thêm vào tay.",
+		[56831] = "Quỷ Lệ-Kim Cương Bất Hoại",
+		[56832] = "1 lượt 1 lần, bỏ qua 1 lần lá bài này bị phá hủy.",
+		[56833] = "Quỷ Lệ-Hấp Huyết Vô Tình",
+		[56834] = "1 lượt 1 lần, khi đối phương kích hoạt bài Phép/Bẫy: Hi sinh 1000 LP, vô hiệu hóa và phá hủy lá bài đó.",
+		[56835] = "Đọa Nhập Ma Đạo",
+		[56836] = "Bạn chỉ có thể kích hoạt 1 “Đọa Nhập Ma Đạo” mỗi lượt. Hi sinh 1000 LP và phá hủy 1 quái thú trên sân bạn đang điều khiển: Triệu Hồi Đặc Biệt 1 <Quỷ Lệ> từ Mộ, Bộ Bài hoặc trên tay lên sân. Kỹ năng mộ chủ động: Chọn và phá hủy 1 quái thú Thuộc Tính Ám trên sân phe ta, hồi phục LP cho bản thân bằng ATK của quái thú vừa bị tiêu diệt.",
+		[56837] = "Đọa Nhập Ma Đạo",
+		[56838] = "Hi sinh 1000 LP và phá hủy 1 quái thú trên sân bạn đang điều khiển: Triệu Hồi Đặc Biệt 1 <Quỷ Lệ> từ Mộ, Bộ Bài hoặc trên tay lên sân.",
+		[56839] = "Đọa Nhập Ma Đạo-Hấp Thu",
+		[56840] = "Kỹ năng mộ chủ động: Chọn và phá hủy 1 quái thú Thuộc Tính Ám trên sân phe ta, hồi phục LP cho bản thân bằng ATK của quái thú vừa bị tiêu diệt.",
+		[56841] = "Kỳ Baby",
+		[56842] = "Thiên Gia Thần Kiếm - Hàn Khí: Chừng nào lá bài này còn tồn tại trên sân, mỗi khi đối phương Triệu Hồi Thường hoặc Triệu Hồi Đặc Biệt quái thú, quái thú đó lập tức bị chuyển sang Thế Thủ và bị khóa trong 1 lượt. Chấp Niệm: Khi có <Quỷ Lệ> trên sân phe ta, lá bài này có thể Triệu Hồi Thường mà không cần hiến tế.",
+		[56843] = "Kỳ Baby-Khống Chế Trận Địa",
+		[56844] = "Chừng nào lá bài này còn tồn tại trên sân, mỗi khi đối phương Triệu Hồi Thường hoặc Triệu Hồi Đặc Biệt quái thú, quái thú đó lập tức bị chuyển sang Thế Thủ và bị khóa trong 1 lượt.",
+		[56845] = "Kỳ Baby-Chấp Niệm",
+		[56846] = "Khi có <Quỷ Lệ> trên sân phe ta, lá bài này có thể Triệu Hồi Thường mà không cần hiến tế.",
+		[56847] = "Khóa Đột Kích",
+		[56848] = "Khi bị đối thủ tiêu diệt trong chiến đấu, đối thủ không thể tiếp tục tấn công trong lượt đó.",
+		-- 4 La bai moi Tru Tien (Dong vo dong chong, Vao sinh cong tu, Than khien, Bat hoang huyen hoa long)
+		[56849] = "Đồng vợ đồng chồng",
+		[56850] = "Khi trên sân phe ta có <Quỷ Lệ> và <Kỳ Baby> chưa hành động có thể kích hoạt, phá hủy tất cả quái thú trên sân đối phương (Xuyên qua tường chắn quái thú).",
+		[56851] = "Đồng Vợ Đồng Chồng-Phá Diệt",
+		[56852] = "Khi trên sân phe ta có <Quỷ Lệ> và <Kỳ Baby> chưa hành động có thể kích hoạt, phá hủy tất cả quái thú trên sân đối phương (Xuyên qua tường chắn quái thú).",
+		[56853] = "Đồng sinh cộng tử",
+		[56854] = "Khi trên sân phe ta có <Quỷ Lệ> có thể kích hoạt, chọn: Triệu hồi đặc biệt <Kỳ Baby> từ tay/bộ bài/trong mộ lên sân, sau đó chọn 1 bài phép có từ khóa \"Tru tiên\" thêm vào tay.",
+		[56855] = "Đồng Sinh Cộng Tử-Triệu Hồi",
+		[56856] = "Khi trên sân phe ta có <Quỷ Lệ> có thể kích hoạt, chọn: Triệu hồi đặc biệt <Kỳ Baby> từ tay/bộ bài/trong mộ lên sân, sau đó chọn 1 bài phép có từ khóa \"Tru tiên\" thêm vào tay.",
+		[56857] = "Thần khiển",
+		[56858] = "Khi trên tay phe ta có <Bát hoang hỏa long>, ngoại trừ <Bát hoang hỏa long> khi tổng số sao quái trên sân / trên tay phe ta có >= 10 (hoặc khi trên sân phe ta có <Thú thần>, không cần hiến tế), có thể kích hoạt: Triệu hồi nghi thức <Bát hoang hỏa long> từ tay.",
+		[56859] = "Thần Khiển-Nghi Thức Triệu Hồi",
+		[56860] = "Khi trên tay phe ta có <Bát hoang hỏa long>, ngoại trừ <Bát hoang hỏa long> khi tổng số sao quái trên sân / trên tay phe ta có >= 10 (hoặc khi trên sân phe ta có <Thú thần>, không cần hiến tế), có thể kích hoạt: Triệu hồi nghi thức <Bát hoang hỏa long> từ tay.",
+		[56861] = "Bát hoang hỏa long",
+		[56862] = "Không thể triệu hồi thường, lần đầu triệu hồi đặc biệt cần hiệu ứng của <Thần khiển> để triệu hồi đặc biệt.\nKĩ năng chỉ kích hoạt 1 lần vào lần lá bài này được triệu hồi nghi thức, gây thiệt hại cho đối phương bằng 1 nửa LP hiện tại của họ.\nKhi lên sân, phá hủy tất cả bài phép môi trường trên sân 2 bên.\nKhi lá bài này trên sân, 2 bên không thể sử dụng bài phép môi trường.\nKhi lên sân nhận Khiên chắn quái, phép, bẫy.\nKhi lá bài này trên sân, hiệu quả tăng LP của đối thủ trở thành nhận sát thương.\nMỗi khi đối phương triệu hồi/triệu hồi đặc biệt quái thú, đối phương nhận 200 thiệt hại (tăng lên thành 400 nếu đối phương có trên 8000 LP).\nKhi lá bài này bị phá hủy, phá hủy tất cả bài trên sân phe ta, phe ta chịu thiệt hại bằng số bài bị phá hủy x 500.",
+		[56863] = "Bát Hoang-Tường Chắn Tam Giới",
+		[56864] = "Khi lên sân nhận Khiên chắn quái, phép, bẫy.",
+		[56865] = "Bát Hoang-Huyền Hỏa Phệ Hồn",
+		[56866] = "Kĩ năng chỉ kích hoạt 1 lần vào lần lá bài này được triệu hồi nghi thức, gây thiệt hại cho đối phương bằng 1 nửa LP hiện tại của họ.",
+		[56867] = "Bát Hoang-Tuyệt Môi Diệt Cảnh",
+		[56868] = "Khi lên sân, phá hủy tất cả bài phép môi trường trên sân 2 bên. Khi lá bài này trên sân, 2 bên không thể sử dụng bài phép môi trường.",
+		[56869] = "Bát Hoang-Chích Nhiệt Phản Phệ",
+		[56870] = "Khi lá bài này trên sân, hiệu quả tăng LP của đối thủ trở thành nhận sát thương. Mỗi khi đối phương triệu hồi/triệu hồi đặc biệt quái thú, đối phương nhận 200 thiệt hại (tăng lên thành 400 nếu đối phương có trên 8000 LP).",
+		[56871] = "Bát Hoang-Long Hồn Câu Diệt",
+		[56872] = "Khi lá bài này bị phá hủy, phá hủy tất cả bài trên sân phe ta, phe ta chịu thiệt hại bằng số bài bị phá hủy x 500.",
+		[56873] = "Bát Hoang-Quy Tắc Nghi Lễ",
+		[56874] = "Không thể triệu hồi thường, lần đầu triệu hồi đặc biệt cần hiệu ứng của <Thần khiển> để triệu hồi đặc biệt.",
+		-- Ky baby skill (when Le Quy on field)
+		[56875] = "Kỳ Baby-Hộ Thể Đạo Lữ",
+		[56876] = "Khi có <Quỷ Lệ> trên sân, nhận tường chắn quái, phép và bẫy.",
+		-- Huyen hoa giam (30592) & skill (14653)
+		[56877] = "Huyền Hỏa Giám",
+		[56878] = "Bẫy phản kích: [Khi úp trên sân]: Phe ta chịu thiệt hại LP -> đưa lá bài này vào Mộ, ngăn chặn thiệt hại và bảo vệ LP lượt này. [Khi trên tay]: Sân ta trống và đối thủ gây thiệt hại -> đưa lá bài này vào Mộ, ngăn chặn thiệt hại và bảo vệ LP lượt này.",
+		[56879] = "Huyền Hỏa Giám",
+		[56880] = "Huyền Hỏa Giám-Trận Pháp Hộ Thể",
+		[56881] = "Khi úp trên sân: Phe ta chịu thiệt hại LP sẽ kích hoạt, đưa lá bài này vào Mộ; ngăn chặn thiệt hại đó và trong lượt này phe ta không chịu thêm bất kì thiệt hại nào.",
+		[56920] = "Huyền Hỏa Giám-Hộ Mệnh",
+		[56921] = "Khi trên tay và trên sân phe ta không có bài: Khi đối phương gây thiệt hại cho phe ta, đưa lá bài này vào Mộ; ngăn chặn thiệt hại đó và trong lượt này phe ta không chịu thêm bất kì thiệt hại nào.",
+		-- Tru tien kiem (21139) & skills (14652, 14668, 14669, 14670, 14671)
+		[56882] = "Tru Tiên Kiếm",
+		[56883] = "Phép trang bị: Trang bị cho quái Chiến Binh/Phù Thủy. Quái trang bị tăng 5000 Công, nhận [Quá Tải], [Liên Trảm], và nhận Tường Chắn Quái/Phép/Bẫy. Sau mỗi lần tấn công: Quái trang bị giảm 1000 Công và Điểm Gốc phe ta chịu 1000 thiệt hại. Hết lượt: quái trang bị tự loại bỏ.",
+		[56884] = "Tru Tiên Kiếm",
+		[56885] = "Tru Tiên Kiếm-Trảm Tiên Diệt Ma",
+		[56886] = "Phép trang bị: Trang bị dành cho quái Chiến Binh hoặc Phù Thủy trên sân phe ta. Quái trang bị tăng 5000 Điểm Tấn Công.",
+		[56922] = "Tru Tiên Kiếm-Quá Tải",
+		[56923] = "Quái trang bị nhận được kỹ năng [Quá Tải]: Khi tấn công quái thủ có DEF thấp hơn ATK của nó, gây sát thương chênh lệch cho đối thủ. Hết lượt: tự loại bỏ.",
+		[56924] = "Tru Tiên Kiếm-Liên Trảm",
+		[56925] = "Quái trang bị nhận được kỹ năng [Liên Trảm]: Có thể tấn công mỗi quái trên sân đối thủ 1 lần; không thể tấn công trực tiếp đối thủ.",
+		[56926] = "Tru Tiên Kiếm-Kiếm Khí Hộ Thể",
+		[56927] = "Quái trang bị nhận được Tường Chắn Quái Thú, Ma Pháp và Cạm Bẫy liên tục trong thời gian trang bị.",
+		[56928] = "Tru Tiên Kiếm-Phệ Hồn Phản Phệ",
+		[56929] = "Sau mỗi lần quái trang bị tấn công: Giảm 1000 Điểm Tấn Công và Điểm Gốc phe ta chịu 1000 thiệt hại.",
+		[39222] = "Quá Tải",
+		[39223] = "Khi quái này tấn công quái thủ có DEF thấp hơn ATK của nó, gây sát thương chênh lệch cho đối thủ. Hết lượt: tự loại bỏ.",
+		[36638] = "Liên Trảm",
+		[36639] = "Có thể tấn công mỗi quái trên sân đối thủ 1 lần; không thể tấn công trực tiếp đối thủ.",
+		-- Modified cards
+		[38702] = "Chuẩn Bị Liên Trảm",
+		[38703] = "Chủ động: Bản thân chưa hành động có thể dùng. Chỉ lượt này; nhận được “Liên Trảm”; sau khi kích hoạt, các quái vật khác ở phe bạn không thể tấn công.",
+		[36400] = "Quái Tộc Rồng 8 Sao x3.",
+		[53262] = "Mắt Xanh-Tia Sáng",
+		[53263] = "Kỹ năng chủ động bộ bài Extra: Mỗi lượt chỉ 1 lần. Hi sinh bản thân và 1 <Rồng Trắng Mắt Xanh> từ bộ bài phe ta; chọn 1 lá bài trên sân đối thủ đưa vào mộ.",
+		[49312] = "Mắt Xanh-Tân Sinh",
+		[49313] = "Chủ động: Bản thân bài này chưa tấn công sẽ có thể dùng. Hi sinh bản thân; chọn và Triệu Hồi Đặc Biệt 1 quái có từ khóa “Mắt Xanh” từ bộ bài thêm phe ta; sau khi kích hoạt, phe ta chỉ có thể triệu hồi/triệu hồi đặc biệt quái có từ khóa “Mắt Xanh”.",
+		[53162] = "Ngân Hà-Chiến Ý",
+		[53163] = "Mỗi lượt tối đa 2 lần. Khi bài này nằm trên tay; khi đối thủ Triệu Hồi Đặc Biệt quái sẽ kích hoạt. Hi sinh bản thân; vô hiệu hóa và phá hủy quái đối thủ (xuyên thấu “Tường Chắn Quái”); nếu trên sân phe ta có quái có từ khóa “Ngân Hà”, “Ánh Sáng” hoặc “Sóng Ánh Sáng”, ngẫu nhiên lấy 1 <Rồng Chiến Ngân Hà> hoặc 1 quái có từ khóa “Ngân Hà”·“Ánh Sáng”·“Sóng Ánh Sáng” từ bộ bài phe ta vào tay.",
+		[56842] = "Khi có mặt trên sân, quái thú đối phương được Triệu Hồi hoặc Triệu Hồi Đặc Biệt sẽ bị khóa trong thế phòng thủ 1 lượt (không thể đổi tư thế trong lượt đó). Nếu trên sân phe ta có <Quỷ Lệ>, lá bài này có thể Triệu Hồi Thường mà không cần quái tế, đồng thời nhận tường chắn quái/phép/bẫy.",
+		[56887] = "Đạo Huyền",
+		[56888] = "Không thể Triệu Hồi Thường. Có thể Triệu Hồi Đặc Biệt từ trên tay bằng cách hiến tế 2 quái thú [Phù Thủy] trên sân. Khi lên sân: lấy 1 [Tru Tiên Kiếm] từ Bộ bài lên tay. [Kích hoạt trên sân - 1 lần/lượt]: Trục xuất 1 Ma pháp/Cạm bẫy trong Mộ -> phá hủy 1 lá bài trên sân đối phương (xuyên tường). [Kích hoạt trên sân - 1 lần/lượt, khi trang bị Tru Tiên Kiếm]: Tiêu diệt toàn bộ quái thú đối phương (xuyên tường), đưa bản thân vào Mộ -> Triệu Hồi Đặc Biệt [Đạo Huyền Tâm Ma] từ Bộ bài/Tay/Mộ.",
+		[56889] = "Đạo Huyền",
+		[56890] = "Đạo Huyền-Chân Nhân Quy Tắc",
+		[56891] = "Không thể Triệu Hồi Thường. Hiến tế 2 [Phù Thủy] trên sân để Triệu Hồi Đặc Biệt từ trên tay.",
+		[56892] = "Đạo Huyền-Chấp Chưởng Tru Tiên",
+		[56893] = "Khi xuất hiện trên sân, lấy 1 [Tru Tiên Kiếm] từ Bộ bài lên tay.",
+		[56894] = "Đạo Huyền-Thanh Vân Kiếm Khí",
+		[56895] = "1 lần/lượt: Trục xuất 1 Ma pháp/Cạm bẫy trong Mộ để phá hủy 1 lá trên sân đối thủ (xuyên tường quái thú).",
+		[56896] = "Đạo Huyền-Tru Tiên Kiếm Trận",
+		[56897] = "1 lần/lượt, khi trang bị Tru Tiên Kiếm: Phá hủy toàn bộ quái thú đối thủ (xuyên tường), đưa bản thân vào Mộ để Triệu Hồi Đặc Biệt [Đạo Huyền Tâm Ma] từ Bộ bài, Tay hoặc Mộ.",
+		[56898] = "Đạo Huyền Tâm Ma",
+		[56899] = "Không thể Triệu Hồi Thường hoặc Triệu Hồi Đặc Biệt trừ hiệu ứng của [Đạo Huyền]. Khi lên sân: Tiêu diệt toàn bộ quái thú khác trên sân ta, đồng thời nhận tường chắn Quái thú. Tối đa 3 lần 1 lượt: Khi đối thủ kích hoạt Ma pháp/Cạm bẫy -> Vô hiệu hóa và phá hủy lá đó, bản thân nhận 500 Công, phe ta nhận 500 sát thương. Bản thân không thể bị phá hủy bởi chiến đấu. Cuối mỗi lượt: Điểm gốc của ta nhận 1000 sát thương; nếu Điểm gốc <= 1000, trục xuất lá này.",
+		[56900] = "Đạo Huyền Tâm Ma",
+		[56901] = "Tâm Ma-Nhập Ma Tẫn Diệt",
+		[56902] = "Khi lên sân: Phá hủy toàn bộ quái thú khác trên sân ta, nhận khiên chắn Quái thú.",
+		[56903] = "Tâm Ma-Ma Huyết Thao Thiên",
+		[56904] = "Tối đa 3 lần 1 lượt: Khi đối thủ kích hoạt Ma pháp/Cạm bẫy: Vô hiệu và phá hủy lá đó, bản thân nhận 500 Công, phe ta nhận 500 thiệt hại.",
+		[56905] = "Tâm Ma-Bất Diệt Ma Thân",
+		[56906] = "Bản thân không thể bị tiêu diệt bởi chiến đấu.",
+		[56907] = "Tâm Ma-Phệ Hồn Phản Phệ",
+		[56908] = "Cuối mỗi lượt, trừ 1000 Điểm gốc của ta. Nếu Điểm gốc <= 1000, trục xuất lá này.",
+		[56909] = "Bích Dao",
+		[56910] = "[Kích hoạt trên tay - 1 lần/lượt]: Bỏ 1 lá bài trên tay vào Mộ -> Triệu Hồi Đặc Biệt lá này lên sân. [Kích hoạt trên sân - 1 lần/lượt]: Lấy 1 [Đọa Nhập Ma Đạo] từ Bộ bài lên tay. [Hiệu ứng trên tay]: Khi có [Quỷ Lệ] trên sân ta và đối thủ kích hoạt Ma pháp/Cạm bẫy -> đưa lá này từ tay vào Mộ để vô hiệu hóa và phá hủy lá đó. [Kích hoạt trong Mộ - 1 lần/lượt]: Khi có [Quỷ Lệ] trên sân -> trục xuất lá này khỏi Mộ, tất cả [Quỷ Lệ] trên sân tăng 1000 Công.",
+		[56911] = "Bích Dao",
+		[56912] = "Bích Dao-Si Tình Tương Phùng",
+		[56913] = "1 lần/lượt trên tay: Bỏ 1 lá bài trên tay vào Mộ để Triệu Hồi Đặc Biệt lá này lên sân.",
+		[56914] = "Bích Dao-Dẫn Đạo Nhập Ma",
+		[56915] = "1 lần/lượt trên sân: Lấy 1 lá [Đọa Nhập Ma Đạo] từ Bộ bài lên tay.",
+		[56916] = "Bích Dao-Si Tình Chú",
+		[56917] = "Trên tay khi có [Quỷ Lệ] trên sân: Đưa vào Mộ để vô hiệu hóa Ma pháp/Cạm bẫy đối phương.",
+		[56918] = "Bích Dao-Hồn Về Thương Tâm",
+		[56919] = "1 lần/lượt trong Mộ khi có [Quỷ Lệ] trên sân: Trục xuất bản thân để tăng 1000 Công cho tất cả [Quỷ Lệ].",
+		-- Thu than (12320) & skills (14676, 14672, 14673, 14674, 14675)
+		[56930] = "Thú thần",
+		[56931] = "Thú thần",
+		[56932] = "Lá bài này không thể triệu hồi đặc biệt, chỉ có thể triệu hồi thường bằng cách hiến tế 3 quái thú.\nKĩ năng chủ động 1: 1 lượt 1 lần, chọn: lấy 1 quái thú nghi lễ có từ khóa “Tru tiên” từ bộ bài lên tay, sau đó lấy thêm 1 lá <Thần khiển> từ mộ bài/bộ bài lên tay.\nKĩ năng chủ động 2 (kĩ năng này và kĩ năng chủ động 1 chỉ có thể dùng 1 loại): Trong lượt này nhận atk bằng số LP của đối thủ hiện có.\nNhận khiên quái, phép, bẫy.\nKhi trên sân phe ta còn quái khác, lá bài này không thể bị chọn làm mục tiêu.",
+		[56933] = "Thú Thần-Hiến Tế Thần Thú",
+		[56934] = "Lá bài này không thể triệu hồi đặc biệt, chỉ có thể triệu hồi thường bằng cách hiến tế 3 quái thú.",
+		[56935] = "Thú Thần-Tru Tiên Nghi Lễ",
+		[56936] = "1 lượt 1 lần, chọn: lấy 1 quái thú nghi lễ có từ khóa “Tru tiên” từ bộ bài lên tay, sau đó lấy thêm 1 lá <Thần khiển> từ mộ bài/bộ bài lên tay.",
+		[56937] = "Thú Thần-Thần Lực Bất Diệt",
+		[56938] = "1 lượt 1 lần (dùng chung lượt với kỹ năng chủ động 1): Trong lượt này nhận ATK bằng số LP của đối thủ hiện có.",
+		[56939] = "Thú Thần-Tam Giới Tường Chắn",
+		[56940] = "Khi có mặt trên sân: Nhận tường chắn quái, phép và bẫy.",
+		[56941] = "Thú Thần-Thần Uy Hộ Thể",
+		[56942] = "Khi trên sân phe ta còn quái khác, lá bài này không thể bị chọn làm mục tiêu.",
+		-- TrickStar-Divaridis & TrickStar-Xuat Hien (14218)
+		[52523] = "Khi bài này được Triệu Hồi Đặc Biệt; khi lên sân; bài này tăng tấn công bằng tổng số quái có từ khóa “TrickStar” đang có mặt trong mộ/mộ bài loại bỏ phe ta x[1] (bỏ qua “Tường Chắn Quái”); giúp phe ta tăng 1/2 mức LP tương ứng.",
+		-- TrickStar Rebalance (14200, 14207, 14222, 14235, 14272)
+		[52487] = "Khi bài này nằm trong mộ; ngoại trừ giai đoạn rút bài; đối thủ có bài vào tay sẽ có thể dùng; đối thủ chịu [1] LP.",
+		[52501] = "Khi bài này nằm trong mộ; khi đối thủ dùng kỹ năng tay chủ động sẽ kích hoạt; khiến đối thủ mất [1] LP.",
+		[52531] = "Chủ động: Mỗi lượt chỉ 1 lần. Xóa 1 Chỉ Thị XYZ đang có; mỗi khi đối thủ dùng bài Phép/Bẫy; trừ [1] LP của đối thủ; hiệu quả tồn tại cho đến khi đối thủ kết thúc lượt kế.",
+		[52557] = "Khi bài này nằm trong mộ; phe ta bị mất LP từ chiến đấu trực tiếp sẽ có thể dùng. Loại bỏ bản thân bài này; giảm 1 nửa sát thương lần này.",
+		[52631] = "1 lần trong một vòng. Khi ở trên sân; khi phe của bạn triệu hồi một Quái Vật liên kết phía trên link[1]; hãy rút một lá bài.",
+		-- Kỳ - Phàm (40727) & Kỹ năng (14677, 14678, 14679, 14680, 14681, 14682, 14683)
+		[56943] = "Kỳ - Phàm",
+		[56944] = "[Quái vật Dung Hợp]\n<Quỷ Lệ> + <Kỳ Baby>\n[Kỹ năng chủ động bộ bài thêm]: Chọn nguyên liệu dung hợp từ bài trên tay/trên sân đưa vào Mộ -> Triệu hồi Dung Hợp lá bài này.\n[Kỹ năng chủ động trên sân - 1 lần/lượt]: Lấy 1 lá bài quái thú có từ khóa \"Tru tiên\" từ Bộ bài lên tay.\nKhi lên sân: Nhận 1 tầng Tường chắn Năng lượng Quái, Phép, Bẫy.\nKhi trên sân: Quái thú đối phương được Triệu Hồi/Triệu Hồi Đặc Biệt sẽ bị khóa trong thế phòng thủ 1 lượt; đồng thời phe ta hồi LP bằng [Số sao quái đó x 100].\nNếu LP phe ta < 8000: Lá bài này nhận Công bằng [8000 - LP hiện tại].\nQuỷ Lệ-Kim Cương Bất Hoại: Không thể bị phá hủy bởi chiến đấu, 1 lượt 1 lần bỏ qua 1 lần phá hủy bởi hiệu ứng thẻ bài.\nQuỷ Lệ-Hấp Huyết Vô Tình: Khi tiêu diệt quái thú hoặc gây sát thương chiến đấu, phe ta hồi LP tương ứng.\nKhi lá bài này bị đối phương phá hủy: Triệu Hồi Đặc Biệt <Quỷ Lệ> và <Kỳ Baby> từ Mộ lên sân.",
+		[56945] = "Kỳ - Phàm",
+		[56946] = "Kỳ Phàm-Dung Hợp Kỳ Linh",
+		[56947] = "Kỹ năng chủ động bộ bài thêm: Chọn nguyên liệu dung hợp (<Quỷ Lệ> + <Kỳ Baby>) từ bài trên tay hoặc trên sân đưa vào Mộ để Triệu Hồi Dung Hợp lá bài này.",
+		[56948] = "Kỳ Phàm-Triệu Tập Tru Tiên",
+		[56949] = "1 lượt 1 lần: Chọn và lấy 1 lá bài quái thú có từ khóa \"Tru tiên\" từ Bộ bài lên tay.",
+		[56950] = "Kỳ Phàm-Nghịch Cảnh Huyết Nộ",
+		[56951] = "Nếu LP phe ta thấp hơn 8000, lá bài này nhận thêm Công bằng 8000 - LP hiện tại của phe ta.",
+		[56952] = "Quỷ Lệ-Kim Cương Bất Hoại",
+		[56953] = "Không thể bị phá hủy bởi chiến đấu. 1 lượt 1 lần được bỏ qua 1 lần phá hủy bởi hiệu ứng thẻ bài.",
+		[56954] = "Kỳ Phàm-Thiên Linh Hóa Sinh",
+		[56955] = "Khi có mặt trên sân: Mỗi khi đối phương Triệu Hồi hoặc Triệu Hồi Đặc Biệt quái thú, phe ta hồi LP bằng số sao của quái thú đó x 100.",
+		[56956] = "Quỷ Lệ-Hấp Huyết Vô Tình",
+		[56957] = "Khi tiêu diệt quái thú đối phương trong chiến đấu hoặc gây sát thương chiến đấu, phe ta được hồi phục lượng LP tương ứng.",
+		[56958] = "Kỳ Phàm-Phục Sinh Tương Ứng",
+		[56959] = "Khi lá bài này bị đối phương phá hủy: Triệu Hồi Đặc Biệt <Quỷ Lệ> và <Kỳ Baby> từ Mộ lên sân.",
+		-- Bình Phàm (30593) & Kỹ năng (14684, 14685, 14686)
+		[56960] = "Bình Phàm",
+		[56961] = "[Bẫy Vĩnh Cửu]\n+ Kĩ năng chủ động 1 (kĩ năng này và kĩ năng chủ động 2 chỉ có thể kích hoạt 1 loại mỗi lượt): Lấy 1 lá bài có từ khóa \"Tru tiên\" từ bộ bài lên tay.\n+ Kĩ năng chủ động 2 (kĩ năng này và kĩ năng chủ động 1 chỉ có thể kích hoạt 1 loại mỗi lượt): Chọn và triệu hồi đặc biệt <Quỷ Lệ> hoặc <Kỳ Baby> từ Mộ hoặc bài trên tay lên sân.\n+ Khi lá bài này vào Mộ từ trên sân: Lấy 1 lá [Huyền Hỏa Giám] từ Bộ bài lên tay.",
+		[56962] = "Bình Phàm",
+		[56963] = "Bình Phàm-Tầm Đạo Tru Tiên",
+		[56964] = "1 lượt 1 lần (chỉ có thể chọn 1 trong 2 kĩ năng mỗi lượt): Lấy 1 lá bài có từ khóa \"Tru tiên\" từ bộ bài lên tay.",
+		[56965] = "Bình Phàm-Triệu Tập Tiên Ma",
+		[56966] = "1 lượt 1 lần (chỉ có thể chọn 1 trong 2 kĩ năng mỗi lượt): Chọn và triệu hồi đặc biệt <Quỷ Lệ> hoặc <Kỳ Baby> từ Mộ hoặc bài trên tay lên sân.",
+		[56967] = "Bình Phàm-Truyền Thừa Huyền Hỏa",
+		[56968] = "Khi lá bài này vào Mộ từ trên sân: Lấy 1 lá [Huyền Hỏa Giám] từ Bộ bài lên tay.",
+		-- Tiểu Bạch (12321) & Kỹ năng (14687, 14688, 14689, 14690)
+		[56969] = "Tiểu Bạch",
+		[56970] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (trên tay hoặc trong mộ - 1 lượt 1 lần): Đưa 1 lá [Huyền Hỏa Giám] từ trên tay hoặc trên sân vào Mộ; Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi lên sân: Nhận 1 tầng Khiên Chắn Quái Thú.\n+ Kĩ năng chủ động (trên sân - 1 lượt 1 lần): Chiếm quyền điều khiển 1 quái thú trên sân đối thủ (xuyên thấu Khiên Chắn Quái).\n+ Khi lá bài này bị phá hủy: Loại bỏ 1 lá [Huyền Hỏa Giám] trong Mộ thay vì bị phá hủy.",
+		[56971] = "Tiểu Bạch",
+		[56972] = "Tiểu Bạch-Huyền Hỏa Giáng Thế",
+		[56973] = "1 lượt 1 lần (trên tay hoặc trong mộ): Đưa 1 lá [Huyền Hỏa Giám] trên tay hoặc trên sân vào Mộ; Triệu Hồi Đặc Biệt lá bài này lên sân.",
+		[56974] = "Tiểu Bạch-Cửu Vĩ Hộ Thể",
+		[56975] = "Khi lên sân: Nhận 1 tầng Khiên Chắn Quái Thú.",
+		[56976] = "Tiểu Bạch-Mị Hoặc Chúng Sinh",
+		[56977] = "1 lượt 1 lần: Chiếm quyền điều khiển 1 quái thú trên sân đối phương (xuyên thấu Khiên Chắn Quái).",
+		[56978] = "Tiểu Bạch-Huyền Hỏa Thế Thân",
+		[56979] = "Khi lá bài này bị phá hủy: Loại bỏ 1 lá [Huyền Hỏa Giám] trong Mộ thay vì bị phá hủy.",
+		-- Quỷ Lệ - Sát (40728) & Kỹ năng (14691, 14692, 14693)
+		[56980] = "Quỷ Lệ - Sát",
+		[56981] = "[Quái thú Xyz / Hiệu Ứng]\n2 quái thú 7 sao có từ khóa \"Tru tiên\"\n+ Huyết Đao: Khi tiêu diệt quái thú trong chiến đấu, bản thân tăng Công.\n+ Đoạt Ý Chí: Khi tiêu diệt quái thú trong chiến đấu, loại bỏ mục tiêu.\n+ Đòn Ảo Ảnh: Tăng sức tấn công khi giao chiến.\n+ Xuyên Phá: Tấn công quái thú ở thế thủ gây sát thương xuyên thấu.\n+ Khi lá bài này bị ảnh hưởng bởi hiệu quả của đối phương: Phe ta nhận 500 thiệt hại, bỏ qua hiệu ứng đó.\n+ Khi lá bài này còn chỉ thị Xyz: Không thể bị phá hủy.\n+ Khi lá bài này bị tấn công và nhận thiệt hại: Tiêu hao 1 chỉ thị Xyz, chuyển toàn bộ thiệt hại thành hồi phục LP x2 lần.",
+		[56982] = "Quỷ Lệ - Sát",
+		[56983] = "Q.Lệ Sát-Nghịch Mệnh Hộ Thân",
+		[56984] = "Khi lá bài này bị ảnh hưởng bởi hiệu quả của đối phương: Phe ta nhận 500 thiệt hại, bỏ qua hiệu ứng đó.",
+		[56985] = "Q.Lệ Sát-Bất Diệt Xyz",
+		[56986] = "Khi lá bài này còn chỉ thị Xyz: Không thể bị phá hủy.",
+		[56987] = "Q.Lệ Sát-Hóa Huyết Hồi Sinh",
+		[56988] = "Khi lá bài này bị tấn công và nhận thiệt hại: Tiêu hao 1 chỉ thị Xyz, chuyển toàn bộ thiệt hại thành hồi phục LP x2 lần.",
+		-- Lôi Oa (12322) & Kỹ năng (14694, 14695)
+		[56989] = "Lôi Oa",
+		[56990] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (tay - mộ - 1 lượt 1 lần): Khi trên sân phe ta có quái thú có từ khóa \"Tiên nghịch\", có thể kích hoạt: Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ 1 lượt 1 lần: Khi đối phương Triệu Hồi hoặc Triệu Hồi Đặc Biệt quái thú, kích hoạt: Vô hiệu hóa toàn bộ hiệu ứng của quái thú đó trong 1 lượt.",
+		[56991] = "Lôi Oa",
+		[56992] = "Lôi Oa-Lôi Trạch Triệu Hồi",
+		[56993] = "1 lượt 1 lần: Trên sân phe ta có quái có từ khóa \"Tiên nghịch\" có thể kích hoạt, Triệu Hồi Đặc Biệt lá bài này từ tay hoặc mộ lên sân.",
+		[56994] = "Lôi Oa-Tê Liệt Định Thân",
+		[56995] = "1 lượt 1 lần: Khi đối phương Triệu Hồi/Triệu Hồi Đặc Biệt, kích hoạt: Vô hiệu hiệu ứng của quái đó trong 1 lượt.",
+		-- Lôi Thú (12323) & Kỹ năng (14696, 14697, 14698)
+		[56996] = "Lôi Thú",
+		[56997] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng tay: 1 lượt 1 lần, khi lá bài này nằm trên tay, đối phương sử dụng bài Phép/Bẫy sẽ kích hoạt: Vô hiệu và phá hủy lá bài đó, sau đó Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi trên sân phe ta không có quái thú thuộc tính \"Lôi\", có thể Triệu Hồi Thường lá bài này không cần vật tế.\n+ Kĩ năng chủ động mộ: Lấy 1 quái thú chủng tộc \"Sấm sét\" có phẩm chất UR trở xuống từ Bộ Bài lên tay.",
+		[56998] = "Lôi Thú",
+		[56999] = "Lôi Thú-Lôi Đình Phản Kích",
+		[57000] = "1 lượt 1 lần: Khi trên tay, đối phương dùng Phép/Bẫy sẽ kích hoạt: Vô hiệu và phá hủy lá đó, sau đó Triệu Hồi Đặc Biệt lá bài này lên sân.",
+		[57001] = "Lôi Thú-Lôi Giáng Tự Nhiên",
+		[57002] = "Khi trên sân phe ta không có quái thuộc tính \"Lôi\", có thể Triệu Hồi Thường không cần vật tế.",
+		[57003] = "Lôi Thú-Dẫn Lôi Nhập Thủ",
+		[57004] = "Kĩ năng chủ động mộ: Lấy 1 quái thú chủng tộc \"Sấm sét\" có phẩm chất UR trở xuống từ Bộ Bài lên tay.",
+		-- Huyết Tổ (12324) & Kỹ năng (14699, 14700, 14701, 14702)
+		[57005] = "Huyết Tổ",
+		[57006] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (tay - mộ): Hi sinh 1 nửa LP, Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi lên sân: Nhận Điểm Tấn Công (ATK) bằng số LP hiện có của phe ta.\n+ Kĩ năng chủ động (trên sân - 1 lượt 1 lần): Chọn hiến tế tối đa 2 quái thú trên sân, phe ta hồi phục LP bằng tổng ATK của các quái thú bị hiến tế.\n+ Kĩ năng chủ động (mộ loại bỏ): Trả lá bài này về Bộ Bài, phe ta rút 1 lá.",
+		[57007] = "Huyết Tổ",
+		[57008] = "Huyết Tổ-Huyết Tế Trùng Sinh",
+		[57009] = "Kĩ năng chủ động tay - mộ: Hi sinh 1 nửa LP, Triệu Hồi Đặc Biệt lá bài này lên sân.",
+		[57010] = "Huyết Tổ-Huyết Khí Thao Thiên",
+		[57011] = "Khi lên sân: Nhận ATK bằng số LP hiện có của phe ta.",
+		[57012] = "Huyết Tổ-Huyết Năng Thôn Phệ",
+		[57013] = "Kĩ năng chủ động trên sân: 1 lượt 1 lần, chọn hiến tế tối đa 2 quái trên sân, phe ta nhận LP bằng ATK của quái bị hiến tế.",
+		[57014] = "Huyết Tổ-Huyết Hồn Quy Hoàn",
+		[57015] = "Kĩ năng chủ động mộ loại bỏ: Trả lá bài này về Bộ Bài, phe ta rút 1 lá.",
+		-- Luyện hồn tông (21134) & Kỹ năng (7552, 7834, 7835, 7836)
+		[56781] = "Luyện hồn tông",
+		[56782] = "[Bài Phép Môi Trường]\n①: Quái tộc Phù Thủy thuộc tính Ám trên sân phe ta tăng ATK bằng số quái trong mộ 2 bên x 100.\n②: Chủ động: 1 lượt 1 lần, chọn 1 quái trên tay hoặc trên sân phe ta đưa vào mộ, sau đó lấy ngẫu nhiên 1 quái tộc Phù Thủy thuộc tính Ám từ bộ bài lên tay.\n③: Khi lá bài này bị phá hủy từ trên sân: Loại bỏ tất cả quái thú trong mộ 2 bên, phe ta và phe địch chịu thiệt hại bằng số quái bị loại bỏ x 100.",
+		[56783] = "Bài phép môi trường.",
+		[56784] = "Luyện hồn tông",
+		[56785] = "Hồn Lực Cường Hóa",
+		[56786] = "Quái tộc Phù Thủy thuộc tính Ám trên sân phe ta tăng ATK bằng số quái trong mộ 2 bên x 100.",
+		[56787] = "Luyện Hồn Thu Nạp",
+		[56788] = "Chủ động: 1 lượt 1 lần, chọn 1 quái trên tay hoặc trên sân phe ta đưa vào mộ, sau đó lấy ngẫu nhiên 1 quái tộc Phù Thủy thuộc tính Ám từ bộ bài lên tay.",
+		[56789] = "Luyện Hồn Bộc Phá",
+		[56790] = "Khi lá bài này bị phá hủy từ trên sân: Loại bỏ tất cả quái thú trong mộ 2 bên, phe ta và phe địch chịu thiệt hại bằng số quái bị loại bỏ x 100.",
+		-- Độn Thiên (12325) & Kỹ năng (14703, 14704, 14705)
+		[57016] = "Độn Thiên",
+		[57017] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động trên tay (1 lượt 1 lần): Hiến tế 1 quái thú Phù Thủy thuộc tính Ám trên sân phe ta, Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Kĩ năng chủ động trên sân (1 lượt 1 lần): Lấy 1 lá <Luyện hồn tông> từ Bộ Bài lên tay.\n+ Khi trên sân phe ta có <Luyện hồn tông>: Nhận Tường Chắn Quái, Phép, Bẫy.",
+		[57018] = "Độn Thiên",
+		[57019] = "Độn Thiên-Hiến Tế Xuất Thế",
+		[57020] = "Kĩ năng chủ động tay: 1 lượt 1 lần, hiến tế 1 quái Phù Thủy thuộc tính Ám trên sân phe ta, Triệu Hồi Đặc Biệt lá bài này lên sân.",
+		[57021] = "Độn Thiên-Luyện Hồn Tông Lệnh",
+		[57022] = "Kĩ năng chủ động trên sân: 1 lượt 1 lần, lấy 1 lá <Luyện hồn tông> từ Bộ Bài lên tay.",
+		[57023] = "Độn Thiên-Luyện Hồn Hộ Thể",
+		[57024] = "Khi trên sân phe ta có <Luyện hồn tông>: Nhận Tường Chắn Quái, Phép, Bẫy.",
+		-- Vương Lâm - bản tôn cổ thần (12326) & Kỹ năng (14706, 14707, 14708, 14709, 14710)
+		[57025] = "Vương Lâm - bản tôn cổ thần",
+		[57026] = "[Quái thú Hiệu Ứng]\n+ Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy, [Miệt Thị] và 1 \"chỉ thị cổ thần\" (tối đa 9).\n+ Khi trở thành mục tiêu tấn công: Vô hiệu hóa hiệu ứng của quái tấn công.\n+ 1 lượt 1 lần, đối phương kích hoạt bài phép/bẫy sẽ kích hoạt: Vô hiệu và đưa lá bài đó vào mộ phe ta, nhận 1 \"chỉ thị cổ thần\".\n+ Kĩ năng chủ động: 1 lượt 1 lần, đưa 1 bài phép/bẫy trên tay phe ta vào mộ, nhận 1 \"chỉ thị cổ thần\".\n+ Tăng ATK/DEF bằng số \"chỉ thị cổ thần\" x 300.\n+ Nếu có từ 3 \"chỉ thị cổ thần\" trở lên: Nhận Khiên Chắn Quái, Phép, Bẫy.\n+ Nếu có từ 5 \"chỉ thị cổ thần\" trở lên: Nhân đôi giá trị ATK/DEF nhận được từ \"chỉ thị cổ thần\".\n+ Nếu có từ 7 \"chỉ thị cổ thần\" trở lên: Đối phương triệu hồi/triệu hồi đặc biệt quái <= 4 sao sẽ bị mất hiệu quả quái.\n+ Nếu có 9 \"chỉ thị cổ thần\": Đối phương triệu hồi/triệu hồi đặc biệt quái có ATK <= 2000 sẽ lập tức bị tiêu diệt.",
+		[57027] = "Vương Lâm - bản tôn cổ thần",
+		[57028] = "Bản Tôn-Cổ Thần Hộ Thể",
+		[57029] = "Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy, 1 \"chỉ thị cổ thần\" (tối đa 9) và [Miệt Thị].",
+		[57030] = "Bản Tôn-Cổ Thần Chi Lực",
+		[57031] = "Tăng ATK/DEF bằng số \"chỉ thị cổ thần\" x 300 (từ 5 chỉ thị trở lên x2 thành x600). Từ 3 chỉ thị trở lên: Nhận Khiên Chắn Quái, Phép, Bẫy.",
+		[57032] = "Bản Tôn-Cổ Thần Nghịch Phạt",
+		[57033] = "1 lượt 1 lần, khi đối phương dùng Phép/Bẫy: Vô hiệu và đưa lá đó vào Mộ phe ta, nhận 1 \"chỉ thị cổ thần\". Khi bị tấn công: Vô hiệu hiệu ứng của quái tấn công.",
+		[57034] = "Bản Tôn-Tế Thần Nạp Khí",
+		[57035] = "Kỹ năng chủ động (1 lượt 1 lần): Đưa 1 bài Phép/Bẫy trên tay phe ta vào Mộ, nhận 1 \"chỉ thị cổ thần\" (tối đa 9).",
+		[57036] = "Bản Tôn-Cổ Thần Uy Áp",
+		[57037] = "Từ 7 chỉ thị trở lên: Đối phương triệu hồi quái <= 4 sao bị mất hiệu ứng. Có 9 chỉ thị: Đối phương triệu hồi quái ATK <= 2000 lập tức bị tiêu diệt.",
+		-- Lăng Thiên Hậu (40729) & Kỹ năng (14711, 14712, 14713, 14714)
+		[57038] = "Lăng Thiên Hậu",
+		[57039] = "2+ quái thú có từ khóa \"Thánh Kỵ\" (kể cả quái từ Bộ Bài Thêm)",
+		[57040] = "Lăng Thiên Hậu",
+		[57041] = "Lăng Thiên Hậu",
+		[57042] = "Lăng Thiên-Vương Khí",
+		[57043] = "Với mỗi bài Phép Trang Bị có từ khóa \"Thánh Kỵ\" được trang bị, tăng 500 ATK.",
+		[57044] = "Lăng Thiên-Liên Kích",
+		[57045] = "Có thể tấn công thêm 1 lần với mỗi lá Phép Trang Bị \"Thánh Kỵ\" được trang bị.",
+		[57046] = "Lăng Thiên-Khát Kiếm",
+		[57047] = "Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 2 Phép Trang Bị \"Thánh Kỵ\" khác nhau từ bộ bài lên tay.",
+		[57048] = "Lăng Thiên-Bản Mệnh Hàng Thế",
+		[57049] = "Khi lên sân: Thêm 3 lá <Lăng thiên kiếm khí - bản mệnh> lên tay.",
+		-- Lăng Thiên Kiếm Khí - Bản Mệnh (21140) & Kỹ năng (14715, 14716)
+		[57050] = "Lăng Thiên Kiếm Khí - Bản Mệnh",
+		[57051] = "[Phép Thường]\n+ 1 lượt tối đa 3 lần, khi lá bài này ở trên tay, quái thú có từ khóa \"Thánh Kỵ\" phe ta bị phá hủy sẽ kích hoạt: Đưa lá bài này vào Mộ: Phá hủy 1 quái trên sân đối thủ (xuyên qua Tường Chắn Quái); nếu trên sân đối thủ không có quái: Phá hủy 1 lá trên tay đối thủ; nếu đối thủ không có quái trên sân và không có bài trên tay: Đối thủ chịu 2000 thiệt hại.\n+ 1 lượt tối đa 3 lần: Chọn 1 quái thú có từ khóa \"Thánh Kỵ\" trong Mộ phe ta, triệu hồi đặc biệt lên sân ở tư thế phòng thủ (không thể đổi tư thế trong lượt này).",
+		[57052] = "Kiếm Khí-Bản Mệnh",
+		[57053] = "Lăng Thiên Kiếm Khí",
+		[57054] = "Kiếm Khí-Hộ Mệnh Phản Kích",
+		[57055] = "1 lượt tối đa 3 lần, khi quái \"Thánh Kỵ\" bị phá hủy: Đưa lá này vào Mộ, tiêu diệt 1 quái đối phương (xuyên tường) / hủy 1 bài trên tay / gây 2000 sát thương.",
+		[57056] = "Kiếm Khí-Trọng Chấn Hồi Quy",
+		[57057] = "1 lượt tối đa 3 lần: Triệu hồi đặc biệt 1 quái \"Thánh Kỵ\" từ Mộ ở tư thế thủ (không thể đổi tư thế lượt này).",
+		-- Đỗ kiến - tiên vệ (12327) & Kỹ năng (14717, 14718)
+		[57058] = "Đỗ kiến - tiên vệ",
+		[57059] = "[Quái thú Hiệu Ứng]\n+ Kỹ năng tay chủ động: Khi trên sân phe ta không có quái: Triệu Hồi Đặc Biệt lá bài này từ trên tay.\n+ Khi có mặt trên sân: Đối phương không thể tấn công quái thú khác ngoài lá bài này.\n+ Khi bị phá hủy trong chiến đấu và đưa vào Mộ: Đối phương bỏ ngẫu nhiên 1 lá bài trên tay.\n+ Khi bài này rời sân hoặc rời khỏi bài trên tay và đưa vào Mộ: Lá bài này sẽ bị loại bỏ.\n+ Bỏ qua hiệu ứng từ bài Quái thú, Phép thuật và Bẫy của đối thủ (Kháng Quái, Phép, Bẫy).",
+		[57060] = "Đỗ kiến - tiên vệ",
+		[57061] = "Tiên Vệ-Hàng Thế",
+		[57062] = "Kỹ năng tay chủ động: Khi trên sân phe ta không có quái sẽ có thể dùng; Triệu Hồi Đặc Biệt bài này từ bài trên tay.",
+		[57063] = "Tiên Vệ-Trụy Lạc",
+		[57064] = "Khi bị phá hủy trong chiến đấu và đưa vào Mộ; đối phương bỏ ngẫu nhiên 1 lá bài trên tay.",
+		-- Thác sâm (40730) & Kỹ năng (14719, 14720, 14721)
+		[57065] = "Thác sâm",
+		[57066] = "[Thần - Hiệu Ứng - XYZ]\n3 quái 8 sao có từ khóa \"Tiên nghịch\"\n+ Lá bài này có \"chỉ thị xyz\": Bị vô hiệu (không thể tấn công và hành động), bị hiệu ứng trói.\n+ Lá bài này không thể bị hiến tế.\n+ Khi vào Mộ sẽ bị loại bỏ.\n+ 1 lượt tối đa 3 lần: Khi trở thành mục tiêu hiệu quả đối phương, xóa 1 \"chỉ thị xyz\" vô hiệu và phá hủy bài phát động của đối phương.\n+ Kỹ năng chủ động (1 lượt 1 lần): Bỏ 1 chỉ thị xyz, đưa toàn bộ bài trên tay vào Mộ.\n+ Khi lá bài này không còn \"chỉ thị xyz\": Nhân đôi ATK/DEF (16000/16000), xóa hiệu ứng trói và nhận Khiên Chắn Quái, Phép, Bẫy.",
+		[57067] = "Thác sâm",
+		[57068] = "Thác Sâm-Phong Ấn Cổ Thần",
+		[57069] = "Có chỉ thị XYZ: Bị vô hiệu (không thể tấn công), nhận hiệu ứng trói. Không thể bị hiến tế. Vào Mộ bị loại bỏ. Khi hết chỉ thị XYZ: x2 ATK/DEF, nhận Khiên Chắn Quái, Phép, Bẫy.",
+		[57070] = "Thác Sâm-Nghịch Chuyển Thần Uy",
+		[57071] = "1 lượt tối đa 3 lần: Khi trở thành mục tiêu hiệu quả đối phương, bỏ 1 chỉ thị XYZ, vô hiệu và phá hủy bài phát động của đối phương.",
+		[57072] = "Thác Sâm-Diệt Thế Táng Lạc",
+		[57073] = "Kỹ năng chủ động (1 lượt 1 lần): Bỏ 1 chỉ thị XYZ, đưa toàn bộ bài trên tay vào Mộ.",
+		-- Đạo hóa hoàng tuyền (21141) & Kỹ năng (14722, 14738)
+		[57074] = "Đạo hóa hoàng tuyền",
+		[57075] = "[Phép Vĩnh Cửu]\n+ Khi lá bài này trên sân, và trên sân phe ta có <Vương Lâm - phân thân>: Đối phương không thể kích hoạt hiệu quả quái thú trong Mộ hoặc Mộ loại bỏ.\n+ Kỹ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ, triệu hồi đặc biệt 1 <12328> từ Mộ lên sân.",
+		[57076] = "Đạo hóa hoàng tuyền",
+		[57077] = "Đạo Hóa Hoàng Tuyền-Phong Tỏa",
+		[57078] = "Khi lá bài này trên sân và trên sân phe ta có Vương Lâm: Đối phương không thể kích hoạt hiệu quả quái thú trong Mộ hoặc Mộ loại bỏ.",
+		[57127] = "Đạo Hóa Hoàng Tuyền - Triệu Hồi",
+		[57128] = "Kỹ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ, triệu hồi đặc biệt 1 <12328> từ Mộ lên sân.",
+		-- Vương Lâm - phân thân (12328) & Kỹ năng (14723, 14724, 14725)
+		[57079] = "Vương Lâm - phân thân",
+		[57080] = "[Phù Thủy - Hiệu Ứng]\n+ Khi lên sân: Lấy 1 lá <Đạo hóa hoàng tuyền> từ bộ bài lên tay.\n+ Kỹ năng chủ động 1: Chọn 1 quái trên sân đối phương để loại bỏ (xuyên qua Tường Chắn Quái 12008), đối phương chịu thiệt hại bằng 1/2 điểm ATK của quái bị loại bỏ.\n+ Kỹ năng chủ động 2: Chọn 1 quái trong Mộ phe ta triệu hồi đặc biệt lên sân, phe ta rút 1 lá bài.\n(Kỹ năng chủ động 1 và 2 mỗi lượt chỉ được dùng 1 loại).",
+		[57081] = "Vương Lâm - phân thân",
+		[57082] = "Cực Cảnh-Tru Diệt Phá Trận",
+		[57083] = "Kỹ năng chủ động 1: Chọn 1 quái trên sân đối phương để loại bỏ (xuyên qua Tường Chắn Quái 12008), đối phương chịu thiệt hại bằng 1/2 điểm ATK của quái bị loại bỏ (dùng chung lượt với kỹ năng 2).",
+		[57084] = "Hoàng Tuyền-Luân Hồi Tái Sinh",
+		[57085] = "Kỹ năng chủ động 2: Chọn 1 quái trong Mộ phe ta triệu hồi đặc biệt lên sân, phe ta rút 1 lá bài (dùng chung lượt với kỹ năng 1).",
+		[57086] = "Phân Thân-Hoàng Tuyền Kêu Gọi",
+		[57087] = "Khi lên sân: Lấy 1 lá <Đạo hóa hoàng tuyền> từ Bộ bài lên tay.",
+		[57088] = "Tiên Nghịch Thần Thông-Hộ Mệnh",
+		[57089] = "Tường chắn Quái, Phép, Bẫy đặc biệt của hệ Tiên Nghịch.",
+		[36590] = "Cánh Bổ Nhào",
+		[36591] = "Khi tấn công; Quái Vật trên sân; tay hoặc mộ của đối thủ không thể kích hoạt hiệu ứng quái vật và đối thủ không thể kích hoạt hiệu ứng phép thuật hoặc bẫy trên sân.",
+		[36638] = "Liên Trảm",
+		[36639] = "Có thể tấn công mỗi quái trên sân đối thủ 1 lần; không thể tấn công trực tiếp đối thủ.",
+		-- Phô Lô Ti Nô (40731) & Kỹ năng (14727, 14728)
+		[57090] = "Phô Lô Ti Nô",
+		[57091] = "[Chiến Binh - Hiệu Ứng - Link 2]\n2 quái thú bất kì\n+ Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.\n+ Kỹ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Mặt ngửa: Nhận Cánh Bổ Nhào, Liên Trảm và tăng 500 ATK cho mỗi quái thú trên sân đối phương.\n- Mặt sấp: Nhận Khiên Chắn.",
+		[57092] = "Phô Lô Ti Nô",
+		[57093] = "Vũ Điệu Lãng Hoa",
+		[57094] = "Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.",
+		[57095] = "Thưởng Hoa Tung Xu",
+		[57096] = "Kỹ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Mặt ngửa: Nhận Cánh Bổ Nhào, Liên Trảm và tăng 500 ATK cho mỗi quái thú trên sân đối phương.\n- Mặt sấp: Nhận Khiên Chắn.",
+		-- Vương Lâm - Cổ yêu (40732) & Kỹ năng (14729, 14730)
+		[57097] = "Vương Lâm - Cổ yêu",
+		[57098] = "[Xác Sống - Hiệu Quả - Đồng Bộ]\n<Vương Lâm - Phân Thân> (12328) + 1 quái điều chỉnh có từ khóa \"Tiên nghịch\" trở lên.\n+ Kỹ năng chủ động bộ bài thêm: 1 lượt 1 lần, chọn 1 quái có từ khóa \"Tiên nghịch\" trên sân phe ta, quái đó nhận \"Nhịp Điệu Synchron\".\n+ Cánh Bổ Nhào: Khi tấn công, quái vật trên sân, tay hoặc mộ của đối thủ không thể kích hoạt hiệu ứng quái vật và đối thủ không thể kích hoạt hiệu ứng phép thuật hoặc bẫy trên sân.\n+ Không bị ảnh hưởng bởi hiệu ứng lá bài khác trong lượt được triệu hồi đồng bộ.\n+ Triệu hồi đồng bộ lá bài này không thể bị vô hiệu hóa.\n+ Khi bị phá hủy: Triệu hồi đặc biệt <Vương Lâm - Phân Thân> từ mộ bài lên sân.",
+		[57099] = "Vương Lâm - Cổ yêu",
+		[57100] = "Cổ Yêu-Đồng Bộ Kêu Gọi",
+		[57101] = "Kỹ năng chủ động bộ bài thêm (1 lượt 1 lần): Chọn 1 quái có từ khóa \"Tiên nghịch\" trên sân phe ta, quái đó nhận \"Nhịp Điệu Synchron\".",
+		[57102] = "Cổ Yêu-Phân Thân Trùng Sinh",
+		[57103] = "Khi bị phá hủy: Triệu hồi đặc biệt <Vương Lâm - Phân Thân> từ mộ bài lên sân.",
+		-- Lý Mộ Uyển (12329) & Kỹ năng (14731, 14732)
+		[57104] = "Lý Mộ Uyển",
+		[57105] = "[Phù Thủy - Hiệu Ứng - Điều Chỉnh]\n+ Kỹ năng chủ động trên tay: 1 lượt 1 lần, chọn lấy 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ bộ bài lên tay, sau đó triệu hồi đặc biệt bản thân lên sân.\n+ Kỹ năng chủ động trong Mộ: 1 lượt 1 lần, loại bỏ bản thân, chọn 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ trên tay, triệu hồi đặc biệt lên sân.",
+		[57106] = "Lý Mộ Uyển",
+		[57107] = "Uyển Nhi-Tương Phùng",
+		[57108] = "Kỹ năng chủ động trên tay (1 lượt 1 lần): Chọn lấy 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ bộ bài lên tay, sau đó triệu hồi đặc biệt bản thân lên sân.",
+		[57109] = "Uyển Nhi-Hồn Quy",
+		[57110] = "Kỹ năng chủ động trong Mộ (1 lượt 1 lần): Loại bỏ bản thân, chọn 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ trên tay, triệu hồi đặc biệt lên sân.",
+		-- Vương Lâm - Hợp Đạo (40733) & Kỹ năng (14736, 14737)
+		[57111] = "Vương Lâm - Hợp Đạo",
+		[57112] = "[Huyễn Thần - Dung Hợp - Hiệu Ứng]\n<12326> + <12328>\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n+ Khi lá bài này bị phá hủy: Phe ta nhận Tường Chắn Sinh Mệnh.\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi ở trên sân: Hai bên không thể Triệu Hồi Đặc Biệt quái từ Mộ.\n+ Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị.\n+ Nhận 1 tầng Tường Chắn Chiến Đấu.",
+		[57113] = "Vương Lâm - Hợp Đạo",
+		[57114] = "Hợp Đạo - Thiên Đạo Trấn Áp",
+		[57115] = "Khi ở trên sân: Hai bên không thể triệu hồi đặc biệt quái từ Mộ. Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị. Nhận 1 tầng Tường Chắn Chiến Đấu.",
+		[57116] = "Hợp Đạo - Niết Bàn Sinh Mệnh",
+		[57117] = "Khi lá bài này bị phá hủy, phe ta nhận Tường Chắn Sinh Mệnh.",
+		-- Hợp Đạo (21142) & Kỹ năng (14733, 14734, 14735)
+		[57118] = "Hợp Đạo",
+		[57119] = "[Ma Pháp Thông Thường]\n(Chỉ được chọn 1 trong các hiệu ứng sau mỗi lượt):\n1. Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Tay hoặc Sân vào Mộ.\n2. Loại bỏ lá bài này trong Mộ bài: Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Bộ bài vào Mộ.\n3. Gửi lá bài này và 1 quái thú có từ khóa \"Tiên nghịch\" từ Tay vào Mộ: Lấy 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài vào Tay.",
+		[57120] = "Hợp Đạo",
+		[57121] = "Hợp Đạo - Dung Hợp",
+		[57122] = "Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Tay hoặc Sân vào Mộ.",
+		[57123] = "Hợp Đạo - Mộ Dung Hợp",
+		[57124] = "Loại bỏ lá bài này trong Mộ bài: Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Bộ bài vào Mộ.",
+		[57125] = "Tiên Nghịch - Trao Đổi",
+		[57126] = "Gửi lá bài này và 1 quái thú có từ khóa \"Tiên nghịch\" từ Tay vào Mộ: Lấy 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài vào Tay.",
+		-- Tuyết Nữ Băng Giá (40648) & Kỹ năng (13838)
+		[51763] = "Kỹ năng bộ bài thêm chủ động: Mỗi lượt chỉ 1 lần. Khi trên sân không có quái và trên tay có từ 2 lá bài trở lên có thể dùng: Loại bỏ ngẫu nhiên 2 lá bài trên tay phe ta; Chọn tối đa [1] quái trên sân đối thủ đưa vào mộ bài loại bỏ (bỏ qua “Tường Chắn Quái”), sau đó Triệu Hồi Đặc Biệt bản thân bài này lên sân.",
+		-- Thần âm phủ đóng cửa thế giới (40551) & Kỹ năng (14739)
+		[35716] = "[Quái Hiệu Quả - Link 5]\nQuái hiệu quả x2 trở lên.\n+ Khi lá bài này trên sân: Phe ta không thể triệu hồi quái từ Bộ bài thêm.",
+		[57129] = "Thần Âm Phủ - Phong Tỏa Bài Thêm",
+		[57130] = "Khi lá bài này trên sân: Phe ta không thể triệu hồi quái từ Bộ bài thêm.",
+		-- Mèo bắt tay (12330) & Kỹ năng (14740)
+		[57131] = "Mèo bắt tay",
+		[57132] = "[Thú - Hiệu Ứng]\n+ 1 lượt tối đa 3 lần: Khi lá bài này nằm trên tay, đối phương kích hoạt hiệu ứng từ bài trên tay, sẽ kích hoạt: Đưa lá bài này vào Mộ, vô hiệu hiệu ứng đó và đẩy lá bài đó về cuối bộ bài, đối phương rút 1 lá, lấy 1 lá <Mèo bắt tay> từ Bộ bài lên tay.",
+		[57133] = "Mèo bắt tay",
+		[57134] = "Mèo Bắt Tay - Chặn Tay",
+		[57135] = "1 lượt tối đa 3 lần: Khi ở trên tay, đối phương kích hoạt hiệu ứng từ bài trên tay: Đưa lá bài này vào Mộ, vô hiệu hiệu ứng đó và đẩy lá bài đó về cuối bộ bài, đối phương rút 1 lá, lấy 1 lá <Mèo bắt tay> từ Bộ bài lên tay.",
+		-- KMR-Zio (12331) & Kỹ năng (14741, 14742)
+		[57136] = "KMR-Zio",
+		[57137] = "[Chiến Binh - Hiệu Ứng]\n+ 1 lượt 1 lần, khi được triệu hồi/triệu hồi đặc biệt lên sân: Lấy 1 lá [Chuyển dạng] từ Bộ bài lên tay.\n+ Kỹ năng chủ động Mộ (1 lượt 1 lần): Chọn lấy 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ Bộ bài lên tay.",
+		[57138] = "KMR-Zio",
+		[57139] = "KMR-Zio - Dẫn Đạo",
+		[57140] = "1 lượt 1 lần, khi được triệu hồi hoặc triệu hồi đặc biệt lên sân: Lấy 1 lá [Chuyển dạng] từ Bộ bài lên tay.",
+		[57141] = "KMR-Zio - Ký Ức Kỵ Sĩ",
+		[57142] = "Kỹ năng chủ động trong Mộ (1 lượt 1 lần): Chọn lấy 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ Bộ bài lên tay.",
+		-- Chuyển dạng (21143) & Kỹ năng (14743)
+		[57143] = "Chuyển dạng",
+		[57144] = "[Ma Pháp Thông Thường]\nChọn 1 quái Dung Hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Bộ bài thêm phe ta; hy sinh nguyên liệu dung hợp đang có mặt trên sân/trên tay phe ta; Triệu Hồi Dung Hợp quái đã chọn, sau đó trong lượt này chỉ có thể triệu hồi quái có từ khóa \"Hiệp sĩ mặt nạ\".",
+		[57145] = "Chuyển dạng",
+		[57146] = "Chuyển dạng - Henshin",
+		[57147] = "Chọn 1 quái Dung Hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Bộ bài thêm phe ta; hy sinh nguyên liệu dung hợp đang có mặt trên sân/trên tay phe ta; Triệu Hồi Dung Hợp quái đã chọn, sau đó trong lượt này chỉ có thể triệu hồi quái có từ khóa \"Hiệp sĩ mặt nạ\".",
+		-- KMR-W (12332) & Kỹ năng (14744, 14745)
+		[57148] = "KMR-W",
+		[57149] = "[Chiến Binh - Hiệu Ứng]\n+ Khi trên sân phe ta không có quái hoặc có quái có từ khóa \"Hiệp sĩ mặt nạ\", có thể triệu hồi thường quái lên sân không cần vật tế.\n+ Kỹ năng chủ động: Hy sinh bản thân, chọn Triệu Hồi Đặc Biệt [KMR-W-Fang] từ Bộ bài thêm lên sân.",
+		[57150] = "KMR-W",
+		[57151] = "KMR-W - Lộng Gió",
+		[57152] = "Khi trên sân phe ta không có quái hoặc có quái có từ khóa \"Hiệp sĩ mặt nạ\", có thể triệu hồi thường quái lên sân không cần vật tế.",
+		[57153] = "KMR-W - Fang Biến Thân",
+		[57154] = "Kỹ năng chủ động: Hy sinh bản thân, chọn Triệu Hồi Đặc Biệt [KMR-W-Fang] từ Bộ bài thêm lên sân.",
+		-- KMR-W-Fang (40734)
+		[57155] = "KMR-W-Fang",
+		[57156] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n+ Phải dùng hiệu quả của KMR-W để triệu hồi.\n+ Thiên Sứ-Xung Kích: 1 lượt 1 lần, chọn 1 lá bài trên sân đối thủ đưa vào Mộ Loại Bỏ (bỏ qua Tường Chắn Quái).\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.",
+		[57157] = "KMR-W-Fang",
+		-- KMR-Zio-W (40735) & Kỹ năng (14746)
+		[57158] = "KMR-Zio-W",
+		[57159] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n<KMR-Zio> + <KMR-W>\n+ Tấn công nhân đôi khi chiến đấu với quái thuộc tính Quang hoặc Ám (bỏ qua Tường Chắn Quái).\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi lá bài này trên sân, quái thuộc tính Quang/Ám trên sân đối phương không thể tấn công.",
+		[57160] = "KMR-Zio-W",
+		[57161] = "KMR-Zio-W - Vương Quyền Phong Ấn",
+		[57162] = "Khi lá bài này trên sân: Quái thuộc tính Quang và Ám trên sân đối phương không thể tấn công.",
+		-- KMR-Ozu (12333) & Kỹ năng (14747)
+		[57163] = "KMR-Ozu",
+		[57164] = "[Chiến Binh - Hiệu Ứng]\n+ Kỹ năng chủ động tay (1 lượt 1 lần): Triệu hồi Đặc Biệt bản thân, sau đó tung 3 đồng xu. Phe ta rút số lá bài bằng số xu mặt ngửa. Sau đó trong lượt này, phe ta chỉ có thể Triệu Hồi/Triệu Hồi Đặc Biệt quái thú có từ khóa \"Hiệp sĩ mặt nạ\".",
+		[57165] = "KMR-Ozu",
+		[57166] = "KMR-Ozu - Giới Khởi Động",
+		[57167] = "Kỹ năng chủ động trên tay (1 lượt 1 lần): Triệu hồi Đặc Biệt bản thân, sau đó tung 3 đồng xu. Phe ta rút số lá bài bằng số xu mặt ngửa. Sau đó trong lượt này, phe ta chỉ có thể Triệu Hồi/Triệu Hồi Đặc Biệt quái thú có từ khóa \"Hiệp sĩ mặt nạ\".",
+		[57168] = "KMR-Wizard",
+		[57169] = "[Chiến Binh - Hiệu Ứng]\n+ Bỏ 1 lá bài trên tay: Triệu Hồi Đặc Biệt lá bài này từ trên tay.\n+ Kỹ năng chủ động (1 lượt 1 lần): Chọn lấy 1 lá bài Phép có từ khóa \"Hiệp sĩ mặt nạ\" từ Bộ bài hoặc Mộ lên tay.",
+		[57170] = "KMR-Wizard",
+		[57171] = "KMR-Wizard - Nhẫn Thuật Ma Pháp",
+		[57172] = "Kỹ năng chủ động (1 lượt 1 lần): Chọn lấy 1 lá bài Phép có từ khóa \"Hiệp sĩ mặt nạ\" từ Bộ bài hoặc Mộ lên tay.",
+		[57173] = "Rider kick",
+		[57174] = "[Ma Pháp Thông Thường]\nKhi trên sân phe ta có quái thú có từ khóa \"Hiệp sĩ mặt nạ\": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường chắn Quái (12008)). Sau đó trong lượt này, quái thú có từ khóa \"Hiệp sĩ mặt nạ\" phe ta không thể tấn công.",
+		[57175] = "Rider kick",
+		[57176] = "Rider kick - Toàn Lực Tất Sát",
+		[57177] = "Khi trên sân phe ta có quái thú có từ khóa \"Hiệp sĩ mặt nạ\": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường chắn Quái (12008)). Sau đó trong lượt này, quái thú có từ khóa \"Hiệp sĩ mặt nạ\" phe ta không thể tấn công.",
+		[57178] = "Chị Em Harpie Lady - Tam Giác Mê Hoặc",
+		[57179] = "[Thú Có Cánh - Dung Hợp - Hiệu Ứng]\n3 quái thú \"Harpie Lady\"\nPhải được Triệu hồi Dung hợp trước tiên.\n(1) Tên lá bài này được coi là \"Harpie Lady\" khi ở trên sân hoặc trong Mộ.\n(2) Tăng 500 Công cho mỗi \"Harpie Lady\" trong Mộ của bạn. Nhận Lá chắn quái vật (12008), Khiên ma thuật (12009), Lá chắn bẫy (12010).\n(3) Mỗi lượt 1 lần (Hiệu ứng Nhanh): Bạn có thể phá hủy toàn bộ Ma pháp và Cạm bẫy đối thủ điều khiển.",
+		[57180] = "Chị Em Harpie Lady - Tam Giác Mê Hoặc",
+		[57181] = "Tam Giác Mê Hoặc - Phong Bão Quét Sạch",
+		[57182] = "Mỗi lượt một lần: Phá hủy toàn bộ Ma pháp và Cạm bẫy mà đối thủ điều khiển.",
+		[57183] = "Tam Kính Kiều Diễm",
+		[57184] = "[Ma Pháp Thông Thường]\nBạn chỉ có thể sử dụng mỗi hiệu ứng (1) và (2) của lá bài này một lần mỗi lượt.\n(1) Thêm 1 quái thú \"Harpie\" từ Bộ bài lên tay, sau đó nếu chỉ có đối thủ điều khiển quái thú, bạn có thể Triệu hồi Đặc biệt 1 \"Harpie Lady\" từ trên tay hoặc Mộ lên sân.\n(2) Kỹ năng chủ động Mộ: Bạn có thể trục xuất lá bài này khỏi Mộ; Triệu hồi Dung hợp 1 quái thú Dung hợp thuộc tính ĐẤT hoặc GIÓ từ Bộ bài Phụ, sử dụng quái thú trên tay hoặc trên sân làm nguyên liệu.",
+		[57185] = "Tam Kính Kiều Diễm",
+		[57186] = "Tam Kính Kiều Diễm - Gương Kính Triệu Tập",
+		[57187] = "Thêm 1 quái thú \"Harpie\" từ Bộ bài lên tay, sau đó nếu chỉ có đối thủ điều khiển quái thú, bạn có thể Triệu hồi Đặc biệt 1 \"Harpie Lady\" từ trên tay hoặc Mộ lên sân.",
+		[57188] = "Tam Kính Kiều Diễm - Dung Hợp Kính Soi",
+		[57189] = "Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; Triệu hồi Dung hợp 1 quái thú Dung hợp thuộc tính ĐẤT hoặc GIÓ từ Bộ bài Phụ, sử dụng quái thú trên tay hoặc trên sân làm nguyên liệu.",
+		[57190] = "KMR-Zio-Wizard",
+		[57191] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + \"KMR-Wizard\"\n(1) Đối phương không thể sử dụng bài Phép.\n(2) Nhận Tường Chắn Quái (12002), Tường Chắn Phép (12003), Tường Chắn Bẫy (12004).\n(3) Tất cả bài Phép/Bẫy trên sân phe ta không thể bị phá hủy.",
+		[57192] = "KMR-Zio-Wizard",
+		[57193] = "KMR-Zio-Wizard - Phong Tỏa Ma Thuật",
+		[57194] = "Khi có mặt: Đối phương không thể sử dụng bài Phép.",
+		[57195] = "Bức Tường Gương Mê Lạc",
+		[57196] = "[Cạm Bẫy Vĩnh Cửu]\n(1) Nhận được các hiệu ứng sau trong khi bạn đang điều khiển một quái thú \"Amazoness\" hoặc \"Harpie Lady\":\n• Tất cả quái thú ngửa mặt mà đối thủ đang điều khiển được chuyển sang Thế Tấn công và phải tấn công nếu có thể.\n• Mỗi trận chiến một lần, khi quái thú của đối thủ tuyên bố tấn công: Bạn có thể giảm một nửa chỉ số ATK của quái thú đó.\n(2) Mỗi lượt một lần, trong Chu kỳ Chuẩn bị: Bạn có thể Úp 1 lá Ma pháp/Cạm bẫy từ Mộ hoặc đang bị trục xuất của bạn mà có đề cập đến \"Harpie Lady\", ngoại trừ lá \"Bức Tường Gương Mê Lạc\".",
+		[57197] = "Bức Tường Gương Mê Lạc",
+		[57198] = "Bức Tường Gương Mê Lạc - Mê Lực Gương Soi",
+		[57199] = "Khi điều khiển \"Amazoness\" hoặc \"Harpie Lady\": Toàn bộ quái thú đối thủ chuyển sang Thế Tấn công và bắt buộc tấn công nếu có thể. Mỗi trận chiến một lần khi quái thú đối thủ tấn công, giảm nửa ATK quái thú đó.",
+		[57200] = "Bức Tường Gương Mê Lạc - Hồi Phục Kính Vạn Hoa",
+		[57201] = "Trong Chu kỳ Chuẩn bị: Bạn có thể Úp 1 lá Ma pháp/Cạm bẫy có đề cập đến \"Harpie Lady\" từ Mộ hoặc đang bị trục xuất lên sân.",
+		[57202] = "Trận Hình Harpie & Amazoness Rakshasa",
+		[57203] = "[Ma Pháp Tốc Độ Nhanh]\nBạn chỉ có thể kích hoạt 1 lá bài có tên này mỗi lượt.\n(1) Chọn 1 quái thú \"Harpie\" hoặc \"Amazoness\" trong Mộ hoặc đang bị trục xuất của bạn; Triệu hồi Đặc biệt quái thú đó, sau đó kích hoạt hiệu ứng dựa trên tổng số quái thú \"Harpie Lady\" và \"Amazoness\" bạn đang điều khiển:\n• Từ 1 quái thú trở lên: Đặt 1 lá \"Bức Tường Gương Mê Lạc\" từ Bộ bài ở trạng thái ngửa vào Vùng Ma pháp & Cạm bẫy.\n• Từ 2 quái thú trở lên: Giành quyền điều khiển 1 quái thú đối thủ điều khiển.\n• Từ 3 quái thú trở lên: Phá hủy tất cả quái thú đối thủ điều khiển.",
+		[57204] = "Trận Hình Rakshasa",
+		[57205] = "Trận Hình Harpie & Amazoness Rakshasa",
+		[57206] = "Triệu hồi Đặc biệt 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ Mộ hoặc đang bị trục xuất, sau đó áp dụng hiệu ứng 1+, 2+, 3+ dựa trên số quái thú \"Harpie Lady\" và \"Amazoness\" bạn điều khiển.",
+		[57207] = "Giải Cứu Kịch Tính Amazoness",
+		[57208] = "[Cạm Bẫy Thông Thường]\nBạn chỉ có thể sử dụng mỗi hiệu ứng (1) và (2) của lá bài này một lần mỗi lượt.\n(1) Chọn mục tiêu là 1 quái thú trên sân; Triệu hồi Đặc biệt 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ trên tay hoặc Bộ bài của bạn, và nếu làm vậy, hãy trả quái thú được chọn làm mục tiêu đó về tay.\n(2) Kỹ năng chủ động Mộ: Bạn có thể trục xuất lá bài này khỏi Mộ; thêm 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ Mộ hoặc đang bị trục xuất lên tay.",
+		[57209] = "Giải Cứu Amazoness",
+		[57210] = "Giải Cứu Kịch Tính Amazoness",
+		[57211] = "Chọn 1 quái thú trên sân; Triệu hồi Đặc biệt 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ tay hoặc Bộ bài, sau đó đưa quái thú mục tiêu về tay.",
+		[57212] = "Giải Cứu Kịch Tính - Chiêu Mộ Tái Sinh",
+		[57213] = "Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; thêm 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ Mộ hoặc đang bị trục xuất lên tay.",
 	}
+	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
 	-- Ensure Str and ClientData.str always unescape \n to actual newline and use Linh Thach terms
 	local _origStr = _G.Str
 	_G.Str = function(sid, ...)
-		if sid and CARD_NAME_OVERRIDES[sid] then
+		if not sid then return "" end
+		local numSid = tonumber(sid)
+		if numSid and CARD_NAME_OVERRIDES[numSid] then
+			return CARD_NAME_OVERRIDES[numSid]
+		end
+		if CARD_NAME_OVERRIDES[sid] then
 			return CARD_NAME_OVERRIDES[sid]
 		end
 		local res = _origStr and _origStr(sid, ...)
-		if not res and rawget(_G, "ClientData") and ClientData.str then
+		if (not res or res == "") and rawget(_G, "ClientData") and ClientData.str then
 			res = ClientData.str(sid, ...)
 		end
 		if type(res) == "string" and string.find(res, "\\n") then
 			res = string.gsub(res, "\\n", "\n")
 		end
-		return filterCurrencyText(res)
+		return filterCurrencyText(res) or tostring(sid)
 	end
 	if rawget(_G, "ClientData") and ClientData.str then
 		local _origCdStr = ClientData.str
 		ClientData.str = function(sid, ...)
-			if sid and CARD_NAME_OVERRIDES[sid] then
+			if not sid then return "" end
+			local numSid = tonumber(sid)
+			if numSid and CARD_NAME_OVERRIDES[numSid] then
+				return CARD_NAME_OVERRIDES[numSid]
+			end
+			if CARD_NAME_OVERRIDES[sid] then
 				return CARD_NAME_OVERRIDES[sid]
 			end
 			local res = _origCdStr(sid, ...)
 			if type(res) == "string" and string.find(res, "\\n") then
 				res = string.gsub(res, "\\n", "\n")
 			end
-			return filterCurrencyText(res)
+			return filterCurrencyText(res) or tostring(sid)
 		end
 	end
 
@@ -3450,6 +5353,23 @@ function patchClientData()
 		-- Ensure all PVE attack/challenge inputs have _offlineMode = true
 	local _origGenInputFromResp = ClientData.genInputFromResp
 	ClientData.genInputFromResp = function(resp)
+		local function ensureHasField(tbl, visited)
+			if type(tbl) ~= "table" then return end
+			visited = visited or {}
+			if visited[tbl] then return end
+			visited[tbl] = true
+			if rawget(tbl, "HasField") == nil and tbl.HasField == nil then
+				rawset(tbl, "HasField", function(self, k)
+					return rawget(self, k) ~= nil or self[k] ~= nil
+				end)
+			end
+			for _, v in pairs(tbl) do
+				if type(v) == "table" then
+					ensureHasField(v, visited)
+				end
+			end
+		end
+		ensureHasField(resp)
 		local ret = _origGenInputFromResp(resp)
 		if ret then
 			ret._offlineMode = true
@@ -3511,9 +5431,9 @@ function patchClientData()
 				end
 
 				local fallbackCids = (Data._troopInfo and Data._troopInfo[1] and Data._troopInfo[1]._infoId) or { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003 }
-				while totalCount < 40 do
+				while totalCount < 20 do
 					for _, fcid in ipairs(fallbackCids) do
-						if totalCount >= 40 then break end
+						if totalCount >= 20 then break end
 						table.insert(safeCards, { info_id = fcid, num = 1 })
 						totalCount = totalCount + 1
 					end
@@ -3534,9 +5454,9 @@ function patchClientData()
 					end
 				end
 				local fallbackCids = (Data._troopInfo and Data._troopInfo[1] and Data._troopInfo[1]._infoId) or { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003 }
-				while totalOppo < 40 do
+				while totalOppo < 20 do
 					for _, fcid in ipairs(fallbackCids) do
-						if totalOppo >= 40 then break end
+						if totalOppo >= 20 then break end
 						table.insert(safeCards, { info_id = fcid, num = 1 })
 						totalOppo = totalOppo + 1
 					end
@@ -3625,12 +5545,17 @@ function patchClientData()
 					local rewardsList = {}
 					if res.rewards and #res.rewards > 0 then
 						for _, rw in ipairs(res.rewards) do
+							local infoId = rw.info_id or Data.ResType.ingot
+							local num = rw.num or 0
 							table.insert(rewardsList, {
-								info_id = rw.info_id or Data.ResType.ingot,
-								num = rw.num or 0,
+								info_id = infoId,
+								num = num,
 								is_fragment = rw.is_fragment or false,
 								level = rw.level or 1
 							})
+							if infoId and infoId >= 10000 and P and P._playerCard then
+								pcall(function() P._playerCard:addCard(infoId, num) end)
+							end
 						end
 					else
 						table.insert(rewardsList, {
@@ -3682,6 +5607,7 @@ function patchClientData()
 						P._gold = res.new_gold
 					end
 					lc.sendEvent(Data.Event.resource_dirty)
+					lc.sendEvent(Data.Event.card_dirty)
 					if ClientView.getMenuUI() then
 						ClientView.getMenuUI():updateResource()
 					end
@@ -3752,14 +5678,41 @@ function patchClientData()
 		pcall(function()
 			local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
 			local api = jsbridge and jsbridge.object("jdzcApi")
-			if api and api.post and bonus then
-				local bid = type(bonus) == "table" and (bonus._infoId or bonus._id) or tonumber(bonus)
-				if bid and bid > 0 then
-					api:post("checkin", { account_id = accId, checkin_type = 1, day_index = bid })
+			if not api or not api.post or not bonus then return end
+			local bid = type(bonus) == "table" and (bonus._infoId or bonus._id) or tonumber(bonus)
+			if not bid or bid <= 0 then return end
+
+			local binfo = Data._bonusInfo and Data._bonusInfo[bid]
+			local btype = (type(bonus) == "table" and bonus._type) or (binfo and binfo._type)
+			local ctype = nil
+			local dayVal = binfo and binfo._val or 0
+
+			if btype == Data.BonusType.week_checkin or (bid >= 3001 and bid <= 3007) then
+				ctype = 2
+				if dayVal <= 0 and bid >= 3001 and bid <= 3007 then dayVal = bid - 3000 end
+			elseif btype == Data.BonusType.month_checkin or (bid >= 6001 and bid <= 6400) then
+				ctype = 1
+			end
+
+			-- ONLY record if it is actually a week or month checkin bonus!
+			if not ctype then return end
+
+			api:post("checkin", { account_id = accId, checkin_type = ctype, day_index = bid, day_val = dayVal }, function(rawRes)
+				local r = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+				if r and r.code == 200 then
 					ClientData._claimedCheckins = ClientData._claimedCheckins or {}
 					ClientData._claimedCheckins[bid] = true
+					if dayVal > 0 then ClientData._claimedCheckins[dayVal] = true end
+					ClientData._claimedCheckinsToday = ClientData._claimedCheckinsToday or {}
+					ClientData._claimedCheckinsToday[bid] = { checkin_type = ctype, day_val = dayVal }
+					if P and P._playerBonus then
+						local ob = require("OnlineBridge")
+						if ob and ob.syncCheckinBonuses then
+							ob.syncCheckinBonuses(P, ClientData._claimedCheckinsList or {})
+						end
+					end
 				end
-			end
+			end)
 		end)
 	end
 	local oldClaimBonus = ClientData.claimBonus
@@ -3791,12 +5744,14 @@ function patchClientData()
 		local myLevel = (P and P._level) or 1
 		local myAvatar = (P and P._avatar) or 201
 		local myVip = (P and P._vip) or 0
+		local myUnionId = (P and P._unionId) or (P and P._playerUnion and P._playerUnion:getMyUnion() and P._playerUnion:getMyUnion()._id) or (targetId or 0)
 
 		local localId = "c_" .. tostring(accId) .. "_" .. tostring(os.time()) .. "_" .. tostring(math.random(1000, 9999))
 		ClientData._knownMsgIds = ClientData._knownMsgIds or {}
 		ClientData._knownMsgIds[localId] = true
 
-		local msgType = (chatType == 1 or chatType == (Chat_pb and Chat_pb.PB_CHAT_WORLD or 1)) and Data.MsgType.world or Data.MsgType.union
+		local isUnionChat = (chatType == 4 or chatType == 2 or chatType == (Chat_pb and Chat_pb.PB_CHAT_UNION or 2) or chatType == Data.MsgType.union)
+		local msgType = isUnionChat and Data.MsgType.union or Data.MsgType.world
 
 		-- 1. Push directly into local player message queue
 		local ok, err = pcall(function()
@@ -3823,7 +5778,7 @@ function patchClientData()
 					silver_cup = mySc,
 					bronze_cup = myBc,
 					gold = 0, grain = 0, ingot = 0, exp = 0, trophy = 800, shield = 0,
-					union_id = 0, union_name = "", union_title = 0, union_avatar = 0, union_tag = "",
+					union_id = myUnionId, union_name = "", union_title = 0, union_avatar = 0, union_tag = "",
 					last_login = os.time() * 1000, rid = 10001, privilege = 0, month_card = 0
 				})
 				if myCrown then
@@ -3831,11 +5786,13 @@ function patchClientData()
 				end
 				local msgObj = {
 					_id = localId,
+					_clientMsgId = localId,
 					_timestamp = os.time(),
 					_user = uinfo,
 					_type = msgType,
 					_content = content,
 					_items = {},
+					_unionId = myUnionId,
 					_goldCup = myGc,
 					_silverCup = mySc,
 					_bronzeCup = myBc
@@ -3848,6 +5805,13 @@ function patchClientData()
 					table.insert(wlist, 1, msgObj)
 				end
 				P._playerMessage:sendMessageEvent(P._playerMessage.Event.msg_new, msgType, 1)
+				if msgType == Data.MsgType.union then
+					pcall(function()
+						if lc and lc.Dispatcher and Data and Data.Event then
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.message, { _event = PlayerMessage.Event.msg_new, _param = 1 }))
+						end
+					end)
+				end
 				pcall(function()
 					if ClientData._chatPanel and ClientData._chatPanel._isPop then
 						ClientData._chatPanel:resetList()
@@ -3877,7 +5841,8 @@ function patchClientData()
 					crown_num = myCnum,
 					content = content,
 					client_msg_id = localId,
-					type = (msgType == Data.MsgType.world and 1 or 2)
+					union_id = myUnionId,
+					type = (msgType == Data.MsgType.union and 4 or 1)
 				})
 			end
 		end)
@@ -3893,7 +5858,7 @@ function patchClientData()
 	end
 	ClientData.getChatPanel = getChatPanel
 
-	local function processChatMessage(id, ts, accId, name, level, avatar, content, msgType, cardId, clientMsgId, crownId, crownNum)
+	local function processChatMessage(id, ts, accId, name, level, avatar, content, msgType, cardId, clientMsgId, crownId, crownNum, isBatch, unionId)
 		if not content or content == "" then return end
 
 		if not P or not P._playerMessage or not P._playerMessage._msgAll then
@@ -3901,14 +5866,39 @@ function patchClientData()
 			table.insert(_G._pendingChatQueue, {
 				id = id, ts = ts, accId = accId, name = name, level = level, avatar = avatar,
 				content = content, msgType = msgType, cardId = cardId, clientMsgId = clientMsgId,
-				crownId = crownId, crownNum = crownNum
+				crownId = crownId, crownNum = crownNum, unionId = unionId
 			})
 			return
 		end
 
 		local isBattle = (msgType == 3 or msgType == Data.MsgType.battle)
-		local isSystem = not isBattle and (msgType == 2 or accId == 0)
-		local targetType = isBattle and Data.MsgType.battle or (isSystem and Data.MsgType.bulletin or Data.MsgType.world)
+		if not isBattle then
+			if type(content) == "table" and (content.replay_id or content.battle_data or content.opponent_name) then
+				isBattle = true
+			elseif type(content) == "string" and (content:find('"replay_id"') or content:find('chia sẻ một trận chiến')) then
+				isBattle = true
+			end
+		end
+
+		-- System announcements / Tin Nhanh: type 2, OR account_id == 0, OR name is 'Hệ Thống', OR system patterns
+		local isSystem = not isBattle and (msgType == 2 or msgType == Data.MsgType.bulletin or accId == 0 or name == "Hệ Thống"
+			or (type(content) == "string" and (content:find("%[THÔNG BÁO%]") or content:find("%[KẾT TOÁN%]") or content:find("%[Tri ân%]"))))
+
+		-- Guild Chat: type 4, OR (msgType == Data.MsgType.union and not isSystem)
+		local isUnion = not isBattle and not isSystem and (msgType == 4 or msgType == Data.MsgType.union or (msgType == 2 and tonumber(unionId or 0) > 0 and accId ~= 0 and name ~= "Hệ Thống"))
+
+		local targetType = isBattle and Data.MsgType.battle or (isSystem and Data.MsgType.bulletin or (isUnion and Data.MsgType.union or Data.MsgType.world))
+
+		local myUnionId = (P and P._unionId) or (P and P._playerUnion and P._playerUnion:getMyUnion() and P._playerUnion:getMyUnion()._id) or 0
+		local msgUnionId = tonumber(unionId) or 0
+
+		-- Strict guild chat isolation:
+		if targetType == Data.MsgType.union then
+			if myUnionId <= 0 or (msgUnionId > 0 and msgUnionId ~= myUnionId) then
+				return
+			end
+		end
+
 		local targetList = P._playerMessage._msgAll[targetType]
 		if not targetList then return end
 
@@ -3925,15 +5915,26 @@ function patchClientData()
 		end
 
 		local repId = (bData and bData.replay_id) or clientMsgId or tostring(id)
-		local key = (isBattle and repId) or (id and tonumber(id) and tonumber(id) > 0 and tostring(id)) or (clientMsgId and clientMsgId ~= "" and clientMsgId)
-		if key then
-			for _, existing in ipairs(targetList) do
-				if existing._id and tostring(existing._id) == tostring(key) then
-					return
+		local idStr = (id and tonumber(id) and tonumber(id) > 0) and tostring(id) or nil
+		local cIdStr = (clientMsgId and clientMsgId ~= "") and tostring(clientMsgId) or nil
+		local repIdStr = (isBattle and repId and tostring(repId) ~= "") and tostring(repId) or nil
+
+		-- Robust deduplication check
+		for _, existing in ipairs(targetList) do
+			local exId = existing._id and tostring(existing._id) or nil
+			local exCId = (existing._clientMsgId and tostring(existing._clientMsgId)) or nil
+			local exRepId = (existing._log and existing._log._id and tostring(existing._log._id)) or (existing._replayId and tostring(existing._replayId)) or nil
+
+			local match = false
+			if idStr and exId and exId == idStr then match = true end
+			if cIdStr and (exId == cIdStr or exCId == cIdStr) then match = true end
+			if repIdStr and (exId == repIdStr or exRepId == repIdStr) then match = true end
+
+			if match then
+				if idStr and exId ~= idStr then
+					existing._id = idStr
 				end
-				if existing._log and existing._log._id and tostring(existing._log._id) == tostring(key) then
-					return
-				end
+				return
 			end
 		end
 
@@ -4035,12 +6036,14 @@ function patchClientData()
 			end
 
 			msgObj = {
-				_id = key or repId or os.time(),
+				_id = idStr or cIdStr or repIdStr or os.time(),
+				_clientMsgId = cIdStr,
 				_timestamp = realTs,
 				_user = uinfo,
 				_sender = uinfo,
 				_opponent = oppoUser,
 				_log = logObj,
+				_replayId = repId,
 				_resultType = bResultType,
 				_round = roundNum,
 				_type = Data.MsgType.battle,
@@ -4058,7 +6061,8 @@ function patchClientData()
 			end
 
 			msgObj = {
-				_id = key or os.time(),
+				_id = idStr or cIdStr or os.time(),
+				_clientMsgId = cIdStr,
 				_timestamp = realTs,
 				_user = uinfo,
 				_type = targetType,
@@ -4075,14 +6079,25 @@ function patchClientData()
 		end
 		table.insert(targetList, 1, msgObj)
 
-		P._playerMessage:sendMessageEvent(P._playerMessage.Event.msg_new, targetType, 1)
-
-		pcall(function()
-			local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
-			if cp and cp._isPop then
-				cp:resetList()
+		if not isBatch then
+			P._playerMessage:sendMessageEvent(P._playerMessage.Event.msg_new, targetType, 1)
+			if targetType == Data.MsgType.union then
+				pcall(function()
+					if lc and lc.Dispatcher and Data and Data.Event then
+						lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.message, { _event = PlayerMessage.Event.msg_new, _param = 1 }))
+					end
+				end)
 			end
-		end)
+		end
+
+		if not isBatch then
+			pcall(function()
+				local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
+				if cp and cp._isPop and cp._contentBg and cp._contentBg._focusTabIndex == targetType then
+					cp:resetList()
+				end
+			end)
+		end
 	end
 
 	_G.addRawChatMessage = processChatMessage
@@ -4093,7 +6108,7 @@ function patchClientData()
 			local queue = _G._pendingChatQueue
 			_G._pendingChatQueue = {}
 			for _, it in ipairs(queue) do
-				processChatMessage(it.id, it.ts, it.accId, it.name, it.level, it.avatar, it.content, it.msgType, it.cardId, it.clientMsgId, it.crownId, it.crownNum)
+				processChatMessage(it.id, it.ts, it.accId, it.name, it.level, it.avatar, it.content, it.msgType, it.cardId, it.clientMsgId, it.crownId, it.crownNum, true, it.unionId or 0)
 			end
 			pcall(function()
 				local cp = getChatPanel()
@@ -4114,7 +6129,7 @@ function patchClientData()
 				local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
 				local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
 				local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
-				processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum)
+				processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum, false, m.union_id or 0)
 			end
 			pcall(flushPendingChatQueue)
 		end
@@ -4129,7 +6144,7 @@ function patchClientData()
 				local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
 				local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
 				local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
-				processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum)
+				processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum, false, m.union_id or 0)
 			end
 			pcall(flushPendingChatQueue)
 		end
@@ -4138,8 +6153,104 @@ function patchClientData()
 		pcall(flushPendingChatQueue)
 		pcall(function()
 			local api = jsbridge and jsbridge.object("jdzcApi")
-			if api and api.loadChatHistory then
-				api:loadChatHistory()
+			if api and api.post then
+				api:post("chat_history", {}, function(rawRes)
+					local res = rawRes
+					if type(res) == "string" then
+						local ok, parsed = pcall(function() return require("json").decode(res) end)
+						if ok and parsed then res = parsed end
+					end
+					if res and res.messages and #res.messages > 0 then
+						for _, m in ipairs(res.messages) do
+							local cardId = m.card_id or (m.items and m.items[1] and (m.items[1].info_id or m.items[1]._infoId)) or 0
+							local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
+							local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
+							local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
+							processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum, true, m.union_id or 0)
+						end
+						pcall(flushPendingChatQueue)
+
+						-- Clean sort and deduplicate all msg lists by timestamp DESC
+						if P and P._playerMessage and P._playerMessage._msgAll then
+							local worldList = P._playerMessage._msgAll[Data.MsgType.world]
+							if worldList and type(worldList) == "table" then
+								local cleanWorld = {}
+								local seen = {}
+								for _, m in ipairs(worldList) do
+									if m._type ~= Data.MsgType.battle and m._type ~= Data.MsgType.bulletin and m._log == nil and m._replayId == nil
+										and not (type(m._content) == "string" and (m._content:find('"replay_id"') or m._content:find('chia sẻ một trận chiến')))
+										and not (type(m._content) == "table" and (m._content.replay_id or m._content.battle_data)) then
+										local uid = (m._id and tostring(m._id)) or (m._clientMsgId and tostring(m._clientMsgId))
+										if not uid or not seen[uid] then
+											if uid then seen[uid] = true end
+											table.insert(cleanWorld, m)
+										end
+									end
+								end
+								for i = #worldList, 1, -1 do worldList[i] = nil end
+								for i, m in ipairs(cleanWorld) do worldList[i] = m end
+							end
+
+							local unionList = P._playerMessage._msgAll[Data.MsgType.union]
+							if unionList and type(unionList) == "table" then
+								local myUnionId = (P and P._unionId) or (P and P._playerUnion and P._playerUnion:getMyUnion() and P._playerUnion:getMyUnion()._id) or 0
+								local cleanUnion = {}
+								local seenUnion = {}
+								for _, m in ipairs(unionList) do
+									local isSys = (m._user and (m._user._id == 0 or m._user._name == "Hệ Thống"))
+										or (type(m._content) == "string" and (m._content:find("%[THÔNG BÁO%]") or m._content:find("%[KẾT TOÁN%]") or m._content:find("%[Tri ân%]")))
+									local msgUnionId = (m._unionId and tonumber(m._unionId)) or 0
+									local isValidUnion = not isSys and m._type == Data.MsgType.union
+									if isValidUnion and myUnionId > 0 and msgUnionId > 0 and msgUnionId ~= myUnionId then
+										isValidUnion = false
+									end
+									if isValidUnion then
+										local uid = (m._id and tostring(m._id)) or (m._clientMsgId and tostring(m._clientMsgId))
+										if not uid or not seenUnion[uid] then
+											if uid then seenUnion[uid] = true end
+											table.insert(cleanUnion, m)
+										end
+									end
+								end
+								for i = #unionList, 1, -1 do unionList[i] = nil end
+								for i, m in ipairs(cleanUnion) do unionList[i] = m end
+							end
+
+							local bulletinList = P._playerMessage._msgAll[Data.MsgType.bulletin]
+							if bulletinList and type(bulletinList) == "table" then
+								local cleanBulletin = {}
+								local seenBulletin = {}
+								for _, m in ipairs(bulletinList) do
+									if m._type == Data.MsgType.bulletin then
+										local uid = (m._id and tostring(m._id)) or (m._clientMsgId and tostring(m._clientMsgId))
+										if not uid or not seenBulletin[uid] then
+											if uid then seenBulletin[uid] = true end
+											table.insert(cleanBulletin, m)
+										end
+									end
+								end
+								for i = #bulletinList, 1, -1 do bulletinList[i] = nil end
+								for i, m in ipairs(cleanBulletin) do bulletinList[i] = m end
+							end
+
+							for _, list in pairs(P._playerMessage._msgAll) do
+								if type(list) == "table" and #list > 1 then
+									table.sort(list, function(a, b)
+										local tsA = a._timestamp or 0
+										local tsB = b._timestamp or 0
+										if tsA ~= tsB then return tsA > tsB end
+										return (tonumber(a._id) or 0) > (tonumber(b._id) or 0)
+									end)
+								end
+							end
+						end
+
+						local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
+						if cp and cp._isPop then
+							cp:resetList()
+						end
+					end
+				end)
 			end
 		end)
 	end
@@ -4147,8 +6258,26 @@ function patchClientData()
 
 	lc.addEventListener(Data.Event.login, function()
 		pcall(function()
+			if ClientData._account and P then
+				P._reputation = tonumber(ClientData._account.reputation) or 50
+			end
+			if ClientData._account and ClientData._account.props and P and P._propBag then
+				for pid, pcount in pairs(ClientData._account.props) do
+					local iid = tonumber(pid) or 0
+					if iid > 0 then
+						local curNum = (P._propBag._props[iid] and P._propBag._props[iid]._num) or 0
+						local diff = (tonumber(pcount) or 0) - curNum
+						if diff ~= 0 then
+							P._propBag:changeProps(iid, diff)
+						end
+					end
+				end
+			end
 			if ClientData.pollChatHistory then
 				ClientData.pollChatHistory()
+			end
+			if ClientData.restoreSurvivalExState then
+				ClientData.restoreSurvivalExState()
 			end
 		end)
 	end)
@@ -4159,6 +6288,9 @@ function patchClientData()
 		pcall(function()
 			if ClientData.pollChatHistory then
 				ClientData.pollChatHistory()
+			end
+			if ClientData.restoreSurvivalExState then
+				ClientData.restoreSurvivalExState()
 			end
 		end)
 		if origReplaceCityScene then return origReplaceCityScene(...) end
@@ -4175,7 +6307,7 @@ function patchClientData()
 			local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
 			local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
 			local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
-			processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum)
+			processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum, false, m.union_id or 0)
 		end
 	end
 	-- Flush any pending WS messages queued before Lua boot
@@ -4414,6 +6546,7 @@ function patchClientData()
 		local pB = serverRoom.playerB
 		if not pA or not pB then return end
 
+		local isWatcher = (myAccId ~= pA.id and myAccId ~= pB.id)
 		local oppo
 		local isAttacker = true
 		if pA.id == myAccId then
@@ -4424,90 +6557,126 @@ function patchClientData()
 			isAttacker = false
 		else
 			oppo = pB
-			isAttacker = false
+			isAttacker = true
 		end
 
 		local matchId = serverRoom.match_id or ("m_room_" .. tostring(serverRoom.code))
 		local seed = tonumber(serverRoom.seed) or math.random(1, 65535)
 
-		local playerCards = {}
-		local playerLevels = {}
-		local playerSkins = {}
-		local totalPlayerCards = 0
-		local curTroopIndex = (P and P._curTroopIndex) or 1
-		local pTroop = (P and P._playerCard and P._playerCard._troops and P._playerCard._troops[curTroopIndex]) or {}
-		local pList = (type(pTroop) == "table" and (pTroop._cards or pTroop)) or {}
-		for _, card in ipairs(pList) do
-			local cid = type(card) == "table" and (card._infoId or card.info_id) or card
-			local num = type(card) == "table" and (card._num or card.num) or 1
-			local lvl = type(card) == "table" and ((card._level and card._level > 0) and card._level or 1) or 1
-			if cid and tonumber(cid) then
-				cid = tonumber(cid)
-				num = math.max(1, tonumber(num) or 1)
-				lvl = tonumber(lvl) or 1
-				table.insert(playerCards, { info_id = cid, num = num })
-				table.insert(playerLevels, { info_id = cid, level = lvl })
-				table.insert(playerSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
-				totalPlayerCards = totalPlayerCards + num
-			end
-		end
 		local fallbackCids = (Data._troopInfo and Data._troopInfo[1] and Data._troopInfo[1]._infoId) or { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003 }
-		while totalPlayerCards < 40 do
-			for _, cid in ipairs(fallbackCids) do
-				if totalPlayerCards >= 40 then break end
-				table.insert(playerCards, { info_id = cid, num = 1 })
-				table.insert(playerLevels, { info_id = cid, level = 1 })
-				table.insert(playerSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
-				totalPlayerCards = totalPlayerCards + 1
+
+		local function buildCardsFromRaw(rawCards)
+			local cards, levels, skins = {}, {}, {}
+			local count = 0
+			local counts, order = {}, {}
+			local function addCid(cid)
+				cid = tonumber(cid)
+				if cid and cid > 0 then
+					if not counts[cid] then
+						counts[cid] = 0
+						table.insert(order, cid)
+					end
+					counts[cid] = counts[cid] + 1
+				end
 			end
+			if type(rawCards) == "table" then
+				local numKeys = {}
+				for k in pairs(rawCards) do
+					if tonumber(k) then table.insert(numKeys, tonumber(k)) end
+				end
+				if #numKeys > 0 then
+					table.sort(numKeys)
+					for _, k in ipairs(numKeys) do
+						addCid(rawCards[k] or rawCards[tostring(k)])
+					end
+				else
+					for _, v in pairs(rawCards) do
+						addCid(v)
+					end
+				end
+			end
+			for _, cid in ipairs(order) do
+				table.insert(cards, { info_id = cid, num = counts[cid] })
+				table.insert(levels, { info_id = cid, level = 1 })
+				table.insert(skins, buildSkinEntryForCard(cid))
+				count = count + counts[cid]
+			end
+			while count < 40 do
+				for _, cid in ipairs(fallbackCids) do
+					if count >= 40 then break end
+					table.insert(cards, { info_id = cid, num = 1 })
+					table.insert(levels, { info_id = cid, level = 1 })
+					table.insert(skins, buildSkinEntryForCard(cid))
+					count = count + 1
+				end
+			end
+			return cards, levels, skins
 		end
 
-		local oppoCards = {}
-		local oppoLevels = {}
-		local oppoSkins = {}
-		local oppoCount = 0
-		local oppoCounts, oppoOrder = {}, {}
-		local rawCards = oppo.cards or {}
-		local function addOppoCid(cid)
-			cid = tonumber(cid)
-			if cid and cid > 0 then
-				if not oppoCounts[cid] then
-					oppoCounts[cid] = 0
-					table.insert(oppoOrder, cid)
-				end
-				oppoCounts[cid] = oppoCounts[cid] + 1
-			end
-		end
-		if type(rawCards) == "table" then
-			local numKeys = {}
-			for k in pairs(rawCards) do
-				if tonumber(k) then table.insert(numKeys, tonumber(k)) end
-			end
-			if #numKeys > 0 then
-				table.sort(numKeys)
-				for _, k in ipairs(numKeys) do
-					addOppoCid(rawCards[k] or rawCards[tostring(k)])
-				end
+		local function parseCrown(userObj)
+			if not userObj then return nil end
+			if userObj._crown and userObj._crown._infoId and userObj._crown._infoId ~= 0 then
+				return { _infoId = userObj._crown._infoId, _num = userObj._crown._num }
+			elseif userObj.crown and type(userObj.crown) == "table" and (userObj.crown.info_id or userObj.crown._infoId) then
+				local cid = tonumber(userObj.crown.info_id or userObj.crown._infoId) or 7204
+				local num = tonumber(userObj.crown.num or userObj.crown._num) or 1
+				if cid ~= 0 then return { _infoId = cid, _num = num } end
 			else
-				for _, v in pairs(rawCards) do
-					addOppoCid(v)
+				local gc = tonumber(userObj.gold_cup) or 0
+				local sc = tonumber(userObj.silver_cup) or 0
+				local bc = tonumber(userObj.bronze_cup) or 0
+				if gc > 0 then return { _infoId = 7204, _num = gc }
+				elseif sc > 0 then return { _infoId = 7205, _num = sc }
+				elseif bc > 0 then return { _infoId = 7206, _num = bc }
 				end
 			end
+			return nil
 		end
-		for _, cid in ipairs(oppoOrder) do
-			table.insert(oppoCards, { info_id = cid, num = oppoCounts[cid] })
-			table.insert(oppoLevels, { info_id = cid, level = 1 })
-			table.insert(oppoSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
-			oppoCount = oppoCount + oppoCounts[cid]
-		end
-		while oppoCount < 40 do
-			for _, cid in ipairs(fallbackCids) do
-				if oppoCount >= 40 then break end
-				table.insert(oppoCards, { info_id = cid, num = 1 })
-				table.insert(oppoLevels, { info_id = cid, level = 1 })
-				table.insert(oppoSkins, { skin_id = 0, info_id = cid, effect_ids = {} })
-				oppoCount = oppoCount + 1
+
+		local playerCards, playerLevels, playerSkins
+		local oppoCards, oppoLevels, oppoSkins
+		local myCrown, oppoCrown
+
+		if isWatcher then
+			playerCards, playerLevels, playerSkins = buildCardsFromRaw(pA.cards)
+			oppoCards, oppoLevels, oppoSkins = buildCardsFromRaw(pB.cards)
+			myCrown = parseCrown(pA)
+			oppoCrown = parseCrown(pB)
+		else
+			playerCards = {}
+			playerLevels = {}
+			playerSkins = {}
+			local totalPlayerCards = 0
+			local curTroopIndex = (P and P._curTroopIndex) or 1
+			local pTroop = (P and P._playerCard and P._playerCard._troops and P._playerCard._troops[curTroopIndex]) or {}
+			local pList = (type(pTroop) == "table" and (pTroop._cards or pTroop)) or {}
+			for _, card in ipairs(pList) do
+				local cid = type(card) == "table" and (card._infoId or card.info_id) or card
+				local num = type(card) == "table" and (card._num or card.num) or 1
+				local lvl = type(card) == "table" and ((card._level and card._level > 0) and card._level or 1) or 1
+				if cid and tonumber(cid) then
+					cid = tonumber(cid)
+					num = math.max(1, tonumber(num) or 1)
+					lvl = tonumber(lvl) or 1
+					table.insert(playerCards, { info_id = cid, num = num })
+					table.insert(playerLevels, { info_id = cid, level = lvl })
+					table.insert(playerSkins, buildSkinEntryForCard(cid))
+					totalPlayerCards = totalPlayerCards + num
+				end
 			end
+			while totalPlayerCards < 40 do
+				for _, cid in ipairs(fallbackCids) do
+					if totalPlayerCards >= 40 then break end
+					table.insert(playerCards, { info_id = cid, num = 1 })
+					table.insert(playerLevels, { info_id = cid, level = 1 })
+					table.insert(playerSkins, buildSkinEntryForCard(cid))
+					totalPlayerCards = totalPlayerCards + 1
+				end
+			end
+
+			oppoCards, oppoLevels, oppoSkins = buildCardsFromRaw(oppo.cards)
+			myCrown = parseCrown(P) or (ClientData and ClientData._account and parseCrown(ClientData._account))
+			oppoCrown = parseCrown(oppo)
 		end
 
 		ClientData._battleFromFindIndex = Data.FindMatchType.hall
@@ -4516,38 +6685,6 @@ function patchClientData()
 		ClientData._currentMatchId = matchId
 		ClientData._usedCardsToAdd = {}
 		ClientData._observeUsedCards = {}
-
-		local myCrown = nil
-		if P and P._crown and P._crown._infoId and P._crown._infoId ~= 0 then
-			myCrown = { _infoId = P._crown._infoId, _num = P._crown._num }
-		elseif ClientData and ClientData._account then
-			local gc = tonumber(ClientData._account.gold_cup) or 0
-			local sc = tonumber(ClientData._account.silver_cup) or 0
-			local bc = tonumber(ClientData._account.bronze_cup) or 0
-			if gc > 0 then myCrown = { _infoId = 7204, _num = gc }
-			elseif sc > 0 then myCrown = { _infoId = 7205, _num = sc }
-			elseif bc > 0 then myCrown = { _infoId = 7206, _num = bc }
-			end
-		end
-
-		local oppoCrown = nil
-		if oppo then
-			if oppo._crown and oppo._crown._infoId and oppo._crown._infoId ~= 0 then
-				oppoCrown = { _infoId = oppo._crown._infoId, _num = oppo._crown._num }
-			elseif oppo.crown and type(oppo.crown) == "table" and (oppo.crown.info_id or oppo.crown._infoId) then
-				local cid = tonumber(oppo.crown.info_id or oppo.crown._infoId) or 7204
-				local num = tonumber(oppo.crown.num or oppo.crown._num) or 1
-				if cid ~= 0 then oppoCrown = { _infoId = cid, _num = num } end
-			else
-				local ogc = tonumber(oppo.gold_cup) or 0
-				local osc = tonumber(oppo.silver_cup) or 0
-				local obc = tonumber(oppo.bronze_cup) or 0
-				if ogc > 0 then oppoCrown = { _infoId = 7204, _num = ogc }
-				elseif osc > 0 then oppoCrown = { _infoId = 7205, _num = osc }
-				elseif obc > 0 then oppoCrown = { _infoId = 7206, _num = obc }
-				end
-			end
-		end
 
 		local battleInput = {
 			_levelId = 0,
@@ -4558,12 +6695,10 @@ function patchClientData()
 			_pvpMatch = true,
 			_matchId = matchId,
 			_isAttacker = isAttacker,
-			_isWatcher = false,
+			_isWatcher = isWatcher,
 			_speedFactor = 1,
 			_type = Battle_pb.PB_BATTLE_MATCH,
 			_battleType = Data.BattleType.PVP_room,
-			_pvpMatch = true,
-			_isOppoOnline = true,
 			_sceneType = Data.BattleSceneType.gold_scene or 11,
 			_timestamp = math.floor(ClientData.getCurrentTime() * 1000),
 			_randomSeed = seed,
@@ -4574,10 +6709,10 @@ function patchClientData()
 			_oppoEventIds = {},
 			_player = {
 				_region = 1,
-				_level = (P and P._level) or 50,
+				_level = isWatcher and (pA.level or 50) or ((P and P._level) or 50),
 				_monthCardType = 0,
-				_roundTimeInit = 90,
-				_roundTimeMax = 90,
+				_roundTimeInit = 45,
+				_roundTimeMax = 45,
 				_roundTimeDelta = 0,
 				_fortressHp = serverRoom.match_hp or 8000,
 				_avatarFrameId = 0,
@@ -4588,10 +6723,14 @@ function patchClientData()
 				_avatarFrameCount = 0,
 				_regionId = 1,
 				_avatarFrame = 0,
-				_vip = (P and P._vip) or 0,
-				_id = myAccId,
-				_name = (P and P._name) or "Player",
-				_avatar = ((P and P._avatar) or 2) * 100 + 1,
+				_vip = isWatcher and (pA.vip or 0) or ((P and P._vip) or 0),
+				_id = isWatcher and (pA.id or 1) or myAccId,
+				_name = isWatcher and (pA.name or "Player A") or ((P and P._name) or "Player"),
+				_avatar = isWatcher and (pA.avatar or 201) or (function()
+					local av = (P and P._avatar) or 301
+					if av < 100 then av = av * 100 + 1 end
+					return av
+				end)(),
 				_crown = myCrown,
 				_cardBackId = (P and P._cardBackId) or Data.PropsId.card_back,
 				_isNpc = false,
@@ -4599,14 +6738,14 @@ function patchClientData()
 				_troopLevels = playerLevels,
 				_troopSkins = playerSkins,
 				_usedCards = {},
-				_trophy = 800
+				_trophy = isWatcher and (tonumber(pA.trophy) or 800) or 800
 			},
 			_opponent = {
 				_region = 1,
-				_level = oppo.level or 50,
+				_level = (isWatcher and pB.level or oppo.level) or 50,
 				_monthCardType = 0,
-				_roundTimeInit = 90,
-				_roundTimeMax = 90,
+				_roundTimeInit = 45,
+				_roundTimeMax = 45,
 				_roundTimeDelta = 0,
 				_fortressHp = serverRoom.match_hp or 8000,
 				_avatarFrameId = 0,
@@ -4617,10 +6756,10 @@ function patchClientData()
 				_avatarFrameCount = 0,
 				_regionId = 1,
 				_avatarFrame = 0,
-				_vip = 0,
-				_id = oppo.id or 0,
-				_name = oppo.name or "Duelist",
-				_avatar = oppo.avatar or 201,
+				_vip = (isWatcher and pB.vip or oppo.vip) or 0,
+				_id = (isWatcher and pB.id or oppo.id) or 0,
+				_name = (isWatcher and pB.name or oppo.name) or "Duelist",
+				_avatar = (isWatcher and pB.avatar or oppo.avatar) or 201,
 				_crown = oppoCrown,
 				_cardBackId = 7600,
 				_isNpc = false,
@@ -4628,18 +6767,18 @@ function patchClientData()
 				_troopLevels = oppoLevels,
 				_troopSkins = oppoSkins,
 				_usedCards = {},
-				_trophy = tonumber(oppo.trophy) or 800
+				_trophy = tonumber(isWatcher and pB.trophy or oppo.trophy) or 800
 			}
 		}
 
 		local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
 		if pvpNet then
-			pvpNet:connect(matchId, myAccId, function(intsJson, addTime, maxTime, timeLeft)
+			pvpNet:connect(matchId, myAccId, isAttacker, function(intsJson, addTime, maxTime, timeLeft, fromSlot)
 				local ok, ints = pcall(json.decode, intsJson)
 				if ok and type(ints) == "table" and #ints > 0 then
 					local card_val = tonumber(ints[1]) or 0
 					local isCardAction = (card_val ~= BattleData.UseCardId.round and card_val ~= BattleData.UseCardId.retreat and card_val ~= 0)
-					local bonusSec = tonumber(addTime) or (isCardAction and 2 or 0)
+					local bonusSec = tonumber(addTime) or (isCardAction and 6 or 0)
 					local maxSec = tonumber(maxTime) or 120
 					local exactTime = tonumber(timeLeft)
 
@@ -4655,34 +6794,97 @@ function patchClientData()
 						end
 					end
 
-					ClientData._usedCardsToAdd = ClientData._usedCardsToAdd or {}
-					for _, val in ipairs(ints) do
-						table.insert(ClientData._usedCardsToAdd, tonumber(val) or 0)
-					end
-					if bUi and type(bUi.oppoTryUseCard) == "function" then
-						bUi:oppoTryUseCard()
+					if isWatcher then
+						local slot = fromSlot
+						if not slot or slot == "" then
+							if bUi and bUi._player and bUi._player._isUsing then
+								slot = "p1"
+							else
+								slot = "p2"
+							end
+						end
+						if slot == "p1" then
+							ClientData._observeUsedCards = ClientData._observeUsedCards or {}
+							for _, val in ipairs(ints) do
+								table.insert(ClientData._observeUsedCards, tonumber(val) or 0)
+							end
+							local handled = false
+							if bUi and type(bUi.observeTryUseCard) == "function" then
+								handled = bUi:observeTryUseCard()
+							end
+							if card_val == BattleData.UseCardId.round and not handled and bUi and bUi._player and bUi._player._playerType == BattleData.PlayerType.observe then
+								pcall(function() bUi._player:startAction() end)
+							end
+						else
+							ClientData._usedCardsToAdd = ClientData._usedCardsToAdd or {}
+							for _, val in ipairs(ints) do
+								table.insert(ClientData._usedCardsToAdd, tonumber(val) or 0)
+							end
+							local handled = false
+							if bUi and type(bUi.oppoTryUseCard) == "function" then
+								handled = bUi:oppoTryUseCard()
+							end
+							if card_val == BattleData.UseCardId.round and not handled and bUi and type(bUi.forceOppoTurnEnd) == "function" then
+								bUi:forceOppoTurnEnd()
+							end
+						end
+					else
+						ClientData._usedCardsToAdd = ClientData._usedCardsToAdd or {}
+						for _, val in ipairs(ints) do
+							table.insert(ClientData._usedCardsToAdd, tonumber(val) or 0)
+						end
+						local handled = false
+						if bUi and type(bUi.oppoTryUseCard) == "function" then
+							handled = bUi:oppoTryUseCard()
+						end
+						if card_val == BattleData.UseCardId.round and not handled and bUi and type(bUi.forceOppoTurnEnd) == "function" then
+							bUi:forceOppoTurnEnd()
+						end
 					end
 				end
 			end, function()
 				local scene = lc._runningScene or ClientView._scene
 				local bUi = scene and scene._battleUi
 				if bUi and not bUi._isBattleEndSended then
-					bUi._forceResult = Data.BattleResult.win
-					bUi:hideThinking()
-					if bUi._opponent and type(bUi.retreat) == "function" then
-						bUi:retreat(bUi._opponent)
+					if isWatcher then
+						ToastManager.push("Một đấu thủ đã rời trận đấu!")
+						bUi._isBattleEndSended = true
+						if type(bUi.showResult) == "function" then
+							bUi:showResult()
+						end
 					else
-						bUi:sendBattleEnd(false, Data.BattleResult.win)
+						bUi._forceResult = Data.BattleResult.win
+						bUi:hideThinking()
+						if bUi._opponent and type(bUi.retreat) == "function" then
+							bUi:retreat(bUi._opponent)
+						else
+							bUi:sendBattleEnd(false, Data.BattleResult.win)
+						end
+						ToastManager.push("Đối thủ đã rời trận, bạn đã giành chiến thắng!")
 					end
-					ToastManager.push("Đối thủ đã rời trận, bạn đã giành chiến thắng!")
 				end
-			end, function(peerResult)
+			end, function(peerResult, reason, winnerSlot)
 				local scene = lc._runningScene or ClientView._scene
 				local bUi = scene and scene._battleUi
 				if bUi and not bUi._isBattleEndSended then
-					local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
-					bUi._forceResult = myRes
-					bUi:sendBattleEnd(false, myRes)
+					if isWatcher then
+						ToastManager.push("Trận đấu đã kết thúc!")
+						bUi._isBattleEndSended = true
+						if type(bUi.showResult) == "function" then
+							bUi:showResult()
+						end
+					else
+						local oppoHp = bUi._opponent and bUi._opponent._fortress and bUi._opponent._fortress._hp
+						local playerHp = bUi._player and bUi._player._fortress and bUi._player._fortress._hp
+						local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
+						if oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0) then
+							myRes = Data.BattleResult.win
+						elseif playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0) then
+							myRes = Data.BattleResult.lose
+						end
+						bUi._forceResult = myRes
+						bUi:sendBattleEnd(false, myRes)
+					end
 				end
 			end, function(chatMsg)
 				local scene = lc._runningScene or ClientView._scene
@@ -4690,7 +6892,7 @@ function patchClientData()
 				if bUi and bUi._opponent and bUi.addChat then
 					bUi:addChat(bUi._opponent, tostring(chatMsg))
 				end
-			end)
+			end, isWatcher)
 		end
 
 		local ind = ClientView.getActiveIndicator()
@@ -4910,18 +7112,26 @@ function patchClientData()
     ClientData.sendSetCharacter = function(charId, isGuide)
         local myAccId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
         local cid = tonumber(charId) or 3
+        local defaultAvatar = cid * 100 + 1
         local api = jsbridge and jsbridge.object("jdzcApi")
         if api and api.post then
             api:post("set_character", {
                 account_id = myAccId,
-                character_id = cid
+                character_id = cid,
+                avatar = defaultAvatar
             }, function(rawRes)
                 local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
                 if res and res.code == 200 then
+                    local newAvatar = res.avatar or defaultAvatar
+                    if ClientData._account then
+                        ClientData._account.character_id = cid
+                        ClientData._account.avatar = newAvatar
+                    end
                     if P then
                         P._characterId = cid
-                        P:changeIcon(cid * 100 + 1)
+                        P:changeIcon(newAvatar)
                         P:sendCharacterDirty()
+                        P:sendIconDirty()
                     end
                     ToastManager.push("Đổi nhân vật thành công!")
                 end
@@ -4941,8 +7151,18 @@ function patchClientData()
             }, function(rawRes)
                 local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
                 if res and res.code == 200 then
+                    if ClientData._account then
+                        ClientData._account.avatar = aid
+                        if res.character_id then
+                            ClientData._account.character_id = res.character_id
+                        end
+                    end
                     if P then
                         P._avatar = aid
+                        if res.character_id then
+                            P._characterId = res.character_id
+                            P:sendCharacterDirty()
+                        end
                         P:sendIconDirty()
                     end
                     ToastManager.push("Đổi avatar thành công!")
@@ -5430,6 +7650,13 @@ local function patchBattleUiTouch(mod)
 			if self._playerUi._pFieldCard then
 				table.insert(cardsToCheck, self._playerUi._pFieldCard)
 			end
+			if self._playerUi._pShowCards then
+				for iter = 1, Data.MAX_CARD_COUNT_ON_COVER do
+					if self._playerUi._pShowCards[iter] then
+						table.insert(cardsToCheck, self._playerUi._pShowCards[iter])
+					end
+				end
+			end
 			for _, pCard in ipairs(cardsToCheck) do
 				if pCard and pCard._initiativeSkillIcons and #pCard._initiativeSkillIcons > 0 then
 					for iconIdx, iconBtn in ipairs(pCard._initiativeSkillIcons) do
@@ -5504,7 +7731,10 @@ local function patchBattleUiTouch(mod)
 				touch.getId = function() return 0 end
 				touch.getID = function() return 0 end
 			end
-			return oldTouchEnded(self, touch)
+			local ok, err = pcall(oldTouchEnded, self, touch)
+			if not ok then
+				print("[h5_patch] BattleUi.onTouchEnded error: " .. tostring(err))
+			end
 		end
 	end
 end
@@ -5520,11 +7750,12 @@ local function patchPlayerUi(PlayerUi)
 		if ret == nil or ret.x == nil or ret.y == nil or ret.x ~= ret.x or ret.y ~= ret.y then
 			-- If the card is in a known slot, calculate position directly from its _pos
 			local pos = cardSprite._card._pos
-			local xs = self._isController and PlayerUi.Pos.attacker_board_x or PlayerUi.Pos.defender_board_x
-			local y = self._isController and PlayerUi.Pos.attacker_board_y or PlayerUi.Pos.defender_board_y
+			local isBottom = self._isController
+			local xs = isBottom and PlayerUi.Pos.attacker_board_x or PlayerUi.Pos.defender_board_x
+			local y = isBottom and PlayerUi.Pos.attacker_board_y or PlayerUi.Pos.defender_board_y
 			if pos and xs and xs[pos] then
 				if cardSprite.isSmall and cardSprite:isSmall() then
-					y = y + (self._isController and (pos == 6 and PlayerUi.Pos.board_pos_dy[1] or -PlayerUi.Pos.board_pos_dy[2]) or pos == 6 and -PlayerUi.Pos.board_pos_dy[1] or PlayerUi.Pos.board_pos_dy[2])
+					y = y + (isBottom and (pos == 6 and PlayerUi.Pos.board_pos_dy[1] or -PlayerUi.Pos.board_pos_dy[2]) or pos == 6 and -PlayerUi.Pos.board_pos_dy[1] or PlayerUi.Pos.board_pos_dy[2])
 				end
 				local defaultPos = cc.p(xs[pos], y)
 				return defaultPos
@@ -5550,18 +7781,10 @@ local function patchPlayerUi(PlayerUi)
 end
 
 local function patchCardSprite(CardSprite)
-	local oldInit = CardSprite.init
-	if oldInit then
-		CardSprite.init = function(self, ...)
-			local ret = oldInit(self, ...)
-			self.__isCard = true
-			-- ponytail: only the CardSprite itself is the upright root;
-			-- marking _pCardArea/_pShadowArea as __isCard made each area
-			-- project around its own center (shadow at -100,-100) so the
-			-- gray shadow stayed at the cursor while the frame drifted right.
-			return ret
-		end
-	end
+	if CardSprite.__h5_patched then return end
+	CardSprite.__h5_patched = true
+
+	-- __isCard is set directly in CardSprite.lua m.init
 
 	CardSprite.runAction = function(self, action)
 		local function onActionComplete()
@@ -5727,11 +7950,16 @@ local function patchCardSprite(CardSprite)
 
 	local oldTouchEnded = CardSprite.onTouchEnded
 	CardSprite.onTouchEnded = function(self, touch)
-		if self._status == CardSprite.Status.large or self._status == CardSprite.Status.info or self._pInfoArea then
-			self:hideLargePic()
-		end
-		if oldTouchEnded then
-			oldTouchEnded(self, touch)
+		local ok, err = pcall(function()
+			if self._status == CardSprite.Status.large or self._status == CardSprite.Status.info or self._pInfoArea then
+				self:hideLargePic()
+			end
+			if oldTouchEnded then
+				oldTouchEnded(self, touch)
+			end
+		end)
+		if not ok then
+			print("[h5_patch] CardSprite.onTouchEnded error: " .. tostring(err))
 		end
 	end
 
@@ -5770,16 +7998,96 @@ local function patchCardSprite(CardSprite)
 		return ret
 	end
 
-	local oldInitCard = CardSprite.initCard
-	if oldInitCard then
-		CardSprite.initCard = function(self, ...)
-				local ret = oldInitCard(self, ...)
-			pcall(function()
-				if self._pCardArea then self._pCardArea:setPosition(0,0) self._pCardArea:setRotation3D({x=0,y=0,z=0}) self._pCardArea:stopAllActions() end
-				if self._pShadowArea then self._pShadowArea:setPosition(0,0) self._pShadowArea:setRotation3D({x=0,y=0,z=0}) self._pShadowArea:setScale(1) end
-			end)
-			return ret
+
+	CardSprite.efcXYZMarkBegin = function(self, markName)
+		if not self._card then return end
+		local count = self._card:getBuffValue(true, BattleData.PositiveType.xyzMark)
+		if self._xyzMaterialCount == count and self._statusEfc and self._statusEfc[markName] ~= nil then
+			return
 		end
+		if self._statusEfc and self._statusEfc[markName] ~= nil then
+			CardSprite.efcXYZMarkEnd(self, markName)
+		end
+		if count > 0 and (not self._statusEfc or self._statusEfc[markName] == nil) then
+			self._xyzMaterialCount = count
+			local efcName = "chaoliangsucai" .. math.min(3, count)
+			local db = self._ownerUi and self._ownerUi:efcDragonBones2(efcName, "effect", 0.5, false)
+			if db then
+				lc.addChildToPos(self._pEffectArea, db, cc.p(0, 0))
+				if self._scene and self._scene.seenByCamera3D then
+					self._scene:seenByCamera3D(db)
+				end
+				self._statusEfc = self._statusEfc or {}
+				self._statusEfc[markName] = db
+			end
+		end
+	end
+
+	local oldUpdateInitiativeSkills = CardSprite.updateInitiativeSkills
+	CardSprite.updateInitiativeSkills = function(self)
+		local card = self._card
+		if not card then return end
+		self._initiativeSkillIcons = self._initiativeSkillIcons or {}
+		local skills = card.getInitiativeSkill and card:getInitiativeSkill(Data.SkillMode.initiative_bcs)
+		if not self._isController or (card._status ~= BattleData.CardStatus.board and card._status ~= BattleData.CardStatus.show and card._status ~= BattleData.CardStatus.field) or not skills or #skills == 0 then
+			pcall(function() self:removeInitiativeSkills() end)
+			return
+		end
+		if self._initiativeSkillIcons and #self._initiativeSkillIcons == #skills and #skills > 0 then
+			for u = 1, #skills do
+				local s = skills[u]
+				local btn = self._initiativeSkillIcons[u]
+				if btn then
+					local canUse = (card._owner and (card._owner:canUseInitiativeSkill(card, s) and (not self._battleUi or self._battleUi._dropLayer == nil))) or false
+					btn:setEnabled(canUse)
+				end
+			end
+			return
+		end
+		pcall(function() self:removeInitiativeSkills() end)
+		self._initiativeSkillIcons = {}
+		for u = 1, #skills do
+			local s = skills[u]
+			local btn = ClientView.createShaderButton("initiative_icon_s", function(q)
+				if not self._ownerUi or not self._ownerUi._isController then return true end
+				if self._battleUi and self._battleUi._isAddingBoardCard then
+					self._ownerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
+					return true
+				end
+				if not ClientData.checkBtnClick() then return end
+				self._ownerUi:castInitiativeSkill(card, s)
+			end)
+			if btn then
+				btn:setDisabledShader(ClientView.SHADER_DISABLE)
+				local canUse = (card._owner and (card._owner:canUseInitiativeSkill(card, s) and (not self._battleUi or self._battleUi._dropLayer == nil))) or false
+				btn:setEnabled(canUse)
+				local h = {0, 6, -6, 10, -10, 6}
+				local posX = (card._pos and h[card._pos]) or 0
+				btn:setTouchRect(cc.rect(posX, 0, lc.w(btn) + posX, lc.h(btn)))
+				if self._scene and self._scene.seenByCamera3D then
+					self._scene:seenByCamera3D(btn)
+				end
+				if self._pEffectArea then
+					lc.addChildToPos(self._pEffectArea, btn, cc.p(-60 + u * 30, -100))
+				end
+				btn:retain()
+				self._initiativeSkillIcons[u] = btn
+			end
+		end
+	end
+
+	local oldGetNegativeStatus = CardSprite.getNegativeStatus
+	CardSprite.getNegativeStatus = function(self)
+		local ret = oldGetNegativeStatus and oldGetNegativeStatus(self) or {}
+		local card = self._card
+		if card and (card._infoId == 40730 or (card.hasSkillFast and card:hasSkillFast(14719))) and card._status == BattleData.CardStatus.board then
+			for idx = 1, #(CardSprite.NegativeStatus or {}) do
+				if CardSprite.NegativeStatus[idx]._name == "manacle" then
+					ret[idx] = not card._tsAwakened
+				end
+			end
+		end
+		return ret
 	end
 end
 -- ---------------------------------------------------------------------------
@@ -5890,6 +8198,13 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 				self._isBattleEndSended = true
 
 				local res = self._forceResult or (self._player and self._player:getResult()) or Data.BattleResult.win
+				local oppoHp = self._opponent and self._opponent._fortress and self._opponent._fortress._hp
+				local playerHp = self._player and self._player._fortress and self._player._fortress._hp
+				if oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0) then
+					res = Data.BattleResult.win
+				elseif playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0) then
+					res = Data.BattleResult.lose
+				end
 				local levelId = input and (input._levelId or input._copyId) or 0
 
 				local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
@@ -5966,7 +8281,7 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 
 				local isClashRank = (self._battleType == Data.BattleType.PVP_clash or self._battleType == Data.BattleType.PVP_clash_npc or self._battleType == 211 or self._battleType == 212 or (Battle_pb and self._battleType == Battle_pb.PB_BATTLE_WORLD_LADDER) or isPvp or (input and (input._isRankLadder or input._clashGrade ~= nil)))
 
-				local function finalizeBattleEnd(deltaTrophy, deltaGold, newTrophy, newGold)
+				local function finalizeBattleEnd(deltaTrophy, deltaGold, newTrophy, newGold, customResType, customResNum, rewardItemInfoId)
 					local realDelta = tonumber(deltaTrophy) or 0
 					local finalTrophy = tonumber(newTrophy) or 0
 					local prevTrophy = finalTrophy - realDelta
@@ -6005,9 +8320,21 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 						P._playerWorld._curLevel[1] = math.max(P._playerWorld._curLevel[1] or 10101, levelId + 1)
 					end
 
-					local gItem = pb.resource:add()
-					gItem.info_id = Data.ResType.gold
-					gItem.num = deltaGold
+					if customResType and customResNum and customResNum > 0 then
+						local rItem = pb.resource:add()
+						rItem.info_id = customResType
+						rItem.num = customResNum
+					elseif deltaGold and deltaGold > 0 then
+						local gItem = pb.resource:add()
+						gItem.info_id = Data.ResType.gold
+						gItem.num = deltaGold
+					end
+
+					if rewardItemInfoId and customResNum and customResNum > 0 then
+						local pItem = pb.resource:add()
+						pItem.info_id = rewardItemInfoId
+						pItem.num = customResNum
+					end
 
 					local eItem = pb.resource:add()
 					eItem.info_id = Data.ResType.exp
@@ -6113,33 +8440,63 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 					local isBot = not (input and input._isOppoOnline and input._pvpMatch)
 					local oppoTrophy = (input and input._opponent and input._opponent._trophy) or (self._opponent and self._opponent._trophy) or 800
 					local battleRounds = (self._player and self._player._round) or (input and input._player and input._player._round) or 1
+					local isSurrender = (self._isSurrender == true or (self._player and self._player._isRetreat == true))
 					api:post("pvp_reward", {
 						account_id = accId,
 						result = (res == Data.BattleResult.win) and 1 or 2,
 						battle_type = "clash",
 						is_bot = isBot,
+						is_surrender = isSurrender,
 						oppo_trophy = oppoTrophy,
 						rounds = battleRounds
 					}, function(rawRes)
 						local cr = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
 						if cr and cr.code == 200 then
-							local dGold = tonumber(cr.delta_gold) or ((res == Data.BattleResult.win) and 10000 or 500)
 							local dTrophy = tonumber(cr.delta_trophy) or ((res == Data.BattleResult.win) and 25 or -15)
+							local dGold = tonumber(cr.delta_gold) or ((res == Data.BattleResult.win) and (math.max(0, dTrophy) * 200) or (math.abs(dTrophy) * 20))
 							local nTrophy = tonumber(cr.trophy) or math.max(0, ((P and P._playerFindClash and P._playerFindClash._trophy) or 800) + dTrophy)
 							local nGold = tonumber(cr.gold) or (((P and P._gold) or 0) + dGold)
 
 							if P then P._gold = nGold end
 							if cr.level and P then P._level = cr.level end
 							if cr.exp and P then P._exp = cr.exp end
+							if cr.reputation ~= nil then
+								local nRep = tonumber(cr.reputation) or 50
+								if P then P._reputation = nRep end
+								if ClientData._account then
+									ClientData._account.reputation = nRep
+									if cr.next_reputation_in then
+										ClientData._account.reputation_updated_at = math.floor(ClientData.getCurrentTime()) - (900 - tonumber(cr.next_reputation_in))
+									end
+								end
+								if isSurrender then
+									ToastManager.push(string.format("Bạn đã đầu hàng! Điểm uy tín -1 (Còn %d/55).", nRep))
+								end
+							end
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.trophy_dirty))
 
 							finalizeBattleEnd(dTrophy, dGold, nTrophy, nGold)
 						else
 							-- Fallback on API non-200
-							local dGold = (res == Data.BattleResult.win) and 5000 or 500
-							local dTrophy = (res == Data.BattleResult.win) and 25 or -10
 							local curT = (P and P._playerFindClash and P._playerFindClash._trophy) or 800
+							local diff = math.abs(curT - oppoTrophy)
+							local ratio = math.min(1.0, diff / 1000.0)
+							local dTrophy = 30
+							if res == Data.BattleResult.win then
+								if curT >= oppoTrophy then
+									dTrophy = math.max(5, math.floor(30 - ratio * 25 + 0.5))
+								else
+									dTrophy = math.min(100, math.floor(30 + ratio * 70 + 0.5))
+								end
+							else
+								if curT >= oppoTrophy then
+									dTrophy = -math.min(100, math.floor(25 + ratio * 75 + 0.5))
+								else
+									dTrophy = -math.max(5, math.floor(25 - ratio * 20 + 0.5))
+								end
+							end
+							local dGold = (res == Data.BattleResult.win) and (math.max(0, dTrophy) * 200) or (math.abs(dTrophy) * 20)
 							finalizeBattleEnd(dTrophy, dGold, math.max(0, curT + dTrophy), ((P and P._gold) or 0) + dGold)
 						end
 					end)
@@ -6275,6 +8632,40 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 						jdzcMod.captureSurvival()
 					end
 					finalizeBattleEnd(0, dGold, curT, ((P and P._gold) or 0) + dGold)
+				elseif input and input._offlineKind == "expedition_ex" then
+					local rewardGem = (res == Data.BattleResult.win) and (tonumber(ClientData._curExpeditionReward) or 100) or 0
+					local curT = (P and P._playerFindClash and P._playerFindClash._trophy) or 800
+					if res == Data.BattleResult.win and rewardGem > 0 then
+						if P then
+							P._ingot = (P._ingot or 0) + rewardGem
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.ingot_dirty))
+						end
+						if api and api.post then
+							api:post("claim_expedition_reward", {
+								account_id = accId,
+								count = rewardGem,
+								opponent_id = ClientData._curExpeditionOppId,
+								opponent_rank = ClientData._curExpeditionOppRank
+							}, function(rawRes)
+								local cr = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+								if cr and cr.new_gem and P then
+									P._ingot = cr.new_gem
+									lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.ingot_dirty))
+								end
+								if cr and cr.defeated_ids then
+									ClientData._defeatedExpeditionIds = cr.defeated_ids
+								end
+							end)
+						end
+						if not ClientData._defeatedExpeditionIds then ClientData._defeatedExpeditionIds = {} end
+						if ClientData._curExpeditionOppId then table.insert(ClientData._defeatedExpeditionIds, ClientData._curExpeditionOppId) end
+						if ClientData._curExpeditionOppRank then table.insert(ClientData._defeatedExpeditionIds, ClientData._curExpeditionOppRank) end
+						ClientData._needRefreshExpedition = true
+						pcall(function()
+							ToastManager.push(string.format("Chiến thắng thám hiểm! Nhận được %d Linh thạch cao cấp (Gem)!", rewardGem))
+						end)
+					end
+					finalizeBattleEnd(0, 0, curT, (P and P._gold) or 0, Data.ResType.ingot, rewardGem)
 				else
 					-- Non-rank or fallback
 					local dGold = (res == Data.BattleResult.win) and 1000 or 200
@@ -6456,7 +8847,7 @@ local function patchResSwitchScene(ResSwitchScene)
 	local origLoadBattleRes = ResSwitchScene.loadBattleRes
 	ResSwitchScene.loadBattleRes = function(self)
 		rawset(self, "_switchedThisScene", false)
-		if origLoadBattleRes then origLoadBattleRes(self) end
+		if origLoadBattleRes then pcall(function() origLoadBattleRes(self) end) end
 		local id
 		id = lc.Scheduler:scheduleScriptFunc(function()
 			lc.Scheduler:unscheduleScriptEntry(id)
@@ -6476,7 +8867,7 @@ local function patchResSwitchScene(ResSwitchScene)
 	local origLoadCityUnionRes = ResSwitchScene.loadCityUnionRes
 	ResSwitchScene.loadCityUnionRes = function(self)
 		rawset(self, "_switchedThisScene", false)
-		if origLoadCityUnionRes then origLoadCityUnionRes(self) end
+		if origLoadCityUnionRes then pcall(function() origLoadCityUnionRes(self) end) end
 		local id
 		id = lc.Scheduler:scheduleScriptFunc(function()
 			lc.Scheduler:unscheduleScriptEntry(id)
@@ -6699,6 +9090,7 @@ function _G.require(name, ...)
 	local patch = patches[name]
 
 	if patch then
+		patches[name] = nil
 		local ok, err = pcall(patch, module)
 
 		if not ok then
@@ -7012,10 +9404,114 @@ function M.patchLateClientData()
 		ClientData.sendBuyPackage = function(packageId, count)
 			return doBuyPackage(count, false, Data.ResType.gold, packageId)
 		end
-		ClientData.sendWorldLottery = ClientData.sendCardLottery
-		ClientData.sendWorldLotteryEx = ClientData.sendCardLottery
-		ClientData.sendWorldLotteryActivity = ClientData.sendCardLottery
-		ClientData.sendWeekLottery = ClientData.sendCardLottery
+		ClientData.sendWorldLottery = function(hasToken, count)
+			local count = tonumber(count) or 1
+			local accId = (P and P._id) or (ClientData and ClientData._account and ClientData._account.id) or 1
+			local api = (jsbridge and jsbridge.object and jsbridge.object("jdzcApi")) or (jdzc and jdzc.api)
+			local tokenId = Data.PropsId.lottery_token or 7104
+			local costIngot = (Data._globalInfo and Data._globalInfo._expeditionDialCost) or 20
+
+			if not hasToken then
+				local reqGem = count * costIngot
+				if P and P.hasResource and not P:hasResource(Data.ResType.ingot, reqGem) then
+					ClientView.getActiveIndicator():hide()
+					local curScene = lc._runningScene
+					if curScene and curScene.enableBtns then curScene:enableBtns(true) end
+					ToastManager.push("Không đủ Linh thạch cao cấp (Gem) để quay thưởng!")
+					return
+				end
+			end
+
+			if api and api.post then
+				api:post("lottery_spin", {
+					account_id = accId,
+					count = count,
+					use_token = hasToken and true or false,
+					token_id = tokenId,
+					cost_ingot = costIngot
+				}, function(rawRes)
+					local res = nil
+					if type(rawRes) == "string" then
+						local ok, parsed = pcall(function()
+							if json and json.decode then return json.decode(rawRes) end
+							return require("json").decode(rawRes)
+						end)
+						if ok and parsed then res = parsed end
+					elseif type(rawRes) == "table" then
+						res = rawRes
+					end
+
+					if res and res.code == 200 and res.items then
+						-- Update local resources
+						if res.new_gem and P then
+							P._ingot = res.new_gem
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.ingot_dirty))
+						end
+						if res.new_gold and P then
+							P._gold = res.new_gold
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
+						end
+						if res.lottery_power ~= nil then
+							ClientData._lotteryPower = res.lottery_power
+						else
+							ClientData._lotteryPower = (ClientData._lotteryPower or 0) + count
+						end
+
+						if hasToken and P and P._propBag then
+							pcall(function()
+								P._propBag:useProps(tokenId, count)
+								lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.prop_dirty, { _infoId = tokenId }))
+							end)
+						end
+
+						-- Add cards or items
+						for _, it in ipairs(res.items) do
+							local infoId = it.info_id
+							local num = it.num
+							if infoId and infoId >= 10000 and P and P._playerCard then
+								pcall(function() P._playerCard:addCard(infoId, num) end)
+							elseif infoId and infoId < 10000 and infoId ~= 1 and infoId ~= 3 and P and P._propBag then
+								pcall(function() P._propBag:addProps(infoId, num) end)
+							end
+						end
+
+						-- Build response
+						local respItems = {}
+						for _, it in ipairs(res.items) do
+							table.insert(respItems, {
+								info_id = it.info_id,
+								num = it.num,
+								slot = it.slot or 1,
+								level = 1
+							})
+						end
+
+						local resp = {
+							type = SglMsgType_pb.PB_TYPE_WORLD_LOTTERY,
+							status = 0,
+							Extensions = {
+								[World_pb.SglWorldMsg.world_lottery_resp] = respItems
+							}
+						}
+						ClientData.onMsg(resp)
+					else
+						ClientView.getActiveIndicator():hide()
+						local curScene = lc._runningScene
+						if curScene and curScene.enableBtns then curScene:enableBtns(true) end
+						local msg = (res and res.msg) or "Quay thưởng thất bại!"
+						ToastManager.push(msg)
+					end
+				end)
+			else
+				ClientView.getActiveIndicator():hide()
+				local curScene = lc._runningScene
+				if curScene and curScene.enableBtns then curScene:enableBtns(true) end
+				ToastManager.push("Không thể kết nối đến máy chủ!")
+			end
+		end
+		ClientData.sendWorldLotteryEx = ClientData.sendWorldLottery
+		ClientData.sendWorldLotteryActivity = ClientData.sendWorldLottery
+		ClientData.sendWeekLottery = ClientData.sendWorldLottery
 
 		-- ==========================================================
 		-- USER VISIT / INSPECT DECK (Late hook)
@@ -7076,7 +9572,19 @@ function M.patchLateClientData()
 			local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
 			local api = jsbridge and jsbridge.object("jdzcApi")
 			if api and api.post then
-				api:post("decompose_card", { account_id = accId, card_id = tonumber(infoId), count = tonumber(count) or 1 })
+				api:post("decompose_card", { account_id = accId, card_id = tonumber(infoId), count = tonumber(count) or 1 }, function(rawRes)
+					local res = rawRes
+					if type(res) == "string" then
+						local ok, parsed = pcall(function() return require("json").decode(res) end)
+						if ok and parsed then res = parsed end
+					end
+					if res and res.code == 200 and res.gold and P then
+						P._gold = res.gold
+						if P.sendGoldDirty then
+							P:sendGoldDirty()
+						end
+					end
+				end)
 			end
 		end
 
@@ -7084,10 +9592,254 @@ function M.patchLateClientData()
 			local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
 			local api = jsbridge and jsbridge.object("jdzcApi")
 			if api and api.post then
-				api:post("decompose_all", { account_id = accId })
+				api:post("decompose_all", { account_id = accId }, function(rawRes)
+					local res = rawRes
+					if type(res) == "string" then
+						local ok, parsed = pcall(function() return require("json").decode(res) end)
+						if ok and parsed then res = parsed end
+					end
+					if res and res.code == 200 and res.gold and P then
+						P._gold = res.gold
+						if P.sendGoldDirty then
+							P:sendGoldDirty()
+						end
+					end
+				end)
+			end
+		end
+
+		-- ==========================================================
+		-- EFFECT SHOP & BATTLEFIELD / RACIAL EFFECTS SYSTEM (Late hooks)
+		-- ==========================================================
+		local PlayerCardCls = package.loaded["PlayerCard"] or require("PlayerCard")
+		local SkinCls = package.loaded["Skin"] or require("Skin")
+
+		-- 1. Patch PlayerCard:cardHasSkin
+		local orig_pc_cardHasSkin = PlayerCardCls.cardHasSkin
+		PlayerCardCls.cardHasSkin = function(self, cardId, skinOrEffectId, checkExpire)
+			cardId = cardId and Data.removeAdditional(cardId)
+			skinOrEffectId = tonumber(skinOrEffectId) or 0
+			if skinOrEffectId == 0 then return true end
+
+			if orig_pc_cardHasSkin and orig_pc_cardHasSkin(self, cardId, skinOrEffectId, checkExpire) then
+				return true
+			end
+
+			local sInfo = Data._skinInfo and Data._skinInfo[skinOrEffectId]
+			if sInfo and sInfo._type and sInfo._type >= 2 and sInfo._type <= 4 then
+				local isUnlocked = (self._globalUnlockedEffects and self._globalUnlockedEffects[skinOrEffectId])
+				if not isUnlocked and self._skins and self._skins[0] then
+					isUnlocked = self._skins[0]:isSkinIdAvailable(skinOrEffectId, checkExpire)
+				end
+
+				if not isUnlocked and lc and lc.UserDefault and lc.UserDefault.getBoolForKey then
+					if lc.UserDefault:getBoolForKey("unlocked_effect_" .. skinOrEffectId, false) then
+						isUnlocked = true
+					end
+				end
+
+				if isUnlocked then
+					if cardId and cardId > 0 then
+						self._skins = self._skins or {}
+						local skinObj = self._skins[cardId] or SkinCls.new(cardId)
+						self._skins[cardId] = skinObj
+						skinObj:addAvailable(skinOrEffectId, 0)
+					end
+					return true
+				end
+			end
+
+			return false
+		end
+
+		-- 2. Patch PlayerCard:buySkinId
+		local orig_pc_buySkinId = PlayerCardCls.buySkinId
+		PlayerCardCls.buySkinId = function(self, skinOrEffectId, expire, cardId)
+			cardId = cardId and Data.removeAdditional(cardId)
+			skinOrEffectId = tonumber(skinOrEffectId) or 0
+			local sInfo = Data._skinInfo and Data._skinInfo[skinOrEffectId]
+			if not sInfo then return false end
+
+			if sInfo._type and sInfo._type >= 2 and sInfo._type <= 4 then
+				if self:cardHasSkin(cardId, skinOrEffectId, true) then
+					return false
+				end
+
+				self._skins = self._skins or {}
+				local skinObj = self._skins[cardId] or SkinCls.new(cardId)
+				self._skins[cardId] = skinObj
+				skinObj:addAvailable(skinOrEffectId, expire or 0)
+
+				self._globalUnlockedEffects = self._globalUnlockedEffects or {}
+				self._globalUnlockedEffects[skinOrEffectId] = true
+				local skinObj0 = self._skins[0] or SkinCls.new(0)
+				self._skins[0] = skinObj0
+				skinObj0:addAvailable(skinOrEffectId, expire or 0)
+
+				if lc and lc.UserDefault and lc.UserDefault.setBoolForKey then
+					lc.UserDefault:setBoolForKey("unlocked_effect_" .. skinOrEffectId, true)
+				end
+
+				local effCat = sInfo._category or 0
+				for cid, s in pairs(self._skins) do
+					if cid > 0 then
+						local cinfo = Data.getInfo(cid)
+						if cinfo and (effCat == 0 or cinfo._category == effCat) then
+							s:addAvailable(skinOrEffectId, 0)
+						end
+					end
+				end
+
+				lc.sendEvent(Data.Event.skin_dirty)
+				return true
+			end
+
+			return orig_pc_buySkinId and orig_pc_buySkinId(self, skinOrEffectId, expire, cardId)
+		end
+
+		-- 3. Patch PlayerCard:setSkinId
+		local orig_pc_setSkinId = PlayerCardCls.setSkinId
+		PlayerCardCls.setSkinId = function(self, cardId, skinOrEffectId, effectType, ...)
+			cardId = cardId and Data.removeAdditional(cardId)
+			effectType = effectType or Data.SkinEffectType.skin
+			skinOrEffectId = tonumber(skinOrEffectId) or 0
+
+			if effectType >= 2 and effectType <= 4 then
+				self._skins = self._skins or {}
+				local skinObj = self._skins[cardId] or SkinCls.new(cardId)
+				self._skins[cardId] = skinObj
+
+				if skinOrEffectId == 0 then
+					skinObj:setCurrentId(0, effectType)
+					lc.sendEvent(Data.Event.skin_dirty)
+					return true
+				end
+
+				if self:cardHasSkin(cardId, skinOrEffectId, true) then
+					skinObj:addAvailable(skinOrEffectId, 0)
+					skinObj:setCurrentId(skinOrEffectId, effectType)
+					lc.sendEvent(Data.Event.skin_dirty)
+					return true
+				end
+				return false
+			end
+
+			return orig_pc_setSkinId and orig_pc_setSkinId(self, cardId, skinOrEffectId, effectType, ...)
+		end
+
+		if P and P._playerCard then
+			P._playerCard.cardHasSkin = PlayerCardCls.cardHasSkin
+			P._playerCard.buySkinId = PlayerCardCls.buySkinId
+			P._playerCard.setSkinId = PlayerCardCls.setSkinId
+		end
+
+		-- 4. Hook ClientData.sendBuyEffect
+		ClientData.sendBuyEffect = function(cardInfoId, effectId, effectType)
+			cardInfoId = tonumber(cardInfoId) or 0
+			effectId = tonumber(effectId) or 0
+			local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+			local api = jsbridge and jsbridge.object("jdzcApi")
+			if api then
+				if api.buyEffect then
+					api:buyEffect(accId, cardInfoId, effectId, function(rawRes)
+						local res = rawRes
+						if type(res) == "string" then
+							local ok, parsed = pcall(function() return require("json").decode(res) end)
+							if ok and parsed then res = parsed end
+						end
+						if res and res.code == 200 then
+							if res.gem and P then P._ingot = res.gem end
+							if res.crystal and P and P._propBag and P._propBag._props and P._propBag._props[7149] then
+								P._propBag._props[7149]._num = res.crystal
+							end
+							if P and P.sendResourceDirty then
+								P:sendResourceDirty()
+							end
+						end
+					end)
+				elseif api.post then
+					api:post("/api/buy_effect", { account_id = accId, card_id = cardInfoId, effect_id = effectId }, function(rawRes)
+						local res = rawRes
+						if type(res) == "string" then
+							local ok, parsed = pcall(function() return require("json").decode(res) end)
+							if ok and parsed then res = parsed end
+						end
+						if res and res.code == 200 then
+							if res.gem and P then P._ingot = res.gem end
+							if res.crystal and P and P._propBag and P._propBag._props and P._propBag._props[7149] then
+								P._propBag._props[7149]._num = res.crystal
+							end
+							if P and P.sendResourceDirty then
+								P:sendResourceDirty()
+							end
+						end
+					end)
+				end
+			end
+		end
+
+		-- 5. Hook ClientData.sendSetSkin
+		ClientData.sendSetSkin = function(cardInfoId, skinOrEffectId)
+			cardInfoId = tonumber(cardInfoId) or 0
+			skinOrEffectId = tonumber(skinOrEffectId) or 0
+			local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+
+			local effId = math.abs(skinOrEffectId)
+			local effType = 0
+			if (53001 <= effId and effId <= 53022) then effType = 2
+			elseif (53101 <= effId and effId <= 53122) then effType = 3
+			elseif (53201 <= effId and effId <= 53222) then effType = 4
+			end
+
+			if effType > 0 and cardInfoId > 0 and lc and lc.UserDefault and lc.UserDefault.setStringForKey then
+				local savedStr = lc.UserDefault:getStringForKey("card_effects_" .. cardInfoId, "")
+				local sData = {}
+				if savedStr ~= "" then
+					local ok, d = pcall(function() return require("json").decode(savedStr) end)
+					if ok and type(d) == "table" then sData = d end
+				end
+				local k = effType == 2 and "toBoard" or (effType == 3 and "onBoard" or "attack")
+				sData[k] = (skinOrEffectId > 0) and effId or 0
+				lc.UserDefault:setStringForKey("card_effects_" .. cardInfoId, require("json").encode(sData))
+			end
+
+			local targetEffectId = (skinOrEffectId > 0) and effId or 0
+			local api = jsbridge and jsbridge.object("jdzcApi")
+			if effType > 0 and api then
+				if api.setEffect then
+					api:setEffect(accId, cardInfoId, targetEffectId, effType, function() end)
+				elseif api.post then
+					api:post("/api/set_effect", { account_id = accId, card_id = cardInfoId, effect_id = targetEffectId, effect_type = effType }, function() end)
+				end
 			end
 		end
 	end
 end
+
+
+function M.patchAudio()
+	if not lc or not lc.Audio then return end
+	local origPlayAudio = lc.Audio.playAudio
+	if origPlayAudio and not lc.Audio._playAudioProtected then
+		lc.Audio._playAudioProtected = true
+		lc.Audio.playAudio = function(id, loop, tbl)
+			tbl = tbl or "main"
+			if lc.Audio._configs and lc.Audio._configs[tbl] then
+				if not lc.Audio._configs[tbl][id] then
+					if id == 33 or (AUDIO and id == AUDIO.M_BATTLE_FLO) then
+						lc.Audio.addAudio("res/audio/m_battle_flo.mp3", lc.Audio.Behavior.music or 0, 228, 2, true, 2, 0, tbl)
+					end
+				end
+			end
+			if not lc.Audio._configs or not lc.Audio._configs[tbl] or not lc.Audio._configs[tbl][id] then
+				print(string.format("[lc.Audio.playAudio] Warning: audio id '%s' in table '%s' not found! Skipping.", tostring(id), tostring(tbl)))
+				return
+			end
+			return origPlayAudio(id, loop, tbl)
+		end
+	end
+end
+
+pcall(M.patchAudio)
 
 return M

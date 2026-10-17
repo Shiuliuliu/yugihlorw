@@ -120,12 +120,13 @@ function var_0_0.ctor(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 	arg_1_0._battleUi = arg_1_1
 	arg_1_0._audioEngine = arg_1_1._audioEngine
 	arg_1_0._player = arg_1_2
+	arg_1_2._playerUi = arg_1_0
 	arg_1_0._isAttacker = arg_1_2._isAttacker
 	arg_1_0._isController = arg_1_0._isAttacker == arg_1_0._battleUi._isAttacker
 	arg_1_0._sceneType = arg_1_3
 	arg_1_0._cardBackId = arg_1_4
 
-	if not arg_1_0._cardBackId or arg_1_0._cardBackId == 0 or not arg_1_0._isController then
+	if not arg_1_0._cardBackId or arg_1_0._cardBackId < 7600 or not arg_1_0._isController then
 		arg_1_0._cardBackId = Data.PropsId.card_back
 	end
 
@@ -147,9 +148,9 @@ function var_0_0.ctor(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 		arg_1_0._hideHandCards = true
 	end
 
-	arg_1_0._handPos = arg_1_0._isAttacker and var_0_0.Pos.attacker_hand_y or var_0_0.Pos.defender_hand_y
+	arg_1_0._handPos = arg_1_0._isController and var_0_0.Pos.attacker_hand_y or var_0_0.Pos.defender_hand_y
 
-	if arg_1_0._isAttacker then
+	if arg_1_0._isController then
 		arg_1_0._handPos = arg_1_0._handPos - (1 - arg_1_0._battleUi._scale) * 320
 
 		if ClientData.isIPhoneX() then
@@ -493,15 +494,17 @@ function var_0_0.hideHandCards(arg_11_0, arg_11_1)
 	arg_11_0:updateHandCardsPos()
 
 	for iter_11_2, iter_11_3 in ipairs(arg_11_0._pRareCards) do
-		if arg_11_0._hideHandCards then
-			iter_11_3:initBack()
-			iter_11_3:setRotation3D({
-				z = 0,
-				x = 0,
-				y = 0
-			})
-		else
-			iter_11_3:initDead()
+		if iter_11_3 and iter_11_3.getContentSize then
+			if arg_11_0._hideHandCards then
+				iter_11_3:initBack()
+				iter_11_3:setRotation3D({
+					z = 0,
+					x = 0,
+					y = 0
+				})
+			else
+				iter_11_3:initDead()
+			end
 		end
 	end
 end
@@ -522,9 +525,13 @@ function var_0_0.updateBoardCardsPos(arg_13_0)
 		if var_13_0 ~= nil then
 			local var_13_1 = arg_13_0:calBoardCardPos(var_13_0)
 
-			var_13_0._pFrame._image:stopAllActions()
-			var_13_0._pFrame._image:startFloat()
-			var_13_0._pFrame._image:setScale(ClientView.getCardBattleScale(var_13_0._card._infoId))
+			if var_13_0._pFrame and var_13_0._pFrame._image then
+				var_13_0._pFrame._image:stopAllActions()
+				var_13_0._pFrame._image:startFloat()
+				var_13_0._pFrame._image:setScale(ClientView.getCardBattleScale(var_13_0._card._infoId))
+			elseif var_13_0._pFrame and var_13_0._pFrame._bones then
+				var_13_0._pFrame._bones:stopAllActions()
+			end
 			var_13_0:setPosition(var_13_1)
 
 			var_13_0._default._rotation = {
@@ -609,11 +616,17 @@ function var_0_0.removeCardSprite(arg_18_0, arg_18_1)
 		return
 	end
 
-	if arg_18_1:getParent() ~= nil then
-		arg_18_1:removeFromParent()
-	end
-
-	arg_18_1:release()
+	pcall(function()
+		arg_18_1:stopAllActions()
+		if arg_18_1._pFrame then
+			if arg_18_1._pFrame._image then arg_18_1._pFrame._image:stopAllActions() end
+			if arg_18_1._pFrame._bones then arg_18_1._pFrame._bones:stopAllActions() end
+		end
+		if arg_18_1:getParent() ~= nil then
+			arg_18_1:removeFromParent()
+		end
+		arg_18_1:release()
+	end)
 end
 
 function var_0_0.hideCardSprite(arg_19_0, arg_19_1)
@@ -683,13 +696,23 @@ function var_0_0.resetWhenInitialDeal(arg_24_0)
 		end
 	end
 
-	for iter_24_2 = 1, #arg_24_0._player._rareCards do
-		local var_24_3 = arg_24_0._player._rareCards[iter_24_2]
+	for iter_24_2 = 1, #arg_24_0._pRareCards do
+		local var_24_4 = arg_24_0._pRareCards[iter_24_2]
+
+		if var_24_4 ~= nil and var_24_4.removeFromParent then
+			var_24_4:removeFromParent()
+		end
+	end
+
+	arg_24_0._pRareCards = {}
+
+	for iter_24_3 = 1, #arg_24_0._player._rareCards do
+		local var_24_3 = arg_24_0._player._rareCards[iter_24_3]
 		local var_24_4 = arg_24_0:createCardSprite(var_24_3)
 
 		arg_24_0._battleUi:addChild(var_24_4)
 
-		arg_24_0._pRareCards[iter_24_2] = var_24_4
+		arg_24_0._pRareCards[iter_24_3] = var_24_4
 	end
 
 	arg_24_0:updateFortressHp()
@@ -863,7 +886,18 @@ function var_0_0.getCardSprite(arg_31_0, arg_31_1)
 		return arg_31_0._boss
 	end
 
-	return arg_31_0._cardSprites[arg_31_1._id]
+	local var_31_0 = arg_31_0._cardSprites[arg_31_1._id]
+
+	if var_31_0 == nil then
+		local var_31_1, var_31_2 = arg_31_0:getRareCardSprite(arg_31_1)
+
+		if var_31_1 ~= nil then
+			arg_31_0._cardSprites[arg_31_1._id] = var_31_1
+			return var_31_1
+		end
+	end
+
+	return var_31_0
 end
 
 function var_0_0.getHandCardSprite(arg_32_0, arg_32_1)
@@ -906,7 +940,7 @@ function var_0_0.getRareCardSprite(arg_35_0, arg_35_1)
 	for iter_35_0 = 1, #arg_35_0._pRareCards do
 		local var_35_0 = arg_35_0._pRareCards[iter_35_0]
 
-		if var_35_0 ~= nil and var_35_0._card == arg_35_1 then
+		if var_35_0 ~= nil and (var_35_0._card == arg_35_1 or var_35_0 == arg_35_1 or (var_35_0._card and var_35_0._card._id == arg_35_1._id)) then
 			return var_35_0, iter_35_0
 		end
 	end
@@ -975,17 +1009,25 @@ function var_0_0.getIsShowHandCardActive(arg_40_0)
 end
 
 function var_0_0.calHandCardPosAndRot(arg_41_0, arg_41_1)
-	local var_41_0 = #arg_41_0._pHandCards
+	local var_41_0 = math.max(#arg_41_0._pHandCards, (arg_41_0._player and #arg_41_0._player._handCards) or 0)
 	local var_41_1 = 0
 
 	for iter_41_0 = 1, Data.MAX_CARD_COUNT_IN_HAND do
 		local var_41_2 = arg_41_0._pHandCards[iter_41_0]
 
-		if var_41_2 ~= nil and var_41_2._card._id == arg_41_1._card._id then
+		if var_41_2 ~= nil and var_41_2._card and arg_41_1 and arg_41_1._card and var_41_2._card._id == arg_41_1._card._id then
 			var_41_1 = iter_41_0
 
 			break
 		end
+	end
+
+	if var_41_1 == 0 and arg_41_1 and arg_41_1._card and arg_41_1._card._pos and arg_41_1._card._pos > 0 then
+		var_41_1 = arg_41_1._card._pos
+	end
+
+	if var_41_0 == 0 then
+		var_41_0 = math.max(1, var_41_1)
 	end
 
 	local var_41_3 = 292 - (1 - arg_41_0._battleUi._scale) * 500
@@ -997,9 +1039,11 @@ function var_0_0.calHandCardPosAndRot(arg_41_0, arg_41_1)
 	local var_41_9 = ClientView.CARD_SIZE.height * CardSprite.Scale.normal
 	local var_41_10 = (var_41_7 - var_41_0 * var_41_8) / (var_41_0 + 1)
 	local var_41_11 = var_41_4 + var_41_8 / 2 + var_41_10
-	local var_41_12 = arg_41_0._isController and var_0_0.Pos.attacker_hand_y or var_0_0.Pos.defender_hand_y
+	local isBottom = arg_41_0._isController
 
-	if arg_41_0._isController then
+	local var_41_12 = isBottom and var_0_0.Pos.attacker_hand_y or var_0_0.Pos.defender_hand_y
+
+	if isBottom then
 		var_41_12 = var_41_12 - (1 - arg_41_0._battleUi._scale) * 320
 
 		if ClientData.isIPhoneX() then
@@ -1009,14 +1053,10 @@ function var_0_0.calHandCardPosAndRot(arg_41_0, arg_41_1)
 
 	local var_41_13 = (ClientView.SCR_H - var_41_9 * arg_41_0._battleUi._scale) / math.cos(ClientView.BATTLE_ROTATION_X * math.pi / 360) / arg_41_0._battleUi._scale
 
-	if not arg_41_0._battleUi._isObserver and arg_41_0._battleUi._battleType ~= Data.BattleType.replay or not arg_41_0._isController and not arg_41_0._battleUi._isReverse then
-		-- block empty
-	elseif not arg_41_0._isController and arg_41_0._battleUi._isReverse then
-		var_41_12 = ClientView.SCR_H - 13
-	elseif arg_41_0._isController and not arg_41_0._battleUi._isReverse then
+	if isBottom then
 		var_41_12 = 13
-	elseif arg_41_0._isController and arg_41_0._battleUi._isReverse then
-		var_41_12 = lc.ch(arg_41_0._battleUi) - 328 - var_41_9 / 2
+	else
+		var_41_12 = ClientView.SCR_H - 13
 	end
 
 	if var_41_6 < var_41_10 then
@@ -1031,7 +1071,7 @@ function var_0_0.calHandCardPosAndRot(arg_41_0, arg_41_1)
 	arg_41_1._default._rotation = {
 		z = 0,
 		y = 0,
-		x = arg_41_0._battleUi._battleType == Data.BattleType.layout and 0 or arg_41_0._battleUi._isReverse and -ClientView.BATTLE_ROTATION_X or ClientView.BATTLE_ROTATION_X
+		x = arg_41_0._battleUi._battleType == Data.BattleType.layout and 0 or ClientView.BATTLE_ROTATION_X
 	}
 
 	return arg_41_1._default._position, arg_41_1._default._rotation
@@ -1078,11 +1118,13 @@ function var_0_0.calBoardCardPos(arg_44_0, arg_44_1)
 		end
 	end
 
-	local var_44_2 = arg_44_0._isController and var_0_0.Pos.attacker_board_x or var_0_0.Pos.defender_board_x
-	local var_44_3 = arg_44_0._isController and var_0_0.Pos.attacker_board_y or var_0_0.Pos.defender_board_y
+	local isBottom = arg_44_0._isController
+
+	local var_44_2 = isBottom and var_0_0.Pos.attacker_board_x or var_0_0.Pos.defender_board_x
+	local var_44_3 = isBottom and var_0_0.Pos.attacker_board_y or var_0_0.Pos.defender_board_y
 
 	if arg_44_1:isSmall() then
-		var_44_3 = var_44_3 + (arg_44_0._isController and (var_44_0 == 6 and var_0_0.Pos.board_pos_dy[1] or -var_0_0.Pos.board_pos_dy[2]) or var_44_0 == 6 and -var_0_0.Pos.board_pos_dy[1] or var_0_0.Pos.board_pos_dy[2])
+		var_44_3 = var_44_3 + (isBottom and (var_44_0 == 6 and var_0_0.Pos.board_pos_dy[1] or -var_0_0.Pos.board_pos_dy[2]) or var_44_0 == 6 and -var_0_0.Pos.board_pos_dy[1] or var_0_0.Pos.board_pos_dy[2])
 	end
 
 	arg_44_1._default._position = cc.p(var_44_2[var_44_0], var_44_3)
@@ -1268,19 +1310,32 @@ function var_0_0.updateBoardCardsInitialSkills(arg_54_0)
 	for iter_54_0, iter_54_1 in pairs(arg_54_0._pBoardCards) do
 		iter_54_1:updateInitiativeSkills()
 	end
+
+	if arg_54_0._pShowCards then
+		for iter_show_k, iter_show_v in pairs(arg_54_0._pShowCards) do
+			iter_show_v:updateInitiativeSkills()
+		end
+	end
 end
 
 function var_0_0.castInitiativeSkill(arg_55_0, arg_55_1, arg_55_2)
 	local var_55_0 = arg_55_0:getCardSprite(arg_55_1) or arg_55_0._opponentUi:getCardSprite(arg_55_1)
 
-	if var_55_0 == nil and arg_55_1._status == BattleData.CardStatus.leave then
+	if var_55_0 == nil and (arg_55_1._status == BattleData.CardStatus.leave or arg_55_1._status == BattleData.CardStatus.grave or arg_55_1._status == BattleData.CardStatus.rare or arg_55_1._status == BattleData.CardStatus.hand) then
 		var_55_0 = arg_55_0:createCardSprite(arg_55_1)
 
 		arg_55_0:hideCardSprite(var_55_0)
 	end
 
-	local var_55_1, var_55_2, var_55_3 = arg_55_1._owner:isGraveSkill(arg_55_2, nil, true)
+	local pOwner = arg_55_1._owner or arg_55_0._player
+	local var_55_1, var_55_2, var_55_3 = pOwner:isGraveSkill(arg_55_2, nil, true)
 	local var_55_4 = arg_55_1:getSkillIndex(arg_55_2)
+	if var_55_4 == 0 and arg_55_2 then
+		var_55_4 = arg_55_1:getSkillIndexById(arg_55_2._id)
+	end
+	if var_55_4 == 0 then
+		var_55_4 = 1
+	end
 
 	if arg_55_1:hasSkills({
 		7144,
@@ -1292,17 +1347,19 @@ function var_0_0.castInitiativeSkill(arg_55_0, arg_55_1, arg_55_2)
 		2982
 	}) or arg_55_1._status == BattleData.CardStatus.grave and arg_55_1:hasSkills({
 		2985
-	}) or arg_55_2._id == 3705 or arg_55_2._id == 3850 or arg_55_2._id == 2324 or arg_55_2._id == 4978 or arg_55_2._id == 4980 or arg_55_2._id == 5430 or arg_55_2._id == 5431 or arg_55_2._id == 5452 or arg_55_2._id == 5470 or arg_55_2._id == 5485 or arg_55_2._id == 5544 or arg_55_2._id == 5549 or arg_55_2._id == 7673 or arg_55_2._id == 7674 or arg_55_2._id == 7732 or arg_55_2._id == 7785 or arg_55_2._id == 7831 or arg_55_2._id == 9796 or arg_55_2._id == 9868 or arg_55_2._id == 13119 or arg_55_2._id == 13259 or arg_55_2._id == 13264 or arg_55_2._id == 13292 or arg_55_2._id == 13348 or arg_55_2._id == 13718 or arg_55_2._id == 13736 or arg_55_2._id == 13850 or arg_55_2._id == 13920 or arg_55_2._id == 13989 or arg_55_2._id == 14390 or arg_55_2._id == 14519 or arg_55_2._id == 14487 or arg_55_2._id == 14541 or arg_55_2._id == 14555 then
+	}) or arg_55_2._id == 3705 or arg_55_2._id == 3850 or arg_55_2._id == 2324 or arg_55_2._id == 4978 or arg_55_2._id == 4980 or arg_55_2._id == 5430 or arg_55_2._id == 5431 or arg_55_2._id == 5452 or arg_55_2._id == 5470 or arg_55_2._id == 5485 or arg_55_2._id == 5544 or arg_55_2._id == 5549 or arg_55_2._id == 7673 or arg_55_2._id == 7674 or arg_55_2._id == 7732 or arg_55_2._id == 14734 or arg_55_2._id == 7785 or arg_55_2._id == 7831 or arg_55_2._id == 9796 or arg_55_2._id == 9868 or arg_55_2._id == 13119 or arg_55_2._id == 13259 or arg_55_2._id == 13264 or arg_55_2._id == 13292 or arg_55_2._id == 13348 or arg_55_2._id == 13718 or arg_55_2._id == 13736 or arg_55_2._id == 13850 or arg_55_2._id == 13920 or arg_55_2._id == 13989 or arg_55_2._id == 14390 or arg_55_2._id == 14519 or arg_55_2._id == 14487 or arg_55_2._id == 14541 or arg_55_2._id == 14555 or arg_55_2._id == 14753 then
 		arg_55_0:showChoiceMerge(var_55_0, nil, var_55_4 * BattleData.ChoiceId.stage_3)
 	elseif arg_55_2._id == 7576 then
 		arg_55_0:showChoiceCeremony(var_55_0, nil, var_55_4 * BattleData.ChoiceId.stage_3)
-	elseif arg_55_1._status == BattleData.CardStatus.rare and arg_55_1:hasSkills({
+	elseif (arg_55_1._status == BattleData.CardStatus.rare and arg_55_1:hasSkills({
 		3874,
 		3885,
-		2375
-	}) then
+		2375,
+		14677
+	})) or (arg_55_2 and arg_55_2._id == 14677) then
 		local var_55_5 = arg_55_1
-		local var_55_6 = B.sortCardsByBoardPos(arg_55_0._player:getMergeCandidatesByTriggerCard(var_55_5, var_55_0._card))
+		local var_55_card = (var_55_0 and var_55_0._card) or arg_55_1
+		local var_55_6 = B.sortCardsByBoardPos(arg_55_0._player:getMergeCandidatesByTriggerCard(var_55_5, var_55_card))
 
 		arg_55_0:showChoiceGrave(var_55_0, nil, var_55_6, #Data._rareInfo[var_55_5._infoId]._joinComponent, var_55_4 * BattleData.ChoiceId.stage_3 + 1, var_55_5)
 	elseif arg_55_1:hasSkills({
@@ -1407,14 +1464,24 @@ function var_0_0.updateGraveArea(arg_57_0)
 end
 
 function var_0_0.updateRareArea(arg_58_0)
+	if arg_58_0._updatingRareArea then return end
+	arg_58_0._updatingRareArea = true
+
 	local var_58_0 = #arg_58_0._pRareCards
 
-	arg_58_0._pRareLabel:setVisible(var_58_0 > 0 and (arg_58_0._isController or arg_58_0._battleUi._isObserver))
-	arg_58_0._pRareLabel:setString(var_58_0)
+	if arg_58_0._pRareLabel then
+		arg_58_0._pRareLabel:setVisible(var_58_0 > 0 and (arg_58_0._isController or arg_58_0._battleUi._isObserver))
+		arg_58_0._pRareLabel:setString(var_58_0)
+	end
 
 	for iter_58_0 = 1, var_58_0 do
-		arg_58_0._pRareCards[iter_58_0]:setVisible(iter_58_0 == var_58_0)
+		local spr = arg_58_0._pRareCards[iter_58_0]
+		if spr and spr.setVisible then
+			spr:setVisible(iter_58_0 == var_58_0)
+		end
 	end
+
+	arg_58_0._updatingRareArea = nil
 end
 
 function var_0_0.createChoiceMaskLayer(arg_59_0, arg_59_1, arg_59_2, arg_59_3, arg_59_4)
@@ -1640,7 +1707,17 @@ function var_0_0.onChoiceSummon(arg_70_0, arg_70_1, arg_70_2)
 						3492,
 						3537
 					}) or var_72_0._card._infoId == 10084 or var_72_0._card:hasSkillFast(14622)) and 2 or 1
-					local var_72_sk = var_72_0._card:getSkillById(14622) or var_72_0._card._skills[var_72_6]
+					local var_72_sk = var_72_0._card:getSkillById(14747)
+						or var_72_0._card:getSkillById(14731)
+						or var_72_0._card:getSkillById(14716)
+						or var_72_0._card:getSkillById(14703)
+						or var_72_0._card:getSkillById(14698)
+						or var_72_0._card:getSkillById(14687)
+						or var_72_0._card:getSkillById(14654)
+						or var_72_0._card:getSkillById(14618)
+						or var_72_0._card:getSkillById(14627)
+						or var_72_0._card:getSkillById(14622)
+						or var_72_0._card._skills[var_72_6]
 					local var_72_7, var_72_8, var_72_9, var_72_10 = var_72_0._card._owner:isGraveSkill(var_72_sk, nil, false)
 
 					if var_72_7 then
@@ -1648,7 +1725,7 @@ function var_0_0.onChoiceSummon(arg_70_0, arg_70_1, arg_70_2)
 					elseif var_72_0._card:hasSkills({
 						3491,
 						3651
-					}) or var_72_0._card._infoId == 11364 or var_72_0._card:hasSkillFast(14621) then
+					}) or var_72_0._card._infoId == 11364 or var_72_0._card:hasSkillFast(14621) or var_72_0._card:hasSkillFast(14618) or var_72_0._card:hasSkillFast(14627) or var_72_0._card:hasSkillFast(14717) or var_72_0._card:hasSkillFast(14747) or var_72_0._card._infoId == 12333 then
 						return arg_70_0:sendEvent(var_0_0.EventType.send_use_card, {
 							_card = var_72_0._card,
 							_target = var_72_1 ~= nil and var_72_1._card or nil,
@@ -1671,7 +1748,7 @@ function var_0_0.showChoiceMerge(arg_73_0, arg_73_1, arg_73_2, arg_73_3)
 	lc.addChildToPos(var_73_0, var_73_1, cc.p(lc.w(var_73_0) / 2, 700))
 
 	local var_73_2 = require("CardInfoPanel")
-	local var_73_3 = arg_73_0._player:getValidMergeResultInfoIdsByTriggerCard(arg_73_1._card, (arg_73_1._card._infoId == 30429 or arg_73_1._card._infoId == 21067) and math.floor(arg_73_3 / BattleData.ChoiceId.stage_3) or (arg_73_1._card._infoId == 20991 or arg_73_1._card._infoId == 30113 or arg_73_1._card._infoId == 30442 or arg_73_1._card._infoId == 30467 or arg_73_1._card._infoId == 30469 or arg_73_1._card._infoId == 30510 or arg_73_1._card:isSkillAtIndex(13264, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(7732, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(7785, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(7831, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(14487, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(14541, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3))) and 2 or nil)
+	local var_73_3 = arg_73_0._player:getValidMergeResultInfoIdsByTriggerCard(arg_73_1._card, (arg_73_1._card._infoId == 30429 or arg_73_1._card._infoId == 21067) and math.floor(arg_73_3 / BattleData.ChoiceId.stage_3) or (arg_73_1._card._infoId == 20991 or arg_73_1._card._infoId == 30113 or arg_73_1._card._infoId == 30442 or arg_73_1._card._infoId == 30467 or arg_73_1._card._infoId == 30469 or arg_73_1._card._infoId == 30510 or arg_73_1._card:isSkillAtIndex(13264, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(7732, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(14734, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(7785, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(7831, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(14487, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(14541, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3)) or arg_73_1._card:isSkillAtIndex(14753, math.floor((arg_73_3 or 0) / BattleData.ChoiceId.stage_3))) and 2 or nil)
 
 	for iter_73_0 = 1, #var_73_3 do
 		local var_73_4 = ccui.Layout:create()
@@ -1744,9 +1821,9 @@ function var_0_0.onChoiceMerge(arg_76_0, arg_76_1, arg_76_2)
 	var_76_1:setVisible(true)
 	arg_76_2:endChoice()
 
-	local var_76_4 = arg_76_0._player:getValidMergeResultInfoIdsByTriggerCard(var_76_1._card, (var_76_1._card._infoId == 30429 or var_76_1._card._infoId == 21067) and math.floor(var_76_3 / BattleData.ChoiceId.stage_3) or (var_76_1._card._infoId == 20991 or var_76_1._card._infoId == 30113 or var_76_1._card._infoId == 30442 or var_76_1._card._infoId == 30467 or var_76_1._card._infoId == 30469 or var_76_1._card._infoId == 30510 or var_76_1._card:isSkillAtIndex(7732, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7785, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7831, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14487, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14541, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3))) and 2 or nil)[var_76_0]
+	local var_76_4 = arg_76_0._player:getValidMergeResultInfoIdsByTriggerCard(var_76_1._card, (var_76_1._card._infoId == 30429 or var_76_1._card._infoId == 21067) and math.floor(var_76_3 / BattleData.ChoiceId.stage_3) or (var_76_1._card._infoId == 20991 or var_76_1._card._infoId == 30113 or var_76_1._card._infoId == 30442 or var_76_1._card._infoId == 30467 or var_76_1._card._infoId == 30469 or var_76_1._card._infoId == 30510 or var_76_1._card:isSkillAtIndex(7732, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14734, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7785, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7831, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14487, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14541, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14753, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3))) and 2 or nil)[var_76_0]
 	local var_76_5 = arg_76_0._player:getBattleCardsByInfoId("R", var_76_4)[1]
-	local var_76_6 = B.sortCardsByBoardPos(arg_76_0._player:getMergeCandidatesByTriggerCard(var_76_5, var_76_1._card, (var_76_1._card._infoId == 30429 or var_76_1._card._infoId == 21067) and math.floor(var_76_3 / BattleData.ChoiceId.stage_3) or (var_76_1._card._infoId == 20991 or var_76_1._card._infoId == 30113 or var_76_1._card._infoId == 30442 or var_76_1._card._infoId == 30467 or var_76_1._card._infoId == 30469 or var_76_1._card._infoId == 30510 or var_76_1._card:isSkillAtIndex(13264, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7732, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7785, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7831, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14487, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14541, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3))) and 2 or nil))
+	local var_76_6 = B.sortCardsByBoardPos(arg_76_0._player:getMergeCandidatesByTriggerCard(var_76_5, var_76_1._card, (var_76_1._card._infoId == 30429 or var_76_1._card._infoId == 21067) and math.floor(var_76_3 / BattleData.ChoiceId.stage_3) or (var_76_1._card._infoId == 20991 or var_76_1._card._infoId == 30113 or var_76_1._card._infoId == 30442 or var_76_1._card._infoId == 30467 or var_76_1._card._infoId == 30469 or var_76_1._card._infoId == 30510 or var_76_1._card:isSkillAtIndex(13264, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7732, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14734, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7785, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(7831, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14487, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14541, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3)) or var_76_1._card:isSkillAtIndex(14753, math.floor((var_76_3 or 0) / BattleData.ChoiceId.stage_3))) and 2 or nil))
 
 	if var_76_0 >= 10 then
 		var_76_0 = var_76_0 * 10
@@ -1871,6 +1948,13 @@ function var_0_0.onChoiceCeremony(arg_80_0, arg_80_1, arg_80_2)
 	arg_80_2:endChoice()
 
 	local var_80_5 = arg_80_0._player:getValidCeremonyResultCardsByTriggerCard(var_80_1._card)[var_80_0]
+	if (var_80_1._card:isInfoId(21138) or var_80_1._card:hasSkillFast(14644)) and #arg_80_0._player:getBattleCardsByInfoId("B", 12320) > 0 then
+		return arg_80_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = var_80_1._card,
+			_target = var_80_2 ~= nil and var_80_2._card or nil,
+			_choice = var_80_0 + var_80_3
+		})
+	end
 	local var_80_6
 
 	if var_80_1._card:hasSkillFast(4214) then
@@ -2012,6 +2096,8 @@ function var_0_0.onChoiceSync(arg_84_0, arg_84_1, arg_84_2)
 end
 
 function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_4, arg_85_5, arg_85_6)
+	arg_85_4 = arg_85_4 or 1
+	arg_85_3 = arg_85_3 or {}
 	local var_85_0
 	local var_85_1
 	local var_85_2
@@ -2036,7 +2122,8 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	}) or arg_85_1._card._status == BattleData.CardStatus.rare and arg_85_1._card:hasSkills({
 		3874,
 		3885,
-		2375
+		2375,
+		14677
 	}) or arg_85_1._card._status == BattleData.CardStatus.board and arg_85_1._card:hasSkills({
 		2243,
 		2318
@@ -2060,8 +2147,10 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 		7622,
 		7631,
 		7731,
+		14733,
+		14743,
 		7753
-	}) and (arg_85_5 == nil or not arg_85_1._card:isSkillAtIndex(7733, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(3705, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(3850, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(2324, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(4978, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(4980, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5430, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5431, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5452, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5470, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5485, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5544, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5549, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7673, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7674, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7732, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7785, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7831, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(9796, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(9868, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13119, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13259, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13264, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13292, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13348, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13718, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13736, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13850, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13920, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13989, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14390, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14487, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14519, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14541, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14555, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
+	}) and (arg_85_5 == nil or (not arg_85_1._card:isSkillAtIndex(7733, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) and not arg_85_1._card:isSkillAtIndex(14735, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)))) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(3705, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(3850, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(2324, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(4978, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(4980, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5430, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5431, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5452, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5470, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5485, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5544, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(5549, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7673, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7674, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7732, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14734, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7785, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7831, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(9796, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(9868, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13119, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13259, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13264, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13292, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13348, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13718, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13736, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13850, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13920, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(13989, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14390, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14487, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14519, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14541, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14555, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14753, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
 		var_85_0 = BattleListDialog.Mode.merge
 		var_85_1 = string.format(Str(STR.CHOICE_TITLE_MERGE_COMPONENT), arg_85_4)
 	elseif arg_85_1._card._status == BattleData.CardStatus.rare and arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(3851, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
@@ -2110,6 +2199,54 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	elseif arg_85_1._card._status == BattleData.CardStatus.hand and B.isSkillCeremony(arg_85_1._card._skills[1]._id) then
 		var_85_0 = BattleListDialog.Mode.ceremony
 		var_85_1 = Str(arg_85_1._card._skills[1]._id ~= 4382 and STR.CHOICE_TITLE_CEREMONY_COMPONENT or STR.CHOICE_TITLE_CHOICE_0)
+	elseif arg_85_1._card:hasSkillFast(14716) or arg_85_1._card:isInfoId(21140) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú Thánh Kỵ trong Mộ"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14731, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or (arg_85_1._card:hasSkillFast(14731) and arg_85_1._card._status == BattleData.CardStatus.hand) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá <Vương Lâm> từ Bộ bài lên tay"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14732, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or (arg_85_1._card:hasSkillFast(14732) and arg_85_1._card._status == BattleData.CardStatus.grave) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá <Vương Lâm> từ trên tay để triệu hồi đặc biệt"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14742, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or (arg_85_1._card:hasSkillFast(14742) and arg_85_1._card._status == BattleData.CardStatus.grave) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú [Hiệp sĩ mặt nạ] từ Bộ bài lên tay"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14748, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or (arg_85_1._card:hasSkillFast(14748) and arg_85_1._card._status == BattleData.CardStatus.board) or arg_85_1._card:isInfoId(12334) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá bài Phép [Hiệp sĩ mặt nạ] từ Bộ bài hoặc Mộ lên tay"
+	elseif arg_85_1._card:hasSkillFast(14729) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14729, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú có từ khóa \"Tiên nghịch\" trên sân"
+	elseif arg_85_1._card:hasSkillFast(14723) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14723, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú trên sân đối thủ để loại bỏ"
+	elseif arg_85_1._card:hasSkillFast(14724) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14724, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú trong Mộ để triệu hồi đặc biệt"
+	elseif arg_85_1._card:hasSkillFast(14738) or arg_85_1._card:isInfoId(21141) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14738, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 <Vương Lâm - Phân Thân> trong Mộ để triệu hồi đặc biệt"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14761, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or (arg_85_1._card:hasSkillFast(14761) and arg_85_1._card._status == BattleData.CardStatus.grave) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú đối phương để giành quyền điều khiển"
+	elseif arg_85_1._card:hasSkillFast(14752) or arg_85_1._card:isInfoId(21145) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14752, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú \"Harpie\" từ Bộ bài lên tay"
+	elseif arg_85_1._card:hasSkillFast(14757) or arg_85_1._card:isInfoId(21146) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14757, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú \"Harpie\" hoặc \"Amazoness\" từ Mộ/Trục xuất để Triệu hồi Đặc biệt"
+	elseif arg_85_1._card:hasSkillFast(14758) or arg_85_1._card:isInfoId(30595) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14758, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú \"Harpie\" hoặc \"Amazoness\" để Triệu hồi Đặc biệt"
+	elseif arg_85_1._card:hasSkillFast(14756) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14756, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá bài Phép/Bẫy \"Harpie\" từ Mộ/Trục xuất lên tay"
+	elseif arg_85_1._card:hasSkillFast(14662) or arg_85_1._card:hasSkillFast(14638) or arg_85_1._card:hasSkillFast(14654) or arg_85_1._card:hasSkillFast(14672) or (arg_85_5 ~= nil and (arg_85_1._card:isSkillAtIndex(14638, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_1._card:isSkillAtIndex(14654, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_1._card:isSkillAtIndex(14672, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = string.format(Str(STR.CHOICE_TITLE_CHOICE), arg_85_4 or 1)
+	elseif arg_85_1._card:hasSkillFast(14656) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14656, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = arg_85_6 == nil and "Chọn 1 Ma pháp/Cạm bẫy trong Mộ để trục xuất" or "Chọn 1 lá bài đối thủ để tiêu diệt"
 	elseif arg_85_1._card:hasSkills({
 		3034,
 		3035,
@@ -3031,6 +3168,21 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14579, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = Str(arg_85_6 == nil and STR.CHOICE_TITLE_14579_1 or STR.CHOICE_TITLE_14579_2)
+	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14701, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn tối đa 2 quái thú trên sân để hiến tế"
+	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14709, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá Phép/Bẫy trên tay đưa vào Mộ"
+	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14703, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 Phù Thủy hệ Ám trên sân để hiến tế"
+	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14704, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá Luyện Hồn Tông từ Bộ Bài lên tay"
+	elseif arg_85_5 ~= nil and (arg_85_1._card:isSkillAtIndex(14698, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_1._card:isSkillAtIndex(14634, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_1._card:isSkillAtIndex(14678, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_1._card:isSkillAtIndex(14684, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_1._card:isSkillAtIndex(14685, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_1._card:isSkillAtIndex(14687, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) or arg_85_1._card:isSkillAtIndex(14689, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = (STR.CHOICE_TITLE_CARD and Str(STR.CHOICE_TITLE_CARD)) or "Chọn 1 lá bài"
 	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14588, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = Str(arg_85_6 == nil and STR.CHOICE_TITLE_14588_1 or STR.CHOICE_TITLE_14588_2)
@@ -3154,6 +3306,9 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7722, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = Str(arg_85_6 == nil and STR.CHOICE_TITLE_7722_1 or STR.CHOICE_TITLE_7722_2)
+	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14735, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = arg_85_6 == nil and "Chọn 1 quái thú \"Tiên nghịch\" từ trên tay đưa vào Mộ" or "Chọn 1 quái thú \"Tiên nghịch\" từ Bộ bài lên tay"
 	elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(7733, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = Str(arg_85_6 == nil and STR.CHOICE_TITLE_7733_1 or STR.CHOICE_TITLE_7733_2)
@@ -3626,7 +3781,7 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 			elseif arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14591, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3)) then
 				var_85_1 = string.format(Str(STR.CHOICE_TITLE_CHOICE_MAX), arg_85_4)
 			else
-				var_85_1 = string.format(Str(STR.CHOICE_TITLE_CHOICE), arg_85_4)
+				var_85_1 = string.format(Str(STR.CHOICE_TITLE_CHOICE), arg_85_4 or 1)
 			end
 		end
 	end
@@ -3700,6 +3855,18 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 
 	local var_89_1 = 0
 
+	if arg_89_2._card:hasSkillFast(14716) or arg_89_2._card:isInfoId(21140) or arg_89_2._card:hasSkillFast(14723) or arg_89_2._card:hasSkillFast(14724) or arg_89_2._card:isInfoId(12328) or arg_89_2._card:isInfoId(12329) or arg_89_2._card:hasSkillFast(14731) or arg_89_2._card:hasSkillFast(14732) or arg_89_2._card:hasSkillFast(14738) or arg_89_2._card:isInfoId(21141) or arg_89_2._card:hasSkillFast(14742) or arg_89_2._card:hasSkillFast(14748) or arg_89_2._card:isInfoId(12334) or arg_89_2._card:isInfoId(21145) or arg_89_2._card:hasSkillFast(14752) or arg_89_2._card:isInfoId(21146) or arg_89_2._card:hasSkillFast(14757) or arg_89_2._card:hasSkillFast(14761) or arg_89_2._card:isInfoId(30595) or arg_89_2._card:hasSkillFast(14758) or arg_89_2._card:hasSkillFast(14759) or arg_89_2._card:hasSkillFast(14756) or arg_89_2._card:isInfoId(30594) then
+		if var_89_0 and #var_89_0 > 0 then
+			var_89_1 = var_89_0[1]._id
+		end
+
+		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_89_2._card,
+			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
+			_choice = var_89_1 * BattleData.ChoiceId.stage_2 + (arg_89_1._choiceBase or 0)
+		})
+	end
+
 	if arg_89_2._card:hasSkills({
 		4048,
 		4171,
@@ -3720,7 +3887,8 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 	}) or arg_89_2._card._status == BattleData.CardStatus.rare and arg_89_2._card:hasSkills({
 		3874,
 		3885,
-		2375
+		2375,
+		14677
 	}) or arg_89_2._card._status == BattleData.CardStatus.board and arg_89_2._card:hasSkills({
 		2243,
 		2318
@@ -3744,12 +3912,14 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		7622,
 		7631,
 		7731,
+		14733,
+		14743,
 		7753
-	}) and not arg_89_2._card:isSkillAtIndex(7733, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(3705, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(3850, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(2324, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(4978, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(4980, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5430, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5431, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5452, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5470, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5485, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5544, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5549, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7673, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7674, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7732, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7785, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7831, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(9796, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(9868, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13119, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13259, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13264, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13292, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13348, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13718, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13736, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13850, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13920, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13989, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14390, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14487, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14519, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14541, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14555, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) then
+	}) and (not arg_89_2._card:isSkillAtIndex(7733, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) and not arg_89_2._card:isSkillAtIndex(14735, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) or arg_89_2._card:isSkillAtIndex(3705, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(3850, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(2324, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(4978, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(4980, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5430, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5431, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5452, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5470, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5485, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5544, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(5549, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7673, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7674, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7732, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14734, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7785, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7831, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(9796, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(9868, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13119, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13259, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13264, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13292, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13348, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13718, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13736, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13850, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13920, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(13989, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14390, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14487, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14519, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14541, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14555, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14753, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) then
 		local var_89_2 = arg_89_1._choiceParam
 
 		if var_89_2 then
-			local var_89_3 = arg_89_0._player:getMergeCandidatesByTriggerCard(var_89_2, arg_89_2._card, (arg_89_2._card._infoId == 30429 or arg_89_2._card._infoId == 21067) and math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or (arg_89_2._card._infoId == 20991 or arg_89_2._card._infoId == 30113 or arg_89_2._card._infoId == 30442 or arg_89_2._card._infoId == 30467 or arg_89_2._card._infoId == 30469 or arg_89_2._card._infoId == 30510 or arg_89_2._card:isSkillAtIndex(13264, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7732, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7785, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7831, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14487, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14541, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) and 2 or nil)
+			local var_89_3 = arg_89_0._player:getMergeCandidatesByTriggerCard(var_89_2, arg_89_2._card, (arg_89_2._card._infoId == 30429 or arg_89_2._card._infoId == 21067) and math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or (arg_89_2._card._infoId == 20991 or arg_89_2._card._infoId == 30113 or arg_89_2._card._infoId == 30442 or arg_89_2._card._infoId == 30467 or arg_89_2._card._infoId == 30469 or arg_89_2._card._infoId == 30510 or arg_89_2._card:isSkillAtIndex(13264, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7732, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14734, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7785, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(7831, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14487, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14541, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14753, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) and 2 or nil)
 
 			var_89_1 = B.getChoiceByCandidatePos(var_89_3, var_89_0)
 
@@ -3768,6 +3938,7 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 				2985,
 				3874,
 				3885,
+				14677,
 				7144,
 				7373,
 				7693
@@ -5499,7 +5670,27 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		if #arg_89_1._cardInfos > 1 then
 			return arg_89_0:showChoiceGrave(arg_89_2, arg_89_3, B.sortCardsByBoardPos(B.filterExcludeCards(arg_89_1._cardInfos, var_89_0)), 1, arg_89_1._choiceBase, var_89_1)
 		end
-	elseif arg_89_2._card:hasSkills({ 14619, 14620, 14622, 14623 }) or arg_89_2._card._infoId == 10084 then
+	elseif (arg_89_2._card:hasSkillFast(14654) or (arg_89_1._choiceBase ~= nil and arg_89_2._card:isSkillAtIndex(14654, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)))) and #var_89_0 >= 2 then
+		var_89_1 = var_89_0[1]._id * BattleData.UseCardId.id_group + var_89_0[2]._id
+	elseif (arg_89_2._card:hasSkillFast(14656) or (arg_89_1._choiceBase ~= nil and arg_89_2._card:isSkillAtIndex(14656, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)))) and arg_89_1._choiceParam == nil then
+		var_89_1 = var_89_0[1]._id
+		local oppTargets = {}
+		if arg_89_0._player._opponent then
+			for _, c in ipairs(arg_89_0._player._opponent:getBattleCards("B")) do
+				table.insert(oppTargets, c)
+			end
+			for _, c in ipairs(arg_89_0._player._opponent:getBattleCards("T")) do
+				table.insert(oppTargets, c)
+			end
+		end
+		if #oppTargets > 0 then
+			return arg_89_0:showChoiceGrave(arg_89_2, arg_89_3, B.sortCardsByBoardPos(oppTargets), 1, arg_89_1._choiceBase, var_89_1)
+		else
+			var_89_1 = var_89_0[1]._id * BattleData.UseCardId.id_group
+		end
+	elseif (arg_89_2._card:hasSkillFast(14656) or (arg_89_1._choiceBase ~= nil and arg_89_2._card:isSkillAtIndex(14656, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)))) and arg_89_1._choiceParam ~= nil then
+		var_89_1 = arg_89_1._choiceParam * BattleData.UseCardId.id_group + var_89_0[1]._id
+	elseif arg_89_2._card:hasSkills({ 14619, 14620, 14622, 14623, 14662, 14638, 14672 }) or arg_89_2._card:hasSkillFast(14662) or arg_89_2._card:hasSkillFast(14638) or arg_89_2._card:hasSkillFast(14672) or arg_89_2._card._infoId == 10084 then
 		var_89_1 = var_89_0[1]._id
 	elseif arg_89_2._card:isSkillAtIndex(13054, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) and arg_89_1._choiceParam == nil then
 		var_89_1 = var_89_0[1]._id
@@ -6005,10 +6196,30 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		if #var_89_271 > 0 then
 			return arg_89_0:showChoiceGrave(arg_89_2, arg_89_3, B.sortCardsByBoardPos(var_89_271), 1, arg_89_1._choiceBase, var_89_1)
 		end
+	elseif arg_89_2._card:isSkillAtIndex(14701, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) and arg_89_1._choiceParam == nil then
+		if #var_89_0 >= 2 then
+			var_89_1 = var_89_0[1]._id * BattleData.UseCardId.id_group + var_89_0[2]._id
+		else
+			var_89_1 = var_89_0[1]._id
+		end
+
+		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_89_2._card,
+			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
+			_choice = var_89_1 * BattleData.ChoiceId.stage_2 + arg_89_1._choiceBase
+		})
+	elseif (arg_89_2._card:isSkillAtIndex(14709, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14703, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14704, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14698, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14634, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14678, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14684, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14685, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14687, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_89_2._card:isSkillAtIndex(14689, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) and arg_89_1._choiceParam == nil then
+		var_89_1 = var_89_0[1]._id
+
+		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_89_2._card,
+			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
+			_choice = var_89_1 * BattleData.ChoiceId.stage_2 + arg_89_1._choiceBase
+		})
 	elseif arg_89_2._card:isSkillAtIndex(14588, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) and arg_89_1._choiceParam == nil then
 		var_89_1 = var_89_0[1]._id
 
-		return arg_89_0:showChoiceGrave(arg_89_2, arg_89_3, B.sortCardsByBoardPos(arg_89_0._player._opponent:getBattleCards("BCSD")), 1, arg_89_1._choiceBase, var_89_1)
+		return arg_89_0:showChoiceGrave(arg_89_2, arg_89_3, B.sortCardsByBoardPos(B.filterNoShieldCards(arg_89_0._player._opponent:getBattleCards("BCSD"), BattleData.PositiveType.shieldMonster, true)), 1, arg_89_1._choiceBase, var_89_1)
 	elseif arg_89_2._card:isSkillAtIndex(14598, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) and arg_89_1._choiceParam == nil then
 		var_89_1 = var_89_0[1]._id
 
@@ -6240,6 +6451,20 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 
 		local var_89_306 = Data._skillInfo[7733]
 		local var_89_307 = arg_89_0._player:filterCanChangeToHandCards(B.filterMoreThanStarCards(arg_89_0._player:getBattleCardsByCategoryAndNature("P", var_89_306._refCards[1], var_89_0[1]._info._nature), var_89_306._val[1]))
+
+		if #var_89_307 > 0 then
+			return arg_89_0:showChoiceGrave(arg_89_2, arg_89_3, var_89_307, 1, arg_89_1._choiceBase, var_89_1)
+		end
+	elseif arg_89_2._card:isSkillAtIndex(14735, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)) and arg_89_1._choiceParam == nil then
+		var_89_1 = var_89_0[1]._id
+
+		local tn_deck_monsters = {}
+		for _, c in ipairs(arg_89_0._player:getBattleCardsByKeyword("P", 301)) do
+			if c:isMonsterRare() then
+				table.insert(tn_deck_monsters, c)
+			end
+		end
+		local var_89_307 = arg_89_0._player:filterCanChangeToHandCards(tn_deck_monsters)
 
 		if #var_89_307 > 0 then
 			return arg_89_0:showChoiceGrave(arg_89_2, arg_89_3, var_89_307, 1, arg_89_1._choiceBase, var_89_1)
@@ -6993,7 +7218,7 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 			6286
 		}) or arg_89_2._card:isSkillAtIndex(6365, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6396, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6507, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card._status == BattleData.CardStatus.grave and arg_89_2._card:hasSkills({
 			6616
-		}) or arg_89_2._card:isSkillAtIndex(6618, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6619, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6679, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6732, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6735, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6746, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6772, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6795, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6843, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6841, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6848, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6921, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6964, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6978, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6982, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2111, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2112, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2117, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2135, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2155, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2196, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2203, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2209, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2212, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2279, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2320, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2341, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2359, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2389, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2392, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2400, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2409, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2429, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2430, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2434, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2441, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2449, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2450, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2486, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2487, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2534, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2562, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2578, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2585, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2586, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2587, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2588, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2598, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2599, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2602, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2615, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2739, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2750, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2772, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2774, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2776, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2785, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2787, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2789, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2806, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2811, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2813, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2838, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2867, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2886, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2915, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2928, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2942, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2951, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2959, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2963, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2969, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2986, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9009, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9034, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9051, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9052, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9072, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9092, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9124, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9168, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9189, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9198, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9204, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9213, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9214, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9218, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9220, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9230, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9258, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9260, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9269, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9282, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9305, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9306, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9314, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9320, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9373, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9375, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9378, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9392, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9382, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9396, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9480, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9481, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9485, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9497, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9518, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9523, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9556, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9563, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9593, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9600, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9614, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9615, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9638, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9712, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9721, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9733, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9739, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9785, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9786, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9815, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9841, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9851, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9867, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9916, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9917, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9918, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9934, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9956, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9965, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9983, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9984, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9960, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7234, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7244, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7309, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7310, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7328, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7336, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7337, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7338, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7365, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7374, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7380, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7404, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7408, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7429, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7433, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7454, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7534, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7551, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7566, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card._status == BattleData.CardStatus.hand and arg_89_2._card:hasSkillFast(7574) or arg_89_2._card._status == BattleData.CardStatus.hand and arg_89_2._card:hasSkillFast(7578) or arg_89_2._card:isSkillAtIndex(7582, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7635, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7640, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7669, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7686, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7687, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7705, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7706, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7722, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7733, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7742, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7772, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card._status == BattleData.CardStatus.hand and arg_89_2._card:hasSkillFast(7774) or arg_89_2._card:isSkillAtIndex(7792, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7794, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7818, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7819, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7828, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card._status == BattleData.CardStatus.show and arg_89_2._card:hasSkillFast(8056) or arg_89_2._card:isSkillAtIndex(8077, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8082, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8083, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8084, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8094, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8145, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8111, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8123, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8124, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8126, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8131, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13002, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13039, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13054, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13068, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13072, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13155, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13156, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13157, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13165, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13168, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13185, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13218, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13220, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13221, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13296, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13318, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13321, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13330, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13332, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13365, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13367, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13373, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13380, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13398, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13401, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13405, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13408, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13411, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13430, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13432, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13452, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13468, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13538, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13552, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13553, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13572, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13602, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13607, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13618, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13626, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13703, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13710, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13764, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13766, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13767, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13792, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13793, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13847, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13959, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13995, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14020, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14047, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14163, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14176, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14185, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14337, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14411, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14441, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14474, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14534, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14561, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14570, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14579, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14588, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14598, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14604, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:hasSkillFast(14618) then
+		}) or arg_89_2._card:isSkillAtIndex(6618, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6619, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6679, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6732, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6735, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6746, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6772, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6795, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6843, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6841, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6848, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6921, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6964, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6978, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(6982, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2111, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2112, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2117, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2135, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2155, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2196, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2203, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2209, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2212, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2279, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2320, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2341, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2359, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2389, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2392, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2400, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2409, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2429, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2430, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2434, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2441, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2449, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2450, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2486, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2487, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2534, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2562, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2578, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2585, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2586, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2587, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2588, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2598, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2599, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2602, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2615, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2739, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2750, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2772, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2774, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2776, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2785, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2787, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2789, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2806, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2811, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2813, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2838, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2867, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2886, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2915, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2928, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2942, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2951, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2959, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2963, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2969, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(2986, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9009, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9034, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9051, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9052, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9072, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9092, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9124, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9168, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9189, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9198, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9204, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9213, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9214, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9218, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9220, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9230, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9258, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9260, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9269, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9282, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9305, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9306, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9314, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9320, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9373, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9375, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9378, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9392, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9382, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9396, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9480, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9481, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9485, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9497, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9518, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9523, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9556, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9563, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9593, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9600, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9614, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9615, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9638, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9712, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9721, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9733, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9739, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9785, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9786, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9815, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9841, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9851, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9867, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9916, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9917, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9918, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9934, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9956, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9965, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9983, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9984, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(9960, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7234, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7244, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7309, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7310, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7328, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7336, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7337, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7338, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7365, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7374, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7380, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7404, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7408, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7429, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7433, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7454, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7534, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7551, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7566, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card._status == BattleData.CardStatus.hand and arg_89_2._card:hasSkillFast(7574) or arg_89_2._card._status == BattleData.CardStatus.hand and arg_89_2._card:hasSkillFast(7578) or arg_89_2._card:isSkillAtIndex(7582, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7635, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7640, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7669, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7686, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7687, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7705, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7706, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7722, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7733, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14735, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7742, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7772, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card._status == BattleData.CardStatus.hand and arg_89_2._card:hasSkillFast(7774) or arg_89_2._card:isSkillAtIndex(7792, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7794, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7818, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7819, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(7828, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card._status == BattleData.CardStatus.show and arg_89_2._card:hasSkillFast(8056) or arg_89_2._card:isSkillAtIndex(8077, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8082, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8083, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8084, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8094, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8145, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8111, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8123, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8124, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8126, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(8131, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13002, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13039, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13054, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13068, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13072, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13155, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13156, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13157, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13165, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13168, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13185, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13218, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13220, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13221, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13296, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13318, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13321, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13330, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13332, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13365, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13367, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13373, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13380, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13398, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13401, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13405, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13408, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13411, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13430, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13432, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13452, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13468, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13538, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13552, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13553, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13572, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13602, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13607, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13618, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13626, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13703, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13710, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13764, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13766, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13767, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13792, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13793, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13847, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13959, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(13995, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14020, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14047, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14163, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14176, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14185, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14337, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14411, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14441, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14474, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14534, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14561, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14570, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14579, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14588, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14598, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:isSkillAtIndex(14604, arg_89_1._choiceBase / BattleData.ChoiceId.stage_3) or arg_89_2._card:hasSkillFast(14618) then
 			var_89_1 = arg_89_1._choiceParam
 		end
 
@@ -7086,6 +7311,14 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 
 	if arg_91_2._card:isSkillAtIndex(9944, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) and arg_91_1._alreadySatisfied then
 		return true
+	end
+
+	if arg_91_2._card:hasSkillFast(14716) or arg_91_2._card:isInfoId(21140) then
+		return var_91_0 == 1
+	end
+
+	if arg_91_2._card:isSkillAtIndex(14701, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) then
+		return var_91_0 <= arg_91_4 and var_91_0 > 0
 	end
 
 	if arg_91_2._card:isSkillAtIndex(3994, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) then
@@ -7456,7 +7689,7 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 	end
 
 	if arg_91_2._card._status == BattleData.CardStatus.hand and B.isSkillCeremony(arg_91_2._card._skills[1]._id) or arg_91_1._choiceBase ~= nil and arg_91_2._card:isSkillAtIndex(7576, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) then
-		if selectCount == 0 then
+		if var_91_0 == 0 then
 			return false
 		end
 
@@ -7558,8 +7791,8 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 		if var_91_0 == 2 then
 			local var_sel = arg_91_1:getSelectedCards()
 			local var_c1, var_c2 = var_sel[1], var_sel[2]
-			return (var_c1._owner == arg_91_0._player and var_c1._category == 13 and var_c2._owner ~= arg_91_0._player)
-				or (var_c2._owner == arg_91_0._player and var_c2._category == 13 and var_c1._owner ~= arg_91_0._player)
+			return (var_c1._owner == arg_91_0._player and var_c1._info and var_c1._info._category == 13 and var_c2._owner ~= arg_91_0._player)
+				or (var_c2._owner == arg_91_0._player and var_c2._info and var_c2._info._category == 13 and var_c1._owner ~= arg_91_0._player)
 		end
 		return false
 	end
@@ -7611,7 +7844,8 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 	}) or arg_91_2._card._status == BattleData.CardStatus.rare and arg_91_2._card:hasSkills({
 		3874,
 		3885,
-		2375
+		2375,
+		14677
 	}) or arg_91_2._card._status == BattleData.CardStatus.hand and arg_91_2._card:hasSkills({
 		4305,
 		4511,
@@ -7629,11 +7863,19 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 		7622,
 		7631,
 		7731,
+		14733,
+		14743,
 		7753
-	}) and not arg_91_2._card:isSkillAtIndex(7733, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(3705, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(3850, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(2324, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5430, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5431, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5452, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5470, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5485, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5544, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5549, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7673, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7674, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7732, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7785, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7831, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(9796, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(9868, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13119, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13259, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13264, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13292, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13348, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13718, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13850, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13920, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13989, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14390, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14487, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14519, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14541, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14555, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) then
+	}) and (not arg_91_2._card:isSkillAtIndex(7733, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) and not arg_91_2._card:isSkillAtIndex(14735, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3))) or arg_91_2._card:isSkillAtIndex(3705, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(3850, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(2324, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5430, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5431, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5452, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5470, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5485, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5544, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(5549, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7673, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7674, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7732, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14734, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7785, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(7831, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(9796, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(9868, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13119, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13259, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13264, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13292, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13348, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13718, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13850, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13920, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(13989, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14390, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14487, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14519, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14541, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14555, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(14753, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) then
 		local var_91_29 = (arg_91_2._card:isSkillAtIndex(3705, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(3850, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) or arg_91_2._card:isSkillAtIndex(2324, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3))) and arg_91_2._card or nil
 
-		return arg_91_2._card._owner:isValidMergeComponents(arg_91_1._choiceParam, arg_91_1:getSelectedCards(), var_91_29, false)
+		local selCards = arg_91_1:getSelectedCards()
+		if arg_91_1._choiceParam and arg_91_1._choiceParam._info and arg_91_1._choiceParam._info._joinComponent then
+			if #selCards ~= #arg_91_1._choiceParam._info._joinComponent then
+				return false
+			end
+		end
+		return arg_91_2._card._owner:isValidMergeComponents(arg_91_1._choiceParam, selCards, var_91_29, false)
 	elseif arg_91_2._card:hasSkillFast(4112) and arg_91_2._card._status == BattleData.CardStatus.hand then
 		local var_91_30 = arg_91_1:getSelectedCards()
 
@@ -8081,6 +8323,32 @@ end
 function var_0_0.showChoiceSkill(arg_96_0, arg_96_1, arg_96_2, arg_96_3, arg_96_4)
 	local var_96_0 = arg_96_1._card
 
+	if var_96_0:hasSkillFast(14724) or var_96_0:hasSkillFast(14723) then
+		local turnId = (arg_96_0._player._round or 0) * 1000 + (arg_96_0._player._round or 0)
+		if var_96_0._vlptUsedTurn == turnId then
+			return
+		end
+	end
+
+	if var_96_0:hasSkillFast(14721) then
+		local turnId = (arg_96_0._player._round or 0) * 1000 + (arg_96_0._player._round or 0)
+		if var_96_0._tsDiscardTurn == turnId or (var_96_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) <= 0 then
+			return
+		end
+	end
+
+	if var_96_0:hasSkillFast(14728) or var_96_0:isInfoId(40731) then
+		local turnId = (arg_96_0._player._round or 0) * 1000 + (arg_96_0._player._round or 0)
+		if var_96_0._floSkillTurn == turnId then
+			return
+		end
+		if arg_96_4 == nil or arg_96_4 == 0 then
+			local skIdx = var_96_0:getSkillIndexById(14728)
+			if skIdx == 0 then skIdx = 2 end
+			arg_96_4 = skIdx * BattleData.ChoiceId.stage_3
+		end
+	end
+
 	if arg_96_3 == nil then
 		local var_96_1, var_96_2 = var_96_0:hasChoiceSkill()
 
@@ -8130,6 +8398,58 @@ function var_0_0.showChoiceSkill(arg_96_0, arg_96_1, arg_96_2, arg_96_3, arg_96_
 	lc.addNodesToCenter(var_96_3, arg_96_0._choiceBtns, var_96_5 == 3 and 100 or 200)
 end
 
+function var_0_0.showChoiceHopDao(arg_96_0, arg_96_1, arg_96_2)
+	local var_96_3 = arg_96_0:createChoiceMaskLayer(arg_96_1, arg_96_2, nil, 0)
+	local var_96_4 = ClientView.createTTF(Str(STR.CHOICE_TITLE_SKILL), ClientView.FontSize.M1)
+
+	var_96_4:runAction(lc.rep(lc.sequence(lc.scaleTo(1.5, 1.05), lc.scaleTo(1.5, 1))))
+	lc.addChildToPos(var_96_3, var_96_4, cc.p(lc.w(var_96_3) / 2, 600))
+
+	local var_skills = { 14733, 14735 }
+	for iter_96_0 = 1, #var_skills do
+		local skillId = var_skills[iter_96_0]
+		local var_96_6 = ClientView.createShaderButton(nil, function(arg_97_0)
+			arg_96_0:onChoiceHopDao(arg_97_0, var_96_3)
+		end)
+
+		var_96_6._index = iter_96_0
+		var_96_6._skillId = skillId
+		var_96_6:setContentSize(346, 178)
+
+		arg_96_0._choiceBtns[#arg_96_0._choiceBtns + 1] = var_96_6
+
+		local var_96_8 = B.createSkill(skillId, 1)
+		local var_96_9 = ClientView.createBattleSkillItem(arg_96_0._player, var_96_8, cc.p(0, 0))
+
+		var_96_9:setTouchEnabled(false)
+		var_96_9:setCameraMask(1)
+		lc.addChildToCenter(var_96_6, var_96_9)
+
+		local var_96_10 = arg_96_0:efcDragonBones2("xuanzhong", "effect5", 2, false)
+
+		lc.addChildToCenter(var_96_9, var_96_10, -1)
+	end
+
+	lc.addNodesToCenter(var_96_3, arg_96_0._choiceBtns, 200)
+end
+
+function var_0_0.onChoiceHopDao(arg_98_0, arg_98_1, arg_98_2)
+	local var_98_0 = arg_98_1._index
+	local var_98_1 = arg_98_2._pCard
+	local var_98_2 = arg_98_2._pTargetCard
+	local var_98_5 = var_98_1._card
+
+	var_98_1:setVisible(true)
+	arg_98_2:endChoice()
+
+	if var_98_0 == 1 or arg_98_1._skillId == 14733 then
+		return arg_98_0:showChoiceMerge(var_98_1, var_98_2)
+	else
+		local tnHand = B.sortCardsByBoardPos(var_98_5._owner:getBattleCardsBy14735())
+		return arg_98_0:showChoiceGrave(var_98_1, var_98_2, tnHand, 1, 3 * BattleData.ChoiceId.stage_3)
+	end
+end
+
 function var_0_0.onChoiceSkill(arg_98_0, arg_98_1, arg_98_2)
 	local var_98_0 = arg_98_1._index
 	local var_98_1 = arg_98_2._pCard
@@ -8142,7 +8462,38 @@ function var_0_0.onChoiceSkill(arg_98_0, arg_98_1, arg_98_2)
 
 	local var_98_5 = var_98_1._card
 
-	if var_98_5._skills[1] ~= nil and var_98_5._skills[1]._id == 3108 and var_98_0 == 2 then
+	if var_98_5._infoId == 21142 or var_98_5:hasSkillFast(14733) then
+		if var_98_0 == 1 or arg_98_1._skillId == 14733 then
+			return arg_98_0:showChoiceMerge(var_98_1, var_98_2)
+		else
+			local tnHand = B.sortCardsByBoardPos(var_98_5._owner:getBattleCardsBy14735())
+			return arg_98_0:showChoiceGrave(var_98_1, var_98_2, tnHand, 1, 3 * BattleData.ChoiceId.stage_3)
+		end
+	elseif (var_98_4 ~= nil and var_98_4._id == 14724) or (var_98_5._skills[2] ~= nil and var_98_5._skills[2]._id == 14724) then
+		if var_98_0 == 1 then
+			local oppo_monsters = B.sortCardsByBoardPos(var_98_5._owner._opponent:getBoardCards())
+			if #oppo_monsters > 0 then
+				return arg_98_0:showChoiceGrave(var_98_1, var_98_2, oppo_monsters, 1, var_98_0 * BattleData.ChoiceId.stage_3 + var_98_3)
+			else
+				arg_98_0:sendEvent(var_0_0.EventType.send_use_card, {
+					_card = var_98_1._card,
+					_target = var_98_2 ~= nil and var_98_2._card or nil,
+					_choice = var_98_0 * BattleData.ChoiceId.stage_3 + var_98_3
+				})
+			end
+		elseif var_98_0 == 2 then
+			local grave_monsters = B.filterCanSpecialSummonCards(var_98_5._owner:getBattleCards("G"))
+			if #grave_monsters > 0 and #var_98_5._owner:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD then
+				return arg_98_0:showChoiceGrave(var_98_1, var_98_2, grave_monsters, 1, var_98_0 * BattleData.ChoiceId.stage_3 + var_98_3)
+			else
+				arg_98_0:sendEvent(var_0_0.EventType.send_use_card, {
+					_card = var_98_1._card,
+					_target = var_98_2 ~= nil and var_98_2._card or nil,
+					_choice = var_98_0 * BattleData.ChoiceId.stage_3 + var_98_3
+				})
+			end
+		end
+	elseif var_98_5._skills[1] ~= nil and var_98_5._skills[1]._id == 3108 and var_98_0 == 2 then
 		return arg_98_0:showChoiceGrave(var_98_1, var_98_2, var_98_5._owner:getBoardCards(), 2, var_98_0 * BattleData.ChoiceId.stage_3 + var_98_3)
 	elseif var_98_5._skills[2] ~= nil and var_98_5._skills[2]._id == 3208 and var_98_0 == 2 then
 		return arg_98_0:showChoiceGrave(var_98_1, var_98_2, B.sortCardsByBoardPos(var_98_5._owner._opponent:getBoardCards()), 1, var_98_0 * BattleData.ChoiceId.stage_3 + var_98_3)
@@ -8773,6 +9124,7 @@ end
 
 function var_0_0.reverse(arg_105_0, arg_105_1)
 	local var_105_0 = arg_105_0._avatarFrame
+	local isBottom = arg_105_0._isController ~= arg_105_1
 
 	if not arg_105_1 then
 		var_105_0:setPosition(arg_105_0._isController and cc.p(0, 0) or cc.p(ClientView.SCR_W, ClientView.SCR_H))
@@ -8794,7 +9146,6 @@ function var_0_0.reverse(arg_105_0, arg_105_1)
 		local var_105_1 = arg_105_0._isController and cc.p(lc.w(var_105_0._avatar) / 2, lc.h(var_105_0._avatar) / 2) or cc.p(lc.w(var_105_0) - lc.w(var_105_0._avatar) / 2, lc.h(var_105_0) - lc.h(var_105_0._avatar) / 2)
 
 		var_105_0._avatar:setPosition(var_105_1)
-
 		var_105_0._avatarPos = var_105_1
 
 		local var_105_2 = arg_105_0._isController and cc.p(90, 104) or cc.p(220, 40)
@@ -8829,7 +9180,6 @@ function var_0_0.reverse(arg_105_0, arg_105_1)
 		local var_105_3 = arg_105_0._isController and cc.p(lc.w(var_105_0) - lc.w(var_105_0._avatar) / 2, lc.h(var_105_0) - lc.h(var_105_0._avatar) / 2) or cc.p(lc.w(var_105_0._avatar) / 2, lc.h(var_105_0._avatar) / 2)
 
 		var_105_0._avatar:setPosition(var_105_3)
-
 		var_105_0._avatarPos = var_105_3
 
 		local var_105_4 = arg_105_0._isController and cc.p(220, 40) or cc.p(90, 104)
@@ -8846,15 +9196,90 @@ function var_0_0.reverse(arg_105_0, arg_105_1)
 		end
 	end
 
-	arg_105_0._pRareLabel:setScaleY(-arg_105_0._pRareLabel:getScaleY())
-	arg_105_0._pGraveLabel:setScaleY(-arg_105_0._pGraveLabel:getScaleY())
+	-- Giữ nguyên tỉ lệ dương (không lật ngược Y text/label) và hoán đổi vị trí mộ/bài hiếm
+	if arg_105_0._pRareLabel then
+		arg_105_0._pRareLabel:setScaleY(math.abs(arg_105_0._pRareLabel:getScaleY()))
+		arg_105_0._pRareLabel:setPosition(isBottom and var_0_0.Pos.attacker_rare or var_0_0.Pos.defender_rare)
+	end
+	if arg_105_0._pGraveLabel then
+		arg_105_0._pGraveLabel:setScaleY(math.abs(arg_105_0._pGraveLabel:getScaleY()))
+		arg_105_0._pGraveLabel:setPosition(isBottom and var_0_0.Pos.attacker_grave or var_0_0.Pos.defender_grave)
+	end
+
+	-- Cập nhật tọa độ ô đặt bài úp / bẫy
+	local var_2_20 = isBottom and var_0_0.Pos.attacker_cover or var_0_0.Pos.defender_cover
+	local var_2_21 = var_0_0.Pos.cover_offset
+	arg_105_0._coverPos = arg_105_0._coverPos or {}
+	for iter_2_0 = 1, Data.MAX_CARD_COUNT_ON_COVER do
+		arg_105_0._coverPos[iter_2_0] = cc.p(var_2_20.x + var_2_21.width * ((iter_2_0 - 1) % 2), var_2_20.y + var_2_21.height * math.floor((iter_2_0 - 1) / 2) * (isBottom and -1 or 1))
+		local covCard = arg_105_0._pCoverCards and arg_105_0._pCoverCards[iter_2_0]
+		if covCard then
+			covCard._default._position = arg_105_0._coverPos[iter_2_0]
+			covCard:setPosition(covCard._default._position)
+		end
+	end
+
+	-- Cập nhật thẻ bài trong mộ
+	if arg_105_0._pGraveCards then
+		local gravePos = isBottom and var_0_0.Pos.attacker_grave or var_0_0.Pos.defender_grave
+		for _, gCard in ipairs(arg_105_0._pGraveCards) do
+			if gCard then
+				gCard._default._position = gravePos
+				gCard:setPosition(gravePos)
+			end
+		end
+	end
+
+	-- Cập nhật thẻ bài Extra Deck
+	if arg_105_0._pRareCards then
+		local rarePos = isBottom and var_0_0.Pos.attacker_rare or var_0_0.Pos.defender_rare
+		for _, rCard in ipairs(arg_105_0._pRareCards) do
+			if rCard and rCard.setPosition then
+				rCard._default = rCard._default or {}
+				rCard._default._position = rarePos
+				rCard:setPosition(rarePos)
+			end
+		end
+	end
+
+	-- Cập nhật gem stones
+	if arg_105_0._gemStones then
+		local gems = isBottom and var_0_0.Pos.attacker_gems or var_0_0.Pos.defender_gems
+		for iter_2_1 = 1, 3 do
+			if arg_105_0._gemStones[iter_2_1] and gems[iter_2_1] then
+				arg_105_0._gemStones[iter_2_1]:setPosition(gems[iter_2_1])
+			end
+		end
+	end
 end
 
 function var_0_0.clear(arg_106_0)
-	arg_106_0._avatarFrame:removeFromParent()
-	arg_106_0._pile:removeFromParent()
-	arg_106_0._pGraveLabel:removeFromParent()
-	arg_106_0._pRareLabel:removeFromParent()
+	arg_106_0:resetCardSprites()
+	if arg_106_0._avatarFrame and arg_106_0._avatarFrame:getParent() then
+		arg_106_0._avatarFrame:removeFromParent()
+	end
+	if arg_106_0._pile and arg_106_0._pile:getParent() then
+		arg_106_0._pile:removeFromParent()
+	end
+	if arg_106_0._pGraveLabel and arg_106_0._pGraveLabel:getParent() then
+		arg_106_0._pGraveLabel:removeFromParent()
+	end
+	if arg_106_0._pRareLabel and arg_106_0._pRareLabel:getParent() then
+		arg_106_0._pRareLabel:removeFromParent()
+	end
+	if arg_106_0._gemStones then
+		for _, gem in ipairs(arg_106_0._gemStones) do
+			if gem and gem:getParent() then gem:removeFromParent() end
+		end
+	end
+	if arg_106_0._boardLockIcons then
+		for _, lock in ipairs(arg_106_0._boardLockIcons) do
+			if lock and lock:getParent() then lock:removeFromParent() end
+		end
+	end
+	if arg_106_0._pAtkLabel and arg_106_0._pAtkLabel:getParent() then
+		arg_106_0._pAtkLabel:removeFromParent()
+	end
 end
 
 function var_0_0.uiRandomTable(arg_107_0, arg_107_1, arg_107_2)
@@ -8873,8 +9298,6 @@ function var_0_0.uiRandomTable(arg_107_0, arg_107_1, arg_107_2)
 		local var_107_2 = {}
 
 		for iter_107_1 = 1, arg_107_2 do
-			print("math.random()math.random()math.random()math.random()math.random()", math.random())
-
 			local var_107_3 = math.min(math.floor(math.random() * var_107_1 + 1), var_107_1)
 
 			while true do

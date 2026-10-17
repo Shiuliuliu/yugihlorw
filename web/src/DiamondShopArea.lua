@@ -286,19 +286,36 @@ function var_0_0.addCardList(arg_18_0, arg_18_1, arg_18_2)
 	local function var_18_4(arg_19_0)
 		local var_19_0 = arg_19_0._card
 
-		if var_19_0._price > P:getItemCount(var_19_0._priceType) then
+		local curResCount = P:getItemCount(var_19_0._priceType)
+		if (var_19_0._priceType == 3 or var_19_0._priceType == 7339 or var_19_0._priceType == 7114) and P._ingot then
+			curResCount = P._ingot
+		end
+
+		if var_19_0._price > curResCount then
 			if var_19_0._priceType == Data.PropsId.times_package_ticket then
 				ToastManager.push(string.format(Str(STR.NOT_ENOUGH), Str(Data._propsInfo[Data.PropsId.times_package_ticket]._nameSid)))
 
 				return require("ExchangeResForm").create(Data.PropsId.times_package_ticket):show()
 			else
-				return ToastManager.push(string.format(Str(STR.NOT_ENOUGH), Str(Data._propsInfo[var_19_0._priceType]._nameSid)))
+				local var_19_name = (Data._propsInfo[var_19_0._priceType] and Str(Data._propsInfo[var_19_0._priceType]._nameSid))
+					or (var_19_0._priceType == Data.ResType.ingot and "Linh Thạch Cao Cấp")
+					or (var_19_0._priceType == 3 and "Linh Thạch Cao Cấp")
+					or (var_19_0._priceType == 7339 and "Linh Thạch Cao Cấp")
+					or (var_19_0._priceType == 7114 and "Linh Thạch Cao Cấp")
+					or (var_19_0._priceType == Data.ResType.gold and "Linh Thạch")
+					or (ClientData and ClientData.getNameByInfoId and ClientData.getNameByInfoId(var_19_0._priceType))
+					or "Tài nguyên"
+				return ToastManager.push(string.format(Str(STR.NOT_ENOUGH), var_19_name))
 			end
 		end
 
 		ClientData.sendBuyDiamond(var_19_0._id)
 		P._playerCard:addCard(var_19_0._infoId, 1)
-		P:addResource(var_19_0._priceType, nil, -var_19_0._price)
+		if var_19_0._priceType == 7339 or var_19_0._priceType == 7114 then
+			P:changeResource(Data.ResType.ingot, -var_19_0._price)
+		else
+			P:addResource(var_19_0._priceType, nil, -var_19_0._price)
+		end
 		require("RewardCardPanel").create(Str(STR.BUYSUCCESS), {
 			var_19_0
 		}):show()

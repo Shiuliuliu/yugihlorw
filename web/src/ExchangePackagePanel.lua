@@ -62,9 +62,9 @@ function var_0_0.refreshList(arg_7_0)
 
 	arg_7_0._list:bindData(var_7_0, function(...)
 		arg_7_0:setOrCreateItem(...)
-	end, math.min(10, #var_7_0))
+	end, #var_7_0)
 
-	for iter_7_0 = 1, arg_7_0._list._cacheCount do
+	for iter_7_0 = 1, #var_7_0 do
 		arg_7_0._list:pushBackCustomItem(arg_7_0:setOrCreateItem(nil, var_7_0[iter_7_0], iter_7_0))
 	end
 

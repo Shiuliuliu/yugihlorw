@@ -200,6 +200,9 @@ function var_0_0.isPosValid(arg_15_0, arg_15_1, arg_15_2)
 			return false
 		end
 	elseif arg_15_0._mode == var_0_0.Mode.link then
+		if (arg_15_1 and (arg_15_1._infoId == 40729 or arg_15_1._infoId == 40731)) or (arg_15_0._cards and arg_15_0._cards[1] and (arg_15_0._cards[1]._infoId == 40729 or arg_15_0._cards[1]._infoId == 40731)) or (arg_15_0._pCard and arg_15_0._pCard._card and (arg_15_0._pCard._card._infoId == 40729 or arg_15_0._pCard._card._infoId == 40731)) then
+			return true
+		end
 		if arg_15_0._linkPos[arg_15_2] ~= true then
 			return false
 		end
@@ -350,7 +353,17 @@ end
 
 function var_0_0.createCardItem(arg_24_0, arg_24_1)
 	local var_24_0
-	local var_24_1 = require("CardThumbnail").create(arg_24_1._infoId, nil, arg_24_1._originOwner._skins[arg_24_1._infoId])
+	local ownerObj = arg_24_1._originOwner or arg_24_1._owner
+	local skinId = nil
+	if ownerObj and ownerObj._skins and type(ownerObj._skins[arg_24_1._infoId]) == "number" then
+		skinId = ownerObj._skins[arg_24_1._infoId]
+	elseif P and P._playerCard and type(P._playerCard.getSkinId) == "function" then
+		local sid = P._playerCard:getSkinId(arg_24_1._infoId)
+		if type(sid) == "number" and sid > 0 then
+			skinId = sid
+		end
+	end
+	local var_24_1 = require("CardThumbnail").create(arg_24_1._infoId, nil, skinId)
 
 	if not arg_24_1:isXYZ() and not arg_24_1:isLink() then
 		var_24_1._frame._starArea:update(arg_24_1:getStar(), arg_24_1._infoId)
@@ -372,6 +385,12 @@ end
 function var_0_0.refreshPosDialogLinkPos(arg_26_0)
 	arg_26_0._linkPos = {}
 	arg_26_0._linkPos[Data.MAX_CARD_COUNT_ON_BOARD + 1] = true
+
+	if (arg_26_0._cards and arg_26_0._cards[1] and arg_26_0._cards[1]._infoId == 40729) or (arg_26_0._pCard and arg_26_0._pCard._card and arg_26_0._pCard._card._infoId == 40729) then
+		for iter_p = 1, Data.MAX_CARD_COUNT_ON_BOARD + 1 do
+			arg_26_0._linkPos[iter_p] = true
+		end
+	end
 
 	for iter_26_0 = 1, Data.MAX_CARD_COUNT_ON_BOARD + 1 do
 		local var_26_0 = arg_26_0._boardCards[iter_26_0] or arg_26_0._posList[iter_26_0]

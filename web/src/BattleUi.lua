@@ -6,7 +6,7 @@ BattleUi = var_0_0
 var_0_0.PVP_ROUND_DURATION = 45
 var_0_0.PVP_ROUND_OFFLINE_DURATION = 2
 var_0_0.PVP_ROPE_DURATION = 15
-var_0_0.PVP_RETREAT_DURATION = 90
+var_0_0.PVP_RETREAT_DURATION = 45
 var_0_0.BattleSpeed = {
 	1.5,
 	2.5,
@@ -483,7 +483,7 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 	elseif arg_22_0._baseBattleType == Data.BattleType.base_PVP then
 		arg_22_0._battleSpeed = 3
 	elseif arg_22_0._baseBattleType == Data.BattleType.base_replay then
-		arg_22_0._battleSpeed = math.max(3, var_22_0(P._level, P._vip))
+		arg_22_0._battleSpeed = arg_22_1._battleSpeed or math.max(3, var_22_0(P._level, P._vip))
 	elseif lc._configs ~= nil then
 		if arg_22_0:isGuideWorldBattle() then
 			arg_22_0._battleSpeed = 1
@@ -565,9 +565,9 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 		_reviewType = ClientData._cfg and ClientData._cfg.battleReview or 0,
 		_monthCardType = arg_22_1._player._monthCardType,
 		_isNewRound = isRealOnlinePvp and arg_22_1._player._isNewRound or false,
-		_roundTimeInit = isRealOnlinePvp and (arg_22_1._player._roundTimeInit or 90) or 0,
+		_roundTimeInit = isRealOnlinePvp and (arg_22_1._player._roundTimeInit or 60) or 0,
 		_roundTimeMax = isRealOnlinePvp and (arg_22_1._player._roundTimeMax or 120) or 0,
-		_roundTimeDelta = isRealOnlinePvp and (arg_22_1._player._roundTimeDelta or 0) or 0,
+		_roundTimeDelta = isRealOnlinePvp and (arg_22_1._player._roundTimeDelta or 6) or 0,
 		_isOnlinePvp = isRealOnlinePvp,
 		_isOppoOnline = isRealOnlinePvp,
 		_pvpMatch = isRealOnlinePvp
@@ -597,9 +597,9 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 		_reviewType = ClientData._cfg and ClientData._cfg.battleReview or 0,
 		_monthCardType = arg_22_1._opponent._monthCardType,
 		_isNewRound = isRealOnlinePvp and arg_22_1._opponent._isNewRound or false,
-		_roundTimeInit = isRealOnlinePvp and (arg_22_1._opponent._roundTimeInit or 90) or 0,
+		_roundTimeInit = isRealOnlinePvp and (arg_22_1._opponent._roundTimeInit or 60) or 0,
 		_roundTimeMax = isRealOnlinePvp and (arg_22_1._opponent._roundTimeMax or 120) or 0,
-		_roundTimeDelta = isRealOnlinePvp and (arg_22_1._opponent._roundTimeDelta or 0) or 0,
+		_roundTimeDelta = isRealOnlinePvp and (arg_22_1._opponent._roundTimeDelta or 6) or 0,
 		_isOnlinePvp = isRealOnlinePvp,
 		_isOppoOnline = isRealOnlinePvp,
 		_pvpMatch = isRealOnlinePvp
@@ -923,6 +923,7 @@ function var_0_0.initUiControl(arg_29_0)
 
 	local var_29_5 = var_29_2("bat_btn_2", "bat_btn_icon_pause")
 
+	var_29_5:setTouchRect(cc.rect(-6, -6, lc.w(var_29_5) + 12, lc.h(var_29_5) + 12))
 	var_29_5:setPosition(var_29_3 + lc.w(var_29_5) / 2, lc.bottom(arg_29_0._btnSetting) - lc.ch(var_29_5))
 
 	arg_29_0._btnReplay = var_29_5
@@ -1062,8 +1063,8 @@ function var_0_0.initUiControl(arg_29_0)
 	elseif arg_29_0._baseBattleType == Data.BattleType.base_replay then
 		var_29_14 = {
 			var_29_5,
-			var_29_7,
-			var_29_8
+			var_29_8,
+			var_29_7
 		}
 	elseif arg_29_0._baseBattleType == Data.BattleType.base_guidance then
 		var_29_12()
@@ -1101,7 +1102,12 @@ function var_0_0.initUiControl(arg_29_0)
 		iter_29_1:setVisible(false)
 	end
 
+	local prevBtn = arg_29_0._btnSetting
 	for iter_29_2, iter_29_3 in ipairs(var_29_14) do
+		if not (arg_29_0._baseBattleType == Data.BattleType.base_PVP and lc.PLATFORM == cc.PLATFORM_OS_WINDOWS) then
+			iter_29_3:setPosition(var_29_3 + lc.w(iter_29_3) / 2, lc.bottom(prevBtn) - lc.ch(iter_29_3))
+			prevBtn = iter_29_3
+		end
 		iter_29_3:setVisible(true)
 	end
 
@@ -1174,6 +1180,9 @@ function var_0_0.resetWhenBattleStart(arg_36_0)
 	arg_36_0._isAutoAuto = false
 	arg_36_0._isAuto = arg_36_0._autoConfig
 	arg_36_0._isPaused = false
+	if arg_36_0._btnReplay and arg_36_0._btnReplay._icon then
+		arg_36_0._btnReplay._icon:setSpriteFrame("bat_btn_icon_pause")
+	end
 	arg_36_0._isOperating = false
 	arg_36_0._isAddingBoardCard = false
 	arg_36_0._isBattleFinished = false
@@ -1379,6 +1388,22 @@ function var_0_0.retreat(arg_47_0, arg_47_1)
 		return
 	end
 
+	arg_47_1 = arg_47_1 or arg_47_0._player
+
+	-- Dừng ngay lập tức toàn bộ turn timer, dây cháy pvp, banner suy nghĩ và tương tác UI
+	if arg_47_0.stopPvpTiming then
+		arg_47_0:stopPvpTiming()
+	end
+	if arg_47_0.removePvpTimingRope then
+		arg_47_0:removePvpTimingRope()
+	end
+	if arg_47_0.hideThinking then
+		arg_47_0:hideThinking()
+	end
+	if arg_47_0.operateEnd then
+		arg_47_0:operateEnd()
+	end
+
 	if arg_47_1 then
 		arg_47_1._recordedUsedCards = arg_47_1._recordedUsedCards or {}
 		table.insert(arg_47_1._recordedUsedCards, BattleData.UseCardId.retreat)
@@ -1389,7 +1414,6 @@ function var_0_0.retreat(arg_47_0, arg_47_1)
 
 	if arg_47_0._statusScheduler ~= nil then
 		lc.Scheduler:unscheduleScriptEntry(arg_47_0._statusScheduler)
-
 		arg_47_0._statusScheduler = nil
 	end
 
@@ -1408,7 +1432,40 @@ function var_0_0.retreat(arg_47_0, arg_47_1)
 		end
 	end
 
-	return arg_47_1:retreat()
+	-- Gửi tín hiệu surrender trực tiếp qua kênh PvP WebSocket nếu đang trong trận PvP
+	local mId = ClientData and ClientData._currentMatchId
+	local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
+	if pvpNet and mId then
+		pcall(function()
+			local myRes = (arg_47_1 == arg_47_0._player) and "2" or "1"
+			if pvpNet.sendEnd then
+				pvpNet:sendEnd(mId, myRes)
+			end
+		end)
+	end
+
+	-- Thiết lập kết quả ngay tức khắc không chờ đợi
+	local isPlayerRetreat = (arg_47_1 == arg_47_0._player)
+	if isPlayerRetreat then
+		arg_47_0._player._isRetreat = true
+		arg_47_0._isSurrender = true
+		arg_47_0._forceResult = Data.BattleResult.lose
+		arg_47_0._player:genResult(Data.BattleResult.lose)
+		arg_47_0._opponent:genResult(Data.BattleResult.win)
+	else
+		arg_47_0._opponent._isRetreat = true
+		arg_47_0._forceResult = Data.BattleResult.win
+		arg_47_0._opponent:genResult(Data.BattleResult.lose)
+		arg_47_0._player:genResult(Data.BattleResult.win)
+	end
+
+	arg_47_0._player._isFinished = true
+	arg_47_0._opponent._isFinished = true
+
+	arg_47_0:finish()
+	arg_47_0:sendBattleEnd()
+
+	return true
 end
 
 function var_0_0.skip(arg_48_0)
@@ -1756,10 +1813,31 @@ function var_0_0.onBattleEventFinished(arg_62_0)
 		arg_62_0._statusScheduler = nil
 	end
 
+	if arg_62_0._player and arg_62_0._opponent then
+		if arg_62_0._player._fortress._hp <= 0 or arg_62_0._opponent._fortress._hp <= 0 or arg_62_0._player:checkFinish() or arg_62_0._opponent:checkFinish() then
+			if not arg_62_0._isBattleFinished then
+				local actP = (arg_62_0._battleEvent and arg_62_0._battleEvent._sender) or arg_62_0._player:getActionPlayer()
+				actP._stepStatus = BattleData.Status.before_account_finish
+				return actP:step()
+			end
+		end
+	end
+
 	return arg_62_0._battleEvent._sender:step()
 end
 
 function var_0_0.tryUseCard(arg_63_0, arg_63_1)
+	if arg_63_0._player and arg_63_0._opponent then
+		if arg_63_0._player._fortress._hp <= 0 or arg_63_0._opponent._fortress._hp <= 0 or arg_63_0._player:checkFinish() or arg_63_0._opponent:checkFinish() then
+			if not arg_63_0._isBattleFinished then
+				local actP = arg_63_0._player:getActionPlayer()
+				actP._stepStatus = BattleData.Status.before_account_finish
+				return actP:step()
+			end
+			return
+		end
+	end
+
 	if not arg_63_0._isEndAllOperation then
 		arg_63_0._isEndAllOperation = arg_63_0._nameTag == "normal" and arg_63_0._playerUi:getIsEndAllOperation() or false
 
@@ -1879,6 +1957,13 @@ function var_0_0.resetWhenRoundEnd(arg_67_0)
 	arg_67_0:removeExchangeArrow()
 	arg_67_0:removeSoftGuide()
 
+	if arg_67_0._playerUi and arg_67_0._playerUi._roundTimerBg then
+		arg_67_0._playerUi._roundTimerBg:setVisible(false)
+	end
+	if arg_67_0._opponentUi and arg_67_0._opponentUi._roundTimerBg then
+		arg_67_0._opponentUi._roundTimerBg:setVisible(false)
+	end
+
 	if arg_67_0._timeOutTimes >= 3 then
 		arg_67_0._timeOutTimes = 0
 	end
@@ -1959,6 +2044,14 @@ function var_0_0.addBoardCardEnded(arg_72_0, arg_72_1)
 	var_72_0:updateBoardCardsInitialSkills()
 	arg_72_0:updateRoundButton()
 
+	if arg_72_0._player and arg_72_0._opponent and not arg_72_0._isBattleFinished then
+		if arg_72_0._player:checkFinish() or arg_72_0._opponent:checkFinish() then
+			local actP = arg_72_0._player:getActionPlayer()
+			actP._stepStatus = BattleData.Status.before_account_finish
+			return actP:step()
+		end
+	end
+
 	if arg_72_0._isOperating and arg_72_0._needSoftGuide then
 		arg_72_0:addSoftGuide()
 	end
@@ -2029,10 +2122,16 @@ function var_0_0.onButtonEvent(arg_75_0, arg_75_1)
 
 		if arg_75_0._isPaused then
 			arg_75_0:pause()
-			arg_75_0._btnReplay._icon:setSpriteFrame("bat_btn_icon_play")
+			if arg_75_0._btnReplay._icon then
+				arg_75_0._btnReplay._icon:setSpriteFrame("bat_btn_icon_play")
+			end
+			ToastManager.push("Đã tạm dừng")
 		else
 			arg_75_0:resume()
-			arg_75_0._btnReplay._icon:setSpriteFrame("bat_btn_icon_pause")
+			if arg_75_0._btnReplay._icon then
+				arg_75_0._btnReplay._icon:setSpriteFrame("bat_btn_icon_pause")
+			end
+			ToastManager.push("Tiếp tục")
 		end
 	elseif arg_75_1 == arg_75_0._btnAuto then
 		return
@@ -2157,7 +2256,7 @@ function var_0_0.onButtonEvent(arg_75_0, arg_75_1)
 		arg_75_0:hideTestProgress()
 		arg_75_0:onExportUnitTestData()
 	elseif arg_75_1 == arg_75_0._btnSwitchView then
-		arg_75_0:reverse()
+		arg_75_0:onSwitchView()
 	elseif arg_75_1 == arg_75_0._btnInitiative or arg_75_1 == arg_75_0._btnRare or arg_75_1 == arg_75_0._btnRare2 then
 		if not arg_75_0._playerUi._isController or arg_75_0._isObserver then
 			return true
@@ -2232,36 +2331,145 @@ function var_0_0.showSkill(arg_82_0, arg_82_1, arg_82_2)
 end
 
 function var_0_0.onSwitchView(arg_83_0)
-	arg_83_0._isReverse = not arg_83_0._isReverse
+	if not arg_83_0._input then return end
+
+	local curRound = 1
+	local isCurOppRound = false
+	if arg_83_0._player then
+		curRound = math.max(1, arg_83_0._player._round or 1)
+		local actP = arg_83_0._player:getActionPlayer()
+		isCurOppRound = (actP == arg_83_0._opponent)
+	end
+	local curSpeed = arg_83_0._battleSpeed or 1
+	local wasPaused = arg_83_0._isPaused
+	local isFinished = arg_83_0._isBattleFinished
 
 	arg_83_0:hideResult()
-	arg_83_0._playerUi:efcFortressDieRemove()
-	arg_83_0._opponentUi:efcFortressDieRemove()
+	if arg_83_0._statusScheduler ~= nil then
+		lc.Scheduler:unscheduleScriptEntry(arg_83_0._statusScheduler)
+		arg_83_0._statusScheduler = nil
+	end
+
+	if arg_83_0._isTouching then
+		pcall(function() arg_83_0:onTouchCanceled(true) end)
+	end
+	if arg_83_0._dropLayer then
+		pcall(function() arg_83_0:hideDropHand() end)
+	end
+	if arg_83_0._choiceMaskLayer then
+		pcall(function()
+			if arg_83_0._choiceMaskLayer.cancelChoice then
+				arg_83_0._choiceMaskLayer:cancelChoice()
+			elseif arg_83_0._choiceMaskLayer:getParent() then
+				arg_83_0._choiceMaskLayer:removeFromParent()
+			end
+		end)
+		arg_83_0._choiceMaskLayer = nil
+	end
+	if arg_83_0._choiceGraveDialog then
+		pcall(function() arg_83_0._choiceGraveDialog:cancel() end)
+		arg_83_0._choiceGraveDialog = nil
+	end
+	if arg_83_0._choicePosDialog then
+		pcall(function() arg_83_0._choicePosDialog:cancel() end)
+		arg_83_0._choicePosDialog = nil
+	end
+	if arg_83_0.removeExchangeArrow then
+		pcall(function() arg_83_0:removeExchangeArrow() end)
+	end
+	if arg_83_0.removeSoftGuide then
+		pcall(function() arg_83_0:removeSoftGuide() end)
+	end
+
+	arg_83_0:stopAllActions()
+	if arg_83_0._layer then
+		arg_83_0._layer:stopAllActions()
+	end
+
+	if arg_83_0._playerUi then
+		pcall(function() arg_83_0._playerUi:efcFortressDieRemove() end)
+		arg_83_0._playerUi:clear()
+	end
+	if arg_83_0._opponentUi then
+		pcall(function() arg_83_0._opponentUi:efcFortressDieRemove() end)
+		arg_83_0._opponentUi:clear()
+	end
 	arg_83_0:resetBattle()
-	arg_83_0._playerUi:resetWhenBattleStart()
-	arg_83_0._opponentUi:resetWhenBattleStart()
-	arg_83_0:resetWhenBattleStart()
-	arg_83_0:setBattleSpeed()
-	arg_83_0._playerUi:clear()
-	arg_83_0._opponentUi:clear()
 
+	-- Hoán đổi _input._player và _input._opponent
 	local var_83_0 = arg_83_0._input._player
-
 	arg_83_0._input._player = arg_83_0._input._opponent
 	arg_83_0._input._opponent = var_83_0
 
+	-- Đảo cờ tấn công cho controller mới
+	arg_83_0._input._isAttacker = not arg_83_0._input._isAttacker
+
+	-- Hoán đổi chuỗi sự kiện replay để khớp với người chơi mới
+	if arg_83_0._input._eventIds or arg_83_0._input._oppoEventIds then
+		local ev = arg_83_0._input._eventIds
+		arg_83_0._input._eventIds = arg_83_0._input._oppoEventIds
+		arg_83_0._input._oppoEventIds = ev
+	end
+
+	-- Hoán đổi replay log nếu có
+	if arg_83_0._input._replayingLog then
+		local log = arg_83_0._input._replayingLog
+		local p = log._player
+		log._player = log._opponent
+		log._opponent = p
+		log._isAttack = not log._isAttack
+		if log._resultType == Data.BattleResult.win then
+			log._resultType = Data.BattleResult.lose
+		elseif log._resultType == Data.BattleResult.lose then
+			log._resultType = Data.BattleResult.win
+		end
+	end
+
+	-- Giữ _isReverse là false để mọi tính toán tọa độ / 3D camera / card rotation luôn chuẩn trực diện
+	arg_83_0._isReverse = false
+
+	-- Khởi tạo lại dữ liệu với input đã hoán đổi
 	arg_83_0:initData(arg_83_0._input)
 
-	arg_83_0._playerUi = PlayerUi.new(arg_83_0, arg_83_0._player, arg_83_0._sceneType, arg_83_0._input._player._cardBackId)
-	arg_83_0._opponentUi = PlayerUi.new(arg_83_0, arg_83_0._opponent, arg_83_0._sceneType, arg_83_0._input._opponent._cardBackId)
+	arg_83_0._playerUi = PlayerUi.new(arg_83_0, arg_83_0._player, arg_83_0._sceneType, arg_83_0._input._player and arg_83_0._input._player._cardBackId)
+	arg_83_0._opponentUi = PlayerUi.new(arg_83_0, arg_83_0._opponent, arg_83_0._sceneType, arg_83_0._input._opponent and arg_83_0._input._opponent._cardBackId)
 	arg_83_0._playerUi._opponentUi = arg_83_0._opponentUi
 	arg_83_0._opponentUi._opponentUi = arg_83_0._playerUi
 
 	arg_83_0._playerUi:resetWhenBattleStart()
 	arg_83_0._opponentUi:resetWhenBattleStart()
 	arg_83_0:resetWhenBattleStart()
-	arg_83_0:startBattle()
-	arg_83_0._scene:seenByCamera3D(arg_83_0)
+	arg_83_0:setBattleSpeed(curSpeed)
+
+	-- Đảm bảo camera 3D chuẩn không bị đảo hay lệch
+	arg_83_0:setScale(arg_83_0._scale)
+	arg_83_0:setPosition(cc.p(ClientView.SCR_CW, ClientView.SCR_CH + arg_83_0._offsetY))
+	arg_83_0:setRotation3D({
+		z = 0,
+		y = 0,
+		x = -ClientView.BATTLE_ROTATION_X
+	})
+	if arg_83_0._scene then
+		arg_83_0._scene:seenByCamera3D(arg_83_0)
+	end
+
+	-- Tua nhanh đến đúng round hiện tại nếu đang trong trận replay
+	if not isFinished and (curRound > 1 or isCurOppRound) and arg_83_0._baseBattleType == Data.BattleType.base_replay then
+		local nextIsOppTurn = not isCurOppRound
+		arg_83_0:forwardToRound(nextIsOppTurn, curRound)
+	else
+		arg_83_0:startBattle()
+	end
+
+	if wasPaused then
+		arg_83_0:pause()
+		if arg_83_0._btnReplay and arg_83_0._btnReplay._icon then
+			arg_83_0._btnReplay._icon:setSpriteFrame("bat_btn_icon_play")
+		end
+	end
+
+	local curName = (arg_83_0._player and arg_83_0._player._name) or "Đối thủ"
+	ToastManager.push("Đang xem góc nhìn của " .. tostring(curName))
 end
 
 function var_0_0.addChild(arg_84_0, arg_84_1, arg_84_2, arg_84_3)
@@ -2271,14 +2479,6 @@ function var_0_0.addChild(arg_84_0, arg_84_1, arg_84_2, arg_84_3)
 		cc.Node.addChild(arg_84_0, arg_84_1, arg_84_2, arg_84_3)
 	else
 		cc.Node.addChild(arg_84_0, arg_84_1)
-	end
-
-	local var_84_0 = arg_84_1:getScaleY()
-
-	if arg_84_1.setFlippedY then
-		arg_84_1:setFlippedY(arg_84_0._isReverse)
-	elseif arg_84_0._isReverse and var_84_0 > 0 then
-		arg_84_1:setScaleY(-var_84_0)
 	end
 end
 
@@ -2305,32 +2505,7 @@ function var_0_0.tryExitScene(arg_85_0)
 end
 
 function var_0_0.reverse(arg_86_0)
-	arg_86_0._isReverse = not arg_86_0._isReverse
-
-	arg_86_0:setFlippedY(arg_86_0._isReverse)
-
-	local var_86_0 = arg_86_0:getRotation3D()
-
-	arg_86_0._playerUi:reverse(arg_86_0._isReverse)
-	arg_86_0._opponentUi:reverse(arg_86_0._isReverse)
-
-	for iter_86_0, iter_86_1 in ipairs(arg_86_0:getChildren()) do
-		if iter_86_1.setFlippedY then
-			iter_86_1:setFlippedY(arg_86_0._isReverse)
-		end
-	end
-
-	arg_86_0._playerUi:updateHandCardsPos()
-	arg_86_0._playerUi:updateBoardCardsPos()
-	arg_86_0._opponentUi:updateHandCardsPos()
-	arg_86_0._opponentUi:updateBoardCardsPos()
-
-	if arg_86_0._playerUi._hideHandCards ~= arg_86_0._opponentUi._hideHandCards then
-		arg_86_0._playerUi:hideHandCards()
-		arg_86_0._opponentUi:hideHandCards()
-	end
-
-	arg_86_0:reverseThinking()
+	return arg_86_0:onSwitchView()
 end
 
 function var_0_0.onPlayerUiEvent(arg_87_0, arg_87_1)
@@ -2906,6 +3081,12 @@ function var_0_0.onBattleEnd(arg_99_0, arg_99_1)
 			var_99_2._grain = var_99_3.num
 		elseif var_99_3.info_id == Data.ResType.ingot then
 			var_99_2._ingot = var_99_3.num
+			table.insert(var_99_2._cards, {
+				_infoId = var_99_3.info_id,
+				_count = var_99_3.num,
+				_isFragment = var_99_3.is_fragment,
+				_level = var_99_3.level
+			})
 		elseif var_99_3.info_id == Data.ResType.exp or var_99_3.info_id == Data.ResType.character_exp then
 			var_99_2._exp = var_99_3.num
 		elseif var_99_3.info_id == Data.ResType.union_personal_power then
@@ -3026,6 +3207,17 @@ function var_0_0.isGuideWorldBattle(arg_101_0, arg_101_1)
 end
 
 function var_0_0.oppoTryUseCard(arg_102_0)
+	if arg_102_0._player and arg_102_0._opponent then
+		if arg_102_0._player._fortress._hp <= 0 or arg_102_0._opponent._fortress._hp <= 0 or arg_102_0._player:checkFinish() or arg_102_0._opponent:checkFinish() then
+			if not arg_102_0._isBattleFinished then
+				local actP = arg_102_0._player:getActionPlayer()
+				actP._stepStatus = BattleData.Status.before_account_finish
+				return actP:step()
+			end
+			return false
+		end
+	end
+
 	if #ClientData._usedCardsToAdd > 0 then
 		local var_102_0 = B.parseOperations(arg_102_0._opponent._isAttacker, ClientData._usedCardsToAdd, false)
 
@@ -3164,25 +3356,30 @@ function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
 		return
 	end
 
+	if arg_107_0._oppoTimeoutFallbackAction then
+		arg_107_0:stopAction(arg_107_0._oppoTimeoutFallbackAction)
+		arg_107_0._oppoTimeoutFallbackAction = nil
+	end
+
 	arg_107_0:stopPvpTiming()
 	arg_107_0:removePvpTimingRope()
 
 	arg_107_0._isPvpTimeout = false
 	arg_107_0._pvpPlayer = arg_107_1
 	arg_107_0._roundRealStartTime = os.time()
-	arg_107_0._roundDuration = 90
+	arg_107_0._roundDuration = 60
 
 	local var_107_0 = ClientData.getCurrentTime()
 
-	-- 90s action duration for each player turn per user request
+	-- 60s action duration for each player turn per user request
 	ClientData._battleRoundStartInfo = {
 		_round = (ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._round or 0) + 1,
 		_isAttacker = arg_107_1 == arg_107_0._player,
 		_beginTime = var_107_0,
-		_endTime = var_107_0 + 90
+		_endTime = var_107_0 + 60
 	}
 
-	local var_107_1 = 90
+	local var_107_1 = 60
 	local var_107_2 = 0
 
 	local var_107_3 = arg_107_0._player == arg_107_1 and arg_107_0._playerUi or arg_107_0._opponentUi
@@ -3204,13 +3401,17 @@ function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
 	if not arg_108_0._isOnlinePvp then
 		return
 	end
-	local delta = tonumber(arg_108_1) or 4
+	local delta = tonumber(arg_108_1) or 6
 	local maxTime = tonumber(arg_108_2) or 120
 	if arg_108_0._roundRealStartTime then
 		local curNow = os.time()
-		local totalDur = arg_108_0._roundDuration or 90
+		local totalDur = arg_108_0._roundDuration or 60
 		local curRemaining = totalDur - (curNow - arg_108_0._roundRealStartTime)
-		local newRemaining = math.min(maxTime, math.max(curRemaining + delta, 15))
+		local newRemaining = math.min(maxTime, math.max(curRemaining + delta, 0))
+		if newRemaining > totalDur then
+			arg_108_0._roundDuration = newRemaining
+			totalDur = newRemaining
+		end
 		arg_108_0._roundRealStartTime = curNow - (totalDur - newRemaining)
 		if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._beginTime then
 			ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + newRemaining
@@ -3223,10 +3424,14 @@ function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
 	if not arg_108_0._isOnlinePvp then
 		return
 	end
-	local newRemaining = math.min(120, math.max(15, tonumber(arg_108_1) or 0))
-	if arg_108_0._roundRealStartTime and newRemaining > 0 then
+	local newRemaining = math.min(120, math.max(0, tonumber(arg_108_1) or 0))
+	if arg_108_0._roundRealStartTime then
 		local curNow = os.time()
-		local totalDur = arg_108_0._roundDuration or 90
+		local totalDur = arg_108_0._roundDuration or 60
+		if newRemaining > totalDur then
+			arg_108_0._roundDuration = newRemaining
+			totalDur = newRemaining
+		end
 		arg_108_0._roundRealStartTime = curNow - (totalDur - newRemaining)
 		if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._beginTime then
 			ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + newRemaining
@@ -3235,20 +3440,50 @@ function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
 	end
 end
 
+function var_0_0.onServerTimeSync(arg_108_0, arg_108_1, arg_108_2)
+	if not arg_108_0._isOnlinePvp or arg_108_0._isBattleFinished then
+		return
+	end
+	local sTime = tonumber(arg_108_1)
+	if sTime == nil then
+		return
+	end
+
+	local sSlot = tostring(arg_108_2 or "")
+	local mySlot = (arg_108_0._player and arg_108_0._player._isAttacker) and "p1" or "p2"
+	local curActiveIsMe = (arg_108_0._pvpPlayer == arg_108_0._player)
+	local expectedActiveSlot = curActiveIsMe and mySlot or ((mySlot == "p1") and "p2" or "p1")
+
+	-- Bỏ qua time_sync trễ/cũ nếu slot không khớp lượt hiện tại của client
+	if sSlot ~= "" and sSlot ~= expectedActiveSlot then
+		return
+	end
+
+	-- Nếu lượt đi vừa mới bắt đầu (trong vòng 3.5s đầu), bỏ qua time_sync thấp (< 10s) còn sót từ cuối lượt trước
+	local curNow = os.time()
+	local elapsed = curNow - (arg_108_0._roundRealStartTime or curNow)
+	if elapsed <= 3.5 and sTime < 10 then
+		return
+	end
+
+	arg_108_0:syncPvpRoundSeconds(sTime)
+end
+
 function var_0_0.startPvpTiming(arg_108_0)
 	if not arg_108_0._isOnlinePvp then
 		return
 	end
+	arg_108_0:stopPvpTiming()
 	if arg_108_0._roundRealStartTime == nil then
 		arg_108_0._roundRealStartTime = os.time()
 	end
 	if arg_108_0._roundDuration == nil then
-		arg_108_0._roundDuration = 90
+		arg_108_0._roundDuration = 60
 	end
 	arg_108_0._pvpTimingScheduler = lc.Scheduler:scheduleScriptFunc(function(arg_109_0)
-		-- Strictly unscaled real wall-clock countdown (90s base, plus delta per action)
+		-- Strictly unscaled real wall-clock countdown (60s base, plus delta per action)
 		local curNow = os.time()
-		local totalDur = arg_108_0._roundDuration or 90
+		local totalDur = arg_108_0._roundDuration or 60
 		local elapsed = curNow - (arg_108_0._roundRealStartTime or curNow)
 		local var_109_0 = math.max(0, totalDur - elapsed)
 
@@ -3268,7 +3503,7 @@ function var_0_0.startPvpTiming(arg_108_0)
 		else
 			arg_108_0:removePvpTimingRope()
 		end
-	end, 0.1, false)
+	end, 0.25, false)
 end
 
 function var_0_0.stopPvpTiming(arg_110_0)
@@ -3331,14 +3566,20 @@ function var_0_0.updateRoundTimer(arg_114_0, arg_114_1)
 	if not arg_114_0._isOnlinePvp then
 		return
 	end
-	local var_114_0 = arg_114_0._player:getActionPlayer()
-	local var_114_1 = arg_114_0._playerUi._player == var_114_0 and arg_114_0._playerUi or arg_114_0._opponentUi
+	-- Determine active UI from _pvpPlayer (consistent and unaffected by transient action statuses)
+	local var_114_1
+	if arg_114_0._pvpPlayer then
+		var_114_1 = (arg_114_0._pvpPlayer == arg_114_0._player) and arg_114_0._playerUi or arg_114_0._opponentUi
+	else
+		local var_114_0 = arg_114_0._player:getActionPlayer()
+		var_114_1 = (arg_114_0._playerUi._player == var_114_0) and arg_114_0._playerUi or arg_114_0._opponentUi
+	end
 
-	if var_114_1._opponentUi._roundTimerBg then
+	if var_114_1._opponentUi and var_114_1._opponentUi._roundTimerBg then
 		var_114_1._opponentUi._roundTimerBg:setVisible(false)
 	end
 
-	local var_114_2 = 90
+	local var_114_2 = arg_114_0._roundDuration or 60
 	if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._endTime and ClientData._battleRoundStartInfo._beginTime then
 		var_114_2 = math.max(1, ClientData._battleRoundStartInfo._endTime - ClientData._battleRoundStartInfo._beginTime)
 	end
@@ -3348,10 +3589,7 @@ function var_0_0.updateRoundTimer(arg_114_0, arg_114_1)
 		return
 	end
 
-	if arg_114_1 <= 0 then
-		return var_114_1._roundTimerBg:setVisible(false)
-	end
-
+	-- Always keep timer visible throughout the turn, displaying 0 if time runs out
 	var_114_1._roundTimerBg:setVisible(true)
 	var_114_1._roundTimer2:setVisible(arg_114_1 > var_0_0.PVP_ROPE_DURATION)
 	var_114_1._roundTimer3:setVisible(arg_114_1 <= var_0_0.PVP_ROPE_DURATION)
@@ -3359,55 +3597,120 @@ function var_0_0.updateRoundTimer(arg_114_0, arg_114_1)
 
 	if ClientData._cfg and ClientData._cfg.isTest then
 		var_114_1._roundTimerLabel:setScale(0.5)
-
 		var_114_1._roundTimerLabel:setString(string.format("%d", math.max(0, math.ceil(arg_114_1))))
 	end
 
 	local var_114_4 = var_114_3 / var_114_2 * 100
-
 	var_114_1._roundTimer:setPercentage(var_114_4)
 
-	local var_114_5 = math.min(100, math.max(0, arg_114_1 / 90 * 100))
-
+	local var_114_5 = math.min(100, math.max(0, arg_114_1 / var_114_2 * 100))
 	var_114_1._roundTimer2:setPercentage(var_114_5)
 	var_114_1._roundTimer3:setPercentage(var_114_5)
 end
 
-function var_0_0.pvpTimeout(arg_115_0)
-	if not arg_115_0._isOnlinePvp then
+function var_0_0.forceTurnEnd(arg_115_0)
+	if not arg_115_0._isOnlinePvp or arg_115_0._isBattleFinished then
 		return
 	end
 	arg_115_0:removePvpTimingRope()
 	arg_115_0:stopPvpTiming()
 
-	local var_115_0 = arg_115_0._player._isAttacker and arg_115_0._player or arg_115_0._opponent
-	local isLocalTurn = (arg_115_0._pvpPlayer == (arg_115_0._isAttacker and var_115_0 or var_115_0._opponent))
+	arg_115_0._isPvpTimeout = true
+	arg_115_0._timeOutTimes = (arg_115_0._timeOutTimes or 0) + 1
+	arg_115_0._isAddingBoardCard = false
+	if arg_115_0._btnEndRound then
+		arg_115_0._btnEndRound:setTouchEnabled(false)
+	end
+	if arg_115_0._btnAuto then
+		arg_115_0._btnAuto:setTouchEnabled(false)
+	end
+
+	-- Cancel all active drags / choice dialogs
+	if arg_115_0._choicePosDialog then
+		pcall(function() arg_115_0._choicePosDialog:cancel() end)
+	end
+	if arg_115_0._choiceGraveDialog then
+		pcall(function() arg_115_0._choiceGraveDialog:cancel() end)
+	end
+	if arg_115_0._choiceMaskLayer then
+		pcall(function() arg_115_0._choiceMaskLayer:cancelChoice() end)
+	end
+	if arg_115_0._dropLayer then
+		pcall(function() arg_115_0:hideDropHand() end)
+	end
+	if arg_115_0._isTouching then
+		pcall(function() arg_115_0:onTouchCanceled(true) end)
+	end
+
+	ToastManager.push("Hết thời gian lượt đi! Đang chuyển lượt...")
+	arg_115_0:useRoundEnd()
+end
+
+function var_0_0.forceOppoTurnEnd(arg_115_0)
+	if not arg_115_0._isOnlinePvp or arg_115_0._isBattleFinished then
+		return
+	end
+	arg_115_0:removePvpTimingRope()
+	arg_115_0:stopPvpTiming()
+	arg_115_0:hideThinking()
+	arg_115_0._isWaitting = false
+
+	if arg_115_0._opponentUi and arg_115_0._opponentUi._roundTimerBg then
+		arg_115_0._opponentUi._roundTimerBg:setVisible(false)
+	end
+
+	ToastManager.push("Đối thủ hết thời gian lượt đi! Lượt chuyển sang bạn!")
+
+	if arg_115_0._opponent then
+		if arg_115_0._opponent._stepStatus == BattleData.Status.wait_oppo_use_card then
+			arg_115_0._opponent._stepStatus = BattleData.Status.default
+		end
+		pcall(function()
+			arg_115_0._opponent:startAction()
+		end)
+	end
+end
+
+function var_0_0.pvpTimeout(arg_115_0)
+	if not arg_115_0._isOnlinePvp or arg_115_0._isBattleFinished then
+		return
+	end
+	arg_115_0:removePvpTimingRope()
+	arg_115_0:stopPvpTiming()
+
+	local isLocalTurn = false
+	if arg_115_0._pvpPlayer then
+		isLocalTurn = (arg_115_0._pvpPlayer == arg_115_0._player)
+	else
+		local actP = arg_115_0._player and arg_115_0._player:getActionPlayer()
+		isLocalTurn = (actP == arg_115_0._player)
+	end
 
 	if isLocalTurn then
-		arg_115_0._isPvpTimeout = true
-		arg_115_0._timeOutTimes = (arg_115_0._timeOutTimes or 0) + 1
-		arg_115_0._isAddingBoardCard = false
-		if arg_115_0._btnEndRound then
-			arg_115_0._btnEndRound:setTouchEnabled(false)
+		arg_115_0:forceTurnEnd()
+	else
+		-- Opponent's turn expired on local machine clock.
+		if arg_115_0._opponentUi and arg_115_0._opponentUi._roundTimerLabel then
+			arg_115_0._opponentUi._roundTimerLabel:setString("0")
 		end
-		if arg_115_0._btnAuto then
-			arg_115_0._btnAuto:setTouchEnabled(false)
+		if arg_115_0._opponentUi and arg_115_0._opponentUi._roundTimerBg then
+			arg_115_0._opponentUi._roundTimerBg:setVisible(true)
 		end
-		arg_115_0:useRoundEnd()
-	elseif not arg_115_0._isObserver then
-		if arg_115_0._opponent then
-			local roundOp = {
-				_card = BattleData.UseCardId.round,
-				_target = 0,
-				_choice = -1,
-				_round = arg_115_0._opponent._round or 1,
-				_time = math.floor(ClientData.getCurrentTime() or os.time())
-			}
-			table.insert(arg_115_0._opponent._ops, roundOp)
-			arg_115_0._isWaitting = false
-			arg_115_0:hideThinking()
-			arg_115_0._opponent:use()
+
+		-- Fail-safe: Nếu đối thủ hoặc server ngắt kết nối hoàn toàn, sau 15 giây mới cưỡng chế chuyển lượt
+		if arg_115_0._oppoTimeoutFallbackAction then
+			arg_115_0:stopAction(arg_115_0._oppoTimeoutFallbackAction)
+			arg_115_0._oppoTimeoutFallbackAction = nil
 		end
+		arg_115_0._oppoTimeoutFallbackAction = lc.performWithDelay(arg_115_0, function()
+			arg_115_0._oppoTimeoutFallbackAction = nil
+			if arg_115_0._isBattleFinished then return end
+			local curActiveIsMe = (arg_115_0._pvpPlayer == arg_115_0._player)
+			if not curActiveIsMe and not arg_115_0._isBattleFinished then
+				print("[PVP] Opponent timeout fail-safe (15s) executed")
+				arg_115_0:forceOppoTurnEnd()
+			end
+		end, 15.0)
 	end
 end
 
@@ -3488,8 +3791,6 @@ function var_0_0.openVS(arg_118_0)
 	arg_118_0._vsBones:gotoAndPlay("effect2")
 	arg_118_0._vsBones:runAction(lc.sequence(var_118_0, function()
 		arg_118_0._vsBones:removeFromParent()
-		ClientData.unloadDragonBones("vs")
-
 		arg_118_0._vsBones = nil
 	end))
 end

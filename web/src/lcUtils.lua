@@ -173,37 +173,45 @@ local CUSTOM_ICON_SPRITES = {
 	["img_icon_res1_s"] = "res/new/linh_thach_34.png",
 	["res_ico_1"] = "res/new/linh_thach_76.png",
 	["img_icon_res3_s"] = "res/new/linh_thach_vip_36.png",
-	["res_ico_3"] = "res/new/linh_thach_vip_76.png"
+	["res_ico_3"] = "res/new/linh_thach_vip_76.png",
+	["img_icon_props_s7339"] = "res/new/linh_thach_vip_36.png",
+	["props_ico_7339"] = "res/new/linh_thach_vip_76.png",
+	["img_icon_props_s7114"] = "res/new/linh_thach_vip_36.png",
+	["props_ico_7114"] = "res/new/linh_thach_vip_76.png"
 }
 
 function lc.createSprite(arg_10_0, arg_10_1, arg_10_2)
 	local var_10_0
 
-	if type(arg_10_0) == "string" and CUSTOM_ICON_SPRITES[arg_10_0] then
+	if not arg_10_0 or arg_10_0 == "" then
+		var_10_0 = cc.Node:create()
+	elseif type(arg_10_0) == "string" and CUSTOM_ICON_SPRITES[arg_10_0] then
 		var_10_0 = cc.Sprite:create(CUSTOM_ICON_SPRITES[arg_10_0])
 	elseif type(arg_10_0) == "table" then
 		local var_10_1 = arg_10_0._crect
 		local var_10_2 = arg_10_0._size
 
 		arg_10_0 = arg_10_0._name
-		if CUSTOM_ICON_SPRITES[arg_10_0] then
+		if not arg_10_0 or arg_10_0 == "" then
+			var_10_0 = cc.Node:create()
+		elseif CUSTOM_ICON_SPRITES[arg_10_0] then
 			var_10_0 = cc.Sprite:create(CUSTOM_ICON_SPRITES[arg_10_0])
 		else
 			var_10_0 = string.find(arg_10_0, "%.") and ccui.Scale9Sprite:create(var_10_1, arg_10_0) or ccui.Scale9Sprite:createWithSpriteFrameName(arg_10_0, var_10_1)
 		end
 
-		if var_10_2 then
+		if var_10_2 and var_10_0.setContentSize then
 			var_10_0:setContentSize(var_10_2)
 		end
 	else
 		var_10_0 = string.find(arg_10_0, "%.") and cc.Sprite:create(arg_10_0) or cc.Sprite:createWithSpriteFrameName(arg_10_0)
 	end
 
-	if arg_10_1 then
+	if arg_10_1 and var_10_0.setPosition then
 		var_10_0:setPosition(arg_10_1)
 	end
 
-	if arg_10_2 then
+	if arg_10_2 and var_10_0.setAnchorPoint then
 		var_10_0:setAnchorPoint(arg_10_2)
 	end
 
@@ -225,6 +233,10 @@ function lc.createImageView(arg_12_0, arg_12_1, arg_12_2)
 		var_12_1 = arg_12_0._crect
 		var_12_2 = arg_12_0._size
 		arg_12_0 = arg_12_0._name
+	end
+
+	if not arg_12_0 or arg_12_0 == "" then
+		return ccui.ImageView:create()
 	end
 
 	local var_12_3 = string.find(arg_12_0, "%.")
@@ -377,7 +389,7 @@ function lc.writeFile(arg_23_0, arg_23_1)
 end
 
 function lc.resetConfigFile(arg_24_0)
-	if lc._configFile == arg_24_0 then
+	if lc._configFile == arg_24_0 and lc._configs ~= nil and next(lc._configs) ~= nil then
 		return
 	end
 
@@ -385,8 +397,20 @@ function lc.resetConfigFile(arg_24_0)
 
 	local var_24_0 = lc.readFile(lc.File:getWritablePath() .. lc._configFile)
 
+	if (var_24_0 == nil or #var_24_0 == 0) and lc.UserDefault ~= nil then
+		local str_ud = lc.UserDefault:getStringForKey("cfg_" .. tostring(lc._configFile), "")
+		if str_ud ~= nil and #str_ud > 0 then
+			var_24_0 = str_ud
+		end
+	end
+
 	if var_24_0 ~= nil and #var_24_0 > 0 then
-		lc._configs = json.decode(var_24_0)
+		local ok, res = pcall(json.decode, var_24_0)
+		if ok and type(res) == "table" then
+			lc._configs = res
+		else
+			lc._configs = {}
+		end
 	else
 		lc._configs = {}
 	end
@@ -409,8 +433,19 @@ function lc.writeConfig(arg_26_0, arg_26_1)
 	if lc._configs == nil then lc._configs = {} end
 	lc._configs[arg_26_0] = arg_26_1
 
-	local cfgPath = lc.File:getWritablePath() .. (lc._configFile or "config.json")
-	lc.writeFile(cfgPath, json.encode(lc._configs))
+	local cfgFile = lc._configFile or "config.json"
+	local cfgPath = lc.File:getWritablePath() .. cfgFile
+	local ok, encoded = pcall(json.encode, lc._configs)
+	if ok and encoded then
+		lc.writeFile(cfgPath, encoded)
+
+		if lc.UserDefault ~= nil then
+			lc.UserDefault:setStringForKey("cfg_" .. tostring(cfgFile), encoded)
+			if lc.UserDefault.flush then
+				pcall(function() lc.UserDefault:flush() end)
+			end
+		end
+	end
 end
 
 function lc.getUdid()

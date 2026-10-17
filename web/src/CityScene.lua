@@ -277,10 +277,10 @@ function var_0_0.onEnter(arg_12_0)
 			arg_12_0:updateUnionFlags()
 		end
 	end)
+	arg_12_0._listeners.propFlag = lc.addEventListener(Data.Event.prop_dirty, function(arg_24_0)
+		arg_12_0:updateDepotFlags()
+	end)
 
-	arg_12_0:scheduleUpdateWithPriorityLua(function(arg_24_0)
-		arg_12_0:onScheduler()
-	end, 0)
 	lc.Audio.playAudio(AUDIO.M_CITY)
 	arg_12_0._scene:addChild(ClientView.getChatPanel(), ClientData.ZOrder.side)
 
