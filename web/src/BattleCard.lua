@@ -286,7 +286,13 @@ function var_0_0.resetMonster(arg_17_0)
 
 	if (arg_17_0:isInfoId(40737) or arg_17_0._infoId == 40737) and arg_17_0._status == BattleData.CardStatus.board then
 		if arg_17_0._owner then
-			arg_17_0._owner:incShield(arg_17_0, { 12002, 12003, 12004 }, false, false, arg_17_0._id, 14754, Data.SkillMode.using)
+			arg_17_0._owner:incShield(arg_17_0, { 12008, 12009, 12010 }, false, false, arg_17_0._id, 14754, Data.SkillMode.using)
+		end
+	end
+
+	if (arg_17_0:isInfoId(40739) or arg_17_0._infoId == 40739) and arg_17_0._status == BattleData.CardStatus.board then
+		if arg_17_0._owner then
+			arg_17_0._owner:incShield(arg_17_0, { 12008, 12009, 12010 }, false, false, arg_17_0._id, 14764, Data.SkillMode.using)
 		end
 	end
 
@@ -5942,11 +5948,11 @@ function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
 		return true
 	end
 
-	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) and (arg_127_0:isInfoId(40736) or arg_127_0._infoId == 40736) then
+	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) and (arg_127_0:isInfoId(40736) or arg_127_0._infoId == 40736 or arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739) then
 		return true
 	end
 
-	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737) then
+	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739) then
 		return true
 	end
 

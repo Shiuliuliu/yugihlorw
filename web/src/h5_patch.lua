@@ -318,6 +318,9 @@ local function patchData()
 				Data._skillInfo[14750]._nameSid = 57220
 				Data._skillInfo[14750]._descSid = 57221
 			end
+			if Data._rareInfo and Data._rareInfo[40737] then
+				Data._rareInfo[40737]._skillId = { 3454, 12008, 12009, 12010, 7488, 14754 }
+			end
 			if Data._rareInfo and Data._rareInfo[40738] then
 				Data._rareInfo[40738]._nameSid = 57222
 				Data._rareInfo[40738]._descSid = 57223
@@ -332,6 +335,7 @@ local function patchData()
 				Data._rareInfo[40739]._nameSid = 57227
 				Data._rareInfo[40739]._descSid = 57228
 				Data._rareInfo[40739]._briefNameSid = 57229
+				Data._rareInfo[40739]._skillId = { 14677, 3106, 12008, 12009, 12010, 14764 }
 			end
 			if Data._skillInfo and Data._skillInfo[14764] then
 				Data._skillInfo[14764]._nameSid = 57230
@@ -4798,6 +4802,20 @@ function patchClientData()
 	end
 
 	local CARD_NAME_OVERRIDES = {
+		-- Tuong Chan (12008, 12009, 12010)
+		[50082] = "Tường Chắn Quái",
+		[50083] = "Bị bài quái đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",
+		[50084] = "Tường Chắn Phép",
+		[50085] = "Bị bài phép đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",
+		[50086] = "Tường Chắn Bẫy",
+		[50087] = "Bị bài bẫy đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",
+		-- shieldEx (12002, 12003, 12004)
+		[50070] = "Tường Chắn Quái",
+		[50071] = "Khi bị ảnh hưởng bởi bài quái đối thủ; hiệu ứng sẽ bị bỏ qua.",
+		[50072] = "Tường Chắn Phép",
+		[50073] = "Khi bị ảnh hưởng bởi bài phép đối thủ; hiệu ứng sẽ bị bỏ qua.",
+		[50074] = "Tường Chắn Bẫy",
+		[50075] = "Khi bị ảnh hưởng bởi bài bẫy đối thủ; hiệu ứng sẽ bị bỏ qua.",
 		[54724] = "Cửu Thiên Huyền Sát",
 		[54727] = "Cửu Thiên Huyền Sát",
 		[43192] = "Cửu Thiên Huyền Sát",
@@ -5320,7 +5338,7 @@ function patchClientData()
 		[57188] = "Tam Kính Kiều Diễm - Dung Hợp Kính Soi",
 		[57189] = "Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; Triệu hồi Dung hợp 1 quái thú Dung hợp thuộc tính ĐẤT hoặc GIÓ từ Bộ bài Phụ, sử dụng quái thú trên tay hoặc trên sân làm nguyên liệu.",
 		[57190] = "KMR-Zio-Wizard",
-		[57191] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + \"KMR-Wizard\"\n(1) Đối phương không thể sử dụng bài Phép.\n(2) Nhận Tường Chắn Quái (12002), Tường Chắn Phép (12003), Tường Chắn Bẫy (12004).\n(3) Tất cả bài Phép/Bẫy trên sân phe ta không thể bị phá hủy.",
+		[57191] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + \"KMR-Wizard\"\n(1) Đối phương không thể sử dụng bài Phép.\n(2) Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Tất cả bài Phép/Bẫy trên sân phe ta không thể bị phá hủy.",
 		[57192] = "KMR-Zio-Wizard",
 		[57193] = "KMR-Zio-Wizard - Phong Tỏa Ma Thuật",
 		[57194] = "Khi có mặt: Đối phương không thể sử dụng bài Phép.",
@@ -5351,7 +5369,7 @@ function patchClientData()
 		[57225] = "KMR-Decade - Thông Đạo Kỵ Sĩ",
 		[57226] = "1 lượt 1 lần, đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.",
 		[57227] = "KMR-Omazio",
-		[57228] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + 1 quái thú Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" + 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\"\n(1) Mỗi lượt nhận 1 lần Khiên Chiến Đấu (3106).\n(2) Nhận Tường Chắn Quái (12002), Tường Chắn Phép (12003), Tường Chắn Bẫy (12004).\n(3) Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài của bạn; Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ, và quái thú đó không thể đổi tư thế trong lượt này.",
+		[57228] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + 1 quái thú Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" + 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\"\n(1) Mỗi lượt nhận 1 lần Khiên Chiến Đấu.\n(2) Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài của bạn; Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ, và quái thú đó không thể đổi tư thế trong lượt này.",
 		[57229] = "KMR-Omazio",
 		[57230] = "KMR-Omazio - Ma Vương Khởi Động",
 		[57231] = "1 lượt 1 lần: Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài để Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ (không thể đổi tư thế trong lượt này).",

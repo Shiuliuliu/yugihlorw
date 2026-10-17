@@ -781,6 +781,15 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 			if arg_15_1._infoId == 40731 or arg_15_1:hasSkillFast(14727) then
 				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14727, Data.SkillMode.using)
 			end
+			if arg_15_1._infoId == 40736 or arg_15_1:hasSkillFast(14750) then
+				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14750, Data.SkillMode.using)
+			end
+			if arg_15_1._infoId == 40737 or arg_15_1:hasSkillFast(14754) then
+				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14754, Data.SkillMode.using)
+			end
+			if arg_15_1._infoId == 40739 or arg_15_1:hasSkillFast(14764) then
+				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 14764, Data.SkillMode.using)
+			end
 			if arg_15_1._infoId == 40730 or arg_15_1:hasSkillFast(14719) then
 				if not arg_15_1._tsAwakened then
 					arg_15_1._negativeStatus[BattleData.NegativeType.manacle] = true
