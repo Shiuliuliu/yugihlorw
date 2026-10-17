@@ -279,10 +279,11 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 				0
 			}
 		end
-	elseif var_1_0 == 3201 or var_1_0 == 3398 or var_1_0 == 3452 or var_1_0 == 3453 or var_1_0 == 3472 or var_1_0 == 6567 or var_1_0 == 14747 then
+	elseif var_1_0 == 3201 or var_1_0 == 3398 or var_1_0 == 3452 or var_1_0 == 3453 or var_1_0 == 3472 or var_1_0 == 6567 or var_1_0 == 14747 or var_1_0 == 14765 or var_1_0 == 14766 then
 		for iter_1_6 = 1, 3 do
 			local var_1_63 = "effect"
-			local var_1_64 = band(var_1_3._lastCount, 2^(iter_1_6 - 1)) == 0 and "back" or "positive"
+			local lastCount = (var_1_3 and var_1_3._lastCount) or (arg_1_3 and arg_1_3._lastCount) or 0
+			local var_1_64 = band(lastCount, 2^(iter_1_6 - 1)) == 0 and "back" or "positive"
 			local var_1_65 = arg_1_0:efcDragonBones(nil, "touyingbi", cc.p(ClientView.SCR_CW - 200 + iter_1_6 * 100, lc.h(arg_1_0._battleUi) / 2), false, false, var_1_63, 1)
 			local var_1_66 = var_1_65:getAnimationDuration(var_1_63)
 			local var_1_67 = var_1_65:getAnimationDuration(var_1_64)

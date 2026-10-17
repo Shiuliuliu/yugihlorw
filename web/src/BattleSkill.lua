@@ -10933,6 +10933,12 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 
 		local coins = B.throwCoins(arg_4_1, 3)
 		arg_4_1._lastCount = coins
+		if ownerCard then
+			ownerCard._lastCount = coins
+		end
+		if arg_4_2 then
+			arg_4_2._lastCount = coins
+		end
 		local heads = B.getCoinsFaceCount(coins)
 
 		local targetPlayer = var_4_8 or pOwner._opponent
@@ -77583,7 +77589,7 @@ function var_0_0.canUseMagic(arg_22_0, arg_22_1, arg_22_2)
 		return true, nil, var_22_643[1]._id * BattleData.ChoiceId.stage_2 + 1
 	elseif var_22_1 == 7731 or var_22_1 == 14733 or var_22_1 == 14743 or var_22_1 == 14753 then
 		local canMerge = false
-		if arg_22_0._castedSkillCounts[var_22_1] == nil or arg_22_0._castedSkillCounts[var_22_1] == 0 then
+		if var_22_1 == 14743 or arg_22_0._castedSkillCounts[var_22_1] == nil or arg_22_0._castedSkillCounts[var_22_1] == 0 then
 			local var_22_644
 			if var_22_1 == 14743 then
 				var_22_644 = arg_22_0:get14743MergeResultInfoIds()
