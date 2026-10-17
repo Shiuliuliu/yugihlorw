@@ -328,6 +328,7 @@ local function patchData()
 				Data._skillInfo[14763]._descSid = 57226
 			end
 			if Data._rareInfo and Data._rareInfo[40739] then
+				Data._rareInfo[40739]._quality = 5
 				Data._rareInfo[40739]._nameSid = 57227
 				Data._rareInfo[40739]._descSid = 57228
 				Data._rareInfo[40739]._briefNameSid = 57229
@@ -335,6 +336,20 @@ local function patchData()
 			if Data._skillInfo and Data._skillInfo[14764] then
 				Data._skillInfo[14764]._nameSid = 57230
 				Data._skillInfo[14764]._descSid = 57231
+			end
+			if Data._rareInfo and Data._rareInfo[40740] then
+				Data._rareInfo[40740]._quality = 4
+				Data._rareInfo[40740]._nameSid = 57232
+				Data._rareInfo[40740]._descSid = 57233
+				Data._rareInfo[40740]._briefNameSid = 57234
+			end
+			if Data._skillInfo and Data._skillInfo[14765] then
+				Data._skillInfo[14765]._nameSid = 57235
+				Data._skillInfo[14765]._descSid = 57236
+			end
+			if Data._skillInfo and Data._skillInfo[14766] then
+				Data._skillInfo[14766]._nameSid = 57237
+				Data._skillInfo[14766]._descSid = 57238
 			end
 		end
 
@@ -5340,6 +5355,13 @@ function patchClientData()
 		[57229] = "KMR-Omazio",
 		[57230] = "KMR-Omazio - Ma Vương Khởi Động",
 		[57231] = "1 lượt 1 lần: Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài để Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ (không thể đổi tư thế trong lượt này).",
+		[57232] = "KMR-Zio-Ozu",
+		[57233] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + \"KMR-Ozu\"\n(1) Kỹ năng chủ động 1 (kỹ năng này và kỹ năng chủ động 2 chỉ có thể dùng 1 loại 1 lượt): 1 lượt 1 lần, tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.\n(2) Kỹ năng chủ động 2 (kỹ năng này và kỹ năng chủ động 1 chỉ có thể dùng 1 loại 1 lượt): 1 lượt 1 lần, tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.",
+		[57234] = "KMR-Zio-Ozu",
+		[57235] = "KMR-Zio-Ozu - Đoạt Thủ Bài",
+		[57236] = "1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.",
+		[57237] = "KMR-Zio-Ozu - Đoạt Trường Bài",
+		[57238] = "1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 

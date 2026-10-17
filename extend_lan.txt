@@ -57229,3 +57229,10 @@ KMR-Omazio
 KMR-Omazio
 KMR-Omazio - Ma Vương Khởi Động
 1 lượt 1 lần: Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa "Hiệp sĩ mặt nạ" trong Mộ, trên tay hoặc trong Bộ bài để Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ (không thể đổi tư thế trong lượt này).
+KMR-Zio-Ozu
+[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + "KMR-Ozu"\n(1) Kỹ năng chủ động 1 (kỹ năng này và kỹ năng chủ động 2 chỉ có thể dùng 1 loại 1 lượt): 1 lượt 1 lần, tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.\n(2) Kỹ năng chủ động 2 (kỹ năng này và kỹ năng chủ động 1 chỉ có thể dùng 1 loại 1 lượt): 1 lượt 1 lần, tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.
+KMR-Zio-Ozu
+KMR-Zio-Ozu - Đoạt Thủ Bài
+1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.
+KMR-Zio-Ozu - Đoạt Trường Bài
+1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.

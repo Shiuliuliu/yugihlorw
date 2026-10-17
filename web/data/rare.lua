@@ -6855,7 +6855,17 @@ return {
   ["_joinResult"]={[1]=0,},
   ["_keyword"]=302,["_link"]={[1]=0,},
   ["_linkAllCandidates"]="0.0",["_linkCandidate"]="0.0",["_linkCount"]="0.0",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=57227,["_nature"]=1,["_option"]=6,["_originId"]=0,["_packageId"]={[1]=0,},
-  ["_picId"]=0,["_py"]="kmromazio",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14677,[2]=3106,[3]=12002,[4]=12003,[5]=12004,[6]=14764,},
+  ["_picId"]=0,["_py"]="kmromazio",["_quality"]=5,["_recruitable"]=1,["_skillId"]={[1]=14677,[2]=3106,[3]=12002,[4]=12003,[5]=12004,[6]=14764,},
   ["_skin"]={[1]=0,},
   ["_star"]=10,["_syncComponent"]={[1]={[1]=0,},},},
+  [40740]={["_atk"]={[1]=2700,},
+  ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=57234,["_category"]=6,["_cost"]=0,["_descSid"]=57233,["_guideSid"]=0,["_hp"]={[1]=2200,},
+  ["_id"]=40740,["_isHide"]=0,["_joinComponent"]={[1]=12331,[2]=12333,},
+  ["_joinResult"]={[1]=0,},
+  ["_keyword"]=302,["_link"]={[1]=0,},
+  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="0.0",["_linkCount"]="0.0",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=57232,["_nature"]=1,["_option"]=6,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="kmrzioozu",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14765,[2]=14766,},
+  ["_skin"]={[1]=0,},
+  ["_star"]=8,["_syncComponent"]={[1]={[1]=0,},},},
 }
+

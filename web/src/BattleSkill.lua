@@ -10917,6 +10917,35 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 			end
 		end
 		var_4_13 = true
+	elseif var_4_4 == 14765 or var_4_4 == 14766 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if ownerCard then
+			ownerCard._zioOzuActiveTurn = turnId
+		end
+		arg_4_1._zioOzuActiveTurn = turnId
+		pOwner._zioOzuActiveTurn = turnId
+		pOwner._castedSkillCounts[14765] = (pOwner._castedSkillCounts[14765] or 0) + 1
+		pOwner._castedSkillCounts[14766] = (pOwner._castedSkillCounts[14766] or 0) + 1
+		arg_4_0._castedSkillCounts[14765] = (arg_4_0._castedSkillCounts[14765] or 0) + 1
+		arg_4_0._castedSkillCounts[14766] = (arg_4_0._castedSkillCounts[14766] or 0) + 1
+
+		local coins = B.throwCoins(arg_4_1, 3)
+		arg_4_1._lastCount = coins
+		local heads = B.getCoinsFaceCount(coins)
+
+		local targetPlayer = var_4_8 or pOwner._opponent
+		if heads > 0 and targetPlayer then
+			local pool = (var_4_4 == 14765) and targetPlayer:getBattleCards("H") or targetPlayer:getBattleCards("BCSD")
+			if pool and #pool > 0 then
+				local targets = arg_4_0:randomTable(pool, heads)
+				for _, t in ipairs(targets) do
+					arg_4_0:setCardStatus(t, BattleData.CardStatus.grave, var_4_5, var_4_4, arg_4_3)
+				end
+			end
+		end
+		var_4_13 = true
 	elseif var_4_4 == 14747 then
 		local pOwner = arg_4_1._owner or arg_4_0
 		if pOwner:getEmptyBoardPos(arg_4_1) ~= nil and pOwner:canSpecialSummon(arg_4_1) then
@@ -106803,6 +106832,40 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 			end
 		end
 		return false
+	elseif var_40_0 == 14765 then
+		if arg_40_1._status ~= BattleData.CardStatus.board and arg_40_1._status ~= BattleData.CardStatus.show then
+			return false
+		end
+		local pOwner = arg_40_1._owner or arg_40_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if arg_40_1._zioOzuActiveTurn == turnId or pOwner._zioOzuActiveTurn == turnId then
+			return false
+		end
+		if (pOwner._castedSkillCounts[14765] and pOwner._castedSkillCounts[14765] > 0) or (pOwner._castedSkillCounts[14766] and pOwner._castedSkillCounts[14766] > 0) then
+			return false
+		end
+		local var_40_8 = pOwner._opponent or arg_40_0._opponent
+		if not var_40_8 or #var_40_8:getBattleCards("H") == 0 then
+			return false
+		end
+		return true
+	elseif var_40_0 == 14766 then
+		if arg_40_1._status ~= BattleData.CardStatus.board and arg_40_1._status ~= BattleData.CardStatus.show then
+			return false
+		end
+		local pOwner = arg_40_1._owner or arg_40_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if arg_40_1._zioOzuActiveTurn == turnId or pOwner._zioOzuActiveTurn == turnId then
+			return false
+		end
+		if (pOwner._castedSkillCounts[14765] and pOwner._castedSkillCounts[14765] > 0) or (pOwner._castedSkillCounts[14766] and pOwner._castedSkillCounts[14766] > 0) then
+			return false
+		end
+		local var_40_8 = pOwner._opponent or arg_40_0._opponent
+		if not var_40_8 or #var_40_8:getBattleCards("BCSD") == 0 then
+			return false
+		end
+		return true
 	elseif var_40_0 == 14747 then
 		if arg_40_1._status ~= BattleData.CardStatus.hand then return false end
 		local pOwner = arg_40_1._owner or arg_40_0
