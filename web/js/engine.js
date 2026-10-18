@@ -3031,10 +3031,76 @@
 			audioEngine[audioKey] = cc.audioEngine[audioKey].bind(cc.audioEngine);
 	}
 
-	audioEngine.setMusicMuted = function (m) { cc.audioEngine.setMusicMuted(m); };
-	audioEngine.isMusicMuted = function () { return cc.audioEngine.isMusicMuted(); };
-	audioEngine.setEffectsMuted = function (m) { cc.audioEngine.setEffectsMuted(m); };
-	audioEngine.isEffectsMuted = function () { return cc.audioEngine.isEffectsMuted(); };
+	if (cc.audioEngine) {
+		if (typeof cc.audioEngine.setMusicMuted !== 'function') {
+			cc.audioEngine._musicMuted = false;
+			cc.audioEngine.setMusicMuted = function (m) {
+				var wasMuted = this._musicMuted;
+				this._musicMuted = !!m;
+				try {
+					if (this._musicMuted) {
+						if (typeof this.pauseMusic === 'function') this.pauseMusic();
+					} else if (wasMuted && this._currMusic) {
+						if (typeof this.resumeMusic === 'function') this.resumeMusic();
+					}
+				} catch (e) {}
+			};
+		}
+		if (typeof cc.audioEngine.isMusicMuted !== 'function') {
+			cc.audioEngine.isMusicMuted = function () {
+				return !!this._musicMuted;
+			};
+		}
+		if (typeof cc.audioEngine.setEffectsMuted !== 'function') {
+			cc.audioEngine._effectsMuted = false;
+			cc.audioEngine.setEffectsMuted = function (m) {
+				this._effectsMuted = !!m;
+				try {
+					if (this._effectsMuted && typeof this.stopAllEffects === 'function') {
+						this.stopAllEffects();
+					}
+				} catch (e) {}
+			};
+		}
+		if (typeof cc.audioEngine.isEffectsMuted !== 'function') {
+			cc.audioEngine.isEffectsMuted = function () {
+				return !!this._effectsMuted;
+			};
+		}
+	}
+
+	audioEngine.setMusicMuted = function (m) {
+		audioEngine._musicMuted = !!m;
+		try {
+			if (cc.audioEngine && typeof cc.audioEngine.setMusicMuted === 'function') {
+				cc.audioEngine.setMusicMuted(m);
+			}
+		} catch (e) {}
+	};
+	audioEngine.isMusicMuted = function () {
+		try {
+			if (cc.audioEngine && typeof cc.audioEngine.isMusicMuted === 'function') {
+				return cc.audioEngine.isMusicMuted();
+			}
+		} catch (e) {}
+		return !!audioEngine._musicMuted;
+	};
+	audioEngine.setEffectsMuted = function (m) {
+		audioEngine._effectsMuted = !!m;
+		try {
+			if (cc.audioEngine && typeof cc.audioEngine.setEffectsMuted === 'function') {
+				cc.audioEngine.setEffectsMuted(m);
+			}
+		} catch (e) {}
+	};
+	audioEngine.isEffectsMuted = function () {
+		try {
+			if (cc.audioEngine && typeof cc.audioEngine.isEffectsMuted === 'function') {
+				return cc.audioEngine.isEffectsMuted();
+			}
+		} catch (e) {}
+		return !!audioEngine._effectsMuted;
+	};
 
 	cc.SimpleAudioEngine = {
 		getInstance: function () { return audioEngine; },

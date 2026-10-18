@@ -2071,7 +2071,11 @@ function _getJsListOfModule(moduleMap, moduleName, dir) {
         if (!extname) {
             var arr = _getJsListOfModule(moduleMap, item, dir);
             if (arr) jsList = jsList.concat(arr);
-        } else if (extname.toLowerCase() === ".js") jsList.push(ccPath.join(dir, item));
+        } else if (extname.toLowerCase() === ".js") {
+            var v = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v000700';
+            var sUrl = ccPath.join(dir, item);
+            jsList.push(v ? (sUrl + (sUrl.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v) : sUrl);
+        }
         _jsAddedCache[item] = 1;
     }
     return jsList;
@@ -2589,7 +2593,9 @@ cc.game = /** @lends cc.game# */{
                     txt = cc.loader._loadTxtSync(_src);
                 }
                 if(!txt){
-                    txt = cc.loader._loadTxtSync("project.json");
+                    var _pVer = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '';
+                    var _pUrl = _pVer ? ("project.json?v=" + _pVer) : "project.json";
+                    txt = cc.loader._loadTxtSync(_pUrl);
                 }
                 data = JSON.parse(txt);
             } catch (e) {

@@ -392,10 +392,10 @@ function var_0_0.setIsMute(arg_14_0, arg_14_1, arg_14_2)
 	local isEffectMuted = bit.band(var_0_2, bit.lshift(1, var_0_0.Behavior.effect)) ~= 0
 
 	if var_0_3.setMusicMuted and (not arg_14_1 or arg_14_1 == var_0_0.Behavior.music) then
-		var_0_3:setMusicMuted(isMusicMuted)
+		pcall(function() var_0_3:setMusicMuted(isMusicMuted) end)
 	end
 	if var_0_3.setEffectsMuted and (not arg_14_1 or arg_14_1 == var_0_0.Behavior.effect) then
-		var_0_3:setEffectsMuted(isEffectMuted)
+		pcall(function() var_0_3:setEffectsMuted(isEffectMuted) end)
 	end
 
 	if arg_14_0 then

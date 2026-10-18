@@ -18,7 +18,7 @@ local var_0_0 = {
 	setMusicMuted = function(arg_m)
 		local inst = cc.SimpleAudioEngine:getInstance()
 		if inst.setMusicMuted then
-			inst:setMusicMuted(arg_m)
+			pcall(function() inst:setMusicMuted(arg_m) end)
 		end
 	end,
 	isEffectsMuted = function()
@@ -28,7 +28,7 @@ local var_0_0 = {
 	setEffectsMuted = function(arg_e)
 		local inst = cc.SimpleAudioEngine:getInstance()
 		if inst.setEffectsMuted then
-			inst:setEffectsMuted(arg_e)
+			pcall(function() inst:setEffectsMuted(arg_e) end)
 		end
 	end,
 	setMusicVolume = function(arg_5_0)
