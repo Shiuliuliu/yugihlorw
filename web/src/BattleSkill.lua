@@ -3273,7 +3273,7 @@ function var_0_0.castDefendSkill(arg_3_0, arg_3_1, arg_3_2, arg_3_3)
 	elseif var_3_4 == 14737 then
 		if (arg_3_1._dieByAttack or arg_3_1._dieByEffect) and not arg_3_1._mark14737Triggered then
 			arg_3_1._mark14737Triggered = true
-			arg_3_0:incShield(arg_3_0._fortress, { 12005 }, false, false, var_3_5, var_3_4, arg_3_3)
+			arg_3_0:incShield(arg_3_0._fortress, { 12005 }, true, false, var_3_5, var_3_4, arg_3_3)
 			var_3_13 = true
 		end
 	elseif var_3_4 == 2146 then
@@ -44917,7 +44917,7 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 	elseif var_8_4 == 14737 then
 		if (arg_8_1._dieByAttack or arg_8_1._dieByEffect) and not arg_8_1._mark14737Triggered then
 			arg_8_1._mark14737Triggered = true
-			arg_8_0:incShield(arg_8_0._fortress, { 12005 }, false, false, var_8_5, var_8_4, arg_8_3)
+			arg_8_0:incShield(arg_8_0._fortress, { 12005 }, true, false, var_8_5, var_8_4, arg_8_3)
 			var_8_13 = true
 		end
 	elseif var_8_4 == 14684 then

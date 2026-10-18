@@ -5335,12 +5335,12 @@ function patchClientData()
 		[57110] = "Kỹ năng chủ động trong Mộ (1 lượt 1 lần): Loại bỏ bản thân, chọn 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ trên tay, triệu hồi đặc biệt lên sân.",
 		-- Vương Lâm - Hợp Đạo (40733) & Kỹ năng (14736, 14737)
 		[57111] = "Vương Lâm - Hợp Đạo",
-		[57112] = "[Huyễn Thần - Dung Hợp - Hiệu Ứng]\n<12326> + <12328>\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n+ Khi lá bài này bị phá hủy: Phe ta nhận Tường Chắn Sinh Mệnh.\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi ở trên sân: Hai bên không thể Triệu Hồi Đặc Biệt quái từ Mộ.\n+ Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị.\n+ Nhận 1 tầng Tường Chắn Chiến Đấu.",
+		[57112] = "[Huyễn Thần - Dung Hợp - Hiệu Ứng]\n<12326> + <12328>\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n+ Khi lá bài này bị phá hủy: Phe ta nhận Tường Chắn Sinh Mệnh (1 lượt).\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi ở trên sân: Hai bên không thể Triệu Hồi Đặc Biệt quái từ Mộ.\n+ Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị.\n+ Nhận 1 tầng Tường Chắn Chiến Đấu.",
 		[57113] = "Vương Lâm - Hợp Đạo",
 		[57114] = "Hợp Đạo - Thiên Đạo Trấn Áp",
 		[57115] = "Khi ở trên sân: Hai bên không thể triệu hồi đặc biệt quái từ Mộ. Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị. Nhận 1 tầng Tường Chắn Chiến Đấu.",
 		[57116] = "Hợp Đạo - Niết Bàn Sinh Mệnh",
-		[57117] = "Khi lá bài này bị phá hủy, phe ta nhận Tường Chắn Sinh Mệnh.",
+		[57117] = "Khi lá bài này bị phá hủy, phe ta nhận Tường Chắn Sinh Mệnh (1 lượt).",
 		-- Hợp Đạo (21142) & Kỹ năng (14733, 14734, 14735)
 		[57118] = "Hợp Đạo",
 		[57119] = "[Ma Pháp Thông Thường]\n(Chỉ được chọn 1 trong các hiệu ứng sau mỗi lượt):\n1. Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Tay hoặc Sân vào Mộ.\n2. Loại bỏ lá bài này trong Mộ bài: Triệu hồi Dung Hợp 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài thêm bằng cách đưa quái thú từ Bộ bài vào Mộ.\n3. Gửi lá bài này và 1 quái thú có từ khóa \"Tiên nghịch\" từ Tay vào Mộ: Lấy 1 quái thú có từ khóa \"Tiên nghịch\" từ Bộ bài vào Tay.",

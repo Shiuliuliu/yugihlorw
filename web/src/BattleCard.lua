@@ -9044,12 +9044,12 @@ function var_0_0.setDieStat(arg_264_0)
 		end
 	end
 
-	-- Vương Lâm - Hợp Đạo (40733 / 14737): Khi bị phá hủy phe ta nhận được Tường Chắn Sinh Mệnh (12005)
+	-- Vương Lâm - Hợp Đạo (40733 / 14737): Khi bị phá hủy phe ta nhận được Tường Chắn Sinh Mệnh (12005) (1 lượt)
 	if (arg_264_0._infoId == 40733 or arg_264_0:hasSkillFast(14737)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and (arg_264_0._dieByAttack or arg_264_0._dieByEffect) then
 		local owner = arg_264_0._owner or (arg_264_0.getOriginOwner and arg_264_0:getOriginOwner())
 		if owner and owner._fortress and not arg_264_0._mark14737Triggered then
 			arg_264_0._mark14737Triggered = true
-			owner:incShield(owner._fortress, { 12005 }, false, false, arg_264_0._id, 14737, Data.SkillMode.magic)
+			owner:incShield(owner._fortress, { 12005 }, true, false, arg_264_0._id, 14737, Data.SkillMode.magic)
 		end
 	end
 

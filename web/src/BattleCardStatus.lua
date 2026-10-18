@@ -1178,6 +1178,10 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 		lc.clearTable(arg_15_1._saved)
 	end
 
+	if arg_15_1._infoId == 40733 or arg_15_1:hasSkillFast(14737) then
+		arg_15_1._mark14737Triggered = nil
+	end
+
 	local var_owner = arg_15_1._owner or arg_15_0
 	if arg_15_1._infoId == 10120 then
 		local var_amazon_monsters = B.filterInTypeCards(var_owner:getBattleCardsByKeyword("B", 6), Data.CardType.monster)
