@@ -2339,6 +2339,7 @@ cc.game = /** @lends cc.game# */{
         this._paused = true;
         // Pause audio engine
         if (cc.audioEngine) {
+            this._wasMusicPlaying = cc.audioEngine.isMusicPlaying() && !cc.audioEngine.isMusicMuted();
             cc.audioEngine.stopAllEffects();
             cc.audioEngine.pauseMusic();
         }
@@ -2356,7 +2357,9 @@ cc.game = /** @lends cc.game# */{
         this._paused = false;
         // Resume audio engine
         if (cc.audioEngine) {
-            cc.audioEngine.resumeMusic();
+            if (this._wasMusicPlaying && !cc.audioEngine.isMusicMuted()) {
+                cc.audioEngine.resumeMusic();
+            }
         }
         // Resume main loop
         this._runMainLoop();

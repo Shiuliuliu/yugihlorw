@@ -3029,6 +3029,11 @@
 			audioEngine[audioKey] = cc.audioEngine[audioKey].bind(cc.audioEngine);
 	}
 
+	audioEngine.setMusicMuted = function (m) { cc.audioEngine.setMusicMuted(m); };
+	audioEngine.isMusicMuted = function () { return cc.audioEngine.isMusicMuted(); };
+	audioEngine.setEffectsMuted = function (m) { cc.audioEngine.setEffectsMuted(m); };
+	audioEngine.isEffectsMuted = function () { return cc.audioEngine.isEffectsMuted(); };
+
 	cc.SimpleAudioEngine = {
 		getInstance: function () { return audioEngine; },
 	};

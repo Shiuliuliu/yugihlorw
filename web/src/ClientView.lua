@@ -3077,6 +3077,121 @@ function var_0_0.createLabelProgressBar(arg_116_0, arg_116_1, arg_116_2, arg_116
 	return var_116_0
 end
 
+function var_0_0.createVolumeSlider(arg_width, arg_height, arg_initVal, arg_onChanged)
+	local w = arg_width or 160
+	local h = arg_height or 22
+	local node = cc.Node:create()
+	node:setContentSize(cc.size(w, h))
+	node:setAnchorPoint(cc.p(0.5, 0.5))
+
+	local bg = lc.createSprite({
+		_name = "img_progress_bg",
+		_crect = var_0_0.CRECT_PROGRESS_BG,
+		_size = cc.size(w, h)
+	})
+	bg:setPosition(w / 2, h / 2)
+	node:addChild(bg)
+
+	local fill = ccui.LoadingBar:create()
+	fill:loadTexture("img_progress_fg", ccui.TextureResType.plistType)
+	fill:setDirection(ccui.LoadingBarDirection.LEFT)
+	fill:ignoreContentAdaptWithSize(false)
+	fill:setCapInsets(var_0_0.CRECT_PROGRESS_FG)
+	fill:setContentSize(w - 6, h - 4)
+	fill:setPosition(w / 2, h / 2)
+	node:addChild(fill)
+
+	local thumb = lc.createSprite("light_point_big")
+	if not thumb then
+		thumb = lc.createSprite("dark_point_big")
+	end
+	if thumb then
+		thumb:setScale(1.2)
+		node:addChild(thumb, 10)
+	end
+
+	local valLabel = var_0_0.createTTF("100%", var_0_0.FontSize.S2)
+	valLabel:setColor(var_0_0.COLOR_TEXT_INGOT or lc.Color3B.white)
+	valLabel:setAnchorPoint(cc.p(0, 0.5))
+	valLabel:setPosition(w + 10, h / 2)
+	node:addChild(valLabel)
+
+	local currentVal = math.max(0.0, math.min(1.0, tonumber(arg_initVal) or 1.0))
+
+	local function updateDisplay(val, notify)
+		currentVal = math.max(0.0, math.min(1.0, val))
+		fill:setPercent(currentVal * 100)
+		if thumb then
+			local posX = 6 + currentVal * (w - 12)
+			thumb:setPosition(posX, h / 2)
+		end
+		valLabel:setString(string.format("%d%%", math.floor(currentVal * 100 + 0.5)))
+		if notify and arg_onChanged then
+			arg_onChanged(currentVal)
+		end
+	end
+
+	updateDisplay(currentVal, false)
+
+	local listener = cc.EventListenerTouchOneByOne:create()
+	listener:setSwallowTouches(true)
+
+	local isDragging = false
+	listener:registerScriptHandler(function(touch, event)
+		if not node:isVisible() then return false end
+		local p = node:getParent()
+		while p do
+			if not p:isVisible() then return false end
+			p = p:getParent()
+		end
+		local pt = node:convertToNodeSpace(touch:getLocation())
+		local touchRect = cc.rect(-10, -15, w + 20, h + 30)
+		if cc.rectContainsPoint(touchRect, pt) then
+			isDragging = true
+			local pct = (pt.x - 6) / (w - 12)
+			updateDisplay(pct, true)
+			return true
+		end
+		return false
+	end, cc.Handler.EVENT_TOUCH_BEGAN)
+
+	listener:registerScriptHandler(function(touch, event)
+		if isDragging then
+			local pt = node:convertToNodeSpace(touch:getLocation())
+			local pct = (pt.x - 6) / (w - 12)
+			updateDisplay(pct, true)
+		end
+	end, cc.Handler.EVENT_TOUCH_MOVED)
+
+	listener:registerScriptHandler(function(touch, event)
+		if isDragging then
+			isDragging = false
+			local pt = node:convertToNodeSpace(touch:getLocation())
+			local pct = (pt.x - 6) / (w - 12)
+			updateDisplay(pct, true)
+		end
+	end, cc.Handler.EVENT_TOUCH_ENDED)
+
+	listener:registerScriptHandler(function(touch, event)
+		isDragging = false
+	end, cc.Handler.EVENT_TOUCH_CANCELLED)
+
+	local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, node)
+
+	node._valLabel = valLabel
+	node._fill = fill
+	node._thumb = thumb
+	node.setValue = function(self, val)
+		updateDisplay(val, false)
+	end
+	node.getValue = function(self)
+		return currentVal
+	end
+
+	return node
+end
+
 function var_0_0.createCheckLabelArea(arg_118_0, arg_118_1, arg_118_2)
 	local var_118_0 = ccui.Widget:create()
 

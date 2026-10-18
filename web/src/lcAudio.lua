@@ -227,28 +227,34 @@ function var_0_0.playAudio(arg_8_0, arg_8_1, arg_8_2)
 		end
 	end
 
-	if bit.band(var_0_2, bit.lshift(1, var_8_0.behavior)) ~= 0 and var_8_0.switch == var_0_0.SwitchType.yes_once then
+	local isMuted = bit.band(var_0_2, bit.lshift(1, var_8_0.behavior)) ~= 0
+	if isMuted and var_8_0.switch == var_0_0.SwitchType.yes_once then
 		return
 	end
 
 	if var_8_0.behavior == var_0_0.Behavior.music then
-		var_0_3:playMusic(var_8_0.name, var_8_0.isLoop)
-
+		if not isMuted then
+			var_0_3:playMusic(var_8_0.name, var_8_0.isLoop)
+		end
 		var_8_0.playingParams.id = 0
 	else
-		var_8_0.playingParams.id = var_0_3:playEffect(var_8_0.name, var_8_0.isLoop)
+		if not isMuted then
+			var_8_0.playingParams.id = var_0_3:playEffect(var_8_0.name, var_8_0.isLoop)
+		else
+			var_8_0.playingParams.id = 0
+		end
 	end
 
 	var_8_0.playingParams.playTime = os.time()
 	var_8_0.playingParams.duration = 0
 	var_0_1[var_8_0.id] = var_8_0
-	var_8_0.state = var_0_0.State.playing
+	var_8_0.state = isMuted and var_0_0.State.paused or var_0_0.State.playing
 
-	if bit.band(var_0_2, bit.lshift(1, var_8_0.behavior)) ~= 0 and var_8_0.switch == var_0_0.SwitchType.yes_replay then
-		var_0_0.pauseAudio(var_8_0.id, var_8_0.cfgName)
+	if isMuted and var_8_0.switch == var_0_0.SwitchType.yes_replay then
+		var_8_0.state = var_0_0.State.paused
 	end
 
-	if not var_8_0.isLoop then
+	if not isMuted and not var_8_0.isLoop then
 		var_8_0.playingParams.isNotifyStop = arg_8_1
 
 		var_8_0:scheduleForStop()
@@ -304,6 +310,11 @@ function var_0_0.resumeAudio(arg_10_0, arg_10_1)
 	end
 
 	if var_10_0.state ~= var_0_0.State.paused then
+		return
+	end
+
+	local isMuted = bit.band(var_0_2, bit.lshift(1, var_10_0.behavior)) ~= 0
+	if isMuted then
 		return
 	end
 
@@ -377,6 +388,16 @@ function var_0_0.setIsMute(arg_14_0, arg_14_1, arg_14_2)
 		var_0_2 = arg_14_0 and 3 or 0
 	end
 
+	local isMusicMuted = bit.band(var_0_2, bit.lshift(1, var_0_0.Behavior.music)) ~= 0
+	local isEffectMuted = bit.band(var_0_2, bit.lshift(1, var_0_0.Behavior.effect)) ~= 0
+
+	if var_0_3.setMusicMuted and (not arg_14_1 or arg_14_1 == var_0_0.Behavior.music) then
+		var_0_3:setMusicMuted(isMusicMuted)
+	end
+	if var_0_3.setEffectsMuted and (not arg_14_1 or arg_14_1 == var_0_0.Behavior.effect) then
+		var_0_3:setEffectsMuted(isEffectMuted)
+	end
+
 	if arg_14_0 then
 		local var_14_0 = {}
 
@@ -400,6 +421,13 @@ function var_0_0.setIsMute(arg_14_0, arg_14_1, arg_14_2)
 			end
 		end
 	end
+end
+
+function var_0_0.isMute(arg_14_behavior)
+	if arg_14_behavior then
+		return bit.band(var_0_2, bit.lshift(1, arg_14_behavior)) ~= 0
+	end
+	return var_0_2 ~= 0
 end
 
 function var_0_0.unloadAllAudio(arg_15_0, arg_15_1)

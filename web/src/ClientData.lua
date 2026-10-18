@@ -219,6 +219,11 @@ function var_0_0.init()
 			return var_11_0:onError(arg_11_0)
 		end
 	end, 0)
+
+	var_0_0.ConfigKey.music_volume = "MUSIC_VOLUME"
+	var_0_0.ConfigKey.effect_volume = "EFFECT_VOLUME"
+	var_0_0.setMusicVolume(var_0_0.getMusicVolume())
+	var_0_0.setEffectVolume(var_0_0.getEffectVolume())
 	var_0_0.toggleAudio(lc.Audio.Behavior.music, lc.UserDefault:getBoolForKey(var_0_0.ConfigKey.music_on, true))
 	var_0_0.toggleAudio(lc.Audio.Behavior.effect, lc.UserDefault:getBoolForKey(var_0_0.ConfigKey.effect_on, true))
 	lc.Director:setIdleTime(180)
@@ -2025,6 +2030,34 @@ function var_0_0.toggleAudio(arg_110_0, arg_110_1)
 	end
 
 	lc.Audio.setIsMute(not arg_110_1, arg_110_0)
+end
+
+function var_0_0.getMusicVolume()
+	if var_0_0._musicVolume == nil then
+		var_0_0._musicVolume = lc.UserDefault:getFloatForKey(var_0_0.ConfigKey.music_volume, 0.8)
+	end
+	return var_0_0._musicVolume
+end
+
+function var_0_0.setMusicVolume(vol)
+	vol = math.max(0.0, math.min(1.0, tonumber(vol) or 0.8))
+	var_0_0._musicVolume = vol
+	lc.UserDefault:setFloatForKey(var_0_0.ConfigKey.music_volume, vol)
+	lc.Audio.setAudioVolume(vol, lc.Audio.Behavior.music)
+end
+
+function var_0_0.getEffectVolume()
+	if var_0_0._effectVolume == nil then
+		var_0_0._effectVolume = lc.UserDefault:getFloatForKey(var_0_0.ConfigKey.effect_volume, 0.8)
+	end
+	return var_0_0._effectVolume
+end
+
+function var_0_0.setEffectVolume(vol)
+	vol = math.max(0.0, math.min(1.0, tonumber(vol) or 0.8))
+	var_0_0._effectVolume = vol
+	lc.UserDefault:setFloatForKey(var_0_0.ConfigKey.effect_volume, vol)
+	lc.Audio.setAudioVolume(vol, lc.Audio.Behavior.effect)
 end
 
 function var_0_0.togglePos(arg_111_0)

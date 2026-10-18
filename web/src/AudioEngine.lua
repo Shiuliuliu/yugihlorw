@@ -11,6 +11,26 @@ local var_0_0 = {
 	getEffectsVolume = function()
 		return cc.SimpleAudioEngine:getInstance():getEffectsVolume()
 	end,
+	isMusicMuted = function()
+		local inst = cc.SimpleAudioEngine:getInstance()
+		return (inst.isMusicMuted and inst:isMusicMuted()) or false
+	end,
+	setMusicMuted = function(arg_m)
+		local inst = cc.SimpleAudioEngine:getInstance()
+		if inst.setMusicMuted then
+			inst:setMusicMuted(arg_m)
+		end
+	end,
+	isEffectsMuted = function()
+		local inst = cc.SimpleAudioEngine:getInstance()
+		return (inst.isEffectsMuted and inst:isEffectsMuted()) or false
+	end,
+	setEffectsMuted = function(arg_e)
+		local inst = cc.SimpleAudioEngine:getInstance()
+		if inst.setEffectsMuted then
+			inst:setEffectsMuted(arg_e)
+		end
+	end,
 	setMusicVolume = function(arg_5_0)
 		cc.SimpleAudioEngine:getInstance():setMusicVolume(arg_5_0)
 	end,

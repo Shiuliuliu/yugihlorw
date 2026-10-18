@@ -472,6 +472,33 @@ cc.Audio.WebAudio.prototype = {
     cc.audioEngine = {
         _currMusic: null,
         _musicVolume: 1,
+        _musicMuted: false,
+        _effectsMuted: false,
+
+        isMusicMuted: function(){
+            return !!this._musicMuted;
+        },
+
+        setMusicMuted: function(muted){
+            var wasMuted = this._musicMuted;
+            this._musicMuted = !!muted;
+            if (this._musicMuted) {
+                this.pauseMusic();
+            } else if (wasMuted && this._currMusic) {
+                this.resumeMusic();
+            }
+        },
+
+        isEffectsMuted: function(){
+            return !!this._effectsMuted;
+        },
+
+        setEffectsMuted: function(muted){
+            this._effectsMuted = !!muted;
+            if (this._effectsMuted) {
+                this.stopAllEffects();
+            }
+        },
 
         features: polyfill,
 
@@ -499,10 +526,18 @@ cc.Audio.WebAudio.prototype = {
                 cc.loader.load(url);
                 audio = cc.loader.getRes(url);
             }
-            audio.setVolume(this._musicVolume);
-            audio.play(0, loop || false);
-
+            if (audio) {
+                audio.setVolume(this._musicVolume);
+            }
             this._currMusic = audio;
+
+            if (this._musicMuted) {
+                return;
+            }
+
+            if (audio) {
+                audio.play(0, loop || false);
+            }
         },
 
         /**
@@ -541,6 +576,7 @@ cc.Audio.WebAudio.prototype = {
          * cc.audioEngine.resumeMusic();
          */
         resumeMusic: function(){
+            if (this._musicMuted) return;
             var audio = this._currMusic;
             if (audio)
                 audio.resume();
@@ -589,6 +625,9 @@ cc.Audio.WebAudio.prototype = {
             if (audio) {
                 audio.setVolume(volume);
             }
+            if (typeof window.updateWebVolumeUi === 'function') {
+                window.updateWebVolumeUi(volume, undefined);
+            }
         },
 
         /**
@@ -625,6 +664,9 @@ cc.Audio.WebAudio.prototype = {
          * var soundId = cc.audioEngine.playEffect(path);
          */
         playEffect: function(url, loop){
+            if (this._effectsMuted) {
+                return null;
+            }
 
             if (SWB && this._currMusic && this._currMusic.getPlaying()) {
                 cc.log('Browser is only allowed to play one audio');
@@ -720,6 +762,9 @@ cc.Audio.WebAudio.prototype = {
                     for(var i=0; i<audioList.length; i++){
                         audioList[i].setVolume(volume);
                     }
+            }
+            if (typeof window.updateWebVolumeUi === 'function') {
+                window.updateWebVolumeUi(undefined, volume);
             }
         },
 

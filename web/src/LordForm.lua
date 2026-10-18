@@ -106,85 +106,112 @@ function var_0_0.init(arg_2_0)
 
 	lc.addChildToPos(arg_2_0._form, var_2_11, cc.p(lc.w(arg_2_0._form) / 2, lc.bottom(var_2_4) - 20))
 
+	local y_row1 = lc.bottom(var_2_11) - 36
+	local y_row2 = y_row1 - 46
+	local y_row3 = y_row2 - 46
+
+	-- Row 1: Music toggle & Music volume slider | Pos toggle
+	local var_2_13 = cc.Label:createWithTTF(Str(STR.AUDIO_MUSIC), ClientView.TTF_FONT, ClientView.FontSize.S2)
+	var_2_13:setColor(ClientView.COLOR_LABEL_LIGHT)
+	lc.addChildToPos(arg_2_0._form, var_2_13, cc.p(lc.left(var_2_4) + lc.w(var_2_13) / 2, y_row1))
+
 	local var_2_12 = ClientView.createScale9ShaderButton(ClientData._isMusicOn and "img_btn_1_s" or "img_btn_2_s", function(arg_10_0)
 		arg_2_0:onSwitchMusic(arg_10_0)
-	end, ClientView.CRECT_BUTTON_S, var_0_5)
-
+	end, ClientView.CRECT_BUTTON_S, 84, 40)
 	var_2_12:addLabel(ClientData._isMusicOn and Str(STR.ON) or Str(STR.OFF))
-	lc.addChildToPos(arg_2_0._form, var_2_12, cc.p(lc.right(var_2_4) - lc.w(var_2_12) / 2, lc.bottom(var_2_11) - lc.h(var_2_12) / 2 - 20))
+	lc.addChildToPos(arg_2_0._form, var_2_12, cc.p(lc.right(var_2_13) + 10 + lc.w(var_2_12) / 2, y_row1))
+	arg_2_0._btnMusic = var_2_12
 
-	local var_2_13 = cc.Label:createWithTTF(Str(STR.AUDIO_MUSIC), ClientView.TTF_FONT, ClientView.FontSize.S2)
-
-	var_2_13:setColor(ClientView.COLOR_LABEL_LIGHT)
-	lc.addChildToPos(arg_2_0._form, var_2_13, cc.p(lc.left(var_2_12) - lc.w(var_2_13) / 2 - 10, lc.y(var_2_12)))
-
-	local var_2_14 = ClientView.createScale9ShaderButton(ClientData._isEffectOn and "img_btn_1_s" or "img_btn_2_s", function(arg_11_0)
-		arg_2_0:onSwitchEffect(arg_11_0)
-	end, ClientView.CRECT_BUTTON_S, var_0_5)
-
-	var_2_14:addLabel(ClientData._isEffectOn and Str(STR.ON) or Str(STR.OFF))
-	lc.addChildToPos(arg_2_0._form, var_2_14, cc.p(lc.right(var_2_5) - lc.w(var_2_14) / 2, lc.y(var_2_12)))
-
-	local var_2_15 = cc.Label:createWithTTF(Str(STR.AUDIO_EFFECT), ClientView.TTF_FONT, ClientView.FontSize.S2)
-
-	var_2_15:setColor(ClientView.COLOR_LABEL_LIGHT)
-	lc.addChildToPos(arg_2_0._form, var_2_15, cc.p(lc.left(var_2_14) - lc.w(var_2_15) / 2 - 10, lc.y(var_2_14)))
+	local sliderMusic = ClientView.createVolumeSlider(140, 22, ClientData.getMusicVolume(), function(val)
+		ClientData.setMusicVolume(val)
+		if val > 0 and not ClientData._isMusicOn then
+			ClientData.toggleAudio(lc.Audio.Behavior.music, true)
+			var_2_12._label:setString(Str(STR.ON))
+			var_2_12:loadTextureNormal("img_btn_1_s", ccui.TextureResType.plistType)
+		elseif val == 0 and ClientData._isMusicOn then
+			ClientData.toggleAudio(lc.Audio.Behavior.music, false)
+			var_2_12._label:setString(Str(STR.OFF))
+			var_2_12:loadTextureNormal("img_btn_2_s", ccui.TextureResType.plistType)
+		end
+	end)
+	lc.addChildToPos(arg_2_0._form, sliderMusic, cc.p(lc.right(var_2_12) + 12 + 140 / 2, y_row1))
+	arg_2_0._sliderMusic = sliderMusic
 
 	local var_2_16 = ClientView.createScale9ShaderButton(ClientData._isPosOn and "img_btn_1_s" or "img_btn_2_s", function(arg_12_0)
 		arg_2_0:onSwitchPos(arg_12_0)
-	end, ClientView.CRECT_BUTTON_S, var_0_5)
-
+	end, ClientView.CRECT_BUTTON_S, 84, 40)
 	var_2_16:addLabel(ClientData._isPosOn and Str(STR.ON) or Str(STR.OFF))
-	lc.addChildToPos(arg_2_0._form, var_2_16, cc.p(lc.right(var_2_6) - lc.w(var_2_16) / 2, lc.y(var_2_12)))
+	lc.addChildToPos(arg_2_0._form, var_2_16, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_16) / 2 - 20, y_row1))
 
 	local var_2_17 = cc.Label:createWithTTF(Str(STR.POS_LABEL, true), ClientView.TTF_FONT, ClientView.FontSize.S2)
-
 	var_2_17:setColor(ClientView.COLOR_LABEL_LIGHT)
-	lc.addChildToPos(arg_2_0._form, var_2_17, cc.p(lc.left(var_2_16) - lc.w(var_2_17) / 2 - 10, lc.y(var_2_16)))
+	lc.addChildToPos(arg_2_0._form, var_2_17, cc.p(lc.left(var_2_16) - lc.w(var_2_17) / 2 - 10, y_row1))
 	var_2_16:setVisible(P:getMaxCharacterLevel() >= ClientData.POS_UNLOCK_LEVEL)
 	var_2_17:setVisible(var_2_16:isVisible())
 
+	-- Row 2: Effect toggle & Effect volume slider | Round toggle
+	local var_2_15 = cc.Label:createWithTTF(Str(STR.AUDIO_EFFECT), ClientView.TTF_FONT, ClientView.FontSize.S2)
+	var_2_15:setColor(ClientView.COLOR_LABEL_LIGHT)
+	lc.addChildToPos(arg_2_0._form, var_2_15, cc.p(lc.left(var_2_4) + lc.w(var_2_15) / 2, y_row2))
+
+	local var_2_14 = ClientView.createScale9ShaderButton(ClientData._isEffectOn and "img_btn_1_s" or "img_btn_2_s", function(arg_11_0)
+		arg_2_0:onSwitchEffect(arg_11_0)
+	end, ClientView.CRECT_BUTTON_S, 84, 40)
+	var_2_14:addLabel(ClientData._isEffectOn and Str(STR.ON) or Str(STR.OFF))
+	lc.addChildToPos(arg_2_0._form, var_2_14, cc.p(lc.right(var_2_15) + 10 + lc.w(var_2_14) / 2, y_row2))
+	arg_2_0._btnEffect = var_2_14
+
+	local sliderEffect = ClientView.createVolumeSlider(140, 22, ClientData.getEffectVolume(), function(val)
+		ClientData.setEffectVolume(val)
+		if val > 0 and not ClientData._isEffectOn then
+			ClientData.toggleAudio(lc.Audio.Behavior.effect, true)
+			var_2_14._label:setString(Str(STR.ON))
+			var_2_14:loadTextureNormal("img_btn_1_s", ccui.TextureResType.plistType)
+		elseif val == 0 and ClientData._isEffectOn then
+			ClientData.toggleAudio(lc.Audio.Behavior.effect, false)
+			var_2_14._label:setString(Str(STR.OFF))
+			var_2_14:loadTextureNormal("img_btn_2_s", ccui.TextureResType.plistType)
+		end
+	end)
+	lc.addChildToPos(arg_2_0._form, sliderEffect, cc.p(lc.right(var_2_14) + 12 + 140 / 2, y_row2))
+	arg_2_0._sliderEffect = sliderEffect
+
 	local var_2_18 = ClientView.createScale9ShaderButton(P._isNewRound and "img_btn_1_s" or "img_btn_2_s", function(arg_13_0)
 		arg_2_0:onSwitchRound(arg_13_0)
-	end, ClientView.CRECT_BUTTON_S, var_0_5)
-
+	end, ClientView.CRECT_BUTTON_S, 84, 40)
 	var_2_18:addLabel(P._isNewRound and Str(STR.ON) or Str(STR.OFF))
-	lc.addChildToPos(arg_2_0._form, var_2_18, cc.p(lc.right(var_2_7) - lc.w(var_2_18) / 2, lc.y(var_2_12)))
+	lc.addChildToPos(arg_2_0._form, var_2_18, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_18) / 2 - 20, y_row2))
 
 	local var_2_19 = cc.Label:createWithTTF(Str(STR.NEW_ROUND_LABEL, true), ClientView.TTF_FONT, ClientView.FontSize.S2)
-
 	var_2_19:setColor(ClientView.COLOR_LABEL_LIGHT)
-	lc.addChildToPos(arg_2_0._form, var_2_19, cc.p(lc.left(var_2_18) - lc.w(var_2_19) / 2 - 10, lc.y(var_2_18)))
+	lc.addChildToPos(arg_2_0._form, var_2_19, cc.p(lc.left(var_2_18) - lc.w(var_2_19) / 2 - 10, y_row2))
+
+	-- Row 3: Region Info | Change Region | Help
+	local var_2_21 = lc.createSprite({
+		_name = "img_com_bg_2",
+		_crect = ClientView.CRECT_COM_BG2,
+		_size = cc.size(230, 40)
+	})
+	var_2_21:setColor(lc.Color3B.black)
+	var_2_21:setOpacity(150)
+	lc.addChildToPos(arg_2_0._form, var_2_21, cc.p(lc.left(var_2_4) + lc.w(var_2_21) / 2, y_row3), -1)
+
+	local var_2_22 = ClientData._userRegion
+	local var_2_23 = ClientView.createTTF(ClientData.genFullRegionName(var_2_22._id, var_2_22._name, true), ClientView.FontSize.S1)
+	var_2_23:setScale(0.8)
+	lc.addChildToPos(arg_2_0._form, var_2_23, cc.p(lc.left(var_2_4) + lc.sw(var_2_23) / 2 + 10, y_row3))
 
 	local var_2_20 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_14_0)
 		arg_2_0:onChangeRegion()
 	end, ClientView.CRECT_BUTTON_S, var_0_4)
-
 	var_2_20:addLabel(Str(STR.CHANGE_REGION))
-	lc.addChildToPos(arg_2_0._form, var_2_20, cc.p(lc.x(var_2_5), lc.bottom(var_2_12) - lc.h(var_2_20) / 2 - 20))
-
-	local var_2_21 = lc.createSprite({
-		_name = "img_com_bg_2",
-		_crect = ClientView.CRECT_COM_BG2,
-		_size = cc.size(240, 40)
-	})
-
-	var_2_21:setColor(lc.Color3B.black)
-	var_2_21:setOpacity(150)
-	lc.addChildToPos(arg_2_0._form, var_2_21, cc.p(lc.left(var_2_13) + lc.w(var_2_21) / 2 - 10, lc.y(var_2_20)), -1)
-
-	local var_2_22 = ClientData._userRegion
-	local var_2_23 = ClientView.createTTF(ClientData.genFullRegionName(var_2_22._id, var_2_22._name, true), ClientView.FontSize.S1)
-
-	var_2_23:setScale(0.8)
-	lc.addChildToPos(arg_2_0._form, var_2_23, cc.p(lc.left(var_2_13) + lc.sw(var_2_23) / 2, lc.y(var_2_20)))
+	lc.addChildToPos(arg_2_0._form, var_2_20, cc.p(lc.right(var_2_21) + 12 + lc.w(var_2_20) / 2, y_row3))
 
 	local var_2_24 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_15_0)
 		arg_2_0:onHelp()
-	end, ClientView.CRECT_BUTTON_S, var_0_4)
-
+	end, ClientView.CRECT_BUTTON_S, 110, 40)
 	var_2_24:addLabel(Str(STR.HELP))
-	lc.addChildToPos(arg_2_0._form, var_2_24, cc.p(lc.x(var_2_6), lc.y(var_2_20)))
+	lc.addChildToPos(arg_2_0._form, var_2_24, cc.p(lc.right(var_2_20) + 12 + lc.w(var_2_24) / 2, y_row3))
 
 	local var_2_25 = lc.App:getChannelName()
 
@@ -422,14 +449,20 @@ function var_0_0.onSwitchMusic(arg_45_0, arg_45_1)
 	ClientData.toggleAudio(lc.Audio.Behavior.music, not ClientData._isMusicOn)
 	arg_45_1._label:setString(ClientData._isMusicOn and Str(STR.ON) or Str(STR.OFF))
 	arg_45_1:loadTextureNormal(ClientData._isMusicOn and "img_btn_1_s" or "img_btn_2_s", ccui.TextureResType.plistType)
-	arg_45_1:setContentSize(cc.size(var_0_5, ClientView.CRECT_BUTTON_S.height))
+	arg_45_1:setContentSize(cc.size(84, ClientView.CRECT_BUTTON_S.height))
+	if arg_45_0._sliderMusic then
+		arg_45_0._sliderMusic:setValue(ClientData._isMusicOn and ClientData.getMusicVolume() or 0)
+	end
 end
 
 function var_0_0.onSwitchEffect(arg_46_0, arg_46_1)
 	ClientData.toggleAudio(lc.Audio.Behavior.effect, not ClientData._isEffectOn)
 	arg_46_1._label:setString(ClientData._isEffectOn and Str(STR.ON) or Str(STR.OFF))
 	arg_46_1:loadTextureNormal(ClientData._isEffectOn and "img_btn_1_s" or "img_btn_2_s", ccui.TextureResType.plistType)
-	arg_46_1:setContentSize(cc.size(var_0_5, ClientView.CRECT_BUTTON_S.height))
+	arg_46_1:setContentSize(cc.size(84, ClientView.CRECT_BUTTON_S.height))
+	if arg_46_0._sliderEffect then
+		arg_46_0._sliderEffect:setValue(ClientData._isEffectOn and ClientData.getEffectVolume() or 0)
+	end
 end
 
 function var_0_0.onSwitchPos(arg_47_0, arg_47_1)
