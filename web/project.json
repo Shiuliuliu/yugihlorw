@@ -1,4 +1,4 @@
-﻿{
+{
 	"debugMode": 0,
 	"showFPS": false,
 	"frameRate": 60,
@@ -13,8 +13,8 @@
 		    "transitions", "motion-streak", "editbox"],
 
 	"jsList": [
-		"js/res.js?v=20261018v182500",
-		"js/engine.js?v=20261018v182500",
-		"js/net.js?v=20261018v182500"
+		"js/res.js?v=20261018v184000",
+		"js/engine.js?v=20261018v184000",
+		"js/net.js?v=20261018v184000"
 	]
 }

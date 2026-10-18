@@ -1884,8 +1884,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 # Determine caching policy
                 is_versioned = ('?v=' in self.path or '&v=' in self.path)
                 is_nocache = (clean_path == '/index.html' or clean_path.endswith('.html'))
+                is_audio = ext_lower in ('.mp3', '.wav', '.ogg') or clean_path.startswith('/res/audio/')
                 is_dynamic_bundle = clean_path in ('/lua_src.json', '/data_dumps.json', '/res_manifest.json') or clean_path.endswith('.plist') or clean_path.endswith('.lan')
-                is_static_res = (clean_path.startswith('/res/') or (ext_lower in IMMUTABLE_STATIC_EXTS)) and not is_dynamic_bundle
+                is_static_res = (clean_path.startswith('/res/') or (ext_lower in IMMUTABLE_STATIC_EXTS)) and not is_dynamic_bundle and not is_audio
                 is_immutable = is_static_res and is_versioned
 
                 def apply_cache_headers():
@@ -1896,6 +1897,12 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     elif is_dynamic_bundle:
                         self.send_header('Cache-Control', 'no-cache, must-revalidate')
                         self.send_header('Pragma', 'no-cache')
+                    elif is_audio:
+                        if is_versioned:
+                            self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
+                        else:
+                            self.send_header('Cache-Control', 'no-cache, must-revalidate')
+                            self.send_header('Pragma', 'no-cache')
                     elif is_immutable:
                         self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
                     elif is_versioned:

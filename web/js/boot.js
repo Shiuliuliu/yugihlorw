@@ -1,4 +1,4 @@
-﻿/* boot.js -- brings up the web client.
+/* boot.js -- brings up the web client.
  *
  * cocos2d-html5 loads this last (see project.json), calls cc.game.run(), and
  * hands control to onStart. From there:
@@ -97,7 +97,7 @@
 		Boot.total = 9 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261018v182500';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261018v184000';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
 			done(fetchJson('lua_src.json?v=' + ver)),

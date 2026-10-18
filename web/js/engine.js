@@ -3009,7 +3009,9 @@
 	 * serve res/ from somewhere else, so every name goes through res.base
 	 * on the way in. */
 	function audioUrl(name) {
-		return res.base + String(name).replace(/^res\//, '');
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '';
+		var url = res.base + String(name).replace(/^res\//, '');
+		return ver ? (url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + ver) : url;
 	}
 
 	var audioEngine = {
