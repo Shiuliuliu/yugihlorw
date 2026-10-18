@@ -1379,7 +1379,14 @@ def ensure_deck_cards(acc_id, raw_cards=None, raw_extra=None):
         try:
             with get_db() as conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT cards, extra_cards FROM user_decks WHERE account_id = %s ORDER BY is_active DESC, deck_slot ASC LIMIT 1", (acc_id,))
+                    cur.execute("SELECT cur_troop FROM accounts WHERE id = %s", (acc_id,))
+                    acc_r = cur.fetchone()
+                    ct = acc_r['cur_troop'] if acc_r and acc_r.get('cur_troop') else 1
+                    cur.execute("""
+                        SELECT cards, extra_cards FROM user_decks 
+                        WHERE account_id = %s 
+                        ORDER BY (deck_slot = %s) DESC, is_active DESC, deck_slot ASC LIMIT 1
+                    """, (acc_id, ct))
                     drow = cur.fetchone()
                     if drow and drow.get('cards'):
                         db_cards = json.loads(drow['cards'])
@@ -1404,6 +1411,117 @@ def ensure_deck_cards(acc_id, raw_cards=None, raw_extra=None):
         idx += 1
 
     return cards, extra
+
+def get_user_visit_deck(uid, req_cur_troop=None):
+    """
+    Fetch the currently active or most recent deck for user inspection (e.g. from Leaderboard/RankForm).
+    Returns (deck_slot, deck_name, troop_list) where troop_list is [{"info_id": cid, "num": count}].
+    """
+    uid = int(uid)
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, cur_troop FROM accounts WHERE id = %s", (uid,))
+            acc = cur.fetchone()
+            cur_troop = req_cur_troop or (acc.get('cur_troop') if acc else None) or 1
+
+            if req_cur_troop and req_cur_troop > 0:
+                cur.execute("UPDATE accounts SET cur_troop = %s WHERE id = %s", (req_cur_troop, uid))
+                cur.execute("UPDATE user_decks SET is_active = (CASE WHEN deck_slot = %s THEN 1 ELSE 0 END) WHERE account_id = %s", (req_cur_troop, uid))
+                cur_troop = req_cur_troop
+
+            # 1. Check match_replays for the user's most recent battle deck (prefer Ranked Ladder 212, then any latest)
+            cur.execute("""
+                SELECT id, battle_type, replay_data, UNIX_TIMESTAMP(created_at) as ts
+                FROM match_replays
+                WHERE account_id = %s
+                ORDER BY (battle_type = 212) DESC, id DESC
+                LIMIT 1
+            """, (uid,))
+            rep_row = cur.fetchone()
+            rep_troop = None
+            rep_cids = set()
+            if rep_row and rep_row.get('replay_data'):
+                try:
+                    rep_data = json.loads(rep_row['replay_data'])
+                    tc = rep_data.get('player', {}).get('_troopCards') or rep_data.get('player', {}).get('troopCards') or []
+                    valid_tc = []
+                    for item in tc:
+                        if isinstance(item, dict) and item.get('info_id'):
+                            cid = int(item['info_id'])
+                            num = int(item.get('num', 1))
+                            if cid > 0 and num > 0:
+                                valid_tc.append({'info_id': cid, 'num': num})
+                                rep_cids.add(cid)
+                    if sum(x['num'] for x in valid_tc) >= 30:
+                        rep_troop = valid_tc
+                except Exception as e:
+                    print(f"[USER VISIT REPLAY ERR] {e}")
+
+            # 2. Check user_decks
+            cur.execute("""
+                SELECT deck_slot, deck_name, cards, extra_cards, is_active
+                FROM user_decks
+                WHERE account_id = %s
+            """, (uid,))
+            decks = cur.fetchall()
+
+            # Find best matching deck slot if we have replay cards
+            matched_slot = None
+            best_match_count = 0
+            for d in decks:
+                try:
+                    c_list = json.loads(d['cards']) if d.get('cards') else []
+                    ec_list = json.loads(d['extra_cards']) if d.get('extra_cards') else []
+                    d_cids = set(c_list + ec_list)
+                    common = len(rep_cids.intersection(d_cids)) if rep_cids else 0
+                    if common > best_match_count and common >= 10:
+                        best_match_count = common
+                        matched_slot = d['deck_slot']
+                except:
+                    pass
+
+            chosen_slot = None
+            if cur_troop and cur_troop > 1:
+                chosen_slot = cur_troop
+            elif matched_slot:
+                chosen_slot = matched_slot
+
+            if chosen_slot:
+                for d in decks:
+                    if d['deck_slot'] == chosen_slot:
+                        try:
+                            c_list = json.loads(d['cards']) if d.get('cards') else []
+                            ec_list = json.loads(d['extra_cards']) if d.get('extra_cards') else []
+                            if len(c_list) >= 30:
+                                from collections import Counter
+                                cnts = Counter([int(c) for c in (c_list + ec_list) if str(c).isdigit() and int(c) > 0])
+                                dname = d.get('deck_name') or f"Bộ Bài {chosen_slot}"
+                                return chosen_slot, dname, [{'info_id': cid, 'num': cnt} for cid, cnt in cnts.items()]
+                        except:
+                            pass
+
+            if rep_troop:
+                dname = "Bộ bài gần đây"
+                if rep_row and rep_row.get('battle_type') == 212:
+                    dname = "Bộ bài Đấu Xếp Hạng"
+                return 'recent', dname, rep_troop
+
+            for d in decks:
+                if d.get('is_active') == 1:
+                    try:
+                        c_list = json.loads(d['cards']) if d.get('cards') else []
+                        ec_list = json.loads(d['extra_cards']) if d.get('extra_cards') else []
+                        if len(c_list) >= 30:
+                            from collections import Counter
+                            cnts = Counter([int(c) for c in (c_list + ec_list) if str(c).isdigit() and int(c) > 0])
+                            return d['deck_slot'], d.get('deck_name') or f"Bộ Bài {d['deck_slot']}", [{'info_id': cid, 'num': cnt} for cid, cnt in cnts.items()]
+                    except:
+                        pass
+
+            deck_cards, deck_extra = ensure_deck_cards(uid)
+            from collections import Counter
+            counts = Counter([int(c) for c in (deck_cards + deck_extra) if str(c).isdigit() and int(c) > 0])
+            return 1, "Bộ Bài 1", [{"info_id": cid, "num": cnt} for cid, cnt in counts.items()]
 
 # Custom MIME types
 mimetypes.add_type('application/wasm', '.wasm')
@@ -2128,13 +2246,44 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
 
                         clean_extra = clean_extra[:20]
 
+                        req_is_active = req.get('is_active')
+                        cur.execute("SELECT cur_troop FROM accounts WHERE id = %s", (acc_id,))
+                        acc_r = cur.fetchone()
+                        cur_tr = acc_r['cur_troop'] if acc_r and acc_r.get('cur_troop') else 1
+                        if req_is_active is not None:
+                            is_act = 1 if req_is_active else 0
+                        else:
+                            is_act = 1 if (int(d_slot) == cur_tr) else 0
+
                         cur.execute("""
                             INSERT INTO user_decks (account_id, deck_slot, deck_name, cards, extra_cards, is_active)
-                            VALUES (%s, %s, %s, %s, %s, 1)
-                            ON DUPLICATE KEY UPDATE deck_name = VALUES(deck_name), cards = VALUES(cards), extra_cards = VALUES(extra_cards)
-                        """, (acc_id, d_slot, d_name, json.dumps(clean_cards), json.dumps(clean_extra)))
+                            VALUES (%s, %s, %s, %s, %s, %s)
+                            ON DUPLICATE KEY UPDATE deck_name = VALUES(deck_name), cards = VALUES(cards), extra_cards = VALUES(extra_cards), is_active = VALUES(is_active)
+                        """, (acc_id, d_slot, d_name, json.dumps(clean_cards), json.dumps(clean_extra), is_act))
+
+                        if is_act == 1:
+                            cur.execute("UPDATE accounts SET cur_troop = %s WHERE id = %s", (d_slot, acc_id))
+                            cur.execute("UPDATE user_decks SET is_active = 0 WHERE account_id = %s AND deck_slot != %s", (acc_id, d_slot))
+
                 resp = {"code": 200, "msg": "Lưu deck thành công!"}
-                print(f"[SAVE DECK] Saved deck '{d_name}' for account {acc_id} ({len(clean_cards)} cards, {len(clean_extra)} extra).")
+                print(f"[SAVE DECK] Saved deck '{d_name}' (slot {d_slot}, is_active={is_act}) for account {acc_id} ({len(clean_cards)} cards, {len(clean_extra)} extra).")
+
+            elif self.path in ('/api/set_cur_troop', '/api/set_active_deck'):
+                acc_id = req.get('account_id') or req.get('user_id')
+                cur_troop = int(req.get('cur_troop') or req.get('deck_slot') or 1)
+                if acc_id and cur_troop > 0:
+                    with get_db() as conn:
+                        with conn.cursor() as cur:
+                            cur.execute("UPDATE accounts SET cur_troop = %s WHERE id = %s", (cur_troop, acc_id))
+                            cur.execute("""
+                                UPDATE user_decks 
+                                SET is_active = (CASE WHEN deck_slot = %s THEN 1 ELSE 0 END)
+                                WHERE account_id = %s
+                            """, (cur_troop, acc_id))
+                    resp = {"code": 200, "msg": f"Cập nhật bộ bài kích hoạt slot {cur_troop} thành công!", "cur_troop": cur_troop}
+                    print(f"[SET CUR TROOP] Account {acc_id} switched active deck to slot {cur_troop}")
+                else:
+                    resp = {"code": 400, "msg": "Thiếu thông tin account_id hoặc cur_troop"}
 
             elif self.path == '/api/save_deck_name':
                 acc_id = req.get('account_id')
@@ -2145,7 +2294,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         with conn.cursor() as cur:
                             cur.execute("""
                                 INSERT INTO user_decks (account_id, deck_slot, deck_name, cards, extra_cards, is_active)
-                                VALUES (%s, %s, %s, '[]', '[]', 1)
+                                VALUES (%s, %s, %s, '[]', '[]', 0)
                                 ON DUPLICATE KEY UPDATE deck_name = VALUES(deck_name)
                             """, (acc_id, d_slot, d_name))
                     print(f"[SAVE DECK NAME] Renamed slot {d_slot} to '{d_name}' for account {acc_id}")
@@ -3098,11 +3247,16 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 if not char_av or char_av < 100:
                     cid = user.get('character_id') or 3
                     char_av = cid * 100 + 1
-                # Fetch active deck cards for VisitForm inspection
-                deck_cards, deck_extra = ensure_deck_cards(uid)
-                from collections import Counter
-                counts = Counter([int(c) for c in (deck_cards + deck_extra) if str(c).isdigit() and int(c) > 0])
-                troop = [{"info_id": cid, "num": cnt} for cid, cnt in counts.items()]
+                # Fetch active or recent deck cards for VisitForm inspection
+                my_uid = req.get('my_user_id') or req.get('account_id')
+                cur_troop_arg = None
+                if req.get('cur_troop'):
+                    if not my_uid or int(my_uid) == int(uid):
+                        try:
+                            cur_troop_arg = int(req.get('cur_troop'))
+                        except Exception:
+                            cur_troop_arg = None
+                chosen_slot, deck_name, troop = get_user_visit_deck(uid, req_cur_troop=cur_troop_arg)
 
                 resp = {
                     "code": 200,
@@ -3119,6 +3273,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             "rid": 10001, "privilege": 0, "month_card": 0
                         },
                         "troop": troop,
+                        "deck_slot": chosen_slot,
+                        "deck_name": deck_name,
                         "pre_rank": rank,
                         "best_rank": rank,
                         "legend_trophy": user.get('trophy', 0) or 0,

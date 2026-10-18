@@ -6,21 +6,21 @@
 
 	<meta charset="utf-8">
 
-	<script>window.JDZC_CONFIG = { version: '20261019v003500' };</script>
+	<script>window.JDZC_CONFIG = { version: '20261019v004000' };</script>
 
 	<title>Yugihlor - Trading "Nạp" Game</title>
 
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
-	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20261019v003500">
+	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20261019v004000">
 
-	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20261019v003500">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20261019v004000">
 
-	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20261019v003500">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20261019v004000">
 
-	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20261019v003500">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20261019v004000">
 
-	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20261019v003500">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20261019v004000">
 
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -674,9 +674,9 @@
 			    "transitions", "motion-streak", "editbox"],
 
 		"jsList": [
-			"js/res.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v003500'),
-			"js/engine.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v003500'),
-			"js/net.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v003500')
+			"js/res.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v004000'),
+			"js/engine.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v004000'),
+			"js/net.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v004000')
 		]
 
 	};
@@ -943,11 +943,26 @@
 
 			if (typeof args[0] === 'object' && args.length >= 5) args.shift();
 
-			var accountId = args[0], deckSlot = args[1], deckName = args[2], cards = args[3], extraCards = args[4], callback = args[5];
+			var accountId = args[0], deckSlot = args[1], deckName = args[2], cards = args[3], extraCards = args[4];
+			var isActive = null;
+			var callback = null;
+			if (args.length >= 6) {
+				if (typeof args[5] === 'function') {
+					callback = args[5];
+				} else {
+					isActive = args[5] ? 1 : 0;
+					if (args.length >= 7 && typeof args[6] === 'function') {
+						callback = args[6];
+					}
+				}
+			}
 
 			if (typeof cards === 'string') { try { cards = JSON.parse(cards); } catch(e){} }
 
 			if (typeof extraCards === 'string') { try { extraCards = JSON.parse(extraCards); } catch(e){} }
+
+			var payload = { account_id: accountId, deck_slot: deckSlot, deck_name: deckName, cards: cards, extra_cards: extraCards };
+			if (isActive !== null) payload.is_active = isActive;
 
 			fetch('/api/save_deck', {
 
@@ -955,7 +970,7 @@
 
 				headers: { 'Content-Type': 'application/json' },
 
-				body: JSON.stringify({ account_id: accountId, deck_slot: deckSlot, deck_name: deckName, cards: cards, extra_cards: extraCards })
+				body: JSON.stringify(payload)
 
 			})
 
@@ -2179,13 +2194,13 @@
 
 	</script>
 
-	<script src="dist/lua51.js?v=20261019v003500"></script>
+	<script src="dist/lua51.js?v=20261019v004000"></script>
 
-	<script src="js/lua.js?v=20261019v003500"></script>
+	<script src="js/lua.js?v=20261019v004000"></script>
 
-	<script src="vendor/CCBoot.js?v=20261019v003500"></script>
+	<script src="vendor/CCBoot.js?v=20261019v004000"></script>
 
-	<script src="js/boot.js?v=20261019v003500"></script>
+	<script src="js/boot.js?v=20261019v004000"></script>
 
 
 

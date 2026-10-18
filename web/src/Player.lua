@@ -569,6 +569,14 @@ function var_0_25.setCurrentTroopIndex(arg_8_0, arg_8_1, arg_8_2)
 		end
 	end
 
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	local myAccId = (ClientData and ClientData._account and ClientData._account.id) or arg_8_0._id
+	if api and api.post and myAccId then
+		pcall(function()
+			api:post("set_cur_troop", { account_id = myAccId, cur_troop = arg_8_1 }, function() end)
+		end)
+	end
+
 	return true
 end
 

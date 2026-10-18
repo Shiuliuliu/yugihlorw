@@ -2467,14 +2467,14 @@ end
 
 function var_0_0.pbTroopToTroop(arg_138_0)
 	local var_138_0 = {}
-	local var_138_1 = {}
+	if not arg_138_0 then return var_138_0 end
 
 	for iter_138_0 = 1, #arg_138_0 do
 		local var_138_2 = arg_138_0[iter_138_0]
 		local var_138_3 = {
 			_level = 1,
-			_infoId = var_138_2.info_id,
-			_num = var_138_2.num
+			_infoId = var_138_2.info_id or var_138_2._infoId,
+			_num = var_138_2.num or var_138_2._num or 1
 		}
 
 		var_138_0[#var_138_0 + 1] = var_138_3
@@ -5831,6 +5831,14 @@ function var_0_0.sendDefTroopIndex(arg_320_0)
 	var_320_0.Extensions[User_pb.SglUserMsg.user_set_troop_req] = arg_320_0
 
 	var_0_0.sendProtoMsg(var_320_0)
+
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	local myAccId = (var_0_0._account and var_0_0._account.id) or (P and P._id)
+	if api and api.post and myAccId then
+		pcall(function()
+			api:post("set_cur_troop", { account_id = myAccId, cur_troop = arg_320_0 }, function() end)
+		end)
+	end
 end
 
 function var_0_0.sendCurToopIndex()
@@ -5840,6 +5848,14 @@ function var_0_0.sendCurToopIndex()
 	var_321_0.Extensions[User_pb.SglUserMsg.user_set_troop_req] = P._curTroopIndex
 
 	var_0_0.sendProtoMsg(var_321_0)
+
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	local myAccId = (var_0_0._account and var_0_0._account.id) or (P and P._id)
+	if api and api.post and myAccId and P and P._curTroopIndex then
+		pcall(function()
+			api:post("set_cur_troop", { account_id = myAccId, cur_troop = P._curTroopIndex }, function() end)
+		end)
+	end
 end
 
 function var_0_0.sendTroopRemark(arg_322_0, arg_322_1)

@@ -434,6 +434,7 @@ local function syncPlayerDecksToWeb()
 	if not (api and api.saveDeck) then return end
 
 	local jsonMod = require("json")
+	local curSlot = (P and P._curTroopIndex) or 1
 	for slot = 1, 10 do
 		local cloneTroop = ClientData and ClientData._cloneTroops and ClientData._cloneTroops[slot]
 		local pTroop = P._playerCard and P._playerCard._troops and P._playerCard._troops[slot]
@@ -460,12 +461,18 @@ local function syncPlayerDecksToWeb()
 			local cStr = jsonMod.encode(cards)
 			local eStr = jsonMod.encode(extra)
 			local deckName = (P and P._troopRemarks and P._troopRemarks[slot] and P._troopRemarks[slot] ~= "") and P._troopRemarks[slot] or ("Bộ Bài " .. tostring(slot))
-			local deckHash = deckName .. "|" .. cStr .. "|" .. eStr
+			local isActive = (slot == curSlot and 1 or 0)
+			local deckHash = deckName .. "|" .. cStr .. "|" .. eStr .. "|" .. tostring(isActive)
 			if _savedDeckHashes[slot] ~= deckHash then
 				_savedDeckHashes[slot] = deckHash
-				api:saveDeck(accId, slot, deckName, cStr, eStr)
+				api:saveDeck(accId, slot, deckName, cStr, eStr, isActive)
 			end
 		end
+	end
+	if api and api.post and accId and curSlot then
+		pcall(function()
+			api:post("set_cur_troop", { account_id = accId, cur_troop = curSlot }, function() end)
+		end)
 	end
 end
 
@@ -7424,8 +7431,10 @@ function patchClientData()
             end
         end
 
+        local myAccId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+        local curTroop = (P and P._curTroopIndex) or 1
         if api and api.post then
-            api:post("user_visit", { user_id = uid }, function(rawRes)
+            api:post("user_visit", { user_id = uid, my_user_id = myAccId, cur_troop = (tonumber(uid) == tonumber(myAccId) and curTroop or nil) }, function(rawRes)
                 local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
                 if res and res.visit then
                     deliverVisit(res.visit)
@@ -9804,8 +9813,10 @@ function M.patchLateClientData()
 		ClientData.sendUserVisit = function(userId)
 			local uid = tonumber(userId) or (ClientData._account and ClientData._account.id) or (P and P._id) or 1
 			local api = jsbridge and jsbridge.object("jdzcApi")
+			local myAccId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
+			local curTroop = (P and P._curTroopIndex) or 1
 			if api and api.post then
-				api:post("user_visit", { user_id = uid }, function(rawRes)
+				api:post("user_visit", { user_id = uid, my_user_id = myAccId, cur_troop = (tonumber(uid) == tonumber(myAccId) and curTroop or nil) }, function(rawRes)
 					local jsonMod = require("json")
 					local res = (type(rawRes) == "string") and jsonMod.decode(rawRes) or rawRes
 					if res and res.visit then

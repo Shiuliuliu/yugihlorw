@@ -85,37 +85,48 @@ function var_0_0.updateView(arg_4_0)
 	end
 
 	local var_4_6 = arg_4_0._label
+	local var_title_str = Str(STR.CUR_TROOP)
+	if arg_4_0._deckName and arg_4_0._deckName ~= "" then
+		var_title_str = string.format("%s (%s)", Str(STR.CUR_TROOP), arg_4_0._deckName)
+	end
 
 	if not var_4_6 then
-		var_4_6 = ClientView.createTTF(Str(STR.CUR_TROOP), ClientView.FontSize.S1, ClientView.COLOR_TEXT_TITLE)
+		var_4_6 = ClientView.createTTF(var_title_str, ClientView.FontSize.S1, ClientView.COLOR_TEXT_TITLE)
 
 		lc.addChildToPos(arg_4_0._frame, var_4_6, cc.p(60 + lc.cw(var_4_6), lc.ch(var_4_6) + var_0_0.FRAME_THICK_BOTTOM + 10))
 
 		arg_4_0._label = var_4_6
+	else
+		var_4_6:setString(var_title_str)
+		var_4_6:setPosition(cc.p(60 + lc.cw(var_4_6), lc.ch(var_4_6) + var_0_0.FRAME_THICK_BOTTOM + 10))
 	end
 
-	if not arg_4_0._countLabel then
-		local var_4_7 = 0
-		local var_4_8 = 0
-		local var_4_9 = 0
+	local var_4_7 = 0
+	local var_4_8 = 0
+	local var_4_9 = 0
 
-		for iter_4_0, iter_4_1 in ipairs(var_4_2) do
-			local var_4_10 = Data.getType(iter_4_1._infoId)
+	for iter_4_0, iter_4_1 in ipairs(var_4_2) do
+		local var_4_10 = Data.getType(iter_4_1._infoId)
 
-			if var_4_10 == Data.CardType.monster then
-				var_4_7 = var_4_7 + iter_4_1._num
-			elseif var_4_10 == Data.CardType.rare then
-				var_4_9 = var_4_9 + iter_4_1._num
-			else
-				var_4_8 = var_4_8 + iter_4_1._num
-			end
+		if var_4_10 == Data.CardType.monster then
+			var_4_7 = var_4_7 + iter_4_1._num
+		elseif var_4_10 == Data.CardType.rare then
+			var_4_9 = var_4_9 + iter_4_1._num
+		else
+			var_4_8 = var_4_8 + iter_4_1._num
 		end
+	end
 
-		local var_4_11 = ClientView.createBMFont(ClientView.BMFont.huali_26, string.format(Str(STR.TROOP_ALL_COUNT), var_4_7, var_4_8, var_4_9))
+	local var_count_str = string.format(Str(STR.TROOP_ALL_COUNT), var_4_7, var_4_8, var_4_9)
+	if not arg_4_0._countLabel then
+		local var_4_11 = ClientView.createBMFont(ClientView.BMFont.huali_26, var_count_str)
 
 		lc.addChildToPos(arg_4_0._frame, var_4_11, cc.p(lc.right(var_4_6) + 40 + lc.cw(var_4_11), lc.y(var_4_6)))
 
 		arg_4_0._countLabel = var_4_11
+	else
+		arg_4_0._countLabel:setString(var_count_str)
+		arg_4_0._countLabel:setPosition(cc.p(lc.right(var_4_6) + 40 + lc.cw(arg_4_0._countLabel), lc.y(var_4_6)))
 	end
 
 	arg_4_0:updateTroopList()
@@ -290,7 +301,17 @@ function var_0_0.onMsg(arg_18_0, arg_18_1)
 		local var_18_0 = arg_18_1.Extensions[User_pb.SglUserMsg.user_visit_resp]
 
 		arg_18_0._user = require("User").create(var_18_0.user_info)
-		arg_18_0._troop = ClientData.pbTroopToTroop(var_18_0.troop)
+		arg_18_0._deckName = var_18_0.deck_name or var_18_0._deckName
+		arg_18_0._deckSlot = var_18_0.deck_slot or var_18_0._deckSlot
+
+		if arg_18_0._userId and P and P._id and tonumber(arg_18_0._userId) == tonumber(P._id) and P._playerCard and P._curTroopIndex then
+			arg_18_0._troop = P._playerCard:getTroop(P._curTroopIndex, true)
+			if P._troopRemarks and P._troopRemarks[P._curTroopIndex] and P._troopRemarks[P._curTroopIndex] ~= "" then
+				arg_18_0._deckName = P._troopRemarks[P._curTroopIndex]
+			end
+		else
+			arg_18_0._troop = ClientData.pbTroopToTroop(var_18_0.troop)
+		end
 
 		arg_18_0:updateView()
 
