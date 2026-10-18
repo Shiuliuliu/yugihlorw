@@ -3367,19 +3367,19 @@ function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
 	arg_107_0._isPvpTimeout = false
 	arg_107_0._pvpPlayer = arg_107_1
 	arg_107_0._roundRealStartTime = os.time()
-	arg_107_0._roundDuration = 60
+	arg_107_0._roundDuration = 90
 
 	local var_107_0 = ClientData.getCurrentTime()
 
-	-- 60s action duration for each player turn per user request
+	-- 90s action duration for each player turn
 	ClientData._battleRoundStartInfo = {
 		_round = (ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._round or 0) + 1,
 		_isAttacker = arg_107_1 == arg_107_0._player,
 		_beginTime = var_107_0,
-		_endTime = var_107_0 + 60
+		_endTime = var_107_0 + 90
 	}
 
-	local var_107_1 = 60
+	local var_107_1 = 90
 	local var_107_2 = 0
 
 	local var_107_3 = arg_107_0._player == arg_107_1 and arg_107_0._playerUi or arg_107_0._opponentUi
@@ -3402,10 +3402,10 @@ function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
 		return
 	end
 	local delta = tonumber(arg_108_1) or 6
-	local maxTime = tonumber(arg_108_2) or 120
+	local maxTime = tonumber(arg_108_2) or 150
 	if arg_108_0._roundRealStartTime then
 		local curNow = os.time()
-		local totalDur = arg_108_0._roundDuration or 60
+		local totalDur = arg_108_0._roundDuration or 90
 		local curRemaining = totalDur - (curNow - arg_108_0._roundRealStartTime)
 		local newRemaining = math.min(maxTime, math.max(curRemaining + delta, 0))
 		if newRemaining > totalDur then
@@ -3424,10 +3424,10 @@ function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
 	if not arg_108_0._isOnlinePvp then
 		return
 	end
-	local newRemaining = math.min(120, math.max(0, tonumber(arg_108_1) or 0))
+	local newRemaining = math.min(150, math.max(0, tonumber(arg_108_1) or 0))
 	if arg_108_0._roundRealStartTime then
 		local curNow = os.time()
-		local totalDur = arg_108_0._roundDuration or 60
+		local totalDur = arg_108_0._roundDuration or 90
 		if newRemaining > totalDur then
 			arg_108_0._roundDuration = newRemaining
 			totalDur = newRemaining
@@ -3478,12 +3478,12 @@ function var_0_0.startPvpTiming(arg_108_0)
 		arg_108_0._roundRealStartTime = os.time()
 	end
 	if arg_108_0._roundDuration == nil then
-		arg_108_0._roundDuration = 60
+		arg_108_0._roundDuration = 90
 	end
 	arg_108_0._pvpTimingScheduler = lc.Scheduler:scheduleScriptFunc(function(arg_109_0)
-		-- Strictly unscaled real wall-clock countdown (60s base, plus delta per action)
+		-- Strictly unscaled real wall-clock countdown (90s base, plus delta per action)
 		local curNow = os.time()
-		local totalDur = arg_108_0._roundDuration or 60
+		local totalDur = arg_108_0._roundDuration or 90
 		local elapsed = curNow - (arg_108_0._roundRealStartTime or curNow)
 		local var_109_0 = math.max(0, totalDur - elapsed)
 
@@ -3579,7 +3579,7 @@ function var_0_0.updateRoundTimer(arg_114_0, arg_114_1)
 		var_114_1._opponentUi._roundTimerBg:setVisible(false)
 	end
 
-	local var_114_2 = arg_114_0._roundDuration or 60
+	local var_114_2 = arg_114_0._roundDuration or 90
 	if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._endTime and ClientData._battleRoundStartInfo._beginTime then
 		var_114_2 = math.max(1, ClientData._battleRoundStartInfo._endTime - ClientData._battleRoundStartInfo._beginTime)
 	end
@@ -3697,7 +3697,7 @@ function var_0_0.pvpTimeout(arg_115_0)
 			arg_115_0._opponentUi._roundTimerBg:setVisible(true)
 		end
 
-		-- Fail-safe: Nếu đối thủ hoặc server ngắt kết nối hoàn toàn, sau 15 giây mới cưỡng chế chuyển lượt
+		-- Fail-safe: Nếu đối thủ hoặc server ngắt kết nối hoàn toàn, sau 45 giây mới cưỡng chế chuyển lượt
 		if arg_115_0._oppoTimeoutFallbackAction then
 			arg_115_0:stopAction(arg_115_0._oppoTimeoutFallbackAction)
 			arg_115_0._oppoTimeoutFallbackAction = nil
@@ -3707,10 +3707,10 @@ function var_0_0.pvpTimeout(arg_115_0)
 			if arg_115_0._isBattleFinished then return end
 			local curActiveIsMe = (arg_115_0._pvpPlayer == arg_115_0._player)
 			if not curActiveIsMe and not arg_115_0._isBattleFinished then
-				print("[PVP] Opponent timeout fail-safe (15s) executed")
+				print("[PVP] Opponent timeout fail-safe (45s) executed")
 				arg_115_0:forceOppoTurnEnd()
 			end
-		end, 15.0)
+		end, 45.0)
 	end
 end
 

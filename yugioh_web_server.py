@@ -5531,14 +5531,15 @@ async def ws_handler(websocket):
                                 print(f"[PVP TURN] Match {match_id}: round ended, turn switched to peer")
                             elif card_id not in (1, 2) and card_id != 0:
                                 match["turn_ws"] = websocket
-                                pkt["add_time"] = 4
-                                pkt["max_time"] = 120
+                                add_sec = 8 if card_id == 999998 else 4
+                                pkt["add_time"] = add_sec
+                                pkt["max_time"] = 150
                                 if "time_left" in pkt:
                                     try:
-                                        pkt["time_left"] = min(120.0, float(pkt["time_left"]) + 4.0)
+                                        pkt["time_left"] = min(150.0, float(pkt["time_left"]) + float(add_sec))
                                     except:
                                         pass
-                                print(f"[PVP TIME] Match {match_id}: +4s round time added on server for action card {card_id} (time_left={pkt.get('time_left')})")
+                                print(f"[PVP TIME] Match {match_id}: +{add_sec}s round time added on server for action card {card_id} (time_left={pkt.get('time_left')})")
                             await peer_ws.send(make_pvp_frame(pkt))
                             print(f"[PVP ACTION] Match {match_id}: relayed ints len={len(ints)} {ints[:4] if len(ints)>=4 else ints} seq={pkt.get('seq')}")
                         except Exception as e:
@@ -5570,8 +5571,9 @@ async def ws_handler(websocket):
                             turn_ws = match.get("turn_ws")
                             last_action = match.get("last_action_time", 0)
                             reason = str(pkt.get("reason", "")).lower()
-                            if sender_won and turn_ws and websocket != turn_ws and reason != "timeout" and (time.time() - last_action < 30.0):
-                                print(f"[PVP END BLOCKED] Match {match_id}: non-turn player claimed victory while turn player is actively playing ({time.time()-last_action:.1f}s ago). Blocked!")
+                            timeout_threshold = 45.0 if reason == "timeout" else 90.0
+                            if sender_won and turn_ws and websocket != turn_ws and (time.time() - last_action < timeout_threshold):
+                                print(f"[PVP END BLOCKED] Match {match_id}: non-turn player claimed victory (reason={reason}) while turn player is actively playing ({time.time()-last_action:.1f}s ago). Blocked!")
                                 return
 
                             peer_res = "2" if sender_won else "1"

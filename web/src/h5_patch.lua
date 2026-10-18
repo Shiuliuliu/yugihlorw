@@ -8470,6 +8470,22 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 		BattleUi.sendBattleEnd = function(self)
 			if self._offlineResultShown then return end
 
+			local oppoHp = self._opponent and self._opponent._fortress and self._opponent._fortress._hp
+			local playerHp = self._player and self._player._fortress and self._player._fortress._hp
+			local isHpDead = (oppoHp and oppoHp <= 0) or (playerHp and playerHp <= 0)
+			local isSurrender = (self._forceResult ~= nil) or (self._player and (self._player._isSurrender or self._player._isRetreat)) or (self._opponent and (self._opponent._isSurrender or self._opponent._isRetreat))
+			local isExodia = (self._player and self._player._winBy3190) or (self._opponent and self._opponent._winBy3190)
+			local isGodWin = (self._player and self._player._winBy3798) or (self._opponent and self._opponent._winBy3798)
+			local isDeckOut = (self._player and self._player._macroStatus == BattleData.Status.round_begin and self._player:getIsPileEmpty()) or (self._opponent and self._opponent._macroStatus == BattleData.Status.round_begin and self._opponent:getIsPileEmpty())
+			local isRoundExceed = (self._player and self._player:getIsRoundExceed()) or (self._opponent and self._opponent:getIsRoundExceed())
+
+			if not (isHpDead or isSurrender or isExodia or isGodWin or isDeckOut or isRoundExceed) then
+				print("[h5_patch:sendBattleEnd] PREVENTED premature end! Player HP:", playerHp, "Oppo HP:", oppoHp)
+				self._offlineResultShown = false
+				self._isBattleEndSended = false
+				return
+			end
+
 			local input = self._input
 			local isOffline = (input and (input._offlineMode or input._offlineMarker or (not input._isOppoOnline)))
 			local isPvp = (input and input._pvpMatch)

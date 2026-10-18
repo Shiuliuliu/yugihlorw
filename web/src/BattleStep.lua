@@ -1438,66 +1438,9 @@ function var_0_0.getIsFortressDied(arg_18_0)
 end
 
 function var_0_0.getIsAllCardsDied(arg_19_0)
-	if not arg_19_0._isInitialDealed then
-		return false
-	end
-	-- In online PvP, the remote opponent's defeat cannot be unilaterally assumed by local client heuristics
-	if arg_19_0._isOnlinePvp and (arg_19_0._playerType == BattleData.PlayerType.opponent or arg_19_0._playerType == BattleData.PlayerType.observe) then
-		return false
-	end
-
-	-- If an action card (e.g. monster summon) is currently being resolved
-	if arg_19_0._actionCard and (arg_19_0._actionCard:isMonsterRare() or arg_19_0._actionCard._type == Data.CardType.monster) then
-		return false
-	end
-
-	-- If any cards are queued to enter the board (e.g. tribute summon in progress)
-	if arg_19_0._cardStatusToChange and #arg_19_0._cardStatusToChange > 0 then
-		for iter_19_sc = 1, #arg_19_0._cardStatusToChange do
-			local sc = arg_19_0._cardStatusToChange[iter_19_sc]
-			if sc and sc._destStatus == BattleData.CardStatus.board then
-				return false
-			end
-		end
-	end
-
-	if #arg_19_0._pileCards > 0 then
-		return false
-	end
-
-	if #arg_19_0:getBoardCards() > 0 then
-		return false
-	end
-
-	for iter_19_0 = 1, Data.MAX_CARD_COUNT_ON_BOARD do
-		local var_19_0 = arg_19_0._opponent._boardCards[iter_19_0]
-
-		if B.isAlive(var_19_0) and var_19_0._isBorrowed then
-			return false
-		end
-	end
-
-	for iter_19_1 = 1, #arg_19_0._handCards do
-		local var_19_1 = arg_19_0._handCards[iter_19_1]
-
-		if var_19_1:isMonsterRare() then
-			return false
-		elseif var_19_1._type == Data.CardType.magic and (arg_19_0:canUseMagic(var_19_1, false) or arg_19_0:canUseMagicLater(var_19_1)) then
-			return false
-		elseif var_19_1._type == Data.CardType.trap and (arg_19_0:canUseTrap(var_19_1, false) or arg_19_0:canUseTrapLater(var_19_1)) then
-			return false
-		end
-	end
-
-	if #arg_19_0:getBattleCards("CS") > 0 then
-		return false
-	end
-
-	if #arg_19_0._handCards > 0 then
-		arg_19_0._isRemainUnusable = true
-	end
-
-	return true
+	-- In Yu-Gi-Oh rules, having no monsters or empty deck during combos does NOT lose the game.
+	-- Defeat only occurs when Fortress HP reaches 0, drawing from an empty deck at round_begin, or surrender/instant win.
+	return false
 end
 
 function var_0_0.genResult(arg_20_0, arg_20_1)

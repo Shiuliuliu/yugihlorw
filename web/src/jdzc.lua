@@ -9199,6 +9199,22 @@ local function var_0_9()
 						return
 					end
 
+					local oppoHp = arg_410_0._opponent and arg_410_0._opponent._fortress and arg_410_0._opponent._fortress._hp
+					local playerHp = arg_410_0._player and arg_410_0._player._fortress and arg_410_0._player._fortress._hp
+					local isHpDead = (oppoHp and oppoHp <= 0) or (playerHp and playerHp <= 0)
+					local isSurrender = (arg_410_0._forceResult ~= nil) or (arg_410_0._player and (arg_410_0._player._isSurrender or arg_410_0._player._isRetreat)) or (arg_410_0._opponent and (arg_410_0._opponent._isSurrender or arg_410_0._opponent._isRetreat))
+					local isExodia = (arg_410_0._player and arg_410_0._player._winBy3190) or (arg_410_0._opponent and arg_410_0._opponent._winBy3190)
+					local isGodWin = (arg_410_0._player and arg_410_0._player._winBy3798) or (arg_410_0._opponent and arg_410_0._opponent._winBy3798)
+					local isDeckOut = (arg_410_0._player and arg_410_0._player._macroStatus == BattleData.Status.round_begin and arg_410_0._player:getIsPileEmpty()) or (arg_410_0._opponent and arg_410_0._opponent._macroStatus == BattleData.Status.round_begin and arg_410_0._opponent:getIsPileEmpty())
+					local isRoundExceed = (arg_410_0._player and arg_410_0._player:getIsRoundExceed()) or (arg_410_0._opponent and arg_410_0._opponent:getIsRoundExceed())
+
+					if not (isHpDead or isSurrender or isExodia or isGodWin or isDeckOut or isRoundExceed) then
+						print("[jdzc:sendBattleEnd] PREVENTED premature end! Player HP:", playerHp, "Oppo HP:", oppoHp)
+						arg_410_0._offlineResultShown = false
+						arg_410_0._isBattleEndSended = false
+						return
+					end
+
 					arg_410_0._offlineResultShown = true
 					arg_410_0._isBattleEndSended = true
 					var_8_0.pvp.inMatch = false

@@ -498,27 +498,42 @@ function var_0_0.efcCardFlip(arg_23_0, arg_23_1)
 	end
 end
 
+local _lastEfcSkillShowTime = 0
+local _lastEfcCardId = 0
 function var_0_0.efcSkillShow(arg_25_0, arg_25_1, arg_25_2, arg_25_3)
+	if not arg_25_1 or not arg_25_1._card then return end
 	local var_25_0 = arg_25_1._card
+	local now = os.clock and os.clock() or os.time()
+	-- Throttle rapid duplicate skill shows (prevent WebGL lag when multiple effects chain)
+	if (now - _lastEfcSkillShowTime < 0.12) or (var_25_0._id == _lastEfcCardId and now - _lastEfcSkillShowTime < 0.35) then
+		return
+	end
+	_lastEfcSkillShowTime = now
+	_lastEfcCardId = var_25_0._id
+
 	local var_25_1 = cc.p(ClientView.SCR_CW + 440, ClientView.SCR_CH)
 	local var_25_2 = CardSprite.create(var_25_0, arg_25_1._ownerUi or arg_25_0._isController and arg_25_0 or arg_25_0._opponentUi)
 
 	var_25_2:initNormal()
 	lc.addChildToPos(arg_25_0._battleUi, var_25_2, var_25_1, BattleUi.ZOrder.skill_label)
 	var_25_2:setScale(0)
-	var_25_2:runAction(lc.sequence(lc.ease(lc.scaleTo(0.2, 1 / CardSprite.Scale.normal), "BackO"), lc.moveBy(0.5, cc.p(3, 5)), lc.moveBy(0.5, cc.p(-3, -5)), lc.scaleTo(0.2, 0), lc.remove()))
-	var_25_2._pShadowArea:runAction(lc.spawn(lc.moveTo(0.2, cc.p(-100, -50)), lc.scaleTo(0.2, 0.6)))
+	var_25_2:runAction(lc.sequence(lc.ease(lc.scaleTo(0.18, 1 / CardSprite.Scale.normal), "BackO"), lc.moveBy(0.35, cc.p(3, 5)), lc.moveBy(0.35, cc.p(-3, -5)), lc.scaleTo(0.15, 0), lc.remove()))
+	var_25_2._pShadowArea:runAction(lc.spawn(lc.moveTo(0.18, cc.p(-100, -50)), lc.scaleTo(0.18, 0.6)))
 
 	local var_25_3 = lc.createNode()
 
 	lc.addChildToCenter(var_25_2._pFrame, var_25_3, -1)
 	var_25_3:setScale(1)
-	arg_25_0._battleUi:createDragonBones("szkp", cc.p(5, 8), var_25_3, "effect1", false, 1)
+	-- Auto-remove DragonBones after animation finishes (prevents armature leak)
+	arg_25_0._battleUi:createDragonBones("szkp", cc.p(5, 8), var_25_3, "effect1", true, 1)
 
-	if var_25_0:isMonsterRare() and arg_25_1._status == CardSprite.Status.fight then
+	if var_25_0:isMonsterRare() and arg_25_1._status == CardSprite.Status.fight and not arg_25_1._gwsfParticleActive then
+		arg_25_1._gwsfParticleActive = true
 		local var_25_4 = Particle.create("par_gwsf")
-
 		lc.addChildToPos(arg_25_1._pEffectArea, var_25_4, cc.p(0, -70))
+		var_25_4:runAction(lc.sequence(1.2, lc.call(function()
+			if arg_25_1 then arg_25_1._gwsfParticleActive = nil end
+		end), lc.remove()))
 	end
 
 	arg_25_0._scene:seenByCamera3D(var_25_2)

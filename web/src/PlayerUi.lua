@@ -1263,7 +1263,29 @@ function var_0_0.updateFortressActive(arg_53_0, arg_53_1)
 	end
 end
 
-function var_0_0.updateBoardCardsInitialSkills(arg_54_0)
+function var_0_0.onChoiceDialogOpened(arg_x_0)
+	if arg_x_0._battleUi and type(arg_x_0._battleUi.addPvpRoundSeconds) == "function" then
+		arg_x_0._battleUi:addPvpRoundSeconds(10, 150)
+	end
+	if ClientData and ClientData._currentMatchId then
+		local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
+		if pvpNet and pvpNet.sendAction then
+			pcall(function()
+				local jsonMod = require("json")
+				local curTimeLeft = arg_x_0._battleUi and arg_x_0._battleUi._roundDuration or 60
+				pvpNet:sendAction(ClientData._currentMatchId, jsonMod.encode({ 999998, 0, 0, os.time() }), curTimeLeft)
+			end)
+		end
+	end
+end
+
+function var_0_0.updateBoardCardsInitialSkills(arg_54_0, force)
+	local now = os.clock and os.clock() or os.time()
+	if not force and arg_54_0._lastInitSkillUpdate and (now - arg_54_0._lastInitSkillUpdate < 0.05) then
+		return
+	end
+	arg_54_0._lastInitSkillUpdate = now
+
 	if arg_54_0._isController and arg_54_0._player == arg_54_0._player:getActionPlayer() and arg_54_0._battleUi._dropLayer == nil and not arg_54_0._battleUi._isAuto then
 		arg_54_0._battleUi._btnInitiative:setEnabled(#arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("BSDGHL", nil, nil, true) > 0)
 
@@ -1319,6 +1341,20 @@ function var_0_0.updateBoardCardsInitialSkills(arg_54_0)
 end
 
 function var_0_0.castInitiativeSkill(arg_55_0, arg_55_1, arg_55_2)
+	if arg_55_0._battleUi and type(arg_55_0._battleUi.addPvpRoundSeconds) == "function" then
+		arg_55_0._battleUi:addPvpRoundSeconds(8, 150)
+	end
+	if ClientData and ClientData._currentMatchId then
+		local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
+		if pvpNet and pvpNet.sendAction then
+			pcall(function()
+				local jsonMod = require("json")
+				local curTimeLeft = arg_55_0._battleUi and arg_55_0._battleUi._roundDuration or 60
+				pvpNet:sendAction(ClientData._currentMatchId, jsonMod.encode({ 999998, 0, 0, os.time() }), curTimeLeft)
+			end)
+		end
+	end
+
 	local var_55_0 = arg_55_0:getCardSprite(arg_55_1) or arg_55_0._opponentUi:getCardSprite(arg_55_1)
 
 	if var_55_0 == nil and (arg_55_1._status == BattleData.CardStatus.leave or arg_55_1._status == BattleData.CardStatus.grave or arg_55_1._status == BattleData.CardStatus.rare or arg_55_1._status == BattleData.CardStatus.hand) then
@@ -1485,6 +1521,7 @@ function var_0_0.updateRareArea(arg_58_0)
 end
 
 function var_0_0.createChoiceMaskLayer(arg_59_0, arg_59_1, arg_59_2, arg_59_3, arg_59_4)
+	pcall(function() arg_59_0:onChoiceDialogOpened() end)
 	local var_59_0 = lc.createMaskLayer(200, lc.Color3B.black, ClientView.SCR_SIZE)
 
 	lc.addChildToPos(arg_59_0._scene, var_59_0, cc.p(0, 0), BattleScene.ZOrder.form)
@@ -2096,6 +2133,7 @@ function var_0_0.onChoiceSync(arg_84_0, arg_84_1, arg_84_2)
 end
 
 function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_4, arg_85_5, arg_85_6)
+	pcall(function() arg_85_0:onChoiceDialogOpened() end)
 	arg_85_4 = arg_85_4 or 1
 	arg_85_3 = arg_85_3 or {}
 	local var_85_0
@@ -9141,6 +9179,7 @@ function var_0_0.showChoicePos(arg_104_0, arg_104_1, arg_104_2, arg_104_3, arg_1
 		return
 	end
 
+	pcall(function() arg_104_0:onChoiceDialogOpened() end)
 	local var_104_0 = BattlePosDialog.create(arg_104_0._battleUi, arg_104_0, arg_104_1, arg_104_2, arg_104_3, arg_104_4, arg_104_5, arg_104_6, arg_104_7)
 
 	var_104_0:show()
