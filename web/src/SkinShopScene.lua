@@ -47,6 +47,10 @@ function var_0_1.onEnter(arg_3_0)
 		arg_3_0._avatarList:updatePage(false)
 		arg_3_0._characterList:updatePage(false)
 	end))
+
+	table.insert(arg_3_0._listeners, lc.addEventListener(Data.Event.icon_dirty, function()
+		arg_3_0._avatarList:updatePage(false)
+	end))
 end
 
 function var_0_1.onExit(arg_5_0)
@@ -295,7 +299,11 @@ function var_0_1.createAvatarItem(arg_28_0)
 	var_28_0._avatarFrame = var_28_1
 
 	local var_28_2 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_29_0)
-		arg_28_0:onBtn(arg_29_0)
+		if arg_29_0._callback then
+			arg_29_0._callback()
+		else
+			arg_28_0:onBtn(arg_29_0)
+		end
 	end, ClientView.CRECT_BUTTON_S, lc.w(var_28_1))
 
 	var_28_2:addLabel(Str(STR.BUY))
@@ -322,6 +330,7 @@ function var_0_1.updateAvatarItem(arg_30_0, arg_30_1, arg_30_2)
 	local var_30_2 = Data.getInfo(var_30_0)
 	local var_30_3 = (P._characters and P._characters[var_30_0] and P._characters[var_30_0]._level > 0) or true
 	local var_30_4 = P._playerCard:hasSkin(var_30_1, true)
+	local isEquipped = (P and P._avatar == var_30_1)
 	local var_30_5 = arg_30_1._btn:getContentSize()
 
 	arg_30_1:setVisible(true)
@@ -329,17 +338,50 @@ function var_0_1.updateAvatarItem(arg_30_0, arg_30_1, arg_30_2)
 
 	arg_30_1._btn._skinId = var_30_1
 
-	arg_30_1._btn:loadTextureNormal(var_30_4 and "img_btn_2_s" or "img_btn_1_s", ccui.TextureResType.plistType)
-	arg_30_1._btn:setContentSize(var_30_5)
-	arg_30_1._btn._label:setString(var_30_3 and (var_30_4 and Str(STR.PURCHASED) or Str(STR.BUY)) or Str(STR.LOCKED))
-
-	if var_30_3 then
+	if isEquipped then
+		arg_30_1._btn:loadTextureNormal("img_btn_2_s", ccui.TextureResType.plistType)
+		arg_30_1._btn:setContentSize(var_30_5)
+		arg_30_1._btn._label:setString("Đang dùng")
 		arg_30_1._btn:setDisabledShader(nil)
-	else
-		arg_30_1._btn:setDisabledShader(ClientView.SHADER_DISABLE)
-	end
+		arg_30_1._btn:setEnabled(true)
 
-	arg_30_1._btn:setEnabled(var_30_3 and not var_30_4)
+		function arg_30_1._btn._callback()
+			ToastManager.push("Avatar này đang được sử dụng!")
+		end
+	elseif var_30_4 then
+		arg_30_1._btn:loadTextureNormal("img_btn_2_s", ccui.TextureResType.plistType)
+		arg_30_1._btn:setContentSize(var_30_5)
+		arg_30_1._btn._label:setString(Str(STR.USE))
+		arg_30_1._btn:setDisabledShader(nil)
+		arg_30_1._btn:setEnabled(true)
+
+		function arg_30_1._btn._callback()
+			if ClientData._player:changeIcon(var_30_1) then
+				ClientData.sendSetAvatar(var_30_1)
+				ToastManager.push(Str(STR.SET_AVATAR_SKIN_SUCCEED))
+			else
+				ClientData.sendSetAvatar(var_30_1)
+				ToastManager.push(Str(STR.SET_AVATAR_SKIN_SUCCEED))
+			end
+			arg_30_0:updateAvatarList()
+		end
+	else
+		arg_30_1._btn:loadTextureNormal("img_btn_1_s", ccui.TextureResType.plistType)
+		arg_30_1._btn:setContentSize(var_30_5)
+		arg_30_1._btn._label:setString(var_30_3 and Str(STR.BUY) or Str(STR.LOCKED))
+
+		if var_30_3 then
+			arg_30_1._btn:setDisabledShader(nil)
+		else
+			arg_30_1._btn:setDisabledShader(ClientView.SHADER_DISABLE)
+		end
+
+		arg_30_1._btn:setEnabled(var_30_3)
+
+		function arg_30_1._btn._callback()
+			arg_30_0:onBtn(arg_30_1._btn)
+		end
+	end
 end
 
 function var_0_1.getAvatarData(arg_31_0)
@@ -372,7 +414,11 @@ function var_0_1.createCharacterItem(arg_33_0)
 	var_33_0._characterFrame = var_33_1
 
 	local var_33_2 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_34_0)
-		arg_33_0:onBtn(arg_34_0)
+		if arg_34_0._callback then
+			arg_34_0._callback()
+		else
+			arg_33_0:onBtn(arg_34_0)
+		end
 	end, ClientView.CRECT_BUTTON_S, lc.w(var_33_1))
 
 	var_33_2:addLabel(Str(STR.BUY))
@@ -462,6 +508,11 @@ function var_0_1.filterAvatarData(arg_41_0, arg_41_1, arg_41_2, arg_41_3, arg_41
 end
 
 function var_0_1.onBtn(arg_42_0, arg_42_1)
+	if arg_42_1 and arg_42_1._callback then
+		arg_42_1._callback()
+		return
+	end
+
 	local var_42_0 = arg_42_1._skinId
 	local var_42_1 = Data._skinInfo[var_42_0]._infoId
 

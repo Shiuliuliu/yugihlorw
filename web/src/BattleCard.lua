@@ -5980,6 +5980,23 @@ function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
 		return true
 	end
 
+	-- Khi "Rồng phá giới - Rồng phá hoại" (40535) còn trên sân, quái có từ khóa "Kiếm sĩ diệt rồng" trên sân phe ta nhận 12008, 12009, 12010
+	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010) then
+		if arg_127_0._status == BattleData.CardStatus.board and (arg_127_0:isMonsterRare() or arg_127_0._type == Data.CardType.monster) then
+			if (arg_127_0:isKeyword(21) or arg_127_0:isKeyword(204) or (arg_127_0._info and (arg_127_0._info._keyword == 21 or arg_127_0._info._keyword == 204))) then
+				local owner = arg_127_0._owner
+				if owner and owner._boardCards then
+					for i = 1, #owner._boardCards do
+						local bc = owner._boardCards[i]
+						if bc and bc._infoId == 40535 and bc._status == BattleData.CardStatus.board then
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+
 	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739) then
 		return true
 	end

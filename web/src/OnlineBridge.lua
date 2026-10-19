@@ -164,6 +164,10 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins, ef
 		local eid = tonumber(eff.effect_id) or 0
 		local is_eq = tonumber(eff.is_equipped) or 0
 		if eid > 0 then
+			local sInfo = Data._skinInfo and Data._skinInfo[eid]
+			if (cid == 0 or not cid) and sInfo and sInfo._infoId and sInfo._infoId > 0 and eid >= 52000 and eid < 55000 then
+				cid = sInfo._infoId
+			end
 			if cid == 0 then
 				global_unlocked[eid] = true
 			else

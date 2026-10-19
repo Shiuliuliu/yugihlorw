@@ -1163,6 +1163,10 @@ function var_0_0.hasSkin(arg_70_0, arg_70_1, arg_70_2)
 		return true
 	end
 
+	if P and P._avatar == arg_70_1 and arg_70_1 >= 52000 and arg_70_1 < 53000 then
+		return true
+	end
+
 	local var_70_0 = Data._skinInfo[arg_70_1]
 
 	if var_70_0 == nil then
@@ -1171,7 +1175,20 @@ function var_0_0.hasSkin(arg_70_0, arg_70_1, arg_70_2)
 
 	local var_70_1 = var_70_0._infoId
 
-	return arg_70_0:cardHasSkin(var_70_1, arg_70_1, arg_70_2)
+	if arg_70_0:cardHasSkin(var_70_1, arg_70_1, arg_70_2) then
+		return true
+	end
+
+	if arg_70_0._skins then
+		if arg_70_0._skins[0] and arg_70_0._skins[0]:isSkinIdAvailable(arg_70_1, arg_70_2) then
+			return true
+		end
+		if arg_70_0._skins[arg_70_1] and arg_70_0._skins[arg_70_1]:isSkinIdAvailable(arg_70_1, arg_70_2) then
+			return true
+		end
+	end
+
+	return false
 end
 
 function var_0_0.cardHasSkin(arg_71_0, arg_71_1, arg_71_2, arg_71_3)

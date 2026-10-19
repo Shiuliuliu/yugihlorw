@@ -2043,12 +2043,12 @@ function var_0_0.addBoardCardEnded(arg_72_0, arg_72_1)
 
 	if var_72_0 then
 		var_72_0:updateCardsActive()
-		var_72_0:updateBoardCardsInitialSkills(true)
+		var_72_0:updateBoardCardsInitialSkills()
 	end
 
 	if arg_72_0._playerUi and arg_72_0._playerUi ~= var_72_0 then
 		arg_72_0._playerUi:updateCardsActive()
-		arg_72_0._playerUi:updateBoardCardsInitialSkills(true)
+		arg_72_0._playerUi:updateBoardCardsInitialSkills()
 	end
 
 	arg_72_0:updateRoundButton()

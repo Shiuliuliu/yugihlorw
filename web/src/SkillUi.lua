@@ -74,9 +74,10 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 		arg_1_0:efcDragonBones3("guanchuan", "effect2", 1, true, arg_1_1, true, cc.p(0, 20)):setRotation(var_1_11)
 	elseif var_1_0 == 2002 or var_1_0 == 2006 or var_1_0 == 9718 then
 		arg_1_0:efcDragonBones3("wlfy", "effect", 2.4, true, arg_1_1, false, cc.p(0, -10))
-	elseif var_1_0 == 1095 or var_1_0 == 2013 or var_1_0 == 3001 or var_1_0 == 3100 or var_1_0 >= 3279 and var_1_0 <= 3287 or var_1_0 == 3918 or var_1_0 == 6343 or var_1_0 == 8063 or var_1_0 == 8146 or var_1_0 == 9821 or var_1_0 == 13509 or var_1_0 == 14728 or var_1_0 == 2036 and var_1_3._lastCount ~= nil then
+	elseif var_1_0 == 1095 or var_1_0 == 2013 or var_1_0 == 3001 or var_1_0 == 3100 or var_1_0 >= 3279 and var_1_0 <= 3287 or var_1_0 == 3918 or var_1_0 == 6343 or var_1_0 == 8063 or var_1_0 == 8146 or var_1_0 == 9821 or var_1_0 == 13509 or var_1_0 == 14728 or var_1_0 == 14772 or var_1_0 == 2036 and var_1_3._lastCount ~= nil then
 		local var_1_12 = "effect"
-		local var_1_13 = var_1_3._lastCount == 0 and "back" or "positive"
+		local lastCount = (var_1_3 and var_1_3._lastCount) or (arg_1_3 and arg_1_3._lastCount) or 0
+		local var_1_13 = lastCount == 0 and "back" or "positive"
 		local var_1_14 = arg_1_0:efcDragonBones(nil, "touyingbi", cc.p(ClientView.SCR_CW, lc.h(arg_1_0._battleUi) / 2), false, false, var_1_12, 1)
 		local var_1_15 = var_1_14:getAnimationDuration(var_1_12)
 		local var_1_16 = var_1_14:getAnimationDuration(var_1_13)
@@ -498,42 +499,28 @@ function var_0_0.efcCardFlip(arg_23_0, arg_23_1)
 	end
 end
 
-local _lastEfcSkillShowTime = 0
-local _lastEfcCardId = 0
 function var_0_0.efcSkillShow(arg_25_0, arg_25_1, arg_25_2, arg_25_3)
 	if not arg_25_1 or not arg_25_1._card then return end
 	local var_25_0 = arg_25_1._card
-	local now = os.clock and os.clock() or os.time()
-	-- Throttle rapid duplicate skill shows (prevent WebGL lag when multiple effects chain)
-	if (now - _lastEfcSkillShowTime < 0.12) or (var_25_0._id == _lastEfcCardId and now - _lastEfcSkillShowTime < 0.35) then
-		return
-	end
-	_lastEfcSkillShowTime = now
-	_lastEfcCardId = var_25_0._id
-
 	local var_25_1 = cc.p(ClientView.SCR_CW + 440, ClientView.SCR_CH)
 	local var_25_2 = CardSprite.create(var_25_0, arg_25_1._ownerUi or arg_25_0._isController and arg_25_0 or arg_25_0._opponentUi)
 
 	var_25_2:initNormal()
 	lc.addChildToPos(arg_25_0._battleUi, var_25_2, var_25_1, BattleUi.ZOrder.skill_label)
 	var_25_2:setScale(0)
-	var_25_2:runAction(lc.sequence(lc.ease(lc.scaleTo(0.18, 1 / CardSprite.Scale.normal), "BackO"), lc.moveBy(0.35, cc.p(3, 5)), lc.moveBy(0.35, cc.p(-3, -5)), lc.scaleTo(0.15, 0), lc.remove()))
-	var_25_2._pShadowArea:runAction(lc.spawn(lc.moveTo(0.18, cc.p(-100, -50)), lc.scaleTo(0.18, 0.6)))
+	var_25_2:runAction(lc.sequence(lc.ease(lc.scaleTo(0.2, 1 / CardSprite.Scale.normal), "BackO"), lc.moveBy(0.5, cc.p(3, 5)), lc.moveBy(0.5, cc.p(-3, -5)), lc.scaleTo(0.2, 0), lc.remove()))
+	var_25_2._pShadowArea:runAction(lc.spawn(lc.moveTo(0.2, cc.p(-100, -50)), lc.scaleTo(0.2, 0.6)))
 
 	local var_25_3 = lc.createNode()
 
 	lc.addChildToCenter(var_25_2._pFrame, var_25_3, -1)
 	var_25_3:setScale(1)
-	-- Auto-remove DragonBones after animation finishes (prevents armature leak)
-	arg_25_0._battleUi:createDragonBones("szkp", cc.p(5, 8), var_25_3, "effect1", true, 1)
+	arg_25_0._battleUi:createDragonBones("szkp", cc.p(5, 8), var_25_3, "effect1", false, 1)
 
-	if var_25_0:isMonsterRare() and arg_25_1._status == CardSprite.Status.fight and not arg_25_1._gwsfParticleActive then
-		arg_25_1._gwsfParticleActive = true
+	if var_25_0:isMonsterRare() and arg_25_1._status == CardSprite.Status.fight then
 		local var_25_4 = Particle.create("par_gwsf")
+
 		lc.addChildToPos(arg_25_1._pEffectArea, var_25_4, cc.p(0, -70))
-		var_25_4:runAction(lc.sequence(1.2, lc.call(function()
-			if arg_25_1 then arg_25_1._gwsfParticleActive = nil end
-		end), lc.remove()))
 	end
 
 	arg_25_0._scene:seenByCamera3D(var_25_2)

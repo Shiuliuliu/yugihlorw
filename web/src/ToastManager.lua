@@ -9,11 +9,20 @@ function var_0_0.push(arg_1_0, arg_1_1)
 		var_0_0.Toasts[arg_1_0]:removeFromParent()
 	end
 
-	local var_1_0 = ClientView.createBoldRichText(arg_1_0, {
-		_fontSize = ClientView.FontSize.M1,
-		_normalClr = ClientView.COLOR_TEXT_LIGHT,
-		_boldClr = ClientView.COLOR_TEXT_GREEN
-	}, 800)
+	local var_1_0
+	if string.find(arg_1_0, "\n") then
+		var_1_0 = ClientView.createBoldRichTextMultiLine(arg_1_0, {
+			_fontSize = ClientView.FontSize.M1,
+			_normalClr = ClientView.COLOR_TEXT_LIGHT,
+			_boldClr = ClientView.COLOR_TEXT_GREEN
+		}, 800)
+	else
+		var_1_0 = ClientView.createBoldRichText(arg_1_0, {
+			_fontSize = ClientView.FontSize.M1,
+			_normalClr = ClientView.COLOR_TEXT_LIGHT,
+			_boldClr = ClientView.COLOR_TEXT_GREEN
+		}, 800)
+	end
 	local var_1_1 = lc.createSprite({
 		_name = "img_toast_bg",
 		_crect = ClientView.CRECT_TOAST_BG

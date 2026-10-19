@@ -59,6 +59,14 @@ function var_0_0.init(arg_2_0)
 	for sid = 52001, 52072 do
 		table.insert(monster_skins, sid)
 	end
+	table.sort(monster_skins, function(a, b)
+		local ownedA = (P and P._playerCard and P._playerCard:hasSkin(a, true)) and 1 or 0
+		local ownedB = (P and P._playerCard and P._playerCard:hasSkin(b, true)) and 1 or 0
+		if ownedA ~= ownedB then
+			return ownedA > ownedB
+		end
+		return a < b
+	end)
 
 	arg_2_0._duelistAvatars = duelist_list
 	arg_2_0._monsterSkins = monster_skins
@@ -129,7 +137,14 @@ function var_0_0.setOrCreateItem(arg_5_0, arg_5_1, arg_5_2)
 		local var_5_4 = cc.p(var_5_1 / 2, lc.h(arg_5_1) / 2)
 
 		for iter_5_0, iter_5_1 in ipairs(arg_5_2) do
+			local isMonsterSkin = (iter_5_1 >= 52000)
+			local isOwned = not isMonsterSkin or (P and P._playerCard and P._playerCard:hasSkin(iter_5_1, true))
+
 			local var_5_5 = ClientView.createShaderButton("avatar_frame_001", function()
+				if isMonsterSkin and not isOwned then
+					ToastManager.push("Chưa sở hữu avatar này! Vui lòng mua tại Cửa Hàng Skin.")
+					return
+				end
 				if ClientData._player:changeIcon(iter_5_1) then
 					ClientData.sendSetAvatar(iter_5_1)
 					arg_5_0:hide()
@@ -154,7 +169,18 @@ function var_0_0.setOrCreateItem(arg_5_0, arg_5_1, arg_5_2)
 
 			if var_5_7 then
 				var_5_7:setScale(0.8)
+				if isMonsterSkin and not isOwned then
+					var_5_7:setColor(lc.Color3B.gray)
+				end
 				lc.addChildToCenter(var_5_5, var_5_7, -1)
+			end
+
+			if isMonsterSkin and not isOwned then
+				local lockIco = lc.createSprite("img_lock")
+				if lockIco then
+					lockIco:setScale(0.8)
+					lc.addChildToCenter(var_5_5, lockIco, 3)
+				end
 			end
 
 			-- Highlight equipped avatar

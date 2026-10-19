@@ -1028,20 +1028,29 @@
 			this.setScaleX(x);
 			this.setScaleY(y);
 		};
+	var TRIG = { rad: NaN, cos: 1, sin: 0 };
+	function trigOf(rad) {
+		if (TRIG.rad !== rad) {
+			TRIG.rad = rad;
+			TRIG.cos = Math.cos(rad);
+			TRIG.sin = Math.sin(rad);
+		}
+		return TRIG;
 	}
 
 	var BATTLE_PERSPECTIVE = {
 		projectFlat: function (x, y, root) {
-			var winSize = cc.director.getWinSize();
+			var winSize = cc.director._winSizeInPoints || cc.director.getWinSize();
 			var camX = winSize.width * 0.5;
 			var camY = winSize.height * 0.5;
-			var zEye = camY * Math.sqrt(3);
+			var zEye = camY * 1.7320508075688772;
 			var anchorX = root ? root.getPositionX() : camX;
 			var anchorY = root ? root.getPositionY() : (camY + 112);
 			var rotX = root && root.__rotation3D ? root.__rotation3D.x : -20;
-			var rad = rotX * Math.PI / 180;
-			var cosT = Math.cos(rad);
-			var sinT = Math.sin(rad);
+			var rad = rotX * 0.017453292519943295;
+			var tr = trigOf(rad);
+			var cosT = tr.cos;
+			var sinT = tr.sin;
 			var offsetY = anchorY - camY;
 
 			var dx = x - anchorX;
@@ -1056,16 +1065,17 @@
 		},
 
 		unprojectFlat: function (sx, sy, root) {
-			var winSize = cc.director.getWinSize();
+			var winSize = cc.director._winSizeInPoints || cc.director.getWinSize();
 			var camX = winSize.width * 0.5;
 			var camY = winSize.height * 0.5;
-			var zEye = camY * Math.sqrt(3);
+			var zEye = camY * 1.7320508075688772;
 			var anchorX = root ? root.getPositionX() : camX;
 			var anchorY = root ? root.getPositionY() : (camY + 112);
 			var rotX = root && root.__rotation3D ? root.__rotation3D.x : -20;
-			var rad = rotX * Math.PI / 180;
-			var cosT = Math.cos(rad);
-			var sinT = Math.sin(rad);
+			var rad = rotX * 0.017453292519943295;
+			var tr = trigOf(rad);
+			var cosT = tr.cos;
+			var sinT = tr.sin;
 			var offsetY = anchorY - camY;
 
 			var s_dy = sy - camY;
@@ -1083,16 +1093,17 @@
 		},
 
 		projectUpright: function (vx, vy, cx, cy, root) {
-			var winSize = cc.director.getWinSize();
+			var winSize = cc.director._winSizeInPoints || cc.director.getWinSize();
 			var camX = winSize.width * 0.5;
 			var camY = winSize.height * 0.5;
-			var zEye = camY * Math.sqrt(3);
+			var zEye = camY * 1.7320508075688772;
 			var anchorX = root ? root.getPositionX() : camX;
 			var anchorY = root ? root.getPositionY() : (camY + 112);
 			var rotX = root && root.__rotation3D ? root.__rotation3D.x : -20;
-			var rad = rotX * Math.PI / 180;
-			var cosT = Math.cos(rad);
-			var sinT = Math.sin(rad);
+			var rad = rotX * 0.017453292519943295;
+			var tr = trigOf(rad);
+			var cosT = tr.cos;
+			var sinT = tr.sin;
 			var offsetY = anchorY - camY;
 
 			var dy_center = cy - anchorY;
@@ -1116,8 +1127,9 @@
 			var anchorY = root ? root.getPositionY() : (camY + 112);
 			var rotX = root && root.__rotation3D ? root.__rotation3D.x : -20;
 			var rad = rotX * 0.017453292519943295;
-			var cosT = Math.cos(rad);
-			var sinT = Math.sin(rad);
+			var tr = trigOf(rad);
+			var cosT = tr.cos;
+			var sinT = tr.sin;
 			var offsetY = anchorY - camY;
 
 			for (var i = 0; i < 4; i++) {
@@ -1141,8 +1153,9 @@
 			var anchorY = root ? root.getPositionY() : (camY + 112);
 			var rotX = root && root.__rotation3D ? root.__rotation3D.x : -20;
 			var rad = rotX * 0.017453292519943295;
-			var cosT = Math.cos(rad);
-			var sinT = Math.sin(rad);
+			var tr = trigOf(rad);
+			var cosT = tr.cos;
+			var sinT = tr.sin;
 			var offsetY = anchorY - camY;
 
 			var dy_center = cy - anchorY;
@@ -2310,7 +2323,9 @@
 	 *
 	 * Sync XHR cannot ask for an ArrayBuffer, hence the byte-preserving
 	 * charset and the copy out of the string. */
+	var binCache = {};
 	function readBinSync(url) {
+		if (binCache[url]) return binCache[url];
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url, false);
 		xhr.overrideMimeType('text/plain; charset=x-user-defined');
@@ -2322,7 +2337,8 @@
 		var bytes = new Uint8Array(text.length);
 		for (var i = 0; i < text.length; i++)
 			bytes[i] = text.charCodeAt(i) & 0xff;
-		return bytes.buffer;
+		binCache[url] = bytes.buffer;
+		return binCache[url];
 	}
 
 	function loadEffectData(dir, armatureName, textureName) {
@@ -2910,6 +2926,10 @@
 				if (!element.node) continue;
 
 				var width = element.node.getContentSize().width;
+				if (maxWidth > 0 && lineWidth === 0 && width > maxWidth && element.node.setDimensions) {
+					element.node.setDimensions(maxWidth, 0);
+					width = element.node.getContentSize().width;
+				}
 				if (maxWidth > 0 && lineWidth > 0 && lineWidth + width > maxWidth) {
 					line = [];
 					lines.push(line);

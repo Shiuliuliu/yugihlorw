@@ -1851,7 +1851,7 @@ function var_0_0.getSkillType(arg_13_0)
 		return var_0_0.SkillType.magicSpell
 	end
 
-	if arg_13_0 == 14652 or arg_13_0 == 14670 or arg_13_0 == 14716 or arg_13_0 == 14733 or arg_13_0 == 14734 or arg_13_0 == 14735 then
+	if arg_13_0 == 14652 or arg_13_0 == 14670 or arg_13_0 == 14716 or arg_13_0 == 14733 or arg_13_0 == 14734 or arg_13_0 == 14735 or arg_13_0 == 14772 then
 		return var_0_0.SkillType.magicHalo
 	end
 

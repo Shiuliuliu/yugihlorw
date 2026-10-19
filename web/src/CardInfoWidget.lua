@@ -110,14 +110,7 @@ function var_0_0.createItemBegin(arg_4_0, arg_4_1)
 	end
 
 	function var_4_2.createRichText(arg_6_0, arg_6_1, arg_6_2, arg_6_3)
-		local var_6_0 = ClientView.createTTF(arg_6_1)
-
-		if arg_6_3 ~= nil and lc.w(var_6_0) > arg_6_3 + 4 then
-			var_6_0 = ClientView.createBoldRichTextMultiLine(arg_6_1, ClientView.RICHTEXT_PARAM_LIGHT_S2, arg_6_3 + 4)
-		else
-			var_6_0 = ClientView.createBoldRichTextMultiLine(arg_6_1, ClientView.RICHTEXT_PARAM_LIGHT_S2)
-		end
-
+		local var_6_0 = ClientView.createBoldRichTextMultiLine(arg_6_1, ClientView.RICHTEXT_PARAM_LIGHT_S2, arg_6_3)
 		var_6_0:setAnchorPoint(cc.p(0, 0.5))
 
 		return var_6_0
@@ -423,11 +416,18 @@ function var_0_0.createSkill(arg_13_0)
 		end
 
 		local var_13_39 = var_13_0:createText(var_13_31)
-		local var_13_40 = var_13_0:createText(var_13_32, nil, var_13_2 - 10 - lc.w(var_13_33) - var_13_13)
+		local availW = var_13_2 - 10 - lc.w(var_13_33) - var_13_13
+		local var_13_40
+		if string.find(var_13_32, "|") then
+			var_13_40 = var_13_0:createRichText(var_13_32, nil, availW)
+			var_13_40:setAnchorPoint(cc.p(0.5, 0.5))
+		else
+			var_13_40 = var_13_0:createText(var_13_32, nil, availW)
+			var_13_40:setColor((iter_13_5._isEquiped or iter_13_5._isRubbed or iter_13_5._skillInfo._id == arg_13_0._extraSid) and ClientView.COLOR_TEXT_INGOT or var_0_9)
+		end
 
 		var_13_33:setOpacity(var_0_4)
 		var_13_39:setColor((iter_13_5._provider == BattleData.SkillProvider.extra or iter_13_5._provider == BattleData.SkillProvider.given) and var_0_8 or var_0_6)
-		var_13_40:setColor((iter_13_5._isEquiped or iter_13_5._isRubbed or iter_13_5._skillInfo._id == arg_13_0._extraSid) and ClientView.COLOR_TEXT_INGOT or var_0_9)
 
 		local var_13_41 = math.max(lc.h(var_13_33), lc.h(var_13_39) + lc.h(var_13_40) + var_13_12)
 		local var_13_42 = ccui.Widget:create()

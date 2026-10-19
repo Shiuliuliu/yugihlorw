@@ -294,6 +294,22 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		arg_7_2 = BattleData.CardStatus.leave
 		arg_7_1._overload = nil
 	end
+
+	-- Card 40535 (Rồng phá giới - Rồng phá hoại) leaves board: decShield from allied Kiếm sĩ diệt rồng
+	if (arg_7_1:isInfoId(40535) or arg_7_1._infoId == 40535) and (arg_7_1._status == BattleData.CardStatus.board or arg_7_1._status == BattleData.CardStatus.show) and arg_7_2 ~= BattleData.CardStatus.board and arg_7_2 ~= BattleData.CardStatus.show then
+		local owner = arg_7_1._owner
+		if owner then
+			local allies = owner:getBoardCards()
+			for _, c in ipairs(allies) do
+				if c ~= arg_7_1 and (c:isKeyword(21) or c:isKeyword(204) or (c._info and (c._info._keyword == 21 or c._info._keyword == 204))) then
+					c._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = false
+					c._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = false
+					c._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = false
+					owner:decShield(c, { 12008, 12009, 12010 }, false, c._id, 12008)
+				end
+			end
+		end
+	end
 	if (arg_7_1._type == Data.CardType.magic or arg_7_1._type == Data.CardType.trap) and arg_7_1._status == BattleData.CardStatus.board and arg_7_2 == BattleData.CardStatus.grave and (arg_7_6 == BattleData.CardStatusVal.b2g_destroy or arg_7_6 == BattleData.CardStatusVal.b2g_cost) then
 		if arg_7_1._owner and (arg_7_1._owner:hasBattleCardsBySkillFast("B", 7488) or #arg_7_1._owner:getBattleCardsByInfoId("B", 40737) > 0) then
 			if arg_7_4 ~= 0 and arg_7_4 ~= nil and arg_7_1._owner ~= arg_7_0 then

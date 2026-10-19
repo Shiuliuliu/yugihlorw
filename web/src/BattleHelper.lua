@@ -1,14 +1,13 @@
 local var_0_0 = PlayerBattle
 
 local function has40551OnBoard(player)
-	if not player then return false end
-	local cards = player:getBattleCardsByInfoId("B", 40551)
-	if #cards == 0 then
-		cards = player:getBattleCardsBySkillFast("B", 14739)
-	end
-	for _, c in ipairs(cards) do
-		if c._status == BattleData.CardStatus.board and (c.canCastMonsterSkill == nil or c:canCastMonsterSkill()) then
-			return true
+	if not player or not player._boardCards then return false end
+	for i = 1, #player._boardCards do
+		local c = player._boardCards[i]
+		if c and c._status == BattleData.CardStatus.board and (c._infoId == 40551 or (c.hasSkillFast and c:hasSkillFast(14739))) then
+			if c.canCastMonsterSkill == nil or c:canCastMonsterSkill() then
+				return true
+			end
 		end
 	end
 	return false

@@ -1359,6 +1359,7 @@ function var_0_0.getCardIconName(arg_35_0)
 		[12329] = true, [12330] = true,
 		[21135] = true, [21136] = true, [21137] = true, [21138] = true,
 		[21139] = true, [21140] = true, [21141] = true, [21142] = true,
+		[21147] = true,
 		[30592] = true, [30593] = true,
 		[40727] = true, [40728] = true, [40729] = true, [40730] = true,
 		[40731] = true, [40732] = true, [40733] = true
@@ -1629,30 +1630,36 @@ function var_0_0.appendBoldRichText(arg_51_0, arg_51_1, arg_51_2)
 
 				var_51_2 = var_51_3 + 1
 			else
-				arg_51_0:insertElement(ccui.RichItemLabel:create(0, var_51_0, 255, string.sub(arg_51_1, var_51_2, var_51_4 - 1), var_0_0.TTF_FONT, var_51_1))
+				if var_51_4 > var_51_2 then
+					arg_51_0:insertElement(ccui.RichItemLabel:create(0, var_51_0, 255, string.sub(arg_51_1, var_51_2, var_51_4 - 1), var_0_0.TTF_FONT, var_51_1))
+				end
 
-				if arg_51_1[var_51_4 + 1] == "\\" then
-					var_51_5 = string.find(arg_51_1, "\\", var_51_4 + 2)
+				local boldClr = arg_51_2._boldClr or var_0_0.COLOR_TEXT_PURPLE
+				local hasSlash = string.sub(arg_51_1, var_51_4 + 1, var_51_4 + 1) == "\\"
+
+				if hasSlash then
+					var_51_5 = string.find(arg_51_1, "\\", var_51_4 + 2) or (var_51_4 + 1)
 
 					local var_51_6 = string.sub(arg_51_1, var_51_4 + 2, var_51_5 - 1)
 
-					if var_51_6[1] == "#" then
-						local var_51_7 = tonumber("0x" .. string.sub(var_51_6, 2, 3))
-						local var_51_8 = tonumber("0x" .. string.sub(var_51_6, 4, 5))
-						local var_51_9 = tonumber("0x" .. string.sub(var_51_6, 6, 7))
+					if var_51_6 == "yellow" or var_51_6 == "vang" then
+						boldClr = cc.c3b(255, 220, 0)
+					elseif string.sub(var_51_6, 1, 1) == "#" or (string.len(var_51_6) == 6 and tonumber("0x" .. var_51_6)) then
+						local hex = string.sub(var_51_6, 1, 1) == "#" and string.sub(var_51_6, 2) or var_51_6
+						local var_51_7 = tonumber("0x" .. string.sub(hex, 1, 2)) or 255
+						local var_51_8 = tonumber("0x" .. string.sub(hex, 3, 4)) or 255
+						local var_51_9 = tonumber("0x" .. string.sub(hex, 5, 6)) or 0
 
 						boldClr = cc.c3b(var_51_7, var_51_8, var_51_9)
 					else
 						local var_51_10 = string.splitByChar(var_51_6, ".")
 
 						if #var_51_10 == 1 then
-							boldClr = lc.Color3B[var_51_10[1]]
-						else
-							boldClr = cc.c3b(var_51_10[1], var_51_10[2], var_51_10[3])
+							boldClr = (lc.Color3B and lc.Color3B[var_51_10[1]]) or boldClr
+						elseif #var_51_10 >= 3 then
+							boldClr = cc.c3b(tonumber(var_51_10[1]) or 255, tonumber(var_51_10[2]) or 255, tonumber(var_51_10[3]) or 0)
 						end
 					end
-				else
-					boldClr = arg_51_2._boldClr or var_0_0.COLOR_TEXT_PURPLE
 				end
 
 				var_51_2 = var_51_5 + 1
@@ -1663,7 +1670,9 @@ function var_0_0.appendBoldRichText(arg_51_0, arg_51_1, arg_51_2)
 					var_51_11, var_51_12 = var_51_3 + 1, var_51_3
 				end
 
-				arg_51_0:insertElement(ccui.RichItemLabel:create(0, boldClr, 255, string.sub(arg_51_1, var_51_2, var_51_11 - 1), var_0_0.TTF_FONT, var_51_1))
+				if var_51_11 > var_51_2 then
+					arg_51_0:insertElement(ccui.RichItemLabel:create(0, boldClr, 255, string.sub(arg_51_1, var_51_2, var_51_11 - 1), var_0_0.TTF_FONT, var_51_1))
+				end
 
 				var_51_2 = var_51_12 + 1
 			end

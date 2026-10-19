@@ -82,6 +82,9 @@ function var_0_0.generateCardPackageData(arg_7_0)
 
 		local var_7_4 = iter_7_1._cardId
 		local var_7_5, var_7_6, var_7_7, var_7_8 = ClientData.getServerDate()
+		var_7_8 = var_7_8 or (os.date("*t").year)
+		var_7_7 = var_7_7 or (os.date("*t").month)
+		var_7_6 = var_7_6 or (os.date("*t").day)
 		local var_7_9 = iter_7_1._date
 		local var_7_10 = string.sub(var_7_9, 1, 4)
 		local var_7_11 = string.sub(var_7_9, 5, 6)
@@ -109,6 +112,10 @@ function var_0_0.generateCardPackageData(arg_7_0)
 				if var_7_13 <= iter_7_3 then
 					break
 				end
+			end
+
+			if iter_7_1._noDiscount or iter_7_1._type == 1 then
+				var_7_16 = 0
 			end
 
 			local var_7_17 = iter_7_1._cost
@@ -147,6 +154,16 @@ function var_0_0.generateCardPackageData(arg_7_0)
 	arg_7_0._packageCardNum = var_7_2
 end
 
+function var_0_0.isLocked(arg_8_0, arg_8_1)
+	local myUnion = P and P._playerUnion and P._playerUnion:getMyUnion()
+	local unionLevel = (myUnion and myUnion._level) or 0
+	local reqLevel = (arg_8_1._type == 1) and 5 or 1
+	if unionLevel < reqLevel then
+		return true, string.format(Str(STR.UNION_UNLOCK_LEVEL), reqLevel)
+	end
+	return false, ""
+end
+
 function var_0_0.createRecruitItem(arg_9_0, arg_9_1)
 	local var_9_0 = ccui.Layout:create()
 
@@ -154,7 +171,13 @@ function var_0_0.createRecruitItem(arg_9_0, arg_9_1)
 	var_9_0:setAnchorPoint(0.5, 0.5)
 
 	local var_9_1 = ClientView.createUnionCardPackage(arg_9_1)
+	local var_9_3, var_9_4 = arg_9_0:isLocked(arg_9_1)
+
 	local var_9_2 = ClientView.createShaderButton(nil, function(arg_10_0)
+		if var_9_3 then
+			ToastManager.push(var_9_4)
+			return
+		end
 		if arg_9_0._packageCardNum[arg_9_1._type] > 0 then
 			arg_9_0:showCardBox(arg_9_1)
 		else
@@ -169,11 +192,14 @@ function var_0_0.createRecruitItem(arg_9_0, arg_9_1)
 
 	var_9_0._info = arg_9_1
 
-	local var_9_3 = false
-	local var_9_4 = ""
+	local titleStr = "Shop Bài Guild " .. arg_9_1._type
+	local titleLabel = ClientView.createBMFont(ClientView.BMFont.huali_26, titleStr)
+	if titleLabel then
+		titleLabel:setScale(0.85)
+		lc.addChildToPos(var_9_1, titleLabel, cc.p(lc.cw(var_9_1), lc.h(var_9_1) - 24), 10)
+	end
 
 	if var_9_3 then
-		var_9_2:setTouchEnabled(false)
 		var_9_1:setGray()
 
 		local var_9_5 = lc.createSprite("img_com_bg_45")

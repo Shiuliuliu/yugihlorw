@@ -1056,7 +1056,20 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                                 yrow = cur.fetchone()
                                 cur_yubi = yrow['count'] if yrow else 0
 
-                            if cur_owned >= max_allowed:
+                            union_level = 0
+                            if shop_type == 'union' or is_yubi:
+                                cur.execute("""
+                                    SELECT u.level 
+                                    FROM union_members um 
+                                    JOIN unions u ON um.union_id = u.id 
+                                    WHERE um.account_id = %s
+                                """, (acc_id,))
+                                urow = cur.fetchone()
+                                union_level = urow['level'] if urow else 0
+
+                            if shop_type == 'union' and union_level < 5:
+                                resp = {"code": 403, "msg": "Guild cần đạt cấp 5 trở lên để mở khóa Shop Bài Guild 1!"}
+                            elif cur_owned >= max_allowed:
                                 resp = {"code": 400, "msg": f"Bạn đã sở hữu tối đa {max_allowed} bản sao của thẻ bài này!"}
                             elif cur_owned + count > max_allowed:
                                 resp = {"code": 400, "msg": f"Chỉ có thể mua thêm {max_allowed - cur_owned} bản sao nữa!"}

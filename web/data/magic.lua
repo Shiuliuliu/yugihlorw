@@ -3423,4 +3423,7 @@ return {
   [21146]={["_available"]=1,["_briefNameSid"]=57204,["_descSid"]=57203,["_guideSid"]=0,["_id"]=21146,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=6,["_maxCount"]=3,["_nameSid"]=57202,["_option"]=64,["_originId"]=0,["_packageId"]={[1]=319001,[2]=311001,},
   ["_picId"]=0,["_py"]="rakshasa",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14757,[2]=14760,[3]=14761,[4]=14762,},
   ["_targetType"]=0,["_type"]=11,},
+  [21147]={["_available"]=1,["_briefNameSid"]=57257,["_descSid"]=57256,["_guideSid"]=0,["_id"]=21147,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=0,["_maxCount"]=3,["_nameSid"]=57255,["_option"]=16,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="bohoatuoi",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=7552,[2]=14772,},
+  ["_targetType"]=0,["_type"]=13,},
 }

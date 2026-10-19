@@ -70159,6 +70159,33 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 			arg_13_0:setCardStatus(target, BattleData.CardStatus.hand, var_13_5, var_13_4, arg_13_3, stVal)
 		end
 		var_13_13 = true
+	elseif var_13_4 == 14772 then
+		local pOwner = var_13_1._owner or arg_13_0
+		local turnId = (arg_13_0._round or 0) * 1000 + (pOwner._round or arg_13_0._round or 0)
+		pOwner._flowerActiveTurn = turnId
+		var_13_1._flowerActiveTurn = turnId
+		arg_13_0._castedSkillCounts[14772] = (arg_13_0._castedSkillCounts[14772] or 0) + 1
+
+		local toss = B.throwCoin(var_13_1)
+		var_13_1._lastCount = toss
+		if arg_13_2 then
+			arg_13_2._lastCount = toss
+		end
+
+		if toss == 1 then
+			-- Ngửa: Phe ta và địch rút 1 lá bài
+			arg_13_0:drawCards(1, var_13_5, var_13_4, arg_13_3, BattleData.CardStatusVal.p2h_normal)
+			if var_13_8 then
+				var_13_8:drawCards(1, var_13_5, var_13_4, arg_13_3, BattleData.CardStatusVal.p2h_normal)
+			end
+		else
+			-- Úp: Phe địch rút 1 lá bài, phe ta nhận 2000 thiệt hại
+			if var_13_8 then
+				var_13_8:drawCards(1, var_13_5, var_13_4, arg_13_3, BattleData.CardStatusVal.p2h_normal)
+			end
+			arg_13_0:addDamage(arg_13_0._fortress, arg_13_0:calcFortressDamage(2000), var_13_5, var_13_4, arg_13_3)
+		end
+		var_13_13 = true
 	end
 
 	return var_13_13
@@ -77999,7 +78026,7 @@ function var_0_0.canUseMagic(arg_22_0, arg_22_1, arg_22_2)
 			return false
 		end
 		return true
-	elseif var_22_1 == 14749 or var_22_1 == 14752 or var_22_1 == 14757 then
+	elseif var_22_1 == 14749 or var_22_1 == 14752 or var_22_1 == 14757 or var_22_1 == 14772 then
 		return true
 	else
 		-- print("@@@@@@@@@@@@@@@@ unimplemented ai magic!", var_22_1)
@@ -107003,6 +107030,19 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 			end
 		end
 		return hasCandidate
+	elseif var_40_0 == 14772 then
+		if arg_40_1._status ~= BattleData.CardStatus.board and arg_40_1._status ~= BattleData.CardStatus.show and arg_40_1._status ~= BattleData.CardStatus.field then
+			return false
+		end
+		local pOwner = arg_40_1._owner or arg_40_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if arg_40_1._flowerActiveTurn == turnId or pOwner._flowerActiveTurn == turnId then
+			return false
+		end
+		if pOwner._castedSkillCounts and pOwner._castedSkillCounts[14772] and pOwner._castedSkillCounts[14772] >= 1 then
+			return false
+		end
+		return true
 	end
 
 	return false

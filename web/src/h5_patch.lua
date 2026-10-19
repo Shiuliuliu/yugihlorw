@@ -387,6 +387,10 @@ local function patchData()
 				Data._skillInfo[14770]._nameSid = 57251
 				Data._skillInfo[14770]._descSid = 57252
 			end
+			if Data._skillInfo and Data._skillInfo[14772] then
+				Data._skillInfo[14772]._nameSid = 57258
+				Data._skillInfo[14772]._descSid = 57259
+			end
 		end
 
 		current = nil
@@ -4399,7 +4403,7 @@ function patchClientData()
 			for _, cid in ipairs({ 12331, 12332, 12333, 12334, 12335 }) do
 				setPack(Data._monsterInfo, cid, { 223001 })
 			end
-			for _, cid in ipairs({ 21143, 21144 }) do
+			for _, cid in ipairs({ 21143, 21144, 21147 }) do
 				setPack(Data._magicInfo, cid, { 223001 })
 			end
 			for _, cid in ipairs({ 40734, 40735, 40737, 40738, 40739, 40740, 40741 }) do
@@ -5487,6 +5491,17 @@ function patchClientData()
 		[57250] = "Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).",
 		[57251] = "KMR-Zio-Ghost - Đồng Quy Loại Bỏ",
 		[57252] = "Kỹ năng chủ động (1 lượt 1 lần): Chọn 1 quái trên sân đối phương, loại bỏ bản thân và quái mục tiêu (xuyên qua tường chắn quái).",
+		-- Rồng phá giới - Rồng phá hoại (40535) & Kỹ năng (14771)
+		[35651] = "Rồng phá giới - Rồng phá hoại",
+		[35654] = "Rồng phá giới - Rồng phá hoại",
+		[57253] = "Rồng Phá Giới - Che Chở",
+		[57254] = "Khi lá bài này còn trên sân; quái có từ khóa \"Kiếm Sĩ Diệt Rồng\" trên sân phe ta nhận Lá chắn quái vật (12008), Khiên ma thuật (12009), Lá chắn bẫy (12010).",
+		-- Bó hoa tươi (21147) & Kỹ năng (14772)
+		[57255] = "Bó hoa tươi",
+		[57256] = "\"Không quan trọng bạn là ai.\nChúc những người phụ nữ trong gia đình bạn\ncó 1 ngày tràn ngập niềm vui, lúc nào cũng tươi trẻ,\nthành công trong công việc và hạnh phúc trong cuộc sống!\".",
+		[57257] = "Bó hoa tươi",
+		[57258] = "Bó hoa tươi",
+		[57259] = "Kĩ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Nếu ngửa: phe ta và địch rút 1 lá bài.\n- Nếu úp: phe địch rút 1 lá bài, phe ta nhận 2000 thiệt hại.\n|\\yellow\\Hỏi: \"ủa tại sao phe địch được rút bài mà phe ta bị lại bị trừ LP?\"|\n|\\yellow\\Đáp: \"Bởi vì : 1 là chân thành đổi lấy chân thành.|\n|\\yellow\\2 là chân thành đổi lấy chân tướng sự thật\".|\n|\\yellow\\\"Tỉnh táo lên những người anh em,|\n|\\yellow\\mình đáng được trân trọng hơn thế - đừng làm lốp giống ad\".|",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
@@ -7972,6 +7987,7 @@ local function patchCardSprite(CardSprite)
 	CardSprite.runAction = function(self, action)
 		local function onActionComplete()
 			if not self._card then return end
+			if not self:getParent() then return end
 			if self._touchEvent and (self._touchEvent._status == CardSprite.TouchStatus.grabbed or self._touchEvent._status == CardSprite.TouchStatus.moved) then return end
 			-- ponytail: skip repositioning for cards no longer on hand/board
 			local cStatus = self._card._status
@@ -7982,7 +7998,7 @@ local function patchCardSprite(CardSprite)
 				return
 			end
 			if cStatus == BattleData.CardStatus.hand then
-				if self._ownerUi and self._ownerUi.calHandCardPosAndRot then
+				if self._ownerUi and self._ownerUi.getHandCardSprite and self._ownerUi:getHandCardSprite(self._card) == self and self._ownerUi.calHandCardPosAndRot then
 					local pos, rot = self._ownerUi:calHandCardPosAndRot(self)
 					if pos and pos.x and pos.y then
 						self:setPosition(pos)
@@ -7994,7 +8010,7 @@ local function patchCardSprite(CardSprite)
 			elseif cStatus == BattleData.CardStatus.board then
 				if self._ownerUi and self._ownerUi.getBoardCardSprite then
 					local bSprite = self._ownerUi:getBoardCardSprite(self._card)
-					if bSprite ~= nil then
+					if bSprite == self and self._ownerUi.calBoardCardPos then
 						local pos = self._ownerUi:calBoardCardPos(self)
 						if pos and pos.x and pos.y then
 							self:setPosition(pos)

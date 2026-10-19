@@ -166,6 +166,9 @@ function var_0_0.resetWhenBattleStart(arg_1_0)
 		end
 	end
 
+	arg_1_0._hasExodiaDeck = false
+	arg_1_0._hasHaraktiDeck = false
+
 	for iter_1_8 = 1, #var_1_7 do
 		local var_1_10 = var_1_7[iter_1_8]
 		local var_1_11 = BattleCard.new(var_1_10._infoId, var_1_10._level, arg_1_0)
@@ -173,6 +176,12 @@ function var_0_0.resetWhenBattleStart(arg_1_0)
 		var_1_11._isTroopCard = true
 
 		arg_1_0:addCardToCards(var_1_11)
+
+		if var_1_10._infoId == 10356 then
+			arg_1_0._hasExodiaDeck = true
+		elseif var_1_10._infoId == 10895 then
+			arg_1_0._hasHaraktiDeck = true
+		end
 	end
 
 	arg_1_0._assistant = {}
@@ -1253,7 +1262,7 @@ function var_0_0.resume(arg_12_0)
 end
 
 local function checkExodia(player)
-	if not player or not player._handCards then return false end
+	if not player or not player._hasExodiaDeck or not player._handCards or #player._handCards < 5 then return false end
 	local found = { [10356] = false, [10318] = false, [10319] = false, [10354] = false, [10355] = false }
 	local count = 0
 	local hCards = player:getBattleCards("H")
@@ -1269,11 +1278,7 @@ local function checkExodia(player)
 end
 
 local function checkGodWin(player)
-	if not player then return false end
-	local hasHarakti = player:hasBattleCardsBySkillFast("PHBGE", 3798)
-		or #player:getBattleCardsByInfoId("PHBGE", 10895) > 0
-		or (player._troopCards and table.contains and table.contains(player._troopCards, 10895))
-	if not hasHarakti then return false end
+	if not player or not player._hasHaraktiDeck then return false end
 
 	local godsFound = { [10270] = false, [10293] = false, [10763] = false }
 	local bCards = player:getBattleCards("B") or {}

@@ -433,7 +433,7 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 
 								if var_3_14 and var_3_15 and #var_3_15 > 0 then
 									var_3_3:showChoiceGrave(var_3_0, var_3_4, var_3_15, var_3_16)
-								elseif var_3_1:hasSkillFast(7655) or var_3_1:hasSkillFast(14752) or var_3_1:hasSkillFast(14757) or var_3_1:isInfoId(21145) or var_3_1:isInfoId(21146) then
+								elseif var_3_1:hasSkillFast(7655) or var_3_1:hasSkillFast(14752) or var_3_1:hasSkillFast(14757) or var_3_1:isInfoId(21145) or var_3_1:isInfoId(21146) or var_3_1:isInfoId(21147) or var_3_1:hasSkillFast(14772) then
 									var_3_3:sendEvent(PlayerUi.EventType.send_use_card, {
 										_choice = 0,
 										_card = var_3_0._card

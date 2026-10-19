@@ -811,6 +811,12 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
 				arg_15_0:incShield(arg_15_1, { 12008, 12009, 12010 }, false, false, arg_15_1._id, 12008, Data.SkillMode.using)
 			end
+			if not (arg_15_1:hasSkillFast(12008) or (arg_15_1._info and B.tableContain(arg_15_1._info._skillId, 12008))) and arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMonster] and (arg_15_1:isKeyword(21) or arg_15_1:isKeyword(204) or (arg_15_1._info and (arg_15_1._info._keyword == 21 or arg_15_1._info._keyword == 204))) then
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = false
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = false
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = false
+				arg_15_0:decShield(arg_15_1, { 12008, 12009, 12010 }, false, arg_15_1._id, 12008)
+			end
 			if (arg_15_1:hasSkillFast(12002) or (arg_15_1._info and B.tableContain(arg_15_1._info._skillId, 12002))) and not arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMonster] then
 				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
 				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
@@ -839,6 +845,20 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				local donthiens = arg_15_0:getBattleCardsByInfoId("B", 12325)
 				for _, dt in ipairs(donthiens) do
 					arg_15_0:incShield(dt, { 12008, 12009, 12010 }, false, false, dt._id, 14705, Data.SkillMode.using)
+				end
+			end
+
+			if arg_15_1._infoId == 40535 or arg_15_1:isInfoId(40535) or arg_15_1:hasSkillFast(14771) then
+				local allies = arg_15_0:getBoardCards()
+				for _, c in ipairs(allies) do
+					if (c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isKeyword(21) or c:isKeyword(204) or (c._info and (c._info._keyword == 21 or c._info._keyword == 204))) then
+						if not c._positiveStatus[BattleData.PositiveType.shieldOppoMonster] then
+							c._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = true
+							c._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = true
+							c._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
+							arg_15_0:incShield(c, { 12008, 12009, 12010 }, false, false, c._id, 12008, Data.SkillMode.using)
+						end
+					end
 				end
 			end
 
