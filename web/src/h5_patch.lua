@@ -8234,8 +8234,12 @@ local function patchCardSprite(CardSprite)
 			local btn = ClientView.createShaderButton("initiative_icon_s", function(q)
 				if not self._ownerUi or not self._ownerUi._isController then return true end
 				if self._battleUi and self._battleUi._isAddingBoardCard then
-					self._ownerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
-					return true
+					if self._battleUi._touchCard == nil and self._battleUi._choiceMaskLayer == nil and self._battleUi._choicePosDialog == nil and self._battleUi._choiceGraveDialog == nil then
+						self._battleUi._isAddingBoardCard = false
+					else
+						self._ownerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
+						return true
+					end
 				end
 				if not ClientData.checkBtnClick() then return end
 				self._ownerUi:castInitiativeSkill(card, s)

@@ -1872,6 +1872,11 @@ function var_0_0.tryUseCard(arg_63_0, arg_63_1)
 			arg_63_0:operateBegin()
 		end
 
+		if arg_63_0._playerUi then
+			arg_63_0._playerUi:updateCardsActive()
+			arg_63_0._playerUi:updateBoardCardsInitialSkills(true)
+		end
+
 		if arg_63_0._isEnableDrap then
 			if arg_63_0._player:getActionPlayer():getIsNeedDrop() then
 				arg_63_0:showDropHand()
@@ -2032,16 +2037,20 @@ function var_0_0.addBoardCardBegan(arg_71_0, arg_71_1)
 end
 
 function var_0_0.addBoardCardEnded(arg_72_0, arg_72_1)
-	if not arg_72_0._isAddingBoardCard then
-		return
-	end
-
-	local var_72_0 = arg_72_1._isAttacker == arg_72_0._isAttacker and arg_72_0._playerUi or arg_72_0._opponentUi
-
 	arg_72_0._isAddingBoardCard = false
 
-	var_72_0:updateCardsActive()
-	var_72_0:updateBoardCardsInitialSkills()
+	local var_72_0 = (arg_72_1 and arg_72_1._isAttacker == arg_72_0._isAttacker) and arg_72_0._playerUi or arg_72_0._opponentUi
+
+	if var_72_0 then
+		var_72_0:updateCardsActive()
+		var_72_0:updateBoardCardsInitialSkills(true)
+	end
+
+	if arg_72_0._playerUi and arg_72_0._playerUi ~= var_72_0 then
+		arg_72_0._playerUi:updateCardsActive()
+		arg_72_0._playerUi:updateBoardCardsInitialSkills(true)
+	end
+
 	arg_72_0:updateRoundButton()
 
 	if arg_72_0._player and arg_72_0._opponent and not arg_72_0._isBattleFinished then
@@ -2263,9 +2272,13 @@ function var_0_0.onButtonEvent(arg_75_0, arg_75_1)
 		end
 
 		if arg_75_0._isAddingBoardCard then
-			arg_75_0._playerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
+			if arg_75_0._touchCard == nil and arg_75_0._choiceMaskLayer == nil and arg_75_0._choicePosDialog == nil and arg_75_0._choiceGraveDialog == nil then
+				arg_75_0._isAddingBoardCard = false
+			else
+				arg_75_0._playerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
 
-			return true
+				return true
+			end
 		end
 
 		local var_75_15, var_75_16 = arg_75_0._playerUi._player:getBattleCardsByCanCastInitiativeSkill(arg_75_1 == arg_75_0._btnInitiative and "BSDGHL" or "R")

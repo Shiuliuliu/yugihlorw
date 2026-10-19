@@ -2072,7 +2072,7 @@ function _getJsListOfModule(moduleMap, moduleName, dir) {
             var arr = _getJsListOfModule(moduleMap, item, dir);
             if (arr) jsList = jsList.concat(arr);
         } else if (extname.toLowerCase() === ".js") {
-            var v = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v005000';
+            var v = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261019v153000';
             var sUrl = ccPath.join(dir, item);
             jsList.push(v ? (sUrl + (sUrl.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v) : sUrl);
         }
