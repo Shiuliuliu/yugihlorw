@@ -5695,6 +5695,8 @@ function var_0_0.getXYZCandidates(arg_254_0, arg_254_1, arg_254_2, arg_254_3, ar
 
 	if arg_254_1._infoId == 40728 then
 		var_254_4 = B.filterInKeywordCards(var_254_4, 300)
+	elseif arg_254_1._infoId == 40730 then
+		var_254_4 = B.filterInKeywordCards(var_254_4, 301)
 	end
 
 	for iter_254_3 = 1, #var_254_4 do
@@ -5723,6 +5725,15 @@ function var_0_0.isValidXYZComponents(arg_255_0, arg_255_1, arg_255_2, arg_255_3
 	if arg_255_1._infoId == 40728 then
 		if #B.filterInKeywordCards(arg_255_2, 300) < #arg_255_2 then
 			return false
+		end
+	elseif arg_255_1._infoId == 40730 then
+		if #B.filterInKeywordCards(arg_255_2, 301) < #arg_255_2 then
+			return false
+		end
+		for _, c in ipairs(arg_255_2) do
+			if c:getStar() ~= 8 or not c:isKeyword(301) then
+				return false
+			end
 		end
 	elseif arg_255_1._infoId == 40353 then
 		if #B.filterInKeywordCards(arg_255_2, 153) == 0 then

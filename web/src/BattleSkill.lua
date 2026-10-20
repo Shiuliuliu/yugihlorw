@@ -373,7 +373,7 @@ function var_0_0.castSkill(arg_1_0, arg_1_1, arg_1_2, arg_1_3)
 		var_1_2 = arg_1_0:castMonster4HaloSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif (var_1_0 == Data.SkillType.trapSpell or var_1_0 == Data.SkillType.trapHalo) and arg_1_2._id ~= 5004 and arg_1_2._id ~= 5080 and arg_1_2._id ~= 5081 and arg_1_2._id ~= 5095 and arg_1_2._id ~= 5244 and arg_1_2._id ~= 5280 and arg_1_2._id ~= 5298 and arg_1_2._id ~= 5430 and arg_1_2._id ~= 5431 and arg_1_2._id ~= 5452 and arg_1_2._id ~= 5470 and arg_1_2._id ~= 5485 and arg_1_2._id ~= 5544 and arg_1_2._id ~= 5549 and arg_1_2._id ~= 14755 and arg_1_2._id ~= 14756 and arg_1_2._id ~= 14758 and arg_1_2._id ~= 14759 or arg_1_2._id == 4181 or arg_1_2._id == 4190 or arg_1_2._id == 7096 then
 		var_1_2 = arg_1_0:castTrapSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif (var_1_0 == Data.SkillType.magicHalo or arg_1_2._id == 14652 or arg_1_2._id == 14670 or arg_1_2._id == 14716) and arg_1_2._id ~= 7144 and arg_1_2._id ~= 7185 and arg_1_2._id ~= 7373 and arg_1_2._id ~= 7544 and arg_1_2._id ~= 7563 and arg_1_2._id ~= 7576 and arg_1_2._id ~= 7579 and arg_1_2._id ~= 7622 and arg_1_2._id ~= 7631 and arg_1_2._id ~= 7652 and arg_1_2._id ~= 7673 and arg_1_2._id ~= 7674 and arg_1_2._id ~= 7693 and arg_1_2._id ~= 7731 and arg_1_2._id ~= 7732 and arg_1_2._id ~= 7753 and arg_1_2._id ~= 7785 and arg_1_2._id ~= 7831 and arg_1_2._id ~= 14733 and arg_1_2._id ~= 14734 and arg_1_2._id ~= 14738 and arg_1_2._id ~= 14743 then
+	elseif (var_1_0 == Data.SkillType.magicHalo or arg_1_2._id == 14652 or arg_1_2._id == 14670 or arg_1_2._id == 14716) and arg_1_2._id ~= 7144 and arg_1_2._id ~= 7185 and arg_1_2._id ~= 7373 and arg_1_2._id ~= 7544 and arg_1_2._id ~= 7563 and arg_1_2._id ~= 7576 and arg_1_2._id ~= 7579 and arg_1_2._id ~= 7622 and arg_1_2._id ~= 7631 and arg_1_2._id ~= 7652 and arg_1_2._id ~= 7673 and arg_1_2._id ~= 7674 and arg_1_2._id ~= 7693 and arg_1_2._id ~= 7731 and arg_1_2._id ~= 7732 and arg_1_2._id ~= 7753 and arg_1_2._id ~= 7785 and arg_1_2._id ~= 7831 and arg_1_2._id ~= 14733 and arg_1_2._id ~= 14734 and arg_1_2._id ~= 14738 and arg_1_2._id ~= 14743 and arg_1_2._id ~= 14772 then
 		var_1_2 = arg_1_0:castMagicHaloSkill(arg_1_1, arg_1_2, arg_1_3)
 	else
 		var_1_2 = arg_1_0:castOtherSkill(arg_1_1, arg_1_2, arg_1_3)
@@ -70161,7 +70161,7 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 		var_13_13 = true
 	elseif var_13_4 == 14772 then
 		local pOwner = var_13_1._owner or arg_13_0
-		local turnId = (arg_13_0._round or 0) * 1000 + (pOwner._round or arg_13_0._round or 0)
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
 		pOwner._flowerActiveTurn = turnId
 		var_13_1._flowerActiveTurn = turnId
 		arg_13_0._castedSkillCounts[14772] = (arg_13_0._castedSkillCounts[14772] or 0) + 1
@@ -71753,6 +71753,16 @@ function var_0_0.canUseMagic(arg_22_0, arg_22_1, arg_22_2)
 
 	if arg_22_0._battleType == Data.BattleType.PVP_room and arg_22_0._round == 1 and not arg_22_1:isInfoId(20236) then
 		return false
+	end
+
+	if arg_22_1:isInfoId(21147) then
+		if #arg_22_0:getBattleCardsByInfoId("S", 21147) > 0 then
+			return false, "existed"
+		end
+		if arg_22_0:getEmptyGroundPos() == nil then
+			return false
+		end
+		return true
 	end
 
 	if arg_22_0._opponent then
