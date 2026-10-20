@@ -9974,8 +9974,20 @@ function var_0_0.getAtk(arg_282_0)
 		return arg_282_0._tsAwakened and 16000 or 8000
 	end
 	local oppo = arg_282_0._owner and arg_282_0._owner._opponent
-	if oppo and oppo._dragonDebuffVal and oppo._dragonDebuffVal > 0 and arg_282_0._status == BattleData.CardStatus.board then
-		return math.max(0, (arg_282_0._atk or 0) - oppo._dragonDebuffVal)
+	if oppo and arg_282_0._status == BattleData.CardStatus.board then
+		if oppo.updateDragonDebuff then
+			oppo:updateDragonDebuff()
+		end
+		local debuff = oppo._dragonDebuffVal or 0
+		if debuff > 0 then
+			local base = (arg_282_0._maxAtk or 0) + (arg_282_0._atkInc or 0)
+			if arg_282_0._info and arg_282_0._info._atk and arg_282_0._info._atk[1] then
+				base = math.max(base, arg_282_0._info._atk[1] + (arg_282_0._atkInc or 0))
+			end
+			local finalAtk = math.max(0, base - debuff)
+			arg_282_0._atk = finalAtk
+			return finalAtk
+		end
 	end
 	return arg_282_0._atk
 end

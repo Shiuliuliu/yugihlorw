@@ -7854,16 +7854,16 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 			return false
 		end
 		local piles = pOwner:getBattleCards("P")
-		local count = 0
+		local deckCandidates = {}
 		for _, c in ipairs(piles) do
-			if (c._type == Data.CardType.monster or c:isMonster()) and (c:isKeyword(204) or c:isKeyword(21) or (c._info and (c._info._keyword == 204 or c._info._keyword == 21))) then
-				count = count + 1
+			if (c._type == Data.CardType.monster or c:isMonster() or c:isMonsterRare()) and (c:isKeyword(204) or c:isKeyword(21) or c._infoId == 10058 or c._infoId == 10649 or (c._info and (c._info._keyword == 204 or c._info._keyword == 21))) then
+				deckCandidates[#deckCandidates + 1] = c
 			end
 		end
-		if count == 0 then
+		if #deckCandidates == 0 then
 			return false
 		end
-		return true, handCards, 1
+		return true, deckCandidates, 1
 	elseif arg_304_1._id == 14770 then
 		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
 		if ownerCard == nil then

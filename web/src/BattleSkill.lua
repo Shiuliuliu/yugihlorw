@@ -10980,7 +10980,7 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		local targetCard = nil
 		if var_4_15 > 0 and pOwner then
 			local cid = var_4_15 % BattleData.UseCardId.id_group
-			targetCard = pOwner:getCardById(cid)
+			targetCard = pOwner:getCardById(cid) or pOwner:getCardById(var_4_15)
 		end
 		if targetCard == nil or targetCard._status ~= BattleData.CardStatus.rare then
 			local candidates = pOwner:getHarpieAmazonFusionCandidates()
@@ -10989,13 +10989,14 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 			end
 		end
 
+		local spawnPos = arg_4_1._pos or (targetCard and pOwner:getEmptyBoardPos(targetCard))
+
 		-- Hy sinh bản thân (đưa vào Mộ)
-		arg_4_0:setCardStatus(arg_4_1, BattleData.CardStatus.grave, arg_4_1._id, 14774, arg_4_3, BattleData.CardStatusVal.b2g_sacrifice)
+		pOwner:setCardStatus(arg_4_1, BattleData.CardStatus.grave, arg_4_1._id, 14774, arg_4_3, BattleData.CardStatusVal.b2g_sacrifice)
 
 		-- Triệu hồi vô điều kiện lên sân từ extradeck
 		if targetCard and pOwner then
-			local targetPos = pOwner:getEmptyBoardPos(targetCard) or arg_4_1._pos
-			pOwner:setCardStatus(targetCard, BattleData.CardStatus.board, arg_4_1._id, 14774, arg_4_3, BattleData.CardStatusVal.r2b_compose, targetPos)
+			pOwner:setCardStatus(targetCard, BattleData.CardStatus.board, arg_4_1._id, 14774, arg_4_3, BattleData.CardStatusVal.r2b_compose, spawnPos)
 		end
 		var_4_13 = true
 	elseif var_4_4 == 14776 then
@@ -11010,35 +11011,33 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		pOwner._castedSkillCounts[14776] = (pOwner._castedSkillCounts[14776] or 0) + 1
 		arg_4_0._castedSkillCounts[14776] = (arg_4_0._castedSkillCounts[14776] or 0) + 1
 
-		-- Bỏ 1 lá bài trên tay
-		local handCard = nil
-		if var_4_15 > 0 and pOwner then
-			local cid = var_4_15 % BattleData.UseCardId.id_group
-			handCard = pOwner:getCardById(cid)
-		end
-		if (handCard == nil or handCard._status ~= BattleData.CardStatus.hand) and pOwner then
-			local hands = pOwner:getBattleCards("H")
-			if #hands > 0 then handCard = hands[1] end
-		end
-		if handCard and pOwner then
+		-- Bỏ 1 lá bài trên tay (chi phí)
+		local hands = pOwner:getBattleCards("H")
+		if #hands > 0 then
+			local handCard = hands[1]
 			pOwner:setCardStatus(handCard, BattleData.CardStatus.grave, ownerCard._id, 14776, arg_4_3, BattleData.CardStatusVal.h2g_abandon)
 		end
 
-		-- Triệu hồi đặc biệt 1 quái có từ khóa "Kiếm Phá Hủy" từ bộ bài lên sân
-		if pOwner then
+		-- Triệu hồi đặc biệt 1 quái có từ khóa "Kiếm Phá Hủy" đã chọn từ bộ bài lên sân
+		local targetDeckCard = nil
+		if var_4_15 > 0 and pOwner then
+			local cid = var_4_15 % BattleData.UseCardId.id_group
+			targetDeckCard = pOwner:getCardById(cid) or pOwner:getCardById(var_4_15)
+		end
+		if targetDeckCard == nil or targetDeckCard._status ~= BattleData.CardStatus.pile then
 			local piles = pOwner:getBattleCards("P")
-			local targetDeckCard = nil
 			for _, c in ipairs(piles) do
-				if (c._type == Data.CardType.monster or c:isMonster()) and (c:isKeyword(204) or c:isKeyword(21) or (c._info and (c._info._keyword == 204 or c._info._keyword == 21))) then
+				if (c._type == Data.CardType.monster or c:isMonster() or c:isMonsterRare()) and (c:isKeyword(204) or c:isKeyword(21) or c._infoId == 10058 or c._infoId == 10649 or (c._info and (c._info._keyword == 204 or c._info._keyword == 21))) then
 					targetDeckCard = c
 					break
 				end
 			end
-			if targetDeckCard then
-				local targetPos = pOwner:getEmptyBoardPos(targetDeckCard)
-				if targetPos then
-					pOwner:setCardStatus(targetDeckCard, BattleData.CardStatus.board, ownerCard._id, 14776, arg_4_3, BattleData.CardStatusVal.p2b_attack_frozen, targetPos)
-				end
+		end
+
+		if targetDeckCard and pOwner then
+			local targetPos = pOwner:getEmptyBoardPos(targetDeckCard)
+			if targetPos then
+				pOwner:setCardStatus(targetDeckCard, BattleData.CardStatus.board, ownerCard._id, 14776, arg_4_3, BattleData.CardStatusVal.p2b_attack_frozen, targetPos)
 			end
 		end
 		var_4_13 = true
@@ -107085,7 +107084,7 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		end
 		local piles = pOwner:getBattleCards("P")
 		for _, c in ipairs(piles) do
-			if (c._type == Data.CardType.monster or c:isMonster()) and (c:isKeyword(204) or c:isKeyword(21) or (c._info and (c._info._keyword == 204 or c._info._keyword == 21))) then
+			if (c._type == Data.CardType.monster or c:isMonster() or c:isMonsterRare()) and (c:isKeyword(204) or c:isKeyword(21) or c._infoId == 10058 or c._infoId == 10649 or (c._info and (c._info._keyword == 204 or c._info._keyword == 21))) then
 				return true
 			end
 		end

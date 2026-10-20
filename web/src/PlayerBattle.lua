@@ -593,26 +593,37 @@ function var_0_0.updateDragonDebuff(arg_0)
 		return
 	end
 
+	local function isDragonCard(c)
+		if not c then return false end
+		if c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare then
+			local cat = c._category or (c._info and c._info._category)
+			if cat == 2 then return true end
+			local kw = c._keyword or (c._info and c._info._keyword)
+			if kw == 39 or kw == 7 then return true end
+		end
+		return false
+	end
+
 	local dCount = 0
 	for _, c in ipairs(p1:getBoardCards()) do
-		if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+		if isDragonCard(c) then
 			dCount = dCount + 1
 		end
 	end
 	for _, c in ipairs(p2:getBoardCards()) do
-		if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+		if isDragonCard(c) then
 			dCount = dCount + 1
 		end
 	end
 	local g1 = p1._graveCards or {}
 	for _, c in ipairs(g1) do
-		if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+		if isDragonCard(c) then
 			dCount = dCount + 1
 		end
 	end
 	local g2 = p2._graveCards or {}
 	for _, c in ipairs(g2) do
-		if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+		if isDragonCard(c) then
 			dCount = dCount + 1
 		end
 	end
@@ -1768,6 +1779,19 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 					if lht_atk > 0 then
 						arg_38_1._atk = arg_38_1._atk + lht_atk
 					end
+				end
+			end
+
+			-- Skill 14775 (Uy Áp): Card 40743 reduces opponent monster ATK by 200 per Dragon on field & grave of both players
+			local c_owner = arg_38_1._owner or arg_38_0
+			local oppo = c_owner and c_owner._opponent
+			if oppo then
+				if oppo.updateDragonDebuff then
+					oppo:updateDragonDebuff()
+				end
+				local debuff = oppo._dragonDebuffVal or 0
+				if debuff > 0 then
+					arg_38_1._atk = math.max(0, arg_38_1._atk - debuff)
 				end
 			end
 		end
