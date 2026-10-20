@@ -670,41 +670,27 @@ function var_0_0.getTouchedBoardCard(arg_6_0, arg_6_1, arg_6_2, arg_6_3, arg_6_4
 		-- block empty
 	else
 		local touchLoc = arg_6_1:getLocation()
-		local bestCard = nil
-		local bestDist = 999999
-
 		for iter_6_0 = Data.MAX_CARD_COUNT_ON_BOARD + 1, 1, -1 do
 			local var_6_0 = arg_6_4._pBoardCards[iter_6_0]
 
-			if var_6_0 ~= nil then
-				local isValid = true
+			if var_6_0 ~= nil and var_6_0:containsTouchLocation(touchLoc.x, touchLoc.y) then
 				if arg_6_2._card:isMonsterRare() then
 					-- block empty
 				elseif arg_6_2._card._type == Data.CardType.magic then
-					if not arg_6_2._card._owner:canUseMagicOnTarget(arg_6_2._card, var_6_0._card) then
-						isValid = false
+					local player = arg_6_2._card._owner or arg_6_4._player
+					if not player:canUseMagicOnTarget(arg_6_2._card, var_6_0._card) then
+						return nil
 					end
-				elseif arg_6_2._card._type == Data.CardType.trap and not arg_6_2._card._owner:canUseTrapOnTarget(arg_6_2._card, var_6_0._card) then
-					isValid = false
-				end
-
-				if isValid then
-					local isInside = var_6_0:containsTouchLocation(touchLoc.x, touchLoc.y)
-					if isInside then
-						return var_6_0
-					end
-
-					local cardPos = var_6_0:convertToWorldSpace3D(cc.p(0, 0), ClientData._camera3D)
-					local dist = cc.pGetDistance(touchLoc, cardPos)
-					if dist < 130 and dist < bestDist then
-						bestDist = dist
-						bestCard = var_6_0
+				elseif arg_6_2._card._type == Data.CardType.trap then
+					local player = arg_6_2._card._owner or arg_6_4._player
+					if not player:canUseTrapOnTarget(arg_6_2._card, var_6_0._card) then
+						return nil
 					end
 				end
+
+				return var_6_0
 			end
 		end
-
-		return bestCard
 	end
 end
 

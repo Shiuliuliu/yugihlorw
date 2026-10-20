@@ -297,127 +297,18 @@ end
 
 function var_0_0.preloadBattleDragonBones(arg_18_0)
 	local var_18_0 = {
-		"vs",
-		"hhdb",
 		"xuanzhong",
 		"kapaisiwang",
-		"beiji",
-		"zh",
-		"szfs",
-		"tuika",
-		"cmdlbz",
-		"qbd",
-		"tsgj",
-		"tsgf",
-		"tssh",
-		"gqbb",
-		"szkp",
-		"touyingbi",
-		"yaosaizi",
-		"wlfy",
-		"guanchuan",
-		"jdgj",
-		"blzz",
-		"dalian01",
-		"dalian02",
-		"dalian03",
-		"dalian04",
-		"chaoliangsucai1",
-		"chaoliangsucai2",
-		"chaoliangsucai3",
-		"cdtx",
-		"zhxz",
-		"gjxz",
-		"s_xuanzhong",
-		"biaoji",
-		"biaoji2",
-		"biaoji3",
-		"biaoji4",
-		"biaoji5",
-		"biaoji6",
-		"biaoji7",
-		"biaoji8",
-		"biaoji9",
-		"busigongji11",
-		"emogongji11",
-		"jixiegongji11",
-		"longzugongji11",
-		"mofashigongji11",
-		"niandongligongji11",
-		"niaoshougongji11",
-		"shuigongji11",
-		"tianshigongji11",
-		"yanshigongji11",
-		"yanzugongji11",
-		"zhanshigongji11",
-		"busiruchang11",
-		"emoruchang11",
-		"jixieruchang11",
-		"longzuruchang11",
-		"mofashiruchang11",
-		"niandongliruchang11",
-		"niaoshouruchang11",
-		"tianshiruchang11",
-		"yanshiruchang11",
-		"yanzuruchang11",
-		"shuiruchang11",
-		"zhanshiruchang11",
-		"busizhanchang11",
-		"emozhanchang11",
-		"jixiezhanchang11",
-		"longzuzhanchang11",
-		"mofashizhanchang11",
-		"niandonglizhanchang11",
-		"niaoshouzhanchang11",
-		"shuizhanchang11",
-		"tianshizhanchang11",
-		"yanshizhanchang11",
-		"yanzuzhanchang11",
-		"zhanshizhanchang11",
-		"xieshen",
-		"tkl",
-		"yishenlong",
-		"yishenlong2"
+		"beiji"
 	}
 
 	for iter_18_0, iter_18_1 in ipairs(var_18_0) do
-		pcall(function()
-			local var_18_1 = cc.DragonBonesNode:createWithDecrypt(string.format("res/effects/%s.lcres", iter_18_1), iter_18_1, iter_18_1)
-			ClientData._dragonBonesTexture[iter_18_1] = 999999
-		end)
+		local var_18_1 = cc.DragonBonesNode:createWithDecrypt(string.format("res/effects/%s.lcres", iter_18_1), iter_18_1, iter_18_1)
+
+		ClientData._dragonBonesTexture[iter_18_1] = 1
 	end
 
-	local particles = {
-		"par_ronghe01",
-		"par_ronghe02",
-		"par_ronghe03",
-		"par_kapaisiwang_1",
-		"par_kapaisiwang_2",
-		"par_kprc01",
-		"par_kprc02",
-		"par_kprc03",
-		"par_szfs",
-		"par_yhcx",
-		"zhudong",
-		"v11",
-		"v13_1",
-		"v13_2",
-		"jsb1",
-		"jsb2",
-		"par_cs1",
-		"par_cs2",
-		"par_cs3",
-		"par_round_explode",
-		"baoji1",
-		"baoji2"
-	}
-	for _, pName in ipairs(particles) do
-		pcall(function()
-			Particle.create(pName)
-		end)
-	end
-
-	lc.log("preload dragonbones and particles")
+	lc.log("preload dragonbones")
 end
 
 function var_0_0.switchScene(arg_19_0)

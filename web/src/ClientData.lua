@@ -4371,10 +4371,22 @@ function var_0_0.unloadUnionRes()
 	var_0_0.unloadAllParticle()
 end
 
+local BATTLE_EFFECTS_SET = {
+	xuanzhong = true, s_xuanzhong = true, kapaisiwang = true, beiji = true,
+	chaoliangsucai1 = true, chaoliangsucai2 = true, chaoliangsucai3 = true,
+	cdtx = true, zhxz = true, gjxz = true, szkp = true, zh = true, tuika = true,
+	jiantou = true, szfs = true, touyingbi = true, yaosaizi = true, wlfy = true,
+	guanchuan = true, jdgj = true, blzz = true, biaoji = true
+}
+
+local BATTLE_PARTICLES_SET = {
+	par_ronghe01 = true, par_ronghe02 = true, par_ronghe03 = true,
+	par_kapaisiwang_1 = true, par_kapaisiwang_2 = true,
+	par_kprc01 = true, par_kprc02 = true, par_kprc03 = true,
+	par_yhcx = true, zhudong = true, par_gwsf = true
+}
+
 function var_0_0.unloadAllDragonBones()
-	if cc.DragonBonesNode and cc.DragonBonesNode.clearCache then
-		pcall(function() cc.DragonBonesNode:clearCache() end)
-	end
 
 	if Data._dragonBonesList == nil then
 		local var_220_0 = lc.readFile("res/effects/list.txt")
@@ -4396,6 +4408,9 @@ function var_0_0.unloadAllDragonBones()
 end
 
 function var_0_0.unloadDragonBones(arg_221_0)
+	if BATTLE_EFFECTS_SET and BATTLE_EFFECTS_SET[arg_221_0] then
+		return
+	end
 	local var_221_0 = arg_221_0 .. ".png"
 
 	if lc.TextureCache:getTextureForKey(var_221_0) ~= nil then
@@ -4419,7 +4434,7 @@ function var_0_0.unloadAllParticle()
 	for iter_222_0, iter_222_1 in ipairs(Data._particleList) do
 		local var_222_2 = "res/particle/" .. iter_222_1 .. ".png"
 
-		if lc.TextureCache:getTextureForKey(var_222_2) ~= nil then
+		if (not BATTLE_PARTICLES_SET or not BATTLE_PARTICLES_SET[iter_222_1]) and lc.TextureCache:getTextureForKey(var_222_2) ~= nil then
 			lc.TextureCache:removeTextureForKey(var_222_2)
 			lc.log("unload paritcle  " .. var_222_2)
 		end

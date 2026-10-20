@@ -7830,32 +7830,22 @@ end
 -- the require hook
 -- ---------------------------------------------------------------------------
 
+local _staticTouchStartLoc = {x = 0, y = 0}
+local function _staticGetStartLocation()
+	return _staticTouchStartLoc
+end
+local function _staticGetTouchId()
+	return 0
+end
+
 local function patchBattleUiTouch(mod)
 	local BattleUi = _G.BattleUi
 	if not BattleUi or not BattleUi.onTouchBegan then return end
 	local oldTouchBegan = BattleUi.onTouchBegan
 	BattleUi.onTouchBegan = function(self, touch)
-
-		-- Check active skill icon touches beneath board cards and field card
-		if touch and self._playerUi then
+		if touch and self._playerUi and self._playerUi._initiativeIconCards and #self._playerUi._initiativeIconCards > 0 then
 			local touchLoc = touch:getLocation()
-			local cardsToCheck = {}
-			if self._playerUi._pBoardCards then
-				for iter = 1, Data.MAX_CARD_COUNT_ON_BOARD do
-					table.insert(cardsToCheck, self._playerUi._pBoardCards[iter])
-				end
-			end
-			if self._playerUi._pFieldCard then
-				table.insert(cardsToCheck, self._playerUi._pFieldCard)
-			end
-			if self._playerUi._pShowCards then
-				for iter = 1, Data.MAX_CARD_COUNT_ON_COVER do
-					if self._playerUi._pShowCards[iter] then
-						table.insert(cardsToCheck, self._playerUi._pShowCards[iter])
-					end
-				end
-			end
-			for _, pCard in ipairs(cardsToCheck) do
+			for _, pCard in ipairs(self._playerUi._initiativeIconCards) do
 				if pCard and pCard._initiativeSkillIcons and #pCard._initiativeSkillIcons > 0 then
 					for iconIdx, iconBtn in ipairs(pCard._initiativeSkillIcons) do
 						if iconBtn and iconBtn:isVisible() then
@@ -7890,14 +7880,14 @@ local function patchBattleUiTouch(mod)
 		end
 
 		if touch then
-			touch.getId = function() return 0 end
-			touch.getID = function() return 0 end
-		end
-		-- Save the BattleUi-level start location so onTouchMoved's budge
-		-- check never relies on touch:getStartLocation().
-		if touch then
+			if not touch.getId or touch:getId() == nil then
+				touch.getId = _staticGetTouchId
+				touch.getID = _staticGetTouchId
+			end
 			local loc = touch:getLocation()
-			self._h5TouchStartLoc = cc.p(loc.x, loc.y)
+			self._h5TouchStartLoc = loc
+			_staticTouchStartLoc.x = loc.x
+			_staticTouchStartLoc.y = loc.y
 		end
 		return oldTouchBegan(self, touch)
 	end
@@ -7905,15 +7895,9 @@ local function patchBattleUiTouch(mod)
 	local oldTouchMoved = BattleUi.onTouchMoved
 	if oldTouchMoved then
 		BattleUi.onTouchMoved = function(self, touch)
-			if touch then
-				touch.getId = function() return 0 end
-			touch.getID = function() return 0 end
-			end
 			if self._h5TouchStartLoc and touch then
 				local origGetStart = touch.getStartLocation
-				touch.getStartLocation = function()
-					return {x = self._h5TouchStartLoc.x, y = self._h5TouchStartLoc.y}
-				end
+				touch.getStartLocation = _staticGetStartLocation
 				local ret = oldTouchMoved(self, touch)
 				touch.getStartLocation = origGetStart
 				return ret
@@ -7925,10 +7909,6 @@ local function patchBattleUiTouch(mod)
 	local oldTouchEnded = BattleUi.onTouchEnded
 	if oldTouchEnded then
 		BattleUi.onTouchEnded = function(self, touch)
-			if touch then
-				touch.getId = function() return 0 end
-				touch.getID = function() return 0 end
-			end
 			local ok, err = pcall(oldTouchEnded, self, touch)
 			if not ok then
 				print("[h5_patch] BattleUi.onTouchEnded error: " .. tostring(err))
@@ -8277,6 +8257,32 @@ local function patchCardSprite(CardSprite)
 				self._initiativeSkillIcons[u] = btn
 			end
 		end
+
+		if self._ownerUi and #self._initiativeSkillIcons > 0 then
+			self._ownerUi._initiativeIconCards = self._ownerUi._initiativeIconCards or {}
+			local already = false
+			for _, c in ipairs(self._ownerUi._initiativeIconCards) do
+				if c == self then already = true break end
+			end
+			if not already then
+				table.insert(self._ownerUi._initiativeIconCards, self)
+			end
+		end
+	end
+
+	local oldRemoveInitiativeSkills = CardSprite.removeInitiativeSkills
+	CardSprite.removeInitiativeSkills = function(self)
+		if self._ownerUi and self._ownerUi._initiativeIconCards then
+			for idx, c in ipairs(self._ownerUi._initiativeIconCards) do
+				if c == self then
+					table.remove(self._ownerUi._initiativeIconCards, idx)
+					break
+				end
+			end
+		end
+		if oldRemoveInitiativeSkills then
+			return oldRemoveInitiativeSkills(self)
+		end
 	end
 
 	local oldGetNegativeStatus = CardSprite.getNegativeStatus
@@ -8293,35 +8299,48 @@ local function patchCardSprite(CardSprite)
 		return ret
 	end
 
+	local _CACHED_STR_1777 = nil
+	local _CACHED_STR_1778 = nil
+	local _CACHED_STR_1779 = nil
+	local _CACHED_STR_1771 = nil
+	local _CACHED_STR_1772 = nil
+	local _CACHED_STR_1773 = nil
+
 	local oldGetPositiveStatus = CardSprite.getPositiveStatus
 	CardSprite.getPositiveStatus = function(self)
 		local ret = oldGetPositiveStatus and oldGetPositiveStatus(self) or {}
 		local card = self._card
-		if card and (card._status == BattleData.CardStatus.board or card._status == nil) then
-			local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12008)) or card._infoId == 40734 or card._infoId == 40736
-			local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12009)) or card._infoId == 40734 or card._infoId == 40736
-			local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12010)) or card._infoId == 40734 or card._infoId == 40736
+		if not card or (card._status ~= BattleData.CardStatus.board and card._status ~= nil) then
+			return ret
+		end
 
-			local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12002)) or card._infoId == 40737 or card._infoId == 40739
-			local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12003)) or card._infoId == 40737 or card._infoId == 40739
-			local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12004)) or card._infoId == 40737 or card._infoId == 40739
+		local cid = card._infoId
+		local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or cid == 40734 or cid == 40736
+		local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or cid == 40734 or cid == 40736
+		local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or cid == 40734 or cid == 40736
+		local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or cid == 40737 or cid == 40739
+		local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or cid == 40737 or cid == 40739
+		local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or cid == 40737 or cid == 40739
 
-			local pStatus = CardSprite.PositiveStatus or {}
-			for idx = 1, #pStatus do
-				local s = pStatus[idx]
-				if s._name == "shieldOppoMonster" and has12008 then
-					ret[idx] = true
-				elseif s._name == "shieldOppoMagic" and has12009 then
-					ret[idx] = true
-				elseif s._name == "shieldOppoTrap" and has12010 then
-					ret[idx] = true
-				elseif s._name == "shieldExMonster" and has12002 then
-					ret[idx] = true
-				elseif s._name == "shieldExMagic" and has12003 then
-					ret[idx] = true
-				elseif s._name == "shieldExTrap" and has12004 then
-					ret[idx] = true
-				end
+		if not has12008 and not has12009 and not has12010 and not has12002 and not has12003 and not has12004 then
+			return ret
+		end
+
+		local pStatus = CardSprite.PositiveStatus or {}
+		for idx = 1, #pStatus do
+			local s = pStatus[idx]
+			if s._name == "shieldOppoMonster" and has12008 then
+				ret[idx] = true
+			elseif s._name == "shieldOppoMagic" and has12009 then
+				ret[idx] = true
+			elseif s._name == "shieldOppoTrap" and has12010 then
+				ret[idx] = true
+			elseif s._name == "shieldExMonster" and has12002 then
+				ret[idx] = true
+			elseif s._name == "shieldExMagic" and has12003 then
+				ret[idx] = true
+			elseif s._name == "shieldExTrap" and has12004 then
+				ret[idx] = true
 			end
 		end
 		return ret
@@ -8331,83 +8350,55 @@ local function patchCardSprite(CardSprite)
 	CardSprite.getCardStatusStrs = function(self)
 		local ret = oldGetCardStatusStrs and oldGetCardStatusStrs(self) or { {}, {} }
 		local card = self._card
-		if card and (card._status == BattleData.CardStatus.board or card._status == nil) then
-			local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12008)) or card._infoId == 40734 or card._infoId == 40736
-			local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12009)) or card._infoId == 40734 or card._infoId == 40736
-			local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12010)) or card._infoId == 40734 or card._infoId == 40736
-
-			local posList = ret[1] or {}
-			ret[1] = posList
-
-			local function normStr(s)
-				if not s then return "" end
-				return string.gsub(s, "%s+", "")
-			end
-
-			local function ensureStatusStr(targetStr)
-				if not targetStr or targetStr == "" then return end
-				local targetNorm = normStr(targetStr)
-				for _, s in ipairs(posList) do
-					if normStr(s) == targetNorm then return end
-				end
-				table.insert(posList, targetStr)
-			end
-
-			if has12008 then
-				ensureStatusStr(Str(1777))
-			end
-			if has12009 then
-				ensureStatusStr(Str(1778))
-			end
-			if has12010 then
-				ensureStatusStr(Str(1779))
-			end
-
-			local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12002)) or card._infoId == 40737 or card._infoId == 40739
-			local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12003)) or card._infoId == 40737 or card._infoId == 40739
-			local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or (card._info and card._info._skillId and B and B.tableContain(card._info._skillId, 12004)) or card._infoId == 40737 or card._infoId == 40739
-
-			if has12002 then
-				ensureStatusStr(string.gsub(string.format(Str(1771), ""), "%s+$", ""))
-			end
-			if has12003 then
-				ensureStatusStr(string.gsub(string.format(Str(1772), ""), "%s+$", ""))
-			end
-			if has12004 then
-				ensureStatusStr(string.gsub(string.format(Str(1773), ""), "%s+$", ""))
-			end
-
-			local seen = {}
-			local uniquePosList = {}
-			for _, s in ipairs(posList) do
-				local n = normStr(s)
-				if n ~= "" and not seen[n] then
-					seen[n] = true
-					table.insert(uniquePosList, s)
-				end
-			end
-			ret[1] = uniquePosList
+		if not card or (card._status ~= BattleData.CardStatus.board and card._status ~= nil) then
+			return ret
 		end
+
+		local cid = card._infoId
+		local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or cid == 40734 or cid == 40736
+		local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or cid == 40734 or cid == 40736
+		local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or cid == 40734 or cid == 40736
+		local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or cid == 40737 or cid == 40739
+		local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or cid == 40737 or cid == 40739
+		local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or cid == 40737 or cid == 40739
+
+		if not has12008 and not has12009 and not has12010 and not has12002 and not has12003 and not has12004 then
+			return ret
+		end
+
+		if not _CACHED_STR_1777 then
+			_CACHED_STR_1777 = Str(1777)
+			_CACHED_STR_1778 = Str(1778)
+			_CACHED_STR_1779 = Str(1779)
+			_CACHED_STR_1771 = string.gsub(string.format(Str(1771), ""), "%s+$", "")
+			_CACHED_STR_1772 = string.gsub(string.format(Str(1772), ""), "%s+$", "")
+			_CACHED_STR_1773 = string.gsub(string.format(Str(1773), ""), "%s+$", "")
+		end
+
+		local posList = ret[1] or {}
+		ret[1] = posList
+
+		local function addIfMissing(target)
+			for i = 1, #posList do
+				if posList[i] == target then return end
+			end
+			table.insert(posList, target)
+		end
+
+		if has12008 then addIfMissing(_CACHED_STR_1777) end
+		if has12009 then addIfMissing(_CACHED_STR_1778) end
+		if has12010 then addIfMissing(_CACHED_STR_1779) end
+		if has12002 then addIfMissing(_CACHED_STR_1771) end
+		if has12003 then addIfMissing(_CACHED_STR_1772) end
+		if has12004 then addIfMissing(_CACHED_STR_1773) end
+
 		return ret
 	end
 end
--- ---------------------------------------------------------------------------
--- BaseForm: the web widget stack rebuilds every widget's position from a
--- percent bookkeeping that goes stale (see engine.js transform sync), which
--- used to drag whole forms into the bottom-left corner. The fix lives in
--- engine.js (sync at transform time); nothing to patch on this side.
--- ---------------------------------------------------------------------------
 
--- ---------------------------------------------------------------------------
--- BattleUi: the recovered build's result screen sends PB_TYPE_BATTLE_AGAIN
--- for "play again" but carries no handler for the reply, so the WAITING
--- overlay it raises never leaves. A client-simulated battle (no relayed
--- opponent) can simply replay locally with a fresh seed; a relayed PvP duel
--- has nothing to rejoin this way, so drop the overlay and leave instead of
--- hanging forever.
--- ---------------------------------------------------------------------------
 local function patchBattleUi(BattleUi)
 	if not BattleUi then return end
+
 	BattleUi.getEventDispatcher = function(self)
 		local ed = cc and cc.eventManager
 		if ed and not ed.removeEventListenersForTarget then

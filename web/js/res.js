@@ -84,11 +84,14 @@
 		var direct = R.manifest.containers[path];
 		if (direct) return direct;
 
-		/* thumbnails follow one convention: <dir>/<id>.lcres/<id>.jpg */
+		/* thumbnails follow one convention: <dir>/<id>.lcres/<id>.jpg or .jpm */
 		var m = /^res\/([a-z_]+)\/([0-9_]+)\.lcres$/.exec(path);
 		if (m) {
 			var ids = R.manifest.thumbs[m[1]];
-			if (ids && ids.indexOf(m[2]) >= 0) return [m[2] + '.jpg'];
+			if (ids && ids.indexOf(m[2]) >= 0) {
+				var ext = (m[1] === 'thumb_rare' || m[1] === 'thumb_monster') ? '.jpm' : '.jpg';
+				return [m[2] + ext];
+			}
 		}
 		return null;
 	};
@@ -740,7 +743,21 @@
 						if (!t) { clearTimeout(timer); resolve(); }
 					});
 				}
-				return Promise.resolve();   /* .bin and friends: not used here */
+				if (/\.bin$/.test(name)) {
+					var binUrl = R.base + path.replace(/^res\//, '') + '/' + name;
+					return fetch(versionedUrl(binUrl))
+						.then(function (r) { return r.ok ? r.arrayBuffer() : null; })
+						.then(function (buf) {
+							if (buf && global.binCache) {
+								var fullUrl = (R.base || 'res/') + path.replace(/^res\//, '') + '/' + name;
+								global.binCache[fullUrl] = buf;
+								global.binCache[fullUrl.split('?')[0]] = buf;
+								global.binCache[binUrl] = buf;
+								global.binCache[binUrl.split('?')[0]] = buf;
+							}
+						}).catch(function () {});
+				}
+				return Promise.resolve();
 			}));
 		});
 
@@ -899,6 +916,18 @@
 			var jpgPath = path.replace(/\.jpm$/, '.jpg');
 			if (jpgPath !== path && R.manifest.files.indexOf(jpgPath) >= 0) return true;
 		}
+		if (R.containerOf && R.containerOf[path]) return true;
+		if (!R.containerEntriesSet && R.manifest.containers) {
+			var set = new Set();
+			for (var c in R.manifest.containers) {
+				var ents = R.manifest.containers[c];
+				if (ents) {
+					for (var i = 0; i < ents.length; i++) set.add(ents[i]);
+				}
+			}
+			R.containerEntriesSet = set;
+		}
+		if (R.containerEntriesSet && R.containerEntriesSet.has(path)) return true;
 		return !!R.entriesOf(path);
 	};
 

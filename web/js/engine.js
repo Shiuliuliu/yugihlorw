@@ -474,7 +474,7 @@
 		var isPath = url.indexOf('res/') === 0 || url.indexOf(res.base) === 0;
 
 		/* If the url ends in .jpm, it's a masked texture (jpg + _mask.png) */
-		if (/\.jpm$/.test(url)) {
+		if (isPath && /\.jpm$/.test(url)) {
 			var jpgPath = url.replace(/\.jpm$/, '.jpg');
 			var maskPath = url.replace(/\.jpm$/, '_mask.png');
 			var realJpgUrl = res.base + jpgPath.replace(/^res\//, '');
@@ -1430,6 +1430,7 @@
 	 * centre the sprites beside it use, so the two agree. */
 	if (cc.ParticleSystem && cc.ParticleSystem.WebGLRenderCmd) {
 		var baseParticleRendering = cc.ParticleSystem.WebGLRenderCmd.prototype.rendering;
+		var particleWorldTransform = { a: 1, b: 0, c: 0, d: 1, tx: 0, ty: 0 };
 		cc.ParticleSystem.WebGLRenderCmd.prototype.rendering = function (ctx) {
 			var node = this._node;
 			if (!node) return baseParticleRendering.call(this, ctx);
@@ -1442,21 +1443,33 @@
 
 			var uprightRoot = getUprightRoot(node);
 			var center = uprightRoot ? getUprightCenter(uprightRoot) : null;
-			var project = center
-				? function (x, y) {
-					return BATTLE_PERSPECTIVE.projectUpright(x, y, center.x, center.y, root);
-				}
-				: function (x, y) { return BATTLE_PERSPECTIVE.projectFlat(x, y, root); };
-
 			var wt = this._worldTransform;
-			var o = project(wt.tx, wt.ty);
-			var ex = project(wt.tx + wt.a, wt.ty + wt.b);
-			var ey = project(wt.tx + wt.c, wt.ty + wt.d);
-			this._worldTransform = {
-				a: ex.x - o.x, b: ex.y - o.y,
-				c: ey.x - o.x, d: ey.y - o.y,
-				tx: o.x, ty: o.y,
-			};
+			var ox, oy, exx, exy, eyx, eyy;
+
+			if (center) {
+				var cx = center.x, cy = center.y;
+				var o = BATTLE_PERSPECTIVE.projectUpright(wt.tx, wt.ty, cx, cy, root);
+				var ex = BATTLE_PERSPECTIVE.projectUpright(wt.tx + wt.a, wt.ty + wt.b, cx, cy, root);
+				var ey = BATTLE_PERSPECTIVE.projectUpright(wt.tx + wt.c, wt.ty + wt.d, cx, cy, root);
+				ox = o.x; oy = o.y;
+				exx = ex.x; exy = ex.y;
+				eyx = ey.x; eyy = ey.y;
+			} else {
+				var o = BATTLE_PERSPECTIVE.projectFlat(wt.tx, wt.ty, root);
+				var ex = BATTLE_PERSPECTIVE.projectFlat(wt.tx + wt.a, wt.ty + wt.b, root);
+				var ey = BATTLE_PERSPECTIVE.projectFlat(wt.tx + wt.c, wt.ty + wt.d, root);
+				ox = o.x; oy = o.y;
+				exx = ex.x; exy = ex.y;
+				eyx = ey.x; eyy = ey.y;
+			}
+
+			particleWorldTransform.a = exx - ox;
+			particleWorldTransform.b = exy - oy;
+			particleWorldTransform.c = eyx - ox;
+			particleWorldTransform.d = eyy - oy;
+			particleWorldTransform.tx = ox;
+			particleWorldTransform.ty = oy;
+			this._worldTransform = particleWorldTransform;
 
 			var ret = baseParticleRendering.call(this, ctx);
 			this._worldTransform = wt;
@@ -2324,8 +2337,11 @@
 	 * Sync XHR cannot ask for an ArrayBuffer, hence the byte-preserving
 	 * charset and the copy out of the string. */
 	var binCache = {};
+	global.binCache = binCache;
 	function readBinSync(url) {
 		if (binCache[url]) return binCache[url];
+		var cleanUrl = (typeof url === 'string') ? url.split('?')[0] : url;
+		if (binCache[cleanUrl]) return binCache[cleanUrl];
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url, false);
 		xhr.overrideMimeType('text/plain; charset=x-user-defined');
@@ -2338,6 +2354,7 @@
 		for (var i = 0; i < text.length; i++)
 			bytes[i] = text.charCodeAt(i) & 0xff;
 		binCache[url] = bytes.buffer;
+		binCache[cleanUrl] = bytes.buffer;
 		return binCache[url];
 	}
 
@@ -2400,54 +2417,57 @@
 		node.setScaleY(t.scaleY);
 	}
 
+	var _staticTransform = { x: 0, y: 0, skewX: 0, skewY: 0, scaleX: 1, scaleY: 1 };
+	function lerpTransformInPlace(out, a, b, k) {
+		out.x = a.x + (b.x - a.x) * k;
+		out.y = a.y + (b.y - a.y) * k;
+		out.skewX = a.skewX + (b.skewX - a.skewX) * k;
+		out.skewY = a.skewY + (b.skewY - a.skewY) * k;
+		out.scaleX = a.scaleX + (b.scaleX - a.scaleX) * k;
+		out.scaleY = a.scaleY + (b.scaleY - a.scaleY) * k;
+		return out;
+	}
 	function lerpTransform(a, b, k) {
-		return {
-			x: a.x + (b.x - a.x) * k,
-			y: a.y + (b.y - a.y) * k,
-			skewX: a.skewX + (b.skewX - a.skewX) * k,
-			skewY: a.skewY + (b.skewY - a.skewY) * k,
-			scaleX: a.scaleX + (b.scaleX - a.scaleX) * k,
-			scaleY: a.scaleY + (b.scaleY - a.scaleY) * k,
-		};
+		return lerpTransformInPlace(_staticTransform, a, b, k);
 	}
 
-	/* The frame covering `at`, with its transform tweened into the next
-	 * one. Frame durations are cumulative, in frames. A frame that carries
-	 * no transform is the armature's way of saying the slot is not on
-	 * screen for that stretch -- a blink, or an effect that starts part-way
-	 * through -- so the index comes back with it and the caller hides the
-	 * slot. */
+	var _staticPickedFrame = {
+		index: 0,
+		displayIndex: 0,
+		alpha: undefined,
+		colorR: undefined,
+		colorG: undefined,
+		colorB: undefined,
+		transform: _staticTransform
+	};
+
 	function pickFrame(frames, at) {
 		var start = 0;
 		for (var i = 0; i < frames.length; i++) {
 			var frame = frames[i], end = start + frame.duration;
 			if (at < end || i === frames.length - 1) {
 				var next = frames[i + 1];
-				if (!frame.transform || !next || !next.transform ||
-				    frame.duration <= 0)
-					return {
-						index: i,
-						displayIndex: frame.displayIndex,
-						alpha: frame.alpha,
-						colorR: frame.colorR,
-						colorG: frame.colorG,
-						colorB: frame.colorB,
-						transform: frame.transform
-					};
+				if (!frame.transform || !next || !next.transform || frame.duration <= 0) {
+					_staticPickedFrame.index = i;
+					_staticPickedFrame.displayIndex = frame.displayIndex;
+					_staticPickedFrame.alpha = frame.alpha;
+					_staticPickedFrame.colorR = frame.colorR;
+					_staticPickedFrame.colorG = frame.colorG;
+					_staticPickedFrame.colorB = frame.colorB;
+					_staticPickedFrame.transform = frame.transform;
+					return _staticPickedFrame;
+				}
 
-				var k = Math.max(0, Math.min(1,
-					(at - start) / frame.duration));
-				return {
-					index: i,
-					displayIndex: frame.displayIndex,
-					alpha: frame.alpha !== undefined && next.alpha !== undefined ?
-						frame.alpha + (next.alpha - frame.alpha) * k : frame.alpha,
-					colorR: frame.colorR,
-					colorG: frame.colorG,
-					colorB: frame.colorB,
-					transform: lerpTransform(frame.transform,
-								 next.transform, k),
-				};
+				var k = Math.max(0, Math.min(1, (at - start) / frame.duration));
+				_staticPickedFrame.index = i;
+				_staticPickedFrame.displayIndex = frame.displayIndex;
+				_staticPickedFrame.alpha = (frame.alpha !== undefined && next.alpha !== undefined) ?
+					frame.alpha + (next.alpha - frame.alpha) * k : frame.alpha;
+				_staticPickedFrame.colorR = frame.colorR;
+				_staticPickedFrame.colorG = frame.colorG;
+				_staticPickedFrame.colorB = frame.colorB;
+				_staticPickedFrame.transform = lerpTransformInPlace(_staticTransform, frame.transform, next.transform, k);
+				return _staticPickedFrame;
 			}
 			start = end;
 		}
@@ -2737,20 +2757,8 @@
 	};
 
 	cc.DragonBonesNode.clearCache = function () {
-		for (var k in dbCache) {
-			if (dbCache[k]) {
-				var entry = dbCache[k];
-				if (entry.atlas && entry.atlas.regions) {
-					Object.keys(entry.atlas.regions).forEach(function (rName) {
-						cc.spriteFrameCache.removeSpriteFrameByName(rName);
-					});
-				}
-				if (entry.textureKey) {
-					cc.textureCache.removeTextureForKey(entry.textureKey);
-				}
-			}
-			delete dbCache[k];
-		}
+		// DuelH5 architecture keeps dbCache intact across scene switches to prevent
+		// freezes, re-compositing, and synchronous XHR reloading during battle.
 	};
 
 	/* ------------------------------------------------------------------ *
@@ -3464,7 +3472,7 @@
 			var texture = cc.textureCache.getTextureForKey(key);
 			if (texture && texture.isLoaded()) return new Cls(texture);
 
-			if (texture || res.exists(key)) {
+			if (texture || res.exists(key) || /\d+(_\d+)?\.(jpm|jpg)$/.test(key)) {
 				var sprite = new Cls();
 				if (size) sprite.setContentSize(cc.size(size[0], size[1]));
 				if (texture) {
@@ -3477,6 +3485,11 @@
 					 * placeholder the rest of the cache uses. Container keys
 					 * ("10001.jpm") keep the sprite's own self-loading. */
 					cc.textureCache.addImageWithMask(key);
+					res.awaitTexture(key, sprite);
+				} else {
+					if (!cc.textureCache.getTextureForKey(key)) {
+						cc.textureCache._textures[key] = res.emptyTexture(key);
+					}
 					res.awaitTexture(key, sprite);
 				}
 				return sprite;
