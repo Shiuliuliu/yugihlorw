@@ -506,6 +506,7 @@ function var_0_0.efcSkillShow(arg_25_0, arg_25_1, arg_25_2, arg_25_3)
 	local var_25_2 = CardSprite.create(var_25_0, arg_25_1._ownerUi or arg_25_0._isController and arg_25_0 or arg_25_0._opponentUi)
 
 	var_25_2:initNormal()
+	if var_25_2.setTouchEnabled then var_25_2:setTouchEnabled(false) end
 	lc.addChildToPos(arg_25_0._battleUi, var_25_2, var_25_1, BattleUi.ZOrder.skill_label)
 	var_25_2:setScale(0)
 	var_25_2:runAction(lc.sequence(lc.ease(lc.scaleTo(0.2, 1 / CardSprite.Scale.normal), "BackO"), lc.moveBy(0.5, cc.p(3, 5)), lc.moveBy(0.5, cc.p(-3, -5)), lc.scaleTo(0.2, 0), lc.remove()))

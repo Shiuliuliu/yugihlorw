@@ -63,7 +63,6 @@ function var_0_0.hide(arg_4_0)
 		arg_4_0._battleUi._isAddingBoardCard = false
 		if arg_4_0._playerUi then
 			arg_4_0._playerUi:updateCardsActive()
-			arg_4_0._playerUi:updateBoardCardsInitialSkills(true)
 		end
 		arg_4_0._battleUi:updateRoundButton()
 	end

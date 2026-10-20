@@ -1228,8 +1228,6 @@ function var_0_0.updateCardsActive(arg_51_0)
 			iter_51_3:updateActive(false)
 		end
 	end
-
-	arg_51_0:updateBoardCardsInitialSkills()
 end
 
 function var_0_0.updateBoardCardsActive(arg_52_0)
@@ -1279,27 +1277,7 @@ function var_0_0.onChoiceDialogOpened(arg_x_0)
 	end
 end
 
-function var_0_0.updateBoardCardsInitialSkills(arg_54_0, force)
-	local now = os.clock and os.clock() or os.time()
-	if not force and arg_54_0._lastInitSkillUpdate and (now - arg_54_0._lastInitSkillUpdate < 0.05) then
-		if not arg_54_0._pendingInitSkillTimer then
-			arg_54_0._pendingInitSkillTimer = true
-			if lc and lc.performWithDelay then
-				local scene = arg_54_0._scene or (cc.Director and cc.Director:getInstance():getRunningScene())
-				if scene then
-					lc.performWithDelay(scene, function()
-						arg_54_0._pendingInitSkillTimer = nil
-						if arg_54_0.updateBoardCardsInitialSkills then
-							arg_54_0:updateBoardCardsInitialSkills(true)
-						end
-					end, 0.06)
-				end
-			end
-		end
-		return
-	end
-	arg_54_0._lastInitSkillUpdate = now
-
+function var_0_0.updateBoardCardsInitialSkills(arg_54_0)
 	if arg_54_0._isController and arg_54_0._player == arg_54_0._player:getActionPlayer() and arg_54_0._battleUi._dropLayer == nil and not arg_54_0._battleUi._isAuto then
 		arg_54_0._battleUi._btnInitiative:setEnabled(#arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("BSDGHL", nil, nil, true) > 0)
 
@@ -1573,7 +1551,6 @@ function var_0_0.createChoiceMaskLayer(arg_59_0, arg_59_1, arg_59_2, arg_59_3, a
 		if arg_59_0._battleUi then
 			arg_59_0._battleUi._isAddingBoardCard = false
 			arg_59_0:updateCardsActive()
-			arg_59_0:updateBoardCardsInitialSkills(true)
 			arg_59_0._battleUi:updateRoundButton()
 		end
 	end
@@ -7381,7 +7358,6 @@ function var_0_0.cancelChoiceGrave(arg_90_0, arg_90_1, arg_90_2, arg_90_3)
 	if arg_90_0._battleUi then
 		arg_90_0._battleUi._isAddingBoardCard = false
 		arg_90_0:updateCardsActive()
-		arg_90_0:updateBoardCardsInitialSkills(true)
 		arg_90_0._battleUi:updateRoundButton()
 	end
 end

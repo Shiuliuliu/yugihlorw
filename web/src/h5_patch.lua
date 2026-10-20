@@ -8202,89 +8202,6 @@ local function patchCardSprite(CardSprite)
 		end
 	end
 
-	local oldUpdateInitiativeSkills = CardSprite.updateInitiativeSkills
-	CardSprite.updateInitiativeSkills = function(self)
-		local card = self._card
-		if not card then return end
-		self._initiativeSkillIcons = self._initiativeSkillIcons or {}
-		local skills = card.getInitiativeSkill and card:getInitiativeSkill(Data.SkillMode.initiative_bcs)
-		if not self._isController or (card._status ~= BattleData.CardStatus.board and card._status ~= BattleData.CardStatus.show and card._status ~= BattleData.CardStatus.field) or not skills or #skills == 0 then
-			pcall(function() self:removeInitiativeSkills() end)
-			return
-		end
-		if self._initiativeSkillIcons and #self._initiativeSkillIcons == #skills and #skills > 0 then
-			for u = 1, #skills do
-				local s = skills[u]
-				local btn = self._initiativeSkillIcons[u]
-				if btn then
-					local canUse = (card._owner and (card._owner:canUseInitiativeSkill(card, s) and (not self._battleUi or self._battleUi._dropLayer == nil))) or false
-					btn:setEnabled(canUse)
-				end
-			end
-			return
-		end
-		pcall(function() self:removeInitiativeSkills() end)
-		self._initiativeSkillIcons = {}
-		for u = 1, #skills do
-			local s = skills[u]
-			local btn = ClientView.createShaderButton("initiative_icon_s", function(q)
-				if not self._ownerUi or not self._ownerUi._isController then return true end
-				if self._battleUi and self._battleUi._isAddingBoardCard then
-					if self._battleUi._touchCard == nil and self._battleUi._choiceMaskLayer == nil and self._battleUi._choicePosDialog == nil and self._battleUi._choiceGraveDialog == nil then
-						self._battleUi._isAddingBoardCard = false
-					else
-						self._ownerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
-						return true
-					end
-				end
-				if not ClientData.checkBtnClick() then return end
-				self._ownerUi:castInitiativeSkill(card, s)
-			end)
-			if btn then
-				btn:setDisabledShader(ClientView.SHADER_DISABLE)
-				local canUse = (card._owner and (card._owner:canUseInitiativeSkill(card, s) and (not self._battleUi or self._battleUi._dropLayer == nil))) or false
-				btn:setEnabled(canUse)
-				local h = {0, 6, -6, 10, -10, 6}
-				local posX = (card._pos and h[card._pos]) or 0
-				btn:setTouchRect(cc.rect(posX, 0, lc.w(btn) + posX, lc.h(btn)))
-				if self._scene and self._scene.seenByCamera3D then
-					self._scene:seenByCamera3D(btn)
-				end
-				if self._pEffectArea then
-					lc.addChildToPos(self._pEffectArea, btn, cc.p(-60 + u * 30, -100))
-				end
-				btn:retain()
-				self._initiativeSkillIcons[u] = btn
-			end
-		end
-
-		if self._ownerUi and #self._initiativeSkillIcons > 0 then
-			self._ownerUi._initiativeIconCards = self._ownerUi._initiativeIconCards or {}
-			local already = false
-			for _, c in ipairs(self._ownerUi._initiativeIconCards) do
-				if c == self then already = true break end
-			end
-			if not already then
-				table.insert(self._ownerUi._initiativeIconCards, self)
-			end
-		end
-	end
-
-	local oldRemoveInitiativeSkills = CardSprite.removeInitiativeSkills
-	CardSprite.removeInitiativeSkills = function(self)
-		if self._ownerUi and self._ownerUi._initiativeIconCards then
-			for idx, c in ipairs(self._ownerUi._initiativeIconCards) do
-				if c == self then
-					table.remove(self._ownerUi._initiativeIconCards, idx)
-					break
-				end
-			end
-		end
-		if oldRemoveInitiativeSkills then
-			return oldRemoveInitiativeSkills(self)
-		end
-	end
-
 	local oldGetNegativeStatus = CardSprite.getNegativeStatus
 	CardSprite.getNegativeStatus = function(self)
 		local ret = oldGetNegativeStatus and oldGetNegativeStatus(self) or {}
@@ -8400,23 +8317,7 @@ local function patchBattleUi(BattleUi)
 	if not BattleUi then return end
 
 	BattleUi.getEventDispatcher = function(self)
-		local ed = cc and cc.eventManager
-		if ed and not ed.removeEventListenersForTarget then
-			ed.removeEventListenersForTarget = function() end
-		end
-		return ed or { removeEventListenersForTarget = function() end }
-	end
-
-	-- Safeguard removeEventListenersForTarget on node event dispatcher
-	if cc and cc.Node and cc.Node.getEventDispatcher then
-		local _origGED = cc.Node.getEventDispatcher
-		cc.Node.getEventDispatcher = function(self)
-			local ed = _origGED(self)
-			if ed and not ed.removeEventListenersForTarget then
-				ed.removeEventListenersForTarget = function() end
-			end
-			return ed or { removeEventListenersForTarget = function() end }
-		end
+		return (cc and cc.eventManager) or { removeEventListenersForTarget = function() end, removeListeners = function() end }
 	end
 
 	if not BattleUi then return end

@@ -299,7 +299,15 @@ function var_0_0.preloadBattleDragonBones(arg_18_0)
 	local var_18_0 = {
 		"xuanzhong",
 		"kapaisiwang",
-		"beiji"
+		"beiji",
+		"szkp",
+		"jdgj",
+		"tssh",
+		"blzz",
+		"guanchuan",
+		"wlfy",
+		"zh",
+		"tuika"
 	}
 
 	for iter_18_0, iter_18_1 in ipairs(var_18_0) do

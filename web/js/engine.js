@@ -70,6 +70,12 @@
 		try { sweepDeadListeners(); } catch (e) { cc.log('[sweep] ' + e); }
 	}, 3000);
 
+	if (cc && cc.eventManager && !cc.eventManager.removeEventListenersForTarget) {
+		cc.eventManager.removeEventListenersForTarget = function (node, recursive) {
+			if (node) cc.eventManager.removeListeners(node, recursive);
+		};
+	}
+
 	/* ------------------------------------------------------------------ *
 	 * cc.Application -- lc.App
 	 *
@@ -2338,6 +2344,49 @@
 	 * charset and the copy out of the string. */
 	var binCache = {};
 	global.binCache = binCache;
+
+	global.jdzcPreloadBattleEffects = function () {
+		var effects = [
+			'szkp', 'xuanzhong', 'kapaisiwang', 'beiji', 'jdgj',
+			'tssh', 'blzz', 'guanchuan', 'wlfy', 'zh', 'tuika',
+			'touyingbi', 'yaosaizi', 'cmdlbz'
+		];
+		var promises = [];
+		var base = (config.resBase || 'res/').replace(/\/+$/, '') + '/';
+		effects.forEach(function (name) {
+			var dir = base + 'effects/' + name + '.lcres/';
+			var texUrl = dir + name + '_tex.bin';
+			var skeUrl = dir + name + '_ske.bin';
+			if (!binCache[texUrl]) {
+				promises.push(
+					fetch(texUrl).then(function (r) {
+						if (!r.ok) return null;
+						return r.arrayBuffer();
+					}).then(function (buf) {
+						if (buf) {
+							binCache[texUrl] = buf;
+							binCache[texUrl.split('?')[0]] = buf;
+						}
+					}).catch(function () {})
+				);
+			}
+			if (!binCache[skeUrl]) {
+				promises.push(
+					fetch(skeUrl).then(function (r) {
+						if (!r.ok) return null;
+						return r.arrayBuffer();
+					}).then(function (buf) {
+						if (buf) {
+							binCache[skeUrl] = buf;
+							binCache[skeUrl.split('?')[0]] = buf;
+						}
+					}).catch(function () {})
+				);
+			}
+		});
+		return Promise.all(promises);
+	};
+
 	function readBinSync(url) {
 		if (binCache[url]) return binCache[url];
 		var cleanUrl = (typeof url === 'string') ? url.split('?')[0] : url;
