@@ -13796,13 +13796,13 @@ function var_0_0.isGraveSkill3(arg_306_0, arg_306_1, arg_306_2, arg_306_3)
 	elseif arg_306_1._id == 14191 then
 		return true, var_306_0._graveCards, 1
 	elseif arg_306_1._id == 14196 then
-		return true, B.sortCardsByBoardPos(var_306_0:getBoardCards()), 1
+		return true, B.sortCardsByBoardPos(B.filterNoShieldCards(var_306_0:getBoardCards(), BattleData.PositiveType.shieldMonster, true)), 1
 	elseif arg_306_1._id == 14197 then
-		return true, B.sortCardsByBoardPos(var_306_0:getBattleCards("BCSD")), 1
+		return true, B.sortCardsByBoardPos(B.filterNoShieldCards(var_306_0:getBattleCards("BCSD"), BattleData.PositiveType.shieldMonster, true)), 1
 	elseif arg_306_1._id == 14199 then
 		return true, arg_306_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_306_0:getBattleCardsByType("G", Data.CardType.monster), var_306_1._refCards[1])), 1
 	elseif arg_306_1._id == 14201 then
-		local var_306_21 = var_306_0:filterCanChangeToHandCards(var_306_0:getBattleCards("BCSD"))
+		local var_306_21 = B.filterNoShieldCards(var_306_0:filterCanChangeToHandCards(var_306_0:getBattleCards("BCSD")), BattleData.PositiveType.shieldMonster, true)
 
 		return true, B.sortCardsByBoardPos(var_306_21), math.min(3, #var_306_21)
 	elseif arg_306_1._id == 14202 then

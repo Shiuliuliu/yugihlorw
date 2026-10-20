@@ -52476,9 +52476,9 @@ Mỗi lượt chỉ 1 lần. Khi bài này nằm trong bộ bài; khi phe ta Tri
 TrickStar-Chuẩn Bị
 Mỗi lượt chỉ 1 lần. Khi bài này có mặt; đối thủ bị mất LP do hiệu quả sẽ có thể dùng. Lấy 1 bài Phép/Bẫy ngẫu nhiên; có từ khóa “TrickStar” từ bộ bài phe ta vào tay.
 TrickStar-Mandrake I
-Kỹ năng mộ chủ động: Kỹ năng này và “TrickStar-Mandrake II” mỗi lượt chỉ được dùng 1 loại. Loại bỏ bản thân bài này; chọn và phá hủy 1 quái trên sân đối thủ (bỏ qua “Khiên Chắn Quái”).
+Kỹ năng mộ chủ động: Kỹ năng này và “TrickStar-Mandrake II” mỗi lượt chỉ được dùng 1 loại. Loại bỏ bản thân bài này; chọn và phá hủy 1 quái trên sân đối thủ.
 TrickStar-Mandrake II
-Kỹ năng mộ loại bỏ chủ động: Kỹ năng này và “TrickStar-Mandrake I” mỗi lượt chỉ được dùng 1 loại. Chọn 1 lá bài trên sân đối thủ; vô hiệu hóa hiệu quả bài đã chọn (bỏ qua “Khiên Chắn Quái”). Kỹ năng chỉ kích hoạt 1 lần.
+Kỹ năng mộ loại bỏ chủ động: Kỹ năng này và “TrickStar-Mandrake I” mỗi lượt chỉ được dùng 1 loại. Chọn 1 lá bài trên sân đối thủ; vô hiệu hóa hiệu quả bài đã chọn. Kỹ năng chỉ kích hoạt 1 lần.
 TrickStar-Xung Kích
 Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Triệu Hồi Đặc Biệt bài này từ bài trên tay.
 TrickStar-Vẫy Gọi
@@ -52486,7 +52486,7 @@ Chủ động: Mỗi lượt chỉ 1 lần. Khi đối thủ bị mất LP sẽ 
 TrickStar-Chuông Gió
 Khi bài này nằm trong mộ; ngoại trừ giai đoạn rút bài; đối thủ có bài vào tay sẽ có thể dùng; đối thủ chịu [1] LP
 TrickStar-Hỏa Ngục
-Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Hi sinh bản thân bài này; chọn tối đa [1] lá bài trên sân đối thủ; đưa trở về bài trên tay của người sở hữu (bỏ qua “Khiên Chắn Quái”). Sau đó trong lượt này; khi Triệu Hồi Đặc Biệt quái từ ngoài bộ bài thêm; chỉ có thể Triệu Hồi Đặc Biệt quái có từ khóa “TrickStar”.
+Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Hi sinh bản thân bài này; chọn tối đa [1] lá bài trên sân đối thủ; đưa trở về bài trên tay của người sở hữu. Sau đó trong lượt này; khi Triệu Hồi Đặc Biệt quái từ ngoài bộ bài thêm; chỉ có thể Triệu Hồi Đặc Biệt quái có từ khóa “TrickStar”.
 TrickStar-Sắp Xếp
 Nghĩa địa·Loại trừ Kỹ năng kích hoạt trong Nghĩa địa: Chỉ một lần mỗi lượt; trả tối đa [1] quái vật có chất lượng UR trở xuống trên sân của chính bạn và Triệu Hồi Đặc Biệt 2 <TrickStar·Phụ kiện> trên sân của riêng bạn. Sau đó; bạn chỉ có thể Triệu Hồi Đặc Biệt những quái vật có từ khóa “TrickStar” trong vòng này mà thôi. Kỹ năng này chỉ có thể được kích hoạt một lần.
 TrickStar-Dự Cảm

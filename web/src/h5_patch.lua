@@ -314,6 +314,15 @@ local function patchData()
 				Data._skillInfo[14749]._modes = { [1] = 61, [2] = 2 }
 				Data._skillInfo[14749]._isIgnoreDefend = 0
 			end
+			if Data._skillInfo[14196] then
+				Data._skillInfo[14196]._isIgnoreDefend = 0
+			end
+			if Data._skillInfo[14197] then
+				Data._skillInfo[14197]._isIgnoreDefend = 0
+			end
+			if Data._skillInfo[14201] then
+				Data._skillInfo[14201]._isIgnoreDefend = 0
+			end
 			if Data._skillInfo[14750] then
 				Data._skillInfo[14750]._nameSid = 57220
 				Data._skillInfo[14750]._descSid = 57221
@@ -5035,6 +5044,10 @@ function patchClientData()
 	end
 
 	local CARD_NAME_OVERRIDES = {
+		-- TrickStar fixes: khong con xuyen qua khien/tuong chan quai
+		[52479] = "Ký năng mộ chủ động: Ký năng này và “TrickStar-Mandrake II” mỗi lượt chỉ được dùng 1 loại. Loại bỏ bản thân bài này; chọn và phá hủy 1 quái trên sân đối thủ.",
+		[52481] = "Ký năng mộ loại bỏ chủ động: Ký năng này và “TrickStar-Mandrake I” mỗi lượt chỉ được dùng 1 loại. Chọn 1 lá bài trên sân đối thủ; vô hiệu hóa hiệu quả bài đã chọn. Ký năng chỉ kích hoạt 1 lần.",
+		[52489] = "Ký năng tay chủ động: Mỗi lượt chỉ 1 lần. Hi sinh bản thân bài này; chọn tối đa [1] lá bài trên sân đối thủ; đưa trở về bài trên tay của người sở hữu. Sau đó trong lượt này; khi Triệu Hồi Đặc Biệt quái từ ngoài bộ bài thêm; chỉ có thể Triệu Hồi Đặc Biệt quái có từ khóa “TrickStar”.",
 		-- Tuong Chan (12008, 12009, 12010)
 		[50082] = "Tường Chắn Quái",
 		[50083] = "Bị bài quái đối thủ ảnh hưởng sẽ bỏ qua hiệu quả.",

@@ -42890,15 +42890,22 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 	elseif var_8_4 == 14196 then
 		arg_8_0:setCardStatus(arg_8_1, BattleData.CardStatus.leave, var_8_5, var_8_4, arg_8_3)
 
-		var_8_13 = arg_8_0:setCardStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.grave)
+		local targetCard = arg_8_0:getCardById(var_8_15)
+		if targetCard and not targetCard:hasShieldInType(BattleData.PositiveType.shieldMonster) and not targetCard:hasShieldExInType(BattleData.PositiveType.shieldMonster) then
+			var_8_13 = arg_8_0:setCardStatusByChoice(var_8_15, var_8_5, var_8_4, arg_8_3, BattleData.CardStatus.grave)
+		else
+			var_8_13 = true
+		end
 	elseif var_8_4 == 14197 then
 		local var_8_127 = arg_8_0:getCardById(var_8_15)
 
 		if var_8_127 ~= nil then
-			arg_8_0:incNegativeStatus(var_8_127, {
-				BattleData.NegativeType.boardMonsterSkillFrozen
-			}, false, var_8_5, var_8_4, arg_8_3)
-			arg_8_0:setCardStatus(arg_8_0._fortress, BattleData.CardStatus.fortress, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.f2f_halo)
+			if not var_8_127:hasShieldInType(BattleData.PositiveType.shieldMonster) and not var_8_127:hasShieldExInType(BattleData.PositiveType.shieldMonster) then
+				arg_8_0:incNegativeStatus(var_8_127, {
+					BattleData.NegativeType.boardMonsterSkillFrozen
+				}, false, var_8_5, var_8_4, arg_8_3)
+				arg_8_0:setCardStatus(arg_8_0._fortress, BattleData.CardStatus.fortress, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.f2f_halo)
+			end
 
 			var_8_13 = true
 		end
@@ -42922,7 +42929,7 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 
 		for iter_8_23 = 1, #var_8_128 do
 			local tgCard = var_8_128[iter_8_23]
-			if not (tgCard and (tgCard:isInfoId(40730) or tgCard:hasSkillFast(14719)) and (tgCard._tsAwakened or tgCard:hasSkillFast(12002) or (tgCard:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)) then
+			if not (tgCard and (tgCard:isInfoId(40730) or tgCard:hasSkillFast(14719)) and (tgCard._tsAwakened or tgCard:hasSkillFast(12002) or (tgCard:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)) and not (tgCard and (tgCard:hasShieldInType(BattleData.PositiveType.shieldMonster) or tgCard:hasShieldExInType(BattleData.PositiveType.shieldMonster))) then
 				arg_8_0:setCardStatus(tgCard, BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3, tgCard._owner ~= tgCard._originOwner and BattleData.CardStatusVal.b2h_oppo or nil)
 			end
 		end
@@ -105318,7 +105325,7 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 			arg_40_1
 		}) > 0
 	elseif var_40_0 == 14196 then
-		return #var_40_4:getBoardCards() > 0
+		return #B.filterNoShieldCards(var_40_4:getBoardCards(), BattleData.PositiveType.shieldMonster, true) > 0
 	elseif var_40_0 == 14197 then
 		return #B.filterNoShieldCards(var_40_4:getBattleCards("BCSD"), BattleData.PositiveType.shieldMonster, true) > 0
 	elseif var_40_0 == 14198 then
@@ -105332,7 +105339,7 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 
 		return #arg_40_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_40_0:getBattleCardsByType("G", Data.CardType.monster), var_40_1._refCards[1])) > 0
 	elseif var_40_0 == 14201 then
-		return #var_40_4:filterCanChangeToHandCards(var_40_4:getBattleCards("BCSD")) > 0
+		return #B.filterNoShieldCards(var_40_4:filterCanChangeToHandCards(var_40_4:getBattleCards("BCSD")), BattleData.PositiveType.shieldMonster, true) > 0
 	elseif var_40_0 == 14202 then
 		if #arg_40_0:getBattleCardsByMaxQuality("B", var_40_1._refCards[1]) == 0 then
 			return false
