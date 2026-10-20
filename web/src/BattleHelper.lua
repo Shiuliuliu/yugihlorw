@@ -4761,8 +4761,8 @@ function var_0_0.getMergeCandidates(arg_239_0, arg_239_1, arg_239_2, arg_239_3, 
 				var_239_6 = B.filterMergeCards(B.filterInSuperIdCards(arg_239_0:getBattleCards(arg_239_2), var_239_5 - 900))
 			elseif var_239_5 == 3902 and arg_239_1:isInfoId(40739) then
 				var_239_6 = B.filterMergeCards(B.filterInSuperIdCards(arg_239_0:getBattleCards(arg_239_2), 3302))
-			elseif var_239_5 == 3015 and arg_239_1:isInfoId(40742) then
-				var_239_6 = B.filterInCategoryCards(B.filterInKeywordCards(arg_239_0:getBattleCards(arg_239_2), 15), 6)
+			elseif (var_239_5 == 3006 or var_239_5 == 3015) and arg_239_1:isInfoId(40742) then
+				var_239_6 = B.filterInCategoryCards(B.filterInKeywordCards(arg_239_0:getBattleCards(arg_239_2), 6), 6)
 			end
 		end
 

@@ -173,7 +173,7 @@ function var_0_0.createKeyword(arg_9_0)
 	local var_9_0, var_9_1, var_9_2, var_9_3 = arg_9_0:createItemBegin(Str(STR.CARD_KEYWORD))
 	local var_9_4 = Data.getInfo(var_9_1)
 	local kwStr
-	if var_9_4._id == 21146 or var_9_4._id == 30594 or var_9_4._id == 30595 then
+	if var_9_4._id == 21146 or var_9_4._id == 30594 or var_9_4._id == 30595 or var_9_4._id == 40742 then
 		kwStr = Str(STR.CARD_KEYWORD_BEGIN + 6) .. ", " .. Str(STR.CARD_KEYWORD_BEGIN + 7)
 	elseif var_9_4._keyword == 300 then
 		kwStr = "Tru tiên"

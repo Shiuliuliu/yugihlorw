@@ -1277,7 +1277,12 @@ function var_0_0.onChoiceDialogOpened(arg_x_0)
 	end
 end
 
-function var_0_0.updateBoardCardsInitialSkills(arg_54_0)
+function var_0_0.updateBoardCardsInitialSkills(arg_54_0, force)
+	local now = os.clock and os.clock() or os.time()
+	if not force and arg_54_0._lastInitSkillUpdate and (now - arg_54_0._lastInitSkillUpdate < 0.05) then
+		return
+	end
+	arg_54_0._lastInitSkillUpdate = now
 	if arg_54_0._isController and arg_54_0._player == arg_54_0._player:getActionPlayer() and arg_54_0._battleUi._dropLayer == nil and not arg_54_0._battleUi._isAuto then
 		arg_54_0._battleUi._btnInitiative:setEnabled(#arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("BSDGHL", nil, nil, true) > 0)
 
