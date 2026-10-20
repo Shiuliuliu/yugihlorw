@@ -2253,6 +2253,9 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	elseif arg_85_1._card:hasSkillFast(14729) or (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14729, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú có từ khóa \"Tiên nghịch\" trên sân"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14774, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14774) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú Dung Hợp Harpie/Amazon từ Bộ bài thêm"
 	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14770, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14770) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú trên sân đối phương để loại bỏ"

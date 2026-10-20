@@ -1916,7 +1916,7 @@ function var_0_0.genAttackTarget(arg_40_0, arg_40_1)
 		end
 	end
 
-	if var_40_8 == nil and arg_40_1._positiveStatus[BattleData.PositiveType.siege] then
+	if var_40_8 == nil and (arg_40_1._positiveStatus[BattleData.PositiveType.siege] or (arg_40_1.canAttackDirectly and arg_40_1:canAttackDirectly())) then
 		var_40_8 = arg_40_0._opponent._fortress
 	end
 

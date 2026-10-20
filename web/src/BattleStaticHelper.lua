@@ -175,6 +175,18 @@ function var_0_0.isSkillSiege(arg_10_0, arg_10_1)
 		return true
 	end
 
+	if arg_10_0 == 14773 then
+		local pOwner = arg_10_1._owner
+		if pOwner then
+			for _, c in ipairs(pOwner:getBoardCards()) do
+				if c ~= arg_10_1 and (c:isKeyword(6) or c:isKeyword(7) or c:isKeyword(15) or c._infoId == 10084 or c._infoId == 40736 or c._infoId == 40742) then
+					return true
+				end
+			end
+		end
+		return false
+	end
+
 	if arg_10_0 == 6136 or arg_10_0 == 6137 then
 		local var_10_0 = Data._skillInfo[arg_10_0]
 		local var_10_1 = arg_10_1._owner:getBattleCardsByInfoId("SD", var_10_0._refCards[2])
@@ -3714,7 +3726,9 @@ function var_0_0.isValidMergeComponent(arg_260_0, arg_260_1, arg_260_2)
 			return arg_260_1._info._category == var_260_1
 		end
 	elseif var_260_0 == Data.CardType.keyword then
-		if arg_260_0 == 3003 and arg_260_2._infoId == 40033 then
+		if arg_260_0 == 3015 and arg_260_2._infoId == 40742 then
+			return arg_260_1:isKeyword(15) and (arg_260_1._info._category == 6 or arg_260_1:isCategory(6))
+		elseif arg_260_0 == 3003 and arg_260_2._infoId == 40033 then
 			return arg_260_1:isKeyword(var_260_1) and arg_260_1:getStar() == 6 and arg_260_1:isNormalMonster()
 		elseif arg_260_0 == 3008 and arg_260_2._infoId == 40033 then
 			return arg_260_1:isKeyword(var_260_1) and arg_260_1:isNormalMonster()

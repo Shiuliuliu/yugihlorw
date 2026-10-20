@@ -6876,4 +6876,13 @@ return {
   ["_picId"]=0,["_py"]="kmrzioghost",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14677,[2]=14769,[3]=14770,},
   ["_skin"]={[1]=0,},
   ["_star"]=7,["_syncComponent"]={[1]={[1]=0,},},},
+  [40742]={["_atk"]={[1]=2400,},
+  ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=57262,["_category"]=6,["_cost"]=0,["_descSid"]=57261,["_guideSid"]=0,["_hp"]={[1]=2500,},
+  ["_id"]=40742,["_isHide"]=0,["_joinComponent"]={[1]=10084,[2]=3015,},
+  ["_joinResult"]={[1]=0,},
+  ["_keyword"]=15,["_link"]={[1]=0,},
+  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="0.0",["_linkCount"]="0.0",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=57260,["_nature"]=6,["_option"]=6,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="cbamzcrdbh",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14677,[2]=6012,[3]=6021,[4]=14773,[5]=14774,},
+  ["_skin"]={[1]=0,},
+  ["_star"]=8,["_syncComponent"]={[1]={[1]=0,},},},
 }

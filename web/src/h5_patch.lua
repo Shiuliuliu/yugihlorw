@@ -391,6 +391,20 @@ local function patchData()
 				Data._skillInfo[14772]._nameSid = 57258
 				Data._skillInfo[14772]._descSid = 57259
 			end
+			if Data._rareInfo and Data._rareInfo[40742] then
+				Data._rareInfo[40742]._quality = 4
+				Data._rareInfo[40742]._nameSid = 57260
+				Data._rareInfo[40742]._descSid = 57261
+				Data._rareInfo[40742]._briefNameSid = 57262
+			end
+			if Data._skillInfo and Data._skillInfo[14773] then
+				Data._skillInfo[14773]._nameSid = 57263
+				Data._skillInfo[14773]._descSid = 57264
+			end
+			if Data._skillInfo and Data._skillInfo[14774] then
+				Data._skillInfo[14774]._nameSid = 57265
+				Data._skillInfo[14774]._descSid = 57266
+			end
 		end
 
 		current = nil
@@ -5502,6 +5516,14 @@ function patchClientData()
 		[57257] = "Bó hoa tươi",
 		[57258] = "Bó hoa tươi",
 		[57259] = "Kĩ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Nếu ngửa: phe ta và địch rút 1 lá bài.\n- Nếu úp: phe địch rút 1 lá bài, phe ta nhận 2000 thiệt hại.\n|\\yellow\\Hỏi: \"ủa tại sao phe địch được rút bài mà phe ta bị lại bị trừ LP?\"|\n|\\yellow\\Đáp: \"Bởi vì : 1 là chân thành đổi lấy chân thành.|\n|\\yellow\\2 là chân thành đổi lấy chân tướng sự thật\".|\n|\\yellow\\\"Tỉnh táo lên những người anh em,|\n|\\yellow\\mình đáng được trân trọng hơn thế - đừng làm lốp giống ad\".|",
+		-- Chiến binh amazon cưỡi rồng bay harpie (40742) & Kỹ năng (14773, 14774)
+		[57260] = "Chiến binh amazon cưỡi rồng bay harpie",
+		[57261] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n10084 + quái tộc chiến binh có từ khóa \"amazon\".\n(Lá bài này luôn được coi là có từ khóa \"amazon\" và \"harpie\".)\n(1) Dung Hợp Kỳ Linh.\n(2) Tăng 300 Công và Thủ với mỗi quái thú \"amazon\" trên sân phe ta. Tăng 300 Công với mỗi quái thú \"harpie\" trên sân phe ta.\n(3) Khi trên sân phe ta có quái \"harpie\" hoặc \"amazon\", nhận \"Tấn công trực tiếp\".\n(4) Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn 1 quái dung hợp có từ khóa \"harpie\" hoặc \"amazon\" trong extradeck, triệu hồi vô điều kiện lên sân.",
+		[57262] = "Chiến binh amazon cưỡi rồng bay harpie",
+		[57263] = "Chiến Binh Cưỡi Rồng - Tấn Công Trực Tiếp",
+		[57264] = "Khi trên sân phe ta có quái \"harpie\" hoặc \"amazon\", nhận \"Tấn công trực tiếp\".",
+		[57265] = "Chiến Binh Cưỡi Rồng - Triệu Hồi Dung Hợp",
+		[57266] = "Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn 1 quái dung hợp có từ khóa \"harpie\" hoặc \"amazon\" trong extradeck, triệu hồi vô điều kiện lên sân.",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 

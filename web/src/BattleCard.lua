@@ -8498,6 +8498,20 @@ function var_0_0.getRareOption(arg_255_0)
 	return var_255_0
 end
 
+function var_0_0.canAttackDirectly(self)
+	if self:isInfoId(40742) or self:hasSkillFast(14773) then
+		local pOwner = self._owner
+		if pOwner then
+			for _, c in ipairs(pOwner:getBoardCards()) do
+				if c ~= self and (c:isKeyword(6) or c:isKeyword(7) or c:isKeyword(15) or c._infoId == 10084 or c._infoId == 40736 or c._infoId == 40742) then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
 function var_0_0.canAttackTarget(arg_256_0, arg_256_1, arg_256_2)
 	if not arg_256_0:canAttack(arg_256_2) then
 		return false
@@ -8603,6 +8617,9 @@ function var_0_0.canAttackTarget(arg_256_0, arg_256_1, arg_256_2)
 	local var_256_1 = var_256_0:getBoardCards()
 
 	if arg_256_1._type == Data.CardType.fortress then
+		if arg_256_0:hasBuff(true, BattleData.PositiveType.siege) or (arg_256_0.canAttackDirectly and arg_256_0:canAttackDirectly()) then
+			return true
+		end
 		return #var_256_1 == 0
 	end
 
@@ -9629,7 +9646,7 @@ local var_0_10 = {
 
 function var_0_0.isKeyword(arg_270_0, arg_270_1, arg_270_2)
 	local infoId = arg_270_0._infoId or (arg_270_0._info and arg_270_0._info._id)
-	if infoId == 21146 or infoId == 30594 or infoId == 30595 then
+	if infoId == 21146 or infoId == 30594 or infoId == 30595 or infoId == 40742 then
 		if arg_270_1 == 6 or arg_270_1 == 7 or arg_270_1 == 15 or (Data and Data.CardKeyword and (arg_270_1 == Data.CardKeyword.ymx or arg_270_1 == Data.CardKeyword.ys or arg_270_1 == Data.CardKeyword.ysnl)) then
 			return true
 		end

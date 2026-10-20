@@ -4761,6 +4761,8 @@ function var_0_0.getMergeCandidates(arg_239_0, arg_239_1, arg_239_2, arg_239_3, 
 				var_239_6 = B.filterMergeCards(B.filterInSuperIdCards(arg_239_0:getBattleCards(arg_239_2), var_239_5 - 900))
 			elseif var_239_5 == 3902 and arg_239_1:isInfoId(40739) then
 				var_239_6 = B.filterMergeCards(B.filterInSuperIdCards(arg_239_0:getBattleCards(arg_239_2), 3302))
+			elseif var_239_5 == 3015 and arg_239_1:isInfoId(40742) then
+				var_239_6 = B.filterInCategoryCards(B.filterInKeywordCards(arg_239_0:getBattleCards(arg_239_2), 15), 6)
 			end
 		end
 
@@ -7711,6 +7713,21 @@ function var_0_0.checkThacSamTargetNegate(battle, target, sourceCard)
 	return true
 end
 
+function var_0_0.getHarpieAmazonFusionCandidates(arg_player)
+	local res = {}
+	local rares = arg_player:getBattleCards("R")
+	for _, c in ipairs(rares) do
+		if c:isMerge() and (c:isKeyword(6) or c:isKeyword(7) or c:isKeyword(15) or c._infoId == 40736 or c._infoId == 40742) then
+			res[#res + 1] = c
+		end
+	end
+	return res
+end
+
+if PlayerBattle and not PlayerBattle.getHarpieAmazonFusionCandidates then
+	PlayerBattle.getHarpieAmazonFusionCandidates = var_0_0.getHarpieAmazonFusionCandidates
+end
+
 function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 	if arg_304_1 == nil then
 		return false
@@ -7753,7 +7770,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -7788,6 +7805,25 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 				end
 			end
 		end
+		if #candidates > 0 then
+			return true, candidates, 1
+		end
+		return false
+	elseif arg_304_1._id == 14774 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards40742 = arg_304_0:getBattleCardsByInfoId("B", 40742)
+			if #cards40742 > 0 then ownerCard = cards40742[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		local turnId = (arg_304_0._round or 0) * 1000 + (pOwner._round or arg_304_0._round or 0)
+		if ownerCard and ownerCard._amazonHarpieTurn == turnId then
+			return false
+		end
+		if pOwner._amazonHarpieTurn == turnId or (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14774] and pOwner._castedSkillCounts[14774] >= 1) then
+			return false
+		end
+		local candidates = pOwner:getHarpieAmazonFusionCandidates()
 		if #candidates > 0 then
 			return true, candidates, 1
 		end
