@@ -1034,6 +1034,8 @@
 			this.setScaleX(x);
 			this.setScaleY(y);
 		};
+	}
+
 	var TRIG = { rad: NaN, cos: 1, sin: 0 };
 	function trigOf(rad) {
 		if (TRIG.rad !== rad) {
