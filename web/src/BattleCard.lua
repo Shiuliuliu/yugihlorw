@@ -7061,7 +7061,7 @@ function var_0_0.disableUnderSkillByOppoType(arg_161_0, arg_161_1, arg_161_2, ar
 			ignoreDefendOk = true
 		end
 
-		if var_161_1._disabled ~= true and var_161_1._sid ~= 14719 and var_161_1._sid ~= 14720 and var_161_1._sid ~= 14721 and not (var_161_1._sid >= 14706 and var_161_1._sid <= 14710) and var_161_1._cid ~= arg_161_0._id and math.floor(var_161_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_161_1 and isOppo and ignoreDefendOk and var_161_1._mode ~= Data.SkillMode.halo and var_161_1._mode ~= Data.SkillMode.under_attack and var_161_1._mode ~= Data.SkillMode.under_attack_damage and var_161_1._mode ~= Data.SkillMode.under_spell_damage and arg_161_0:disableUnderSkill(var_161_1, arg_161_2, arg_161_3, arg_161_4) then
+		if var_161_1._disabled ~= true and var_161_1._sid ~= 14719 and var_161_1._sid ~= 14720 and var_161_1._sid ~= 14721 and var_161_1._sid ~= 14777 and not (var_161_1._sid >= 14706 and var_161_1._sid <= 14710) and var_161_1._cid ~= arg_161_0._id and math.floor(var_161_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_161_1 and isOppo and ignoreDefendOk and var_161_1._mode ~= Data.SkillMode.halo and var_161_1._mode ~= Data.SkillMode.under_attack and var_161_1._mode ~= Data.SkillMode.under_attack_damage and var_161_1._mode ~= Data.SkillMode.under_spell_damage and arg_161_0:disableUnderSkill(var_161_1, arg_161_2, arg_161_3, arg_161_4) then
 			var_161_0 = true
 		end
 	end
@@ -7096,7 +7096,7 @@ function var_0_0.disableUnderSkillByOppoTypeAndCheckShield(arg_162_0, arg_162_1,
 			ignoreDefendOk = true
 		end
 
-		if var_162_2._disabled ~= true and var_162_2._sid ~= 14719 and var_162_2._sid ~= 14720 and var_162_2._sid ~= 14721 and not (var_162_2._sid >= 14706 and var_162_2._sid <= 14710) and var_162_2._cid ~= arg_162_0._id and math.floor(var_162_2._sid / Data.INFO_ID_GROUP_SIZE) == arg_162_1 and isOppo and (var_162_3 == nil or not var_162_3:hasShieldInType(arg_162_5)) and ignoreDefendOk and var_162_2._mode ~= Data.SkillMode.halo and var_162_2._mode ~= Data.SkillMode.under_attack and var_162_2._mode ~= Data.SkillMode.under_attack_damage and var_162_2._mode ~= Data.SkillMode.under_spell_damage and arg_162_0:disableUnderSkill(var_162_2, arg_162_2, arg_162_3, arg_162_4) then
+		if var_162_2._disabled ~= true and var_162_2._sid ~= 14719 and var_162_2._sid ~= 14720 and var_162_2._sid ~= 14721 and var_162_2._sid ~= 14777 and not (var_162_2._sid >= 14706 and var_162_2._sid <= 14710) and var_162_2._cid ~= arg_162_0._id and math.floor(var_162_2._sid / Data.INFO_ID_GROUP_SIZE) == arg_162_1 and isOppo and (var_162_3 == nil or not var_162_3:hasShieldInType(arg_162_5)) and ignoreDefendOk and var_162_2._mode ~= Data.SkillMode.halo and var_162_2._mode ~= Data.SkillMode.under_attack and var_162_2._mode ~= Data.SkillMode.under_attack_damage and var_162_2._mode ~= Data.SkillMode.under_spell_damage and arg_162_0:disableUnderSkill(var_162_2, arg_162_2, arg_162_3, arg_162_4) then
 			var_162_0 = true
 			var_162_1 = var_162_3
 		end
@@ -7203,7 +7203,7 @@ function var_0_0.disableUnderSkillByDestroy(arg_167_0, arg_167_1, arg_167_2, arg
 			var_167_3 = false
 		end
 
-		if var_167_3 and (var_167_2._sid == 5030 or var_167_2._sid == 5219) then
+		if var_167_3 and (var_167_2._sid == 5030 or var_167_2._sid == 5219 or var_167_2._sid == 14777) then
 			var_167_3 = false
 		end
 
@@ -9651,6 +9651,11 @@ function var_0_0.isKeyword(arg_270_0, arg_270_1, arg_270_2)
 			return true
 		end
 	end
+	if infoId == 40743 then
+		if arg_270_1 == 21 or arg_270_1 == 204 or (Data and Data.CardKeyword and (arg_270_1 == Data.CardKeyword.phjs or arg_270_1 == Data.CardKeyword.phdj)) then
+			return true
+		end
+	end
 
 	if arg_270_0._info._keyword == arg_270_1 then
 		return true
@@ -9967,6 +9972,10 @@ function var_0_0.getAtk(arg_282_0)
 			return arg_282_0._atk
 		end
 		return arg_282_0._tsAwakened and 16000 or 8000
+	end
+	local oppo = arg_282_0._owner and arg_282_0._owner._opponent
+	if oppo and oppo._dragonDebuffVal and oppo._dragonDebuffVal > 0 and arg_282_0._status == BattleData.CardStatus.board then
+		return math.max(0, (arg_282_0._atk or 0) - oppo._dragonDebuffVal)
 	end
 	return arg_282_0._atk
 end

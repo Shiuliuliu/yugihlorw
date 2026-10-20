@@ -4762,7 +4762,7 @@ function var_0_0.getMergeCandidates(arg_239_0, arg_239_1, arg_239_2, arg_239_3, 
 			elseif var_239_5 == 3902 and arg_239_1:isInfoId(40739) then
 				var_239_6 = B.filterMergeCards(B.filterInSuperIdCards(arg_239_0:getBattleCards(arg_239_2), 3302))
 			elseif (var_239_5 == 3006 or var_239_5 == 3015) and arg_239_1:isInfoId(40742) then
-				var_239_6 = B.filterInCategoryCards(B.filterInKeywordCards(arg_239_0:getBattleCards(arg_239_2), 6), 6)
+				var_239_6 = B.filterInKeywordCards(arg_239_0:getBattleCards(arg_239_2), 6)
 			end
 		end
 
@@ -5442,6 +5442,10 @@ function var_0_0.isValidSyncComponents(arg_249_0, arg_249_1, arg_249_2, arg_249_
 	end
 
 	if arg_249_1._infoId == 40732 and #B.filterEqualInfoIdCards(var_249_5, 12328) == 0 then
+		return false
+	end
+
+	if arg_249_1._infoId == 40743 and #B.filterEqualInfoIdCards(var_249_5, 10058) == 0 then
 		return false
 	end
 
@@ -7770,7 +7774,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -7828,6 +7832,38 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 			return true, candidates, 1
 		end
 		return false
+	elseif arg_304_1._id == 14776 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards40743 = arg_304_0:getBattleCardsByInfoId("B", 40743)
+			if #cards40743 > 0 then ownerCard = cards40743[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		local turnId = (arg_304_0._round or 0) * 1000 + (pOwner._round or arg_304_0._round or 0)
+		if ownerCard and ownerCard._busterSummonTurn == turnId then
+			return false
+		end
+		if pOwner._busterSummonTurn == turnId or (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14776] and pOwner._castedSkillCounts[14776] >= 1) then
+			return false
+		end
+		if pOwner:getEmptyBoardPos() == nil then
+			return false
+		end
+		local handCards = pOwner:getBattleCards("H")
+		if #handCards == 0 then
+			return false
+		end
+		local piles = pOwner:getBattleCards("P")
+		local count = 0
+		for _, c in ipairs(piles) do
+			if (c._type == Data.CardType.monster or c:isMonster()) and (c:isKeyword(204) or c:isKeyword(21) or (c._info and (c._info._keyword == 204 or c._info._keyword == 21))) then
+				count = count + 1
+			end
+		end
+		if count == 0 then
+			return false
+		end
+		return true, handCards, 1
 	elseif arg_304_1._id == 14770 then
 		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
 		if ownerCard == nil then

@@ -3727,7 +3727,7 @@ function var_0_0.isValidMergeComponent(arg_260_0, arg_260_1, arg_260_2)
 		end
 	elseif var_260_0 == Data.CardType.keyword then
 		if (arg_260_0 == 3006 or arg_260_0 == 3015) and arg_260_2._infoId == 40742 then
-			return (arg_260_1:isKeyword(6) or (arg_260_1._info and arg_260_1._info._keyword == 6)) and (arg_260_1._info and arg_260_1._info._category == 6)
+			return arg_260_1:isKeyword(6) or (arg_260_1._info and arg_260_1._info._keyword == 6)
 		elseif arg_260_0 == 3003 and arg_260_2._infoId == 40033 then
 			return arg_260_1:isKeyword(var_260_1) and arg_260_1:getStar() == 6 and arg_260_1:isNormalMonster()
 		elseif arg_260_0 == 3008 and arg_260_2._infoId == 40033 then

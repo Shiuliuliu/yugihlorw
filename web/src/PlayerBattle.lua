@@ -61,6 +61,8 @@ function var_0_0.ctor(arg_1_0, arg_1_1)
 
 	arg_1_0._fortressSkillInfo = arg_1_1._fortressSkill
 	arg_1_0._ai = BattleAi.new(arg_1_0)
+	arg_1_0._dragonDebuffVal = 0
+	arg_1_0._has40743 = 0
 
 	if #arg_1_0._ops > 0 then
 		arg_1_0:battleLog("")
@@ -462,6 +464,39 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		end
 	end
 
+	-- Card 40743 (Kiếm sĩ diệt rồng huyền thoại): khi bị phá hủy bởi chiến đấu hoặc hiệu quả, phá hủy tất cả quái tộc rồng đối phương (xuyên 12002, 12008)
+	if (arg_7_1:isInfoId(40743) or arg_7_1:hasSkillFast(14777)) and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost 
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp 
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		if not isCostOrSac then
+			local owner = arg_7_1._owner
+			local oppo = owner and owner._opponent
+			if oppo then
+				local oppoDragons = {}
+				for _, c in ipairs(oppo:getBoardCards()) do
+					if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+						table.insert(oppoDragons, c)
+					end
+				end
+				for _, target in ipairs(oppoDragons) do
+					if target._positiveStatus then
+						target._positiveStatus[BattleData.PositiveType.shieldExMonster] = false
+						target._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = false
+					end
+					oppo:setCardStatus(target, BattleData.CardStatus.grave, arg_7_1._id, 14777, Data.SkillMode.kill, BattleData.CardStatusVal.b2g_dead)
+				end
+			end
+		end
+	end
+
 	if arg_7_6 == BattleData.CardStatusVal.r2b_sync or arg_7_6 == BattleData.CardStatusVal.r2b_sync_attack_frozen then
 		arg_7_1._mark6387 = nil
 
@@ -524,6 +559,66 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		_statusVal = arg_7_6,
 		_futureSourceStatus = arg_7_7
 	})
+
+	if arg_7_0.updateDragonDebuff then
+		arg_7_0:updateDragonDebuff()
+	end
+end
+
+function var_0_0.updateDragonDebuff(arg_0)
+	local p1 = arg_0
+	local p2 = arg_0 and arg_0._opponent
+	if not p1 or not p2 then return end
+
+	local count1 = 0
+	for _, c in ipairs(p1:getBoardCards()) do
+		if c:isInfoId(40743) or (c.hasSkillFast and c:hasSkillFast(14775)) then
+			count1 = count1 + 1
+		end
+	end
+
+	local count2 = 0
+	for _, c in ipairs(p2:getBoardCards()) do
+		if c:isInfoId(40743) or (c.hasSkillFast and c:hasSkillFast(14775)) then
+			count2 = count2 + 1
+		end
+	end
+
+	p1._has40743 = count1
+	p2._has40743 = count2
+
+	if count1 == 0 and count2 == 0 then
+		p1._dragonDebuffVal = 0
+		p2._dragonDebuffVal = 0
+		return
+	end
+
+	local dCount = 0
+	for _, c in ipairs(p1:getBoardCards()) do
+		if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+			dCount = dCount + 1
+		end
+	end
+	for _, c in ipairs(p2:getBoardCards()) do
+		if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+			dCount = dCount + 1
+		end
+	end
+	local g1 = p1._graveCards or {}
+	for _, c in ipairs(g1) do
+		if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+			dCount = dCount + 1
+		end
+	end
+	local g2 = p2._graveCards or {}
+	for _, c in ipairs(g2) do
+		if (c._type == Data.CardType.monster or c:isMonster()) and (c._info and c._info._category == 2) then
+			dCount = dCount + 1
+		end
+	end
+
+	p1._dragonDebuffVal = dCount * 200 * count1
+	p2._dragonDebuffVal = dCount * 200 * count2
 end
 
 function var_0_0.setCardPosChange(arg_8_0, arg_8_1, arg_8_2, arg_8_3, arg_8_4, arg_8_5)
@@ -2216,7 +2311,7 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 		return false
 	end
 
-	if var_51_0 == arg_51_1 or arg_51_2._cid == arg_51_1._id or arg_51_2._sid == 14632 or arg_51_2._sid == 14719 or (arg_51_2._sid >= 14706 and arg_51_2._sid <= 14710) then
+	if var_51_0 == arg_51_1 or arg_51_2._cid == arg_51_1._id or arg_51_2._sid == 14632 or arg_51_2._sid == 14719 or arg_51_2._sid == 14777 or (arg_51_2._sid >= 14706 and arg_51_2._sid <= 14710) then
 		return false
 	end
 

@@ -407,6 +407,27 @@ local function patchData()
 				Data._skillInfo[14774]._nameSid = 57265
 				Data._skillInfo[14774]._descSid = 57266
 			end
+			if Data._rareInfo and Data._rareInfo[40743] then
+				Data._rareInfo[40743]._quality = 4
+				Data._rareInfo[40743]._keyword = 21
+				Data._rareInfo[40743]._joinComponent = { 5008, 6008 }
+				Data._rareInfo[40743]._syncComponent = { { 0 }, { 10058 } }
+				Data._rareInfo[40743]._nameSid = 57267
+				Data._rareInfo[40743]._descSid = 57268
+				Data._rareInfo[40743]._briefNameSid = 57269
+			end
+			if Data._skillInfo and Data._skillInfo[14775] then
+				Data._skillInfo[14775]._nameSid = 57270
+				Data._skillInfo[14775]._descSid = 57271
+			end
+			if Data._skillInfo and Data._skillInfo[14776] then
+				Data._skillInfo[14776]._nameSid = 57272
+				Data._skillInfo[14776]._descSid = 57273
+			end
+			if Data._skillInfo and Data._skillInfo[14777] then
+				Data._skillInfo[14777]._nameSid = 57274
+				Data._skillInfo[14777]._descSid = 57275
+			end
 		end
 
 		current = nil
@@ -5526,6 +5547,16 @@ function patchClientData()
 		[57264] = "Khi trên sân phe ta có quái \"harpie\" hoặc \"amazon\", nhận \"Tấn công trực tiếp\".",
 		[57265] = "Chiến Binh Cưỡi Rồng - Triệu Hồi Dung Hợp",
 		[57266] = "Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn 1 quái dung hợp có từ khóa \"harpie\" hoặc \"amazon\" trong extradeck, triệu hồi vô điều kiện lên sân.",
+		-- Kiếm sĩ diệt rồng huyền thoại (40743) & Kỹ năng (14775, 14776, 14777)
+		[57267] = "Kiếm sĩ diệt rồng huyền thoại",
+		[57268] = "[Chiến Binh - Đồng Bộ - Hiệu Ứng]\n10058 + 1 quái điều chỉnh.\n(1) Quái đối phương bị giảm 200 ATK cho mỗi quái tộc Rồng trên sân và trong Mộ 2 bên.\n(2) Kĩ năng chủ động (1 lượt 1 lần): Bỏ 1 lá bài trên tay, Triệu Hồi Đặc Biệt 1 quái có từ khóa \"Kiếm Phá Hủy\" từ bộ bài lên sân.\n(3) Khi lá bài này bị phá hủy bởi chiến đấu hoặc hiệu quả: Phá hủy tất cả quái tộc Rồng trên sân đối phương (xuyên qua khiên bảo vệ).",
+		[57269] = "Kiếm sĩ diệt rồng huyền thoại",
+		[57270] = "Huyền Thoại Diệt Rồng - Uy Áp",
+		[57271] = "Quái đối phương bị giảm 200 ATK cho mỗi quái tộc Rồng trên sân và trong Mộ 2 bên.",
+		[57272] = "Kiếm Phá Hủy - Triệu Tập",
+		[57273] = "Kĩ năng chủ động: 1 lượt 1 lần, bỏ 1 lá bài trên tay, triệu hồi đặc biệt 1 quái có từ khóa \"Kiếm Phá Hủy\" từ bộ bài lên sân.",
+		[57274] = "Diệt Rồng Huyền Thoại - Phản Kích",
+		[57275] = "Khi lá bài này bị phá hủy bởi chiến đấu hoặc hiệu quả, phá hủy tất cả quái tộc rồng trên sân đối phương (xuyên qua khiên bảo vệ).",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
@@ -8223,92 +8254,6 @@ local function patchCardSprite(CardSprite)
 				self._statusEfc = self._statusEfc or {}
 				self._statusEfc[markName] = db
 			end
-		end
-	end
-
-	local oldUpdateInitiativeSkills = CardSprite.updateInitiativeSkills
-	CardSprite.updateInitiativeSkills = function(self)
-		local card = self._card
-		if not card then return end
-		self._initiativeSkillIcons = self._initiativeSkillIcons or {}
-		local skills = card.getInitiativeSkill and card:getInitiativeSkill(Data.SkillMode.initiative_bcs)
-		if not self._isController or (card._status ~= BattleData.CardStatus.board and card._status ~= BattleData.CardStatus.show and card._status ~= BattleData.CardStatus.field) or not skills or #skills == 0 then
-			pcall(function() self:removeInitiativeSkills() end)
-			return
-		end
-		if self._initiativeSkillIcons and #self._initiativeSkillIcons == #skills and #skills > 0 then
-			for u = 1, #skills do
-				local s = skills[u]
-				local btn = self._initiativeSkillIcons[u]
-				if btn then
-					local canUse = (card._owner and (card._owner:canUseInitiativeSkill(card, s) and (not self._battleUi or self._battleUi._dropLayer == nil))) or false
-					btn:setEnabled(canUse)
-				end
-			end
-			return
-		end
-		pcall(function() self:removeInitiativeSkills() end)
-		self._initiativeSkillIcons = {}
-		for u = 1, #skills do
-			local s = skills[u]
-			local btn = ClientView.createShaderButton("initiative_icon_s", function(q)
-				if not self._ownerUi or not self._ownerUi._isController then return true end
-				if self._battleUi and self._battleUi._isAddingBoardCard then
-					if self._battleUi._touchCard == nil and self._battleUi._choiceMaskLayer == nil and self._battleUi._choicePosDialog == nil and self._battleUi._choiceGraveDialog == nil then
-						self._battleUi._isAddingBoardCard = false
-					else
-						self._ownerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
-						return true
-					end
-				end
-				if not ClientData.checkBtnClick() then return end
-				self._ownerUi:castInitiativeSkill(card, s)
-			end)
-			if btn then
-				btn:setDisabledShader(ClientView.SHADER_DISABLE)
-				local canUse = (card._owner and (card._owner:canUseInitiativeSkill(card, s) and (not self._battleUi or self._battleUi._dropLayer == nil))) or false
-				btn:setEnabled(canUse)
-				local h = {0, 6, -6, 10, -10, 6}
-				local posX = (card._pos and h[card._pos]) or 0
-				btn:setTouchRect(cc.rect(posX, 0, lc.w(btn) + posX, lc.h(btn)))
-				if self._scene and self._scene.seenByCamera3D then
-					self._scene:seenByCamera3D(btn)
-				end
-				local isGround = (card._status == BattleData.CardStatus.show or card._status == BattleData.CardStatus.field)
-				local targetParent = isGround and (self._pFrameIcon or self._pCardArea or self) or self._pEffectArea
-				local targetPos = isGround and cc.p(lc.w(targetParent) - 30, lc.h(targetParent) / 2) or cc.p(-60 + u * 30, -100)
-				if targetParent then
-					lc.addChildToPos(targetParent, btn, targetPos)
-				end
-				btn:retain()
-				self._initiativeSkillIcons[u] = btn
-			end
-		end
-
-		if self._ownerUi and #self._initiativeSkillIcons > 0 then
-			self._ownerUi._initiativeIconCards = self._ownerUi._initiativeIconCards or {}
-			local already = false
-			for _, c in ipairs(self._ownerUi._initiativeIconCards) do
-				if c == self then already = true break end
-			end
-			if not already then
-				table.insert(self._ownerUi._initiativeIconCards, self)
-			end
-		end
-	end
-
-	local oldRemoveInitiativeSkills = CardSprite.removeInitiativeSkills
-	CardSprite.removeInitiativeSkills = function(self)
-		if self._ownerUi and self._ownerUi._initiativeIconCards then
-			for idx, c in ipairs(self._ownerUi._initiativeIconCards) do
-				if c == self then
-					table.remove(self._ownerUi._initiativeIconCards, idx)
-					break
-				end
-			end
-		end
-		if oldRemoveInitiativeSkills then
-			return oldRemoveInitiativeSkills(self)
 		end
 	end
 

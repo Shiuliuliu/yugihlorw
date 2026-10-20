@@ -1362,7 +1362,8 @@ function var_0_0.getCardIconName(arg_35_0)
 		[21147] = true,
 		[30592] = true, [30593] = true,
 		[40727] = true, [40728] = true, [40729] = true, [40730] = true,
-		[40731] = true, [40732] = true, [40733] = true
+		[40731] = true, [40732] = true, [40733] = true,
+		[40742] = true, [40743] = true
 	}
 
 	if lc.FrameCache:getSpriteFrame(var_35_1) == nil and not customCards[var_35_0] then

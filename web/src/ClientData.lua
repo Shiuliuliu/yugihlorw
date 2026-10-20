@@ -1726,16 +1726,18 @@ function var_0_0.getNameByInfoId(arg_77_0)
 		return "Linh Thạch"
 	end
 
-	if type == Data.CardType.nature then
+	local cardType = Data.getType(arg_77_0)
+
+	if cardType == Data.CardType.nature then
 		return Str(STR.NATURE_NONE + arg_77_0 % 1000)
-	elseif type == Data.CardType.category then
+	elseif cardType == Data.CardType.category then
 		return Str(STR.CARD_CATEGORY_BEGIN + arg_77_0 % 1000)
-	elseif type == Data.CardType.keyword then
+	elseif cardType == Data.CardType.keyword then
 		if arg_77_0 % 1000 == 300 or arg_77_0 == 300 then
 			return "Tru tiên"
 		end
 		return Str(STR.CARD_KEYWORD_BEGIN + arg_77_0 % 1000)
-	elseif type == Data.CardType.flag then
+	elseif cardType == Data.CardType.flag then
 		return Str(STR.MONSTER_FLAG_BEGIN + arg_77_0 % 1000)
 	end
 
