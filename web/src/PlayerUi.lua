@@ -2264,6 +2264,15 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14776, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14776) or arg_85_1._card:isInfoId(40743) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú [Kiếm Phá Hủy] từ Bộ bài để Triệu hồi Đặc biệt"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14779, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14779) or (arg_85_1._card:isInfoId(11961) and arg_85_1._card._status == BattleData.CardStatus.grave) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú [Kiếm Phá Hủy] từ Bộ bài lên tay"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14781, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14781) or (arg_85_1._card:isInfoId(11959) and arg_85_1._card._status == BattleData.CardStatus.grave) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá bài Bẫy [Kiếm Phá Hủy] từ Bộ bài lên tay"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14783, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14783) or (arg_85_1._card:isInfoId(11960) and arg_85_1._card._status == BattleData.CardStatus.grave) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá bài Phép [Kiếm Phá Hủy] từ Bộ bài lên tay"
 	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14770, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14770) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú trên sân đối phương để loại bỏ"
@@ -3924,7 +3933,7 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		})
 	end
 
-	if arg_89_2._card:hasSkillFast(14716) or arg_89_2._card:isInfoId(21140) or arg_89_2._card:hasSkillFast(14723) or arg_89_2._card:hasSkillFast(14724) or arg_89_2._card:isInfoId(12328) or arg_89_2._card:isInfoId(12329) or arg_89_2._card:hasSkillFast(14731) or arg_89_2._card:hasSkillFast(14732) or arg_89_2._card:hasSkillFast(14738) or arg_89_2._card:isInfoId(21141) or arg_89_2._card:hasSkillFast(14742) or arg_89_2._card:hasSkillFast(14748) or arg_89_2._card:isInfoId(12334) or arg_89_2._card:isInfoId(21145) or arg_89_2._card:hasSkillFast(14752) or arg_89_2._card:isInfoId(21146) or arg_89_2._card:hasSkillFast(14757) or arg_89_2._card:hasSkillFast(14761) or arg_89_2._card:isInfoId(30595) or arg_89_2._card:hasSkillFast(14758) or arg_89_2._card:hasSkillFast(14759) or arg_89_2._card:hasSkillFast(14756) or arg_89_2._card:isInfoId(30594) or arg_89_2._card:hasSkillFast(14774) or arg_89_2._card:isInfoId(40742) or arg_89_2._card:hasSkillFast(14776) or arg_89_2._card:isInfoId(40743) then
+	if arg_89_2._card:hasSkillFast(14716) or arg_89_2._card:isInfoId(21140) or arg_89_2._card:hasSkillFast(14723) or arg_89_2._card:hasSkillFast(14724) or arg_89_2._card:isInfoId(12328) or arg_89_2._card:isInfoId(12329) or arg_89_2._card:hasSkillFast(14731) or arg_89_2._card:hasSkillFast(14732) or arg_89_2._card:hasSkillFast(14738) or arg_89_2._card:isInfoId(21141) or arg_89_2._card:hasSkillFast(14742) or arg_89_2._card:hasSkillFast(14748) or arg_89_2._card:isInfoId(12334) or arg_89_2._card:isInfoId(21145) or arg_89_2._card:hasSkillFast(14752) or arg_89_2._card:isInfoId(21146) or arg_89_2._card:hasSkillFast(14757) or arg_89_2._card:hasSkillFast(14761) or arg_89_2._card:isInfoId(30595) or arg_89_2._card:hasSkillFast(14758) or arg_89_2._card:hasSkillFast(14759) or arg_89_2._card:hasSkillFast(14756) or arg_89_2._card:isInfoId(30594) or arg_89_2._card:hasSkillFast(14774) or arg_89_2._card:isInfoId(40742) or arg_89_2._card:hasSkillFast(14776) or arg_89_2._card:isInfoId(40743) or arg_89_2._card:hasSkillFast(14779) or arg_89_2._card:isInfoId(11961) or arg_89_2._card:hasSkillFast(14781) or arg_89_2._card:isInfoId(11959) or arg_89_2._card:hasSkillFast(14783) or arg_89_2._card:isInfoId(11960) then
 		if var_89_0 and #var_89_0 > 0 then
 			var_89_1 = var_89_0[1]._id
 		end

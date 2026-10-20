@@ -43,6 +43,78 @@ function var_0_0.changeCardStatus(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4, a
 		end
 	end
 
+	-- Hand traps for Kiếm Phá Hủy (11960, 11961, 11959)
+	local function isDragonMonsterCard(c)
+		if not c then return false end
+		if c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare then
+			local cat = c._category or (c._info and c._info._category)
+			if cat == 2 or cat == Data.CardCategory.dragon then
+				return true
+			end
+			local kw = c._keyword or (c._info and c._info._keyword)
+			if kw == 39 then
+				return true
+			end
+		end
+		return false
+	end
+
+	local function getActiveHandTrap(player, infoId)
+		if not player then return nil end
+		local hands = player:getBattleCards("H")
+		for _, c in ipairs(hands) do
+			if c._infoId == infoId and not c:hasChangeStatusUnderSkill({ BattleData.CardStatus.grave, BattleData.CardStatus.leave }) then
+				return c
+			end
+		end
+		return nil
+	end
+
+	local c_owner = arg_1_1._owner or arg_1_0
+	local oppo = c_owner and c_owner._opponent
+
+	if oppo and not oppo._isSkillDisabled then
+		-- 1. Card 11960: Opponent summons Dragon from Extra Deck -> discard 11960, banish summoned dragon
+		if arg_1_3 == BattleData.CardStatus.board and arg_1_2 ~= BattleData.CardStatus.board and isDragonMonsterCard(arg_1_1) then
+			local isExtraDeck = (arg_1_2 == BattleData.CardStatus.rare or arg_1_1:isMonsterRare() or arg_1_1._type == Data.CardType.rare)
+			if isExtraDeck then
+				local ht11960 = getActiveHandTrap(oppo, 11960)
+				if ht11960 then
+					oppo:changeCardStatus(ht11960, BattleData.CardStatus.hand, BattleData.CardStatus.grave, BattleData.CardStatusVal.h2g_drop)
+					arg_1_3 = BattleData.CardStatus.leave
+					arg_1_0:battleLog("[BATTLE] Hand Trap 11960: discarded to grave, banished Extra Deck dragon %d", arg_1_1._infoId)
+				end
+			end
+		end
+
+		-- 2. Card 11961: Opponent summons Dragon -> discard 11961, banish summoned dragon
+		if arg_1_3 == BattleData.CardStatus.board and arg_1_2 ~= BattleData.CardStatus.board and isDragonMonsterCard(arg_1_1) then
+			local ht11961 = getActiveHandTrap(oppo, 11961)
+			if ht11961 then
+				oppo:changeCardStatus(ht11961, BattleData.CardStatus.hand, BattleData.CardStatus.grave, BattleData.CardStatusVal.h2g_drop)
+				arg_1_3 = BattleData.CardStatus.leave
+				if arg_1_2 == BattleData.CardStatus.hand then
+					arg_1_4 = BattleData.CardStatusVal.h2l_show
+				end
+				arg_1_0:battleLog("[BATTLE] Hand Trap 11961: discarded to grave, banished summoned dragon %d", arg_1_1._infoId)
+			end
+		end
+
+		-- 3. Card 11959: Opponent draws Dragon -> discard 11959, banish drawn dragon
+		if arg_1_2 == BattleData.CardStatus.pile and arg_1_3 == BattleData.CardStatus.hand and isDragonMonsterCard(arg_1_1) then
+			local isDuelRound = (arg_1_0._round and arg_1_0._round > 0) and (arg_1_0._macroStatus ~= BattleData.Status.initial_deal) and (not arg_1_1.isStatusValDeal or not arg_1_1:isStatusValDeal())
+			if isDuelRound then
+				local ht11959 = getActiveHandTrap(oppo, 11959)
+				if ht11959 then
+					oppo:changeCardStatus(ht11959, BattleData.CardStatus.hand, BattleData.CardStatus.grave, BattleData.CardStatusVal.h2g_drop)
+					arg_1_3 = BattleData.CardStatus.leave
+					arg_1_4 = BattleData.CardStatusVal.p2l_show
+					arg_1_0:battleLog("[BATTLE] Hand Trap 11959: discarded to grave, banished drawn dragon %d", arg_1_1._infoId)
+				end
+			end
+		end
+	end
+
 	local var_1_0 = {
 		_card = arg_1_1,
 		_sourceStatus = arg_1_2,

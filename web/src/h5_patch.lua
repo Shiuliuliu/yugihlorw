@@ -428,6 +428,42 @@ local function patchData()
 				Data._skillInfo[14777]._nameSid = 57274
 				Data._skillInfo[14777]._descSid = 57275
 			end
+			if Data._monsterInfo and Data._monsterInfo[11961] then
+				Data._monsterInfo[11961]._descSid = 57288
+				Data._monsterInfo[11961]._skillId = { 13057, 13058, 14778, 14779 }
+			end
+			if Data._monsterInfo and Data._monsterInfo[11959] then
+				Data._monsterInfo[11959]._descSid = 57289
+				Data._monsterInfo[11959]._skillId = { 13055, 13058, 14780, 14781 }
+			end
+			if Data._monsterInfo and Data._monsterInfo[11960] then
+				Data._monsterInfo[11960]._descSid = 57290
+				Data._monsterInfo[11960]._skillId = { 13056, 13058, 14782, 14783 }
+			end
+			if Data._skillInfo and Data._skillInfo[14778] then
+				Data._skillInfo[14778]._nameSid = 57276
+				Data._skillInfo[14778]._descSid = 57277
+			end
+			if Data._skillInfo and Data._skillInfo[14779] then
+				Data._skillInfo[14779]._nameSid = 57278
+				Data._skillInfo[14779]._descSid = 57279
+			end
+			if Data._skillInfo and Data._skillInfo[14780] then
+				Data._skillInfo[14780]._nameSid = 57280
+				Data._skillInfo[14780]._descSid = 57281
+			end
+			if Data._skillInfo and Data._skillInfo[14781] then
+				Data._skillInfo[14781]._nameSid = 57282
+				Data._skillInfo[14781]._descSid = 57283
+			end
+			if Data._skillInfo and Data._skillInfo[14782] then
+				Data._skillInfo[14782]._nameSid = 57284
+				Data._skillInfo[14782]._descSid = 57285
+			end
+			if Data._skillInfo and Data._skillInfo[14783] then
+				Data._skillInfo[14783]._nameSid = 57286
+				Data._skillInfo[14783]._descSid = 57287
+			end
 		end
 
 		current = nil
@@ -5557,6 +5593,22 @@ function patchClientData()
 		[57273] = "Kĩ năng chủ động: 1 lượt 1 lần, bỏ 1 lá bài trên tay, triệu hồi đặc biệt 1 quái có từ khóa \"Kiếm Phá Hủy\" từ bộ bài lên sân.",
 		[57274] = "Diệt Rồng Huyền Thoại - Phản Kích",
 		[57275] = "Khi lá bài này bị phá hủy bởi chiến đấu hoặc hiệu quả, phá hủy tất cả quái tộc rồng trên sân đối phương (xuyên qua khiên bảo vệ).",
+		-- Kiếm Phá Hủy (11961, 11959, 11960) & Kỹ năng mới (14778..14783)
+		[57276] = "Phá Hủy Kiếm - Trừ Long Thủ Trĩ",
+		[57277] = "Khi lá bài này trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái thú tộc \"rồng\" sẽ kích hoạt: đưa lá bài này vào mộ, loại bỏ quái thú đối phương vừa triệu hồi.",
+		[57278] = "Kiếm Phá Rồng - Hồi Chưởng",
+		[57279] = "Kĩ năng chủ động Mộ: Chọn lấy 1 lá bài quái có từ khóa \"kiếm phá hủy\" từ bộ bài lên tay.",
+		[57280] = "Kiếm Phá Vũ Khí - Khóa Long Rút Bài",
+		[57281] = "Khi lá bài này trên tay, đối phương rút được lá bài quái thú tộc \"rồng\" sẽ kích hoạt: đưa lá bài này vào mộ, loại bỏ lá bài đối phương vừa rút được.",
+		[57282] = "Kiếm Phá Vũ Khí - Phục Trang",
+		[57283] = "Kĩ năng chủ động Mộ: Chọn lấy 1 lá bài bẫy có từ khóa \"kiếm phá hủy\" từ bộ bài lên tay.",
+		[57284] = "Kiếm Phá Phép Thuật - Phong Tỏa Rồng Phụ",
+		[57285] = "Khi lá bài này trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái thú tộc \"rồng\" từ extradeck sẽ kích hoạt: đưa lá bài này vào mộ, loại bỏ quái thú đối phương vừa triệu hồi.",
+		[57286] = "Kiếm Phá Phép Thuật - Cầu Pháp",
+		[57287] = "Kĩ năng chủ động Mộ: Chọn lấy 1 lá bài phép có từ khóa \"kiếm phá hủy\" từ bộ bài lên tay.",
+		[57288] = "[Rồng - Điều Chỉnh - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến quái tộc Rồng của đối phương không thể kích hoạt hiệu ứng.\n(2) Khi trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái tộc \"Rồng\": Đưa lá này vào Mộ, loại bỏ quái đối phương vừa triệu hồi.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 quái có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
+		[57289] = "[Cơ Giới - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến đối phương không thể kích hoạt hiệu ứng quái thú trong Mộ.\n(2) Khi trên tay, đối phương rút được quái tộc \"Rồng\": Đưa lá này vào Mộ, loại bỏ lá bài đối phương vừa rút được.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 bẫy có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
+		[57290] = "[Phép Thuật - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến đối phương không thể kích hoạt bài Phép/Bẫy đã đặt.\n(2) Khi trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái tộc \"Rồng\" từ extradeck: Đưa lá này vào Mộ, loại bỏ quái đối phương vừa triệu hồi.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 phép có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
