@@ -1725,7 +1725,7 @@ function var_0_25.filterBySearch(arg_67_0, arg_67_1, arg_67_2)
 				table.insert(var_67_0, iter_67_1)
 			elseif var_67_1._keyword ~= nil and (
 				((var_67_1._id == 21146 or var_67_1._id == 30594 or var_67_1._id == 30595 or var_67_1._id == 40742) and (matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + 6), arg_67_2) or matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + 7), arg_67_2) or matchCardSearch("amazon", arg_67_2) or matchCardSearch("harpie", arg_67_2)))
-				or ((var_67_1._id == 40743) and (matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + 21), arg_67_2) or matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + 204), arg_67_2) or matchCardSearch("kiếm sĩ diệt rồng", arg_67_2) or matchCardSearch("kiếm phá hủy", arg_67_2) or matchCardSearch("diệt rồng", arg_67_2) or matchCardSearch("phá hủy", arg_67_2)))
+				or (((var_67_1._id == 40743 or var_67_1._id == 40744)) and (matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + 21), arg_67_2) or matchCardSearch(Str(STR.CARD_KEYWORD_BEGIN + 204), arg_67_2) or matchCardSearch("kiếm sĩ diệt rồng", arg_67_2) or matchCardSearch("kiếm phá hủy", arg_67_2) or matchCardSearch("diệt rồng", arg_67_2) or matchCardSearch("phá hủy", arg_67_2)))
 				or matchCardSearch(((var_67_1._keyword == 300 and "Tru tiên") or (var_67_1._keyword == 301 and "Tiên nghịch") or (var_67_1._keyword == 302 and "Hiệp sĩ mặt nạ") or Str(STR.CARD_KEYWORD_BEGIN + var_67_1._keyword)), arg_67_2)
 			) then
 				table.insert(var_67_0, iter_67_1)

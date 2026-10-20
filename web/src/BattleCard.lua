@@ -9651,7 +9651,7 @@ function var_0_0.isKeyword(arg_270_0, arg_270_1, arg_270_2)
 			return true
 		end
 	end
-	if infoId == 40743 then
+	if infoId == 40743 or infoId == 40744 then
 		if arg_270_1 == 21 or arg_270_1 == 204 or (Data and Data.CardKeyword and (arg_270_1 == Data.CardKeyword.phjs or arg_270_1 == Data.CardKeyword.phdj)) then
 			return true
 		end

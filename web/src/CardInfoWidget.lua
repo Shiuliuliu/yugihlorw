@@ -176,7 +176,7 @@ function var_0_0.createKeyword(arg_9_0)
 	if var_9_4._id == 21146 or var_9_4._id == 30594 or var_9_4._id == 30595 or var_9_4._id == 40742 then
 		kwStr = Str(STR.CARD_KEYWORD_BEGIN + 6) .. ", " .. Str(STR.CARD_KEYWORD_BEGIN + 7)
 
-	elseif var_9_4._id == 40743 then
+	elseif var_9_4._id == 40743 or var_9_4._id == 40744 then
 		kwStr = Str(STR.CARD_KEYWORD_BEGIN + 21) .. ", " .. Str(STR.CARD_KEYWORD_BEGIN + 204)
 
 

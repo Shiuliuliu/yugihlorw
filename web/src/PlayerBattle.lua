@@ -278,8 +278,8 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		return
 	end
 
-	-- Xuyên qua tường chắn quái cho KMR-Zio-Ghost (14769 & 14770)
-	if arg_7_4 == 14769 or arg_7_4 == 14770 then
+	-- Xuyên qua tường chắn quái cho KMR-Zio-Ghost (14769 & 14770) va Kiem si diet rong tap su (14784)
+	if arg_7_4 == 14769 or arg_7_4 == 14770 or arg_7_4 == 14784 then
 		table.insert(arg_7_1._underSkills, {
 			_cid = arg_7_3,
 			_sid = arg_7_4,

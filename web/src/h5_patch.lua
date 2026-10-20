@@ -464,6 +464,73 @@ local function patchData()
 				Data._skillInfo[14783]._nameSid = 57286
 				Data._skillInfo[14783]._descSid = 57287
 			end
+			if Data._rareInfo and not Data._rareInfo[40744] then
+				Data._rareInfo[40744] = {
+					_atk = { 1800 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57299,
+					_category = 6,
+					_cost = 0,
+					_descSid = 57298,
+					_guideSid = 0,
+					_hp = { 0 },
+					_id = 40744,
+					_isHide = 0,
+					_joinComponent = { 0 },
+					_joinResult = { 0 },
+					_keyword = 21,
+					_link = { 1 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "K==204||K==21",
+					_linkCount = "#==1",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57297,
+					_nature = 3,
+					_option = 8194,
+					_originId = 0,
+					_packageId = { 128001 },
+					_picId = 0,
+					_py = "ksdrts",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14784, 14785, 14786 },
+					_skin = { 0 },
+					_star = 0,
+					_syncComponent = { { 0 } }
+				}
+			end
+			if Data._rareInfo and Data._rareInfo[40744] then
+				Data._rareInfo[40744]._quality = 4
+				Data._rareInfo[40744]._keyword = 21
+				Data._rareInfo[40744]._linkCandidate = "K==204||K==21"
+				Data._rareInfo[40744]._nameSid = 57297
+				Data._rareInfo[40744]._descSid = 57298
+				Data._rareInfo[40744]._briefNameSid = 57299
+			end
+			if Data._skillInfo and not Data._skillInfo[14784] then
+				Data._skillInfo[14784] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57292, _effectVal = { 0 }, _id = 14784, _isIgnoreDefend = 0, _modes = { 33 }, _nameSid = 57291, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14784] then
+				Data._skillInfo[14784]._nameSid = 57291
+				Data._skillInfo[14784]._descSid = 57292
+			end
+			if Data._skillInfo and not Data._skillInfo[14785] then
+				Data._skillInfo[14785] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57294, _effectVal = { 0 }, _id = 14785, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57293, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 204 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14785] then
+				Data._skillInfo[14785]._nameSid = 57293
+				Data._skillInfo[14785]._descSid = 57294
+			end
+			if Data._skillInfo and not Data._skillInfo[14786] then
+				Data._skillInfo[14786] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57296, _effectVal = { 0 }, _id = 14786, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57295, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 21 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14786] then
+				Data._skillInfo[14786]._nameSid = 57295
+				Data._skillInfo[14786]._descSid = 57296
+			end
 		end
 
 		current = nil
@@ -5609,6 +5676,16 @@ function patchClientData()
 		[57288] = "[Rồng - Điều Chỉnh - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến quái tộc Rồng của đối phương không thể kích hoạt hiệu ứng.\n(2) Khi trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái tộc \"Rồng\": Đưa lá này vào Mộ, loại bỏ quái đối phương vừa triệu hồi.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 quái có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
 		[57289] = "[Cơ Giới - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến đối phương không thể kích hoạt hiệu ứng quái thú trong Mộ.\n(2) Khi trên tay, đối phương rút được quái tộc \"Rồng\": Đưa lá này vào Mộ, loại bỏ lá bài đối phương vừa rút được.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 bẫy có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
 		[57290] = "[Phép Thuật - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến đối phương không thể kích hoạt bài Phép/Bẫy đã đặt.\n(2) Khi trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái tộc \"Rồng\" từ extradeck: Đưa lá này vào Mộ, loại bỏ quái đối phương vừa triệu hồi.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 phép có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
+		-- Kiếm sĩ diệt rồng tập sự (40744) & Kỹ năng (14784, 14785, 14786)
+		[57291] = "Diệt Rồng Tập Sự - Hàng Long",
+		[57292] = "Kĩ năng chủ động bộ bài thêm: Chọn 1 quái tộc \"rồng\" trên sân đối phương đưa vào mộ, sau đó triệu hồi đặc biệt bài này lên sân phe ta (xuyên qua tường chắn quái).",
+		[57293] = "Diệt Rồng Tập Sự - Tầm Kiếm",
+		[57294] = "Kĩ năng chủ động (1 lượt 1 lần): Chọn lấy tối đa 2 quái thú có từ khóa \"Kiếm hủy diệt\" từ bộ bài lên tay.",
+		[57295] = "Diệt Rồng Tập Sự - Truyền Thừa",
+		[57296] = "Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa \"Kiếm sĩ diệt rồng\" trong bộ bài phe ta.",
+		[57297] = "Kiếm sĩ diệt rồng tập sự",
+		[57298] = "[Chiến Binh - Hiệu Quả - Link]\n1 quái có từ khóa \"Kiếm hủy diệt\" hoặc \"Kiếm sĩ diệt rồng\".\n(Lá bài này luôn có từ khóa \"Kiếm hủy diệt\" và \"Kiếm sĩ diệt rồng\".)\n(1) Kĩ năng chủ động bộ bài thêm: Chọn 1 quái tộc \"rồng\" trên sân đối phương đưa vào mộ, sau đó triệu hồi đặc biệt bài này lên sân phe ta (xuyên qua tường chắn quái).\n(2) Kĩ năng chủ động (1 lượt 1 lần): Chọn lấy tối đa 2 quái thú có từ khóa \"Kiếm hủy diệt\" từ bộ bài lên tay.\n(3) Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa \"Kiếm sĩ diệt rồng\" trong bộ bài phe ta.",
+		[57299] = "Kiếm sĩ diệt rồng tập sự",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 

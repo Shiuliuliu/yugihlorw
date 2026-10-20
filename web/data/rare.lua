@@ -6895,4 +6895,13 @@ return {
   ["_skin"]={[1]=0,},
   ["_star"]=8,["_syncComponent"]={[1]={[1]=0,},
   [2]={[1]=10058,},},},
+  [40744]={["_atk"]={[1]=1800,},
+  ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=57299,["_category"]=6,["_cost"]=0,["_descSid"]=57298,["_guideSid"]=0,["_hp"]={[1]=0,},
+  ["_id"]=40744,["_isHide"]=0,["_joinComponent"]={[1]=0,},
+  ["_joinResult"]={[1]=0,},
+  ["_keyword"]=21,["_link"]={[1]=1,},
+  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="K==204||K==21",["_linkCount"]="#==1",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=57297,["_nature"]=3,["_option"]=8194,["_originId"]=0,["_packageId"]={[1]=128001,},
+  ["_picId"]=0,["_py"]="ksdrts",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14784,[2]=14785,[3]=14786,},
+  ["_skin"]={[1]=0,},
+  ["_star"]=0,["_syncComponent"]={[1]={[1]=0,},},},
 }

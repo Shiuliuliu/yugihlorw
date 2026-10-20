@@ -57288,3 +57288,12 @@ Kĩ năng chủ động Mộ: Chọn lấy 1 lá bài phép có từ khóa "ki�
 [Rồng - Điều Chỉnh - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 "Kiếm sĩ diệt rồng" trên sân. Quái được trang bị khiến quái tộc Rồng của đối phương không thể kích hoạt hiệu ứng.\n(2) Khi trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái tộc "Rồng": Đưa lá này vào Mộ, loại bỏ quái đối phương vừa triệu hồi.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 quái có từ khóa "Kiếm Phá Hủy" từ Bộ bài lên tay.
 [Cơ Giới - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 "Kiếm sĩ diệt rồng" trên sân. Quái được trang bị khiến đối phương không thể kích hoạt hiệu ứng quái thú trong Mộ.\n(2) Khi trên tay, đối phương rút được quái tộc "Rồng": Đưa lá này vào Mộ, loại bỏ lá bài đối phương vừa rút được.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 bẫy có từ khóa "Kiếm Phá Hủy" từ Bộ bài lên tay.
 [Phép Thuật - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 "Kiếm sĩ diệt rồng" trên sân. Quái được trang bị khiến đối phương không thể kích hoạt bài Phép/Bẫy đã đặt.\n(2) Khi trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái tộc "Rồng" từ extradeck: Đưa lá này vào Mộ, loại bỏ quái đối phương vừa triệu hồi.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 phép có từ khóa "Kiếm Phá Hủy" từ Bộ bài lên tay.
+Diệt Rồng Tập Sự - Hàng Long
+Kĩ năng chủ động bộ bài thêm: Chọn 1 quái tộc "rồng" trên sân đối phương đưa vào mộ, sau đó triệu hồi đặc biệt bài này lên sân phe ta (xuyên qua tường chắn quái).
+Diệt Rồng Tập Sự - Tầm Kiếm
+Kĩ năng chủ động (1 lượt 1 lần): Chọn lấy tối đa 2 quái thú có từ khóa "Kiếm hủy diệt" từ bộ bài lên tay.
+Diệt Rồng Tập Sự - Truyền Thừa
+Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa "Kiếm sĩ diệt rồng" trong bộ bài phe ta.
+Kiếm sĩ diệt rồng tập sự
+[Chiến Binh - Hiệu Quả - Link]\n1 quái có từ khóa "Kiếm hủy diệt" hoặc "Kiếm sĩ diệt rồng".\n(Lá bài này luôn có từ khóa "Kiếm hủy diệt" và "Kiếm sĩ diệt rồng".)\n(1) Kĩ năng chủ động bộ bài thêm: Chọn 1 quái tộc "rồng" trên sân đối phương đưa vào mộ, sau đó triệu hồi đặc biệt bài này lên sân phe ta (xuyên qua tường chắn quái).\n(2) Kĩ năng chủ động (1 lượt 1 lần): Chọn lấy tối đa 2 quái thú có từ khóa "Kiếm hủy diệt" từ bộ bài lên tay.\n(3) Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa "Kiếm sĩ diệt rồng" trong bộ bài phe ta.
+Kiếm sĩ diệt rồng tập sự

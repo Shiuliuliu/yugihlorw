@@ -5909,7 +5909,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		return {}
 	end
 
-	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738
+	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738 or arg_260_1._infoId == 40744
 	local var_260_1 = B.filterCanBeLinkedCards(arg_260_0:getBattleCards(arg_260_2), arg_260_1, var_260_0)
 
 	if arg_260_1._infoId == 40709 then
@@ -5988,7 +5988,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 	for iter_260_1 = 1, #var_260_1 do
 		local var_260_5 = var_260_1[iter_260_1]
 
-		if not var_260_4[var_260_5._id] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId ~= 40729 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
+		if not var_260_4[var_260_5._id] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
 			var_260_4[var_260_5._id] = true
 			var_260_3[#var_260_3 + 1] = var_260_5
 		end
@@ -7774,7 +7774,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_1._id ~= 14779 and arg_304_1._id ~= 14781 and arg_304_1._id ~= 14783 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_1._id ~= 14779 and arg_304_1._id ~= 14781 and arg_304_1._id ~= 14783 and arg_304_1._id ~= 14784 and arg_304_1._id ~= 14785 and arg_304_1._id ~= 14786 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -7933,6 +7933,86 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		for _, c in ipairs(piles) do
 			if (c._type == Data.CardType.magic or c:isMagic()) and (c:isKeyword(204) or c:isKeyword(21) or c._infoId == 20066 or c._infoId == 20971 or c._infoId == 20972 or (c._info and (c._info._keyword == 204 or c._info._keyword == 21))) then
 				deckCandidates[#deckCandidates + 1] = c
+			end
+		end
+		if #deckCandidates == 0 then
+			return false
+		end
+		return true, deckCandidates, 1
+	elseif arg_304_1._id == 14784 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards40744 = arg_304_0:getBattleCardsByInfoId("R", 40744)
+			if #cards40744 > 0 then ownerCard = cards40744[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		if pOwner:getEmptyBoardPos() == nil then
+			return false
+		end
+		local oppo = pOwner._opponent or arg_304_0._opponent
+		if not oppo then return false end
+		local oppoDragons = {}
+		for _, c in ipairs(oppo:getBoardCards()) do
+			if c and c._status == BattleData.CardStatus.board and (c:isCategory(2) or (c._info and c._info._category == 2)) then
+				table.insert(oppoDragons, c)
+			end
+		end
+		if #oppoDragons == 0 then
+			return false
+		end
+		return true, oppoDragons, 1
+	elseif arg_304_1._id == 14785 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards40744 = arg_304_0:getBattleCardsByInfoId("B", 40744)
+			if #cards40744 > 0 then ownerCard = cards40744[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		local turnId = (arg_304_0._round or 0) * 1000 + (pOwner._round or arg_304_0._round or 0)
+		if ownerCard and ownerCard._tapsuSearchTurn == turnId then
+			return false
+		end
+		if pOwner._tapsuSearchTurn_14785 == turnId or (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14785] and pOwner._castedSkillCounts[14785] >= 1) then
+			return false
+		end
+		if ownerCard and (ownerCard._status ~= BattleData.CardStatus.board and ownerCard._status ~= BattleData.CardStatus.field and ownerCard._status ~= BattleData.CardStatus.show) then
+			return false
+		end
+		local piles = pOwner:getBattleCards("P")
+		local deckCandidates = {}
+		for _, c in ipairs(piles) do
+			if (c._type == Data.CardType.monster or c:isMonster() or c:isMonsterRare()) and (c:isKeyword(204) or c._infoId == 11959 or c._infoId == 11960 or c._infoId == 11961 or (c._info and c._info._keyword == 204)) then
+				deckCandidates[#deckCandidates + 1] = c
+			end
+		end
+		if #deckCandidates == 0 then
+			return false
+		end
+		return true, deckCandidates, math.min(2, #deckCandidates)
+	elseif arg_304_1._id == 14786 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards40744 = arg_304_0:getBattleCardsByInfoId("B", 40744)
+			if #cards40744 > 0 then ownerCard = cards40744[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		local turnId = (arg_304_0._round or 0) * 1000 + (pOwner._round or arg_304_0._round or 0)
+		if ownerCard and ownerCard._tapsuSacrificeTurn == turnId then
+			return false
+		end
+		if pOwner._tapsuSacrificeTurn_14786 == turnId or (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14786] and pOwner._castedSkillCounts[14786] >= 1) then
+			return false
+		end
+		if ownerCard and (ownerCard._status ~= BattleData.CardStatus.board and ownerCard._status ~= BattleData.CardStatus.field and ownerCard._status ~= BattleData.CardStatus.show) then
+			return false
+		end
+		local piles = pOwner:getBattleCards("P")
+		local deckCandidates = {}
+		for _, c in ipairs(piles) do
+			if (c._type == Data.CardType.monster or c:isMonster() or c:isMonsterRare()) and (c:isKeyword(21) or c._infoId == 10058 or c._infoId == 10649 or (c._info and c._info._keyword == 21)) then
+				if pOwner:canSpecialSummon(c) then
+					deckCandidates[#deckCandidates + 1] = c
+				end
 			end
 		end
 		if #deckCandidates == 0 then
