@@ -697,12 +697,29 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 		elseif arg_15_1:isStatusValLinkSummon() then
 			var_15_0 = arg_15_1._saved._pos and arg_15_0:isLinkPosEmpty(arg_15_1._saved._pos) and arg_15_1._saved._pos or arg_15_0:getEmptyLinkPos(arg_15_1)
 		else
-			var_15_0 = arg_15_1._saved._pos and arg_15_0:isBoardPosEmpty(arg_15_1._saved._pos) and arg_15_1._saved._pos or arg_15_0:getEmptyBoardPos(arg_15_1)
+			local desiredPos = arg_15_1._saved._pos
+			local isDesiredEmpty = desiredPos and not arg_15_0:isBoardPosLocked(desiredPos) and (arg_15_0._boardCards[desiredPos] == nil or arg_15_0._boardCards[desiredPos] == arg_15_1 or arg_15_0._boardCards[desiredPos]._destStatus == BattleData.CardStatus.grave or arg_15_0._boardCards[desiredPos]._destStatus == BattleData.CardStatus.leave)
+			var_15_0 = isDesiredEmpty and desiredPos or arg_15_0:getEmptyBoardPos(arg_15_1)
+		end
+
+		if var_15_0 == nil then
+			for iter_pos = 1, Data.MAX_CARD_COUNT_ON_BOARD do
+				if not arg_15_0:isBoardPosLocked(iter_pos) then
+					local c = arg_15_0._boardCards[iter_pos]
+					if c == nil or c == arg_15_1 or c._destStatus == BattleData.CardStatus.grave or c._destStatus == BattleData.CardStatus.leave then
+						var_15_0 = iter_pos
+						break
+					end
+				end
+			end
 		end
 
 		arg_15_1._saved._pos = nil
 
 		if var_15_0 ~= nil then
+			if arg_15_0._boardCards[var_15_0] ~= nil and arg_15_0._boardCards[var_15_0] ~= arg_15_1 then
+				arg_15_0._boardCards[var_15_0] = nil
+			end
 			arg_15_0._boardCards[var_15_0] = arg_15_1
 			arg_15_0._isBoardDirty = true
 			arg_15_1._pos = var_15_0

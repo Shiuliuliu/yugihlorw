@@ -9800,6 +9800,10 @@ function var_0_0.isNatureGroup(arg_273_0, arg_273_1)
 	return false
 end
 
+function var_0_0.isCategory(arg_274_0, arg_274_1)
+	return (arg_274_0._info and arg_274_0._info._category == arg_274_1) or (arg_274_0._category == arg_274_1)
+end
+
 function var_0_0.isCategoryGroup(arg_274_0, arg_274_1)
 	for iter_274_0 = 1, #arg_274_1 do
 		if arg_274_0._info._category == arg_274_1[iter_274_0] then
@@ -9938,22 +9942,7 @@ end
 
 function var_0_0.getAtk(arg_282_0)
 	if (arg_282_0._infoId == 40736 or arg_282_0:hasSkillFast(14750)) and arg_282_0._status == BattleData.CardStatus.board then
-		local owner = arg_282_0._owner
-		if owner then
-			local count = 0
-			local graveCards = owner._graveCards or (owner.getGraveCards and owner:getGraveCards()) or {}
-			for _, gc in ipairs(graveCards) do
-				if gc and (gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736) then
-					count = count + 1
-				end
-			end
-			local bonus = count * 500
-			local extra = arg_282_0._atkInc or 0
-			local totalAtk = 3000 + bonus + extra
-			arg_282_0._atk = totalAtk
-			return totalAtk
-		end
-		return arg_282_0._atk or 3000
+		return arg_282_0._atk or arg_282_0._maxAtk or 3000
 	end
 	if (arg_282_0._infoId == 12324 or arg_282_0:hasSkillFast(14700)) and arg_282_0._status == BattleData.CardStatus.board then
 		return arg_282_0._atk or (arg_282_0._htAtk or 0)

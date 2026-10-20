@@ -1758,6 +1758,18 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 				arg_38_1._maxAtk = 8000
 				arg_38_1._atk = math.max(0, 8000 + var_38_5)
 			end
+		elseif (arg_38_1._infoId == 40736 or arg_38_1:hasSkillFast(14750)) and arg_38_1._status == BattleData.CardStatus.board then
+			local owner = arg_38_1._owner or arg_38_0
+			local count = 0
+			local graveCards = (owner and (owner._graveCards or (owner.getGraveCards and owner:getGraveCards()))) or {}
+			for _, gc in ipairs(graveCards) do
+				if gc and (gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736) then
+					count = count + 1
+				end
+			end
+			local bonus = count * 500
+			arg_38_1._maxAtk = 3000 + bonus
+			arg_38_1._atk = math.max(0, 3000 + bonus + var_38_5)
 		elseif arg_38_1:isV12() then
 			arg_38_1._atk = arg_38_1._hp
 		elseif arg_38_1:hasCanCastMonsterSkillFast(13722) then

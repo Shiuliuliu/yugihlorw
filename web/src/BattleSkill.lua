@@ -11020,9 +11020,10 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 
 		-- Triệu hồi đặc biệt 1 quái có từ khóa "Kiếm Phá Hủy" đã chọn từ bộ bài lên sân
 		local targetDeckCard = nil
-		if var_4_15 > 0 and pOwner then
-			local cid = var_4_15 % BattleData.UseCardId.id_group
-			targetDeckCard = pOwner:getCardById(cid) or pOwner:getCardById(var_4_15)
+		local chosenId = (var_4_15 > 0 and var_4_15) or (var_4_14 > 0 and var_4_14)
+		if chosenId and chosenId > 0 and pOwner then
+			local cid = chosenId % BattleData.UseCardId.id_group
+			targetDeckCard = pOwner:getCardById(cid) or pOwner:getCardById(chosenId)
 		end
 		if targetDeckCard == nil or targetDeckCard._status ~= BattleData.CardStatus.pile then
 			local piles = pOwner:getBattleCards("P")
@@ -11037,7 +11038,9 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		if targetDeckCard and pOwner then
 			local targetPos = pOwner:getEmptyBoardPos(targetDeckCard)
 			if targetPos then
-				pOwner:setCardStatus(targetDeckCard, BattleData.CardStatus.board, ownerCard._id, 14776, arg_4_3, BattleData.CardStatusVal.p2b_attack_frozen, targetPos)
+				targetDeckCard._saved = targetDeckCard._saved or {}
+				targetDeckCard._saved._pos = targetPos
+				pOwner:setCardStatus(targetDeckCard, BattleData.CardStatus.board, ownerCard._id, 14776, arg_4_3, BattleData.CardStatusVal.p2b_attack_frozen)
 			end
 		end
 		var_4_13 = true
@@ -11148,7 +11151,7 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 			local oppo = pOwner._opponent
 			if oppo then
 				for _, c in ipairs(oppo:getBoardCards()) do
-				if c and c._status == BattleData.CardStatus.board and (c:isCategory(2) or (c._info and c._info._category == 2)) then
+				if c and c._status == BattleData.CardStatus.board and ((c.isCategory and c:isCategory(2)) or (c._info and c._info._category == 2)) then
 					targetCard = c
 					break
 				end
@@ -11218,9 +11221,10 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		arg_4_0._castedSkillCounts[14786] = (arg_4_0._castedSkillCounts[14786] or 0) + 1
 
 		local targetCard = nil
-		if var_4_15 > 0 and pOwner then
-			local cid = var_4_15 % BattleData.UseCardId.id_group
-			targetCard = pOwner:getCardById(cid) or pOwner:getCardById(var_4_15)
+		local chosenId = (var_4_15 > 0 and var_4_15) or (var_4_14 > 0 and var_4_14)
+		if chosenId and chosenId > 0 and pOwner then
+			local cid = chosenId % BattleData.UseCardId.id_group
+			targetCard = pOwner:getCardById(cid) or pOwner:getCardById(chosenId)
 		end
 		if targetCard == nil or targetCard._status ~= BattleData.CardStatus.pile then
 			local piles = pOwner:getBattleCards("P")
@@ -11239,7 +11243,9 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 
 		-- Triệu hồi đặc biệt 1 quái "Kiếm sĩ diệt rồng" trong bộ bài
 		if targetCard and pOwner then
-			pOwner:setCardStatus(targetCard, BattleData.CardStatus.board, arg_4_1._id, 14786, arg_4_3, BattleData.CardStatusVal.p2b_attack_frozen, spawnPos)
+			targetCard._saved = targetCard._saved or {}
+			targetCard._saved._pos = spawnPos or pOwner:getEmptyBoardPos(targetCard)
+			pOwner:setCardStatus(targetCard, BattleData.CardStatus.board, arg_4_1._id, 14786, arg_4_3, BattleData.CardStatusVal.p2b_attack_frozen)
 		end
 		var_4_13 = true
 	elseif var_4_4 == 14770 then
@@ -107365,7 +107371,7 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		local oppo = pOwner._opponent or arg_40_0._opponent
 		if not oppo then return false end
 		for _, c in ipairs(oppo:getBoardCards()) do
-			if c and c._status == BattleData.CardStatus.board and (c:isCategory(2) or (c._info and c._info._category == 2)) then
+			if c and c._status == BattleData.CardStatus.board and ((c.isCategory and c:isCategory(2)) or (c._info and c._info._category == 2)) then
 				return true
 			end
 		end

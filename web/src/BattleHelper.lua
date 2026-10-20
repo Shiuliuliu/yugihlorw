@@ -7953,7 +7953,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		if not oppo then return false end
 		local oppoDragons = {}
 		for _, c in ipairs(oppo:getBoardCards()) do
-			if c and c._status == BattleData.CardStatus.board and (c:isCategory(2) or (c._info and c._info._category == 2)) then
+			if c and c._status == BattleData.CardStatus.board and ((c.isCategory and c:isCategory(2)) or (c._info and c._info._category == 2)) then
 				table.insert(oppoDragons, c)
 			end
 		end
