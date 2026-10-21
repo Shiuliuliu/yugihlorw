@@ -2351,7 +2351,8 @@
 		var effects = [
 			'szkp', 'xuanzhong', 'kapaisiwang', 'beiji', 'jdgj',
 			'tssh', 'blzz', 'guanchuan', 'wlfy', 'zh', 'tuika',
-			'touyingbi', 'yaosaizi', 'cmdlbz'
+			'touyingbi', 'yaosaizi', 'cmdlbz',
+			'chaoliangsucai1', 'chaoliangsucai2', 'chaoliangsucai3'
 		];
 		var promises = [];
 		var base = (config.resBase || 'res/').replace(/\/+$/, '') + '/';
@@ -2760,7 +2761,12 @@
 
 		stop: function () {
 			this._playing = false;
-			this.unscheduleUpdate();
+			try {
+				this.unscheduleUpdate();
+				if (cc.director && cc.director.getScheduler()) {
+					cc.director.getScheduler().unscheduleUpdate(this);
+				}
+			} catch (e) {}
 			return this;
 		},
 

@@ -3983,6 +3983,20 @@ function var_0_0.preloadEffects(arg_133_0, arg_133_1)
 	for iter_133_0 = 1, 2 do
 		local var_133_0 = iter_133_0 == 1 and arg_133_0._player or arg_133_0._opponent
 
+		if arg_133_1 and var_133_0 and var_133_0._rareCards then
+			for _, rCard in ipairs(var_133_0._rareCards) do
+				local cid = rCard._infoId or rCard._id
+				if cid then
+					pcall(function()
+						local texName = ClientView.getCardImageName(cid)
+						if texName then
+							lc.TextureCache:addImage(texName)
+						end
+					end)
+				end
+			end
+		end
+
 		for iter_133_1, iter_133_2 in ipairs(var_133_0._troopSkins) do
 			local var_133_1 = iter_133_2.effect_ids
 

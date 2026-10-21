@@ -9482,6 +9482,11 @@ function var_0_0.initBoardRects(arg_108_0)
 end
 
 function var_0_0.switchBoard(arg_109_0, arg_109_1)
+	if arg_109_0._isExBoard == arg_109_1 then
+		return
+	end
+	arg_109_0._isExBoard = arg_109_1
+
 	arg_109_0._exRect:setVisible(arg_109_1)
 	arg_109_0._largeRects[2]:setVisible(arg_109_1)
 	arg_109_0._smallRects[2]:setVisible(not arg_109_1)

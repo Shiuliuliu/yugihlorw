@@ -397,42 +397,67 @@ function var_0_0.efcIconMarkReload(arg_21_0, arg_21_1)
 end
 
 function var_0_0.efcXYZMarkBegin(arg_22_0, arg_22_1)
+	if not arg_22_0._card then return end
 	local var_22_0 = arg_22_0._card:getBuffValue(true, BattleData.PositiveType.xyzMark)
 
-	if arg_22_0._statusEfc[arg_22_1] ~= nil then
+	if arg_22_0._xyzMaterialCount == var_22_0 and arg_22_0._statusEfc and arg_22_0._statusEfc[arg_22_1] ~= nil then
+		return
+	end
+
+	if arg_22_0._statusEfc and arg_22_0._statusEfc[arg_22_1] ~= nil then
 		var_0_0.efcXYZMarkEnd(arg_22_0, arg_22_1)
 	end
 
-	if var_22_0 > 0 and arg_22_0._statusEfc[arg_22_1] == nil then
-		local var_22_1 = arg_22_0._ownerUi:efcDragonBones2("chaoliangsucai" .. math.min(3, var_22_0), "effect", 0.5, false)
+	if var_22_0 > 0 and (not arg_22_0._statusEfc or arg_22_0._statusEfc[arg_22_1] == nil) then
+		arg_22_0._xyzMaterialCount = var_22_0
+		local var_22_1 = arg_22_0._ownerUi and arg_22_0._ownerUi:efcDragonBones2("chaoliangsucai" .. math.min(3, var_22_0), "effect", 0.5, false)
 
-		lc.addChildToPos(arg_22_0._pEffectArea, var_22_1, cc.p(0, 0))
-		arg_22_0._scene:seenByCamera3D(var_22_1)
+		if var_22_1 then
+			lc.addChildToPos(arg_22_0._pEffectArea, var_22_1, cc.p(0, 0))
+			if arg_22_0._scene and arg_22_0._scene.seenByCamera3D then
+				arg_22_0._scene:seenByCamera3D(var_22_1)
+			end
 
-		arg_22_0._statusEfc[arg_22_1] = var_22_1
+			arg_22_0._statusEfc = arg_22_0._statusEfc or {}
+			arg_22_0._statusEfc[arg_22_1] = var_22_1
+		end
 	end
 end
 
 function var_0_0.efcXYZMarkEnd(arg_23_0, arg_23_1)
-	if arg_23_0._statusEfc[arg_23_1] == nil then
+	if not arg_23_0._statusEfc or arg_23_0._statusEfc[arg_23_1] == nil then
 		return
 	end
 
 	local var_23_0 = arg_23_0._statusEfc[arg_23_1]
 
 	arg_23_0._statusEfc[arg_23_1] = nil
+	arg_23_0._xyzMaterialCount = nil
 
-	var_23_0:removeFromParent()
+	if var_23_0 then
+		if var_23_0.stop then
+			var_23_0:stop()
+		end
+		var_23_0:removeFromParent()
+	end
 end
 
 function var_0_0.efcXYZMarkRemove(arg_24_0, arg_24_1)
-	if arg_24_0._statusEfc[arg_24_1] == nil then
+	if not arg_24_0._statusEfc or arg_24_0._statusEfc[arg_24_1] == nil then
 		return
 	end
 
-	arg_24_0._statusEfc[arg_24_1]:removeFromParent()
+	local var_24_0 = arg_24_0._statusEfc[arg_24_1]
 
 	arg_24_0._statusEfc[arg_24_1] = nil
+	arg_24_0._xyzMaterialCount = nil
+
+	if var_24_0 then
+		if var_24_0.stop then
+			var_24_0:stop()
+		end
+		var_24_0:removeFromParent()
+	end
 end
 
 function var_0_0.efcXYZMarkReload(arg_25_0, arg_25_1)
@@ -3754,12 +3779,15 @@ function var_0_0.updateActive(arg_77_0, arg_77_1)
 
 			lc.addChildToCenter(arg_77_0._pFrame, var_77_0, -1)
 			var_77_0:setScale(1.8)
-			arg_77_0._battleUi:createDragonBones("xuanzhong", cc.p(5, 8), var_77_0, "effect1", false, 1)
+			var_77_0._bones = arg_77_0._battleUi:createDragonBones("xuanzhong", cc.p(5, 8), var_77_0, "effect1", false, 1)
 			arg_77_0._ownerUi._scene:seenByCamera3D(var_77_0)
 
 			arg_77_0._handGlow = var_77_0
 		end
 	elseif arg_77_0._handGlow ~= nil then
+		if arg_77_0._handGlow._bones and arg_77_0._handGlow._bones.stop then
+			arg_77_0._handGlow._bones:stop()
+		end
 		arg_77_0._handGlow:removeFromParent()
 
 		arg_77_0._handGlow = nil
@@ -3788,6 +3816,9 @@ function var_0_0.updateBoardActive(arg_78_0)
 			arg_78_0._boardGlow._bones:gotoAndPlay(arg_78_0._card:canAttack(true) and "effect1" or "effect2")
 		end
 	elseif arg_78_0._boardGlow ~= nil then
+		if arg_78_0._boardGlow._bones and arg_78_0._boardGlow._bones.stop then
+			arg_78_0._boardGlow._bones:stop()
+		end
 		arg_78_0._boardGlow:removeFromParent()
 
 		arg_78_0._boardGlow = nil
@@ -4080,21 +4111,27 @@ end
 
 function var_0_0.updateInitiativeSkills(arg_90_0)
 	local var_90_0 = arg_90_0._card
-	local var_90_1 = var_90_0:getInitiativeSkill(Data.SkillMode.initiative_bcs)
+	if not var_90_0 then return end
+	local var_90_1 = var_90_0:getInitiativeSkill(Data.SkillMode.initiative_bcs) or {}
 
-	for iter_90_0 = 1, #var_90_1 do
-		local var_90_2 = var_90_1[iter_90_0]
+	if not arg_90_0._isController or (var_90_0._status ~= BattleData.CardStatus.board and var_90_0._status ~= BattleData.CardStatus.show and var_90_0._status ~= BattleData.CardStatus.field) then
+		arg_90_0:removeInitiativeSkills()
+		return
+	end
+
+	if arg_90_0._initiativeSkillIcons and #arg_90_0._initiativeSkillIcons == #var_90_1 and #var_90_1 > 0 then
+		for iter_90_1 = 1, #var_90_1 do
+			local var_90_3 = var_90_1[iter_90_1]
+			local btn = arg_90_0._initiativeSkillIcons[iter_90_1]
+			if btn then
+				local canUse = var_90_0._owner and var_90_0._owner:canUseInitiativeSkill(var_90_0, var_90_3) and arg_90_0._battleUi._dropLayer == nil or false
+				btn:setEnabled(canUse)
+			end
+		end
+		return
 	end
 
 	arg_90_0:removeInitiativeSkills()
-
-	if not arg_90_0._isController then
-		return
-	end
-
-	if var_90_0._status ~= BattleData.CardStatus.board and var_90_0._status ~= BattleData.CardStatus.show and var_90_0._status ~= BattleData.CardStatus.field then
-		return
-	end
 
 	for iter_90_1 = 1, #var_90_1 do
 		local var_90_3 = var_90_1[iter_90_1]
@@ -4146,9 +4183,15 @@ function var_0_0.updateInitiativeSkills(arg_90_0)
 end
 
 function var_0_0.removeInitiativeSkills(arg_92_0)
+	if not arg_92_0._initiativeSkillIcons then return end
 	for iter_92_0 = 1, #arg_92_0._initiativeSkillIcons do
-		arg_92_0._initiativeSkillIcons[iter_92_0]:removeFromParent()
-		arg_92_0._initiativeSkillIcons[iter_92_0]:release()
+		local btn = arg_92_0._initiativeSkillIcons[iter_92_0]
+		if btn then
+			btn:removeFromParent()
+			if btn.release then
+				btn:release()
+			end
+		end
 	end
 
 	arg_92_0._initiativeSkillIcons = {}

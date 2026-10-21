@@ -8398,6 +8398,49 @@ local function patchCardSprite(CardSprite)
 		end
 	end
 
+	CardSprite.efcXYZMarkEnd = function(self, markName)
+		if not self._statusEfc or self._statusEfc[markName] == nil then
+			return
+		end
+		local db = self._statusEfc[markName]
+		self._statusEfc[markName] = nil
+		self._xyzMaterialCount = nil
+		if db then
+			if db.stop then db:stop() end
+			db:removeFromParent()
+		end
+	end
+
+	CardSprite.efcXYZMarkRemove = function(self, markName)
+		if not self._statusEfc or self._statusEfc[markName] == nil then
+			return
+		end
+		local db = self._statusEfc[markName]
+		self._statusEfc[markName] = nil
+		self._xyzMaterialCount = nil
+		if db then
+			if db.stop then db:stop() end
+			db:removeFromParent()
+		end
+	end
+
+	CardSprite.efcXYZMarkReload = function(self, markName)
+		CardSprite.efcXYZMarkRemove(self, markName)
+		CardSprite.efcXYZMarkBegin(self, markName)
+	end
+
+	if CardSprite.PositiveStatus then
+		for idx = 1, #CardSprite.PositiveStatus do
+			local entry = CardSprite.PositiveStatus[idx]
+			if entry and entry._name == "xyzMark" and entry._function then
+				entry._function._begin = CardSprite.efcXYZMarkBegin
+				entry._function._end = CardSprite.efcXYZMarkEnd
+				entry._function._remove = CardSprite.efcXYZMarkRemove
+				entry._function._reload = CardSprite.efcXYZMarkReload
+			end
+		end
+	end
+
 	local oldGetNegativeStatus = CardSprite.getNegativeStatus
 	CardSprite.getNegativeStatus = function(self)
 		local ret = oldGetNegativeStatus and oldGetNegativeStatus(self) or {}
