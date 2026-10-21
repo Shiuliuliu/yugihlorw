@@ -4645,7 +4645,7 @@ return {
   ["_id"]=40498,["_isHide"]=0,["_joinComponent"]={[1]=0,},
   ["_joinResult"]={[1]=0,},
   ["_keyword"]=123,["_link"]={[1]=3,[2]=8,},
-  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="S<100",["_linkCount"]="#==2",["_linkSelectedCandidates"]="UNI(S)==1",["_maxCount"]=3,["_nameSid"]=35503,["_nature"]=1,["_option"]=8194,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="K==123&&S<100",["_linkCount"]="#==2",["_linkSelectedCandidates"]="UNI(S)==1",["_maxCount"]=3,["_nameSid"]=35503,["_nature"]=1,["_option"]=8194,["_originId"]=0,["_packageId"]={[1]=0,},
   ["_picId"]=0,["_py"]="wsjdd",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=9886,[2]=9887,[3]=9928,[4]=9929,},
   ["_skin"]={[1]=50135,},
   ["_star"]=0,["_syncComponent"]={[1]={[1]=0,},},},

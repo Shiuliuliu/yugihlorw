@@ -35501,7 +35501,7 @@ Quái vật 4 sao X2
 0
 Vua Cua Khoan
 Võ Cơ-Ahashima
-Quái có số sao giống nhau x2.
+Quái có số sao giống nhau có từ khóa “Võ Thần” x2.
 |Ghi chú|\nChỉ có thể dùng quái chưa hành động làm nguyên liệu Link, Quái Dung Hợp/Synchron/XYZ không thể dùng làm nguyên liệu Link Hiệu quả kỹ năng “Võ Thần Nhảy Vòng” sẽ không bị vô hiệu hóa kích hoạt bởi “Cánh Bổ Nhào”.
 Võ Cơ-Ahashima
 Vortex Lốc Xoáy
