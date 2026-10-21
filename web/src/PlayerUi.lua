@@ -1053,10 +1053,14 @@ function var_0_0.calHandCardPosAndRot(arg_41_0, arg_41_1)
 
 	local var_41_13 = (ClientView.SCR_H - var_41_9 * arg_41_0._battleUi._scale) / math.cos(ClientView.BATTLE_ROTATION_X * math.pi / 360) / arg_41_0._battleUi._scale
 
-	if isBottom then
-		var_41_12 = 13
-	else
+	if not arg_41_0._battleUi._isObserver and arg_41_0._battleUi._battleType ~= Data.BattleType.replay or not arg_41_0._isController and not arg_41_0._battleUi._isReverse then
+		-- block empty
+	elseif not arg_41_0._isController and arg_41_0._battleUi._isReverse then
 		var_41_12 = ClientView.SCR_H - 13
+	elseif arg_41_0._isController and not arg_41_0._battleUi._isReverse then
+		var_41_12 = 13
+	elseif arg_41_0._isController and arg_41_0._battleUi._isReverse then
+		var_41_12 = lc.ch(arg_41_0._battleUi) - 328 - var_41_9 / 2
 	end
 
 	if var_41_6 < var_41_10 then
@@ -1118,10 +1122,18 @@ function var_0_0.calBoardCardPos(arg_44_0, arg_44_1)
 		end
 	end
 
+	if var_44_0 == 0 and arg_44_1._card and arg_44_1._card._pos and arg_44_1._card._pos > 0 then
+		var_44_0 = arg_44_1._card._pos
+	end
+
 	local isBottom = arg_44_0._isController
 
 	local var_44_2 = isBottom and var_0_0.Pos.attacker_board_x or var_0_0.Pos.defender_board_x
 	local var_44_3 = isBottom and var_0_0.Pos.attacker_board_y or var_0_0.Pos.defender_board_y
+
+	if var_44_0 <= 0 or var_44_0 > #var_44_2 then
+		var_44_0 = 1
+	end
 
 	if arg_44_1:isSmall() then
 		var_44_3 = var_44_3 + (isBottom and (var_44_0 == 6 and var_0_0.Pos.board_pos_dy[1] or -var_0_0.Pos.board_pos_dy[2]) or var_44_0 == 6 and -var_0_0.Pos.board_pos_dy[1] or var_0_0.Pos.board_pos_dy[2])
@@ -1265,14 +1277,19 @@ end
 
 function var_0_0.onChoiceDialogOpened(arg_x_0)
 	if arg_x_0._battleUi and type(arg_x_0._battleUi.addPvpRoundSeconds) == "function" then
-		arg_x_0._battleUi:addPvpRoundSeconds(10, 150)
+		arg_x_0._battleUi:addPvpRoundSeconds(10, 270)
 	end
 	if ClientData and ClientData._currentMatchId then
 		local pvpNet = jsbridge and jsbridge.object("jdzcPvp")
 		if pvpNet and pvpNet.sendAction then
 			pcall(function()
 				local jsonMod = require("json")
-				local curTimeLeft = arg_x_0._battleUi and arg_x_0._battleUi._roundDuration or 60
+				local curTimeLeft = nil
+				if arg_x_0._battleUi and arg_x_0._battleUi._roundRealStartTime then
+					local bUi = arg_x_0._battleUi
+					local totalDur = bUi._roundDuration or 90
+					curTimeLeft = math.max(0, totalDur - (os.time() - bUi._roundRealStartTime))
+				end
 				pvpNet:sendAction(ClientData._currentMatchId, jsonMod.encode({ 999998, 0, 0, os.time() }), curTimeLeft)
 			end)
 		end
@@ -1291,11 +1308,15 @@ function var_0_0.updateBoardCardsInitialSkills(arg_54_0, force)
 		local var_54_0 = #arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("R", nil, nil, true) > 0
 
 		arg_54_0._battleUi._btnRare:setEnabled(var_54_0)
-		arg_54_0._battleUi._btnRare2:setEnabled(var_54_0)
+		if arg_54_0._battleUi._btnRare2 and arg_54_0._battleUi._btnRare2 ~= arg_54_0._battleUi._btnRare then
+			arg_54_0._battleUi._btnRare2:setEnabled(var_54_0)
+		end
 	else
 		arg_54_0._battleUi._btnInitiative:setEnabled(false)
 		arg_54_0._battleUi._btnRare:setEnabled(false)
-		arg_54_0._battleUi._btnRare2:setEnabled(false)
+		if arg_54_0._battleUi._btnRare2 and arg_54_0._battleUi._btnRare2 ~= arg_54_0._battleUi._btnRare then
+			arg_54_0._battleUi._btnRare2:setEnabled(false)
+		end
 	end
 
 	if arg_54_0._battleUi._btnInitiative:isEnabled() then
@@ -1318,16 +1339,6 @@ function var_0_0.updateBoardCardsInitialSkills(arg_54_0, force)
 		arg_54_0._battleUi._btnRare._particle = nil
 	end
 
-	if arg_54_0._battleUi._btnRare2:isEnabled() then
-		if arg_54_0._battleUi._btnRare2._particle == nil then
-			arg_54_0._battleUi._btnRare2._particle = arg_54_0:efcParticle("zhudong", cc.p(34, 18), true, false, arg_54_0._battleUi._btnRare2)
-		end
-	elseif arg_54_0._battleUi._btnRare2._particle ~= nil then
-		arg_54_0._battleUi._btnRare2._particle:removeFromParent()
-
-		arg_54_0._battleUi._btnRare2._particle = nil
-	end
-
 	for iter_54_0, iter_54_1 in pairs(arg_54_0._pBoardCards) do
 		iter_54_1:updateInitiativeSkills()
 	end
@@ -1348,7 +1359,12 @@ function var_0_0.castInitiativeSkill(arg_55_0, arg_55_1, arg_55_2)
 		if pvpNet and pvpNet.sendAction then
 			pcall(function()
 				local jsonMod = require("json")
-				local curTimeLeft = arg_55_0._battleUi and arg_55_0._battleUi._roundDuration or 60
+				local curTimeLeft = nil
+				if arg_55_0._battleUi and arg_55_0._battleUi._roundRealStartTime then
+					local bUi = arg_55_0._battleUi
+					local totalDur = bUi._roundDuration or 90
+					curTimeLeft = math.max(0, totalDur - (os.time() - bUi._roundRealStartTime))
+				end
 				pvpNet:sendAction(ClientData._currentMatchId, jsonMod.encode({ 999998, 0, 0, os.time() }), curTimeLeft)
 			end)
 		end
@@ -9482,9 +9498,6 @@ function var_0_0.initBoardRects(arg_108_0)
 end
 
 function var_0_0.switchBoard(arg_109_0, arg_109_1)
-	if arg_109_0._isExBoard == arg_109_1 then
-		return
-	end
 	arg_109_0._isExBoard = arg_109_1
 
 	arg_109_0._exRect:setVisible(arg_109_1)

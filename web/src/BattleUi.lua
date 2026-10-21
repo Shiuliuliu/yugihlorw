@@ -972,17 +972,11 @@ function var_0_0.initUiControl(arg_29_0)
 
 	local var_29_10 = var_29_2("initiative_icon_rare")
 
-	var_29_10:setPosition(130 + ClientView.SCR_EDGE, 180)
+	var_29_10:setPosition(lc.left(var_29_9) - 20 - lc.cw(var_29_10), 40)
 	var_29_10:setDisabledShader(ClientView.SHADER_DISABLE)
 
 	arg_29_0._btnRare = var_29_10
-
-	local var_29_11 = var_29_2("initiative_icon_rare")
-
-	var_29_11:setPosition(lc.left(var_29_9) - 20 - lc.cw(var_29_11), 40)
-	var_29_11:setDisabledShader(ClientView.SHADER_DISABLE)
-
-	arg_29_0._btnRare2 = var_29_11
+	arg_29_0._btnRare2 = var_29_10
 
 	local function var_29_12()
 		local var_34_0 = var_29_2("bat_btn_1", "bat_icon_guide_npc", nil, Str(STR.TIP))
@@ -3345,6 +3339,7 @@ function var_0_0.pvpTimingWhenRoundBegin(arg_107_0, arg_107_1)
 	arg_107_0._pvpPlayer = arg_107_1
 	arg_107_0._roundRealStartTime = os.time()
 	arg_107_0._roundDuration = 90
+	arg_107_0._accumulatedBonusSeconds = 0
 
 	local var_107_0 = ClientData.getCurrentTime()
 
@@ -3378,20 +3373,28 @@ function var_0_0.addPvpRoundSeconds(arg_108_0, arg_108_1, arg_108_2)
 	if not arg_108_0._isOnlinePvp then
 		return
 	end
-	local delta = tonumber(arg_108_1) or 6
-	local maxTime = tonumber(arg_108_2) or 150
+	local maxBonusAllowed = 180
+	local curAccum = arg_108_0._accumulatedBonusSeconds or 0
+	local remainingBonus = math.max(0, maxBonusAllowed - curAccum)
+	if remainingBonus <= 0 then
+		return
+	end
+	local delta = math.min(tonumber(arg_108_1) or 6, remainingBonus)
+	arg_108_0._accumulatedBonusSeconds = curAccum + delta
+
+	local maxTime = tonumber(arg_108_2) or 270
 	if arg_108_0._roundRealStartTime then
 		local curNow = os.time()
 		local totalDur = arg_108_0._roundDuration or 90
-		local curRemaining = totalDur - (curNow - arg_108_0._roundRealStartTime)
-		local newRemaining = math.min(maxTime, math.max(curRemaining + delta, 0))
+		local curRemaining = math.max(0, totalDur - (curNow - arg_108_0._roundRealStartTime))
+		local newRemaining = math.min(maxTime, curRemaining + delta)
 		if newRemaining > totalDur then
 			arg_108_0._roundDuration = newRemaining
 			totalDur = newRemaining
 		end
 		arg_108_0._roundRealStartTime = curNow - (totalDur - newRemaining)
-		if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._beginTime then
-			ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + newRemaining
+		if ClientData._battleRoundStartInfo then
+			ClientData._battleRoundStartInfo._endTime = ClientData.getCurrentTime() + newRemaining
 		end
 		arg_108_0:updateRoundTimer(newRemaining)
 	end
@@ -3401,7 +3404,7 @@ function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
 	if not arg_108_0._isOnlinePvp then
 		return
 	end
-	local newRemaining = math.min(150, math.max(0, tonumber(arg_108_1) or 0))
+	local newRemaining = math.min(270, math.max(0, tonumber(arg_108_1) or 0))
 	if arg_108_0._roundRealStartTime then
 		local curNow = os.time()
 		local totalDur = arg_108_0._roundDuration or 90
@@ -3410,8 +3413,8 @@ function var_0_0.syncPvpRoundSeconds(arg_108_0, arg_108_1)
 			totalDur = newRemaining
 		end
 		arg_108_0._roundRealStartTime = curNow - (totalDur - newRemaining)
-		if ClientData._battleRoundStartInfo and ClientData._battleRoundStartInfo._beginTime then
-			ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + newRemaining
+		if ClientData._battleRoundStartInfo then
+			ClientData._battleRoundStartInfo._endTime = ClientData.getCurrentTime() + newRemaining
 		end
 		arg_108_0:updateRoundTimer(newRemaining)
 	end

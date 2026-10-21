@@ -3640,21 +3640,23 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
             elif self.path == '/api/cancel_pvp_match':
                 acc_id = int(req.get('account_id', 0))
                 if acc_id:
-                    was_waiting = (acc_id in PVP_HTTP_WAITING)
-                    PVP_HTTP_WAITING.pop(acc_id, None)
-                    if was_waiting:
-                        PVP_HTTP_CANCELLED.add(acc_id)
-                    else:
-                        PVP_HTTP_CANCELLED.discard(acc_id)
-                    PVP_HTTP_MATCHED.pop(acc_id, None)
+                    with PVP_LOCK:
+                        was_waiting = (acc_id in PVP_HTTP_WAITING)
+                        PVP_HTTP_WAITING.pop(acc_id, None)
+                        if was_waiting:
+                            PVP_HTTP_CANCELLED.add(acc_id)
+                        else:
+                            PVP_HTTP_CANCELLED.discard(acc_id)
+                        PVP_HTTP_MATCHED.pop(acc_id, None)
                     print(f"[PVP MATCH] Matchmaking cancelled for account {acc_id}")
                 self._send_json({"code": 200, "msg": "Matchmaking cancelled"})
                 return
 
             elif self.path == '/api/pvp_match':
                 acc_id = int(req.get('account_id', 1))
-                PVP_HTTP_CANCELLED.discard(acc_id)
-                PVP_HTTP_MATCHED.pop(acc_id, None)
+                with PVP_LOCK:
+                    PVP_HTTP_CANCELLED.discard(acc_id)
+                    PVP_HTTP_MATCHED.pop(acc_id, None)
                 my_mode = str(req.get('mode', 'clash')).lower()
                 my_name = req.get('name', 'Duelist')
                 my_level = int(req.get('level', 50))
@@ -3697,115 +3699,130 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     return
 
                 now = time.time()
-                # Clean expired (> 45s)
-                for k, v in list(PVP_HTTP_WAITING.items()):
-                    if now - v['time'] > 45:
-                        PVP_HTTP_WAITING.pop(k, None)
+                with PVP_LOCK:
+                    # Clean expired (> 45s)
+                    for k, v in list(PVP_HTTP_WAITING.items()):
+                        if now - v['time'] > 45:
+                            PVP_HTTP_WAITING.pop(k, None)
 
-                if acc_id in PVP_HTTP_MATCHED:
-                    resp = PVP_HTTP_MATCHED.pop(acc_id)
-                else:
-                    matched_oppo = None
-                    candidates = []
-                    for other_id, other_data in list(PVP_HTTP_WAITING.items()):
-                        other_mode = str(other_data.get('mode', 'clash')).lower()
-                        is_rank_clash = (my_mode in ('clash', 'clash_ex', 'ladder') and other_mode in ('clash', 'clash_ex', 'ladder'))
-                        is_compatible = (other_mode == my_mode) or is_rank_clash
-                        if other_id != acc_id and (now - other_data['time'] < 50) and is_compatible:
-                            other_trophy = int(other_data.get('trophy', 800) or 800)
-                            if my_mode in ('survival_ex', 'survival'):
-                                diff = 0
-                                tier = 0
-                            else:
-                                diff = abs(my_trophy - other_trophy)
-                                my_find_strong = bool(req.get('find_strong', False))
-                                other_find_strong = bool(other_data.get('find_strong', False))
-                                # KHONG GHEP DAU NEU LECH TREN 1000 RANKPOINT (TRU KHI NGUOI CO RANK THAP HON BAT 'TIM DOI THU MANH')
-                                if diff > 1000:
-                                    can_match = (other_trophy > my_trophy and my_find_strong) or (my_trophy > other_trophy and other_find_strong)
-                                    if not can_match:
-                                        continue
-                                # ƯU TIÊN CÁC TÀI KHOẢN TỪ 1000 TRỞ XUỐNG BẮT CẶP VỚI NHAU
-                                if my_trophy <= 1000:
-                                    tier = 0 if other_trophy <= 1000 else 1
+                    if acc_id in PVP_HTTP_MATCHED:
+                        resp = PVP_HTTP_MATCHED.pop(acc_id)
+                        matched_oppo = resp.get("oppo")
+                    else:
+                        matched_oppo = None
+                        candidates = []
+                        for other_id, other_data in list(PVP_HTTP_WAITING.items()):
+                            other_mode = str(other_data.get('mode', 'clash')).lower()
+                            is_rank_clash = (my_mode in ('clash', 'clash_ex', 'ladder') and other_mode in ('clash', 'clash_ex', 'ladder'))
+                            is_compatible = (other_mode == my_mode) or is_rank_clash
+                            if other_id != acc_id and (now - other_data['time'] < 50) and is_compatible:
+                                other_trophy = int(other_data.get('trophy', 800) or 800)
+                                if my_mode in ('survival_ex', 'survival'):
+                                    diff = 0
+                                    tier = 0
                                 else:
-                                    tier = 0 if other_trophy > 1000 else 1
-                            candidates.append((tier, diff, other_id, other_data))
+                                    diff = abs(my_trophy - other_trophy)
+                                    my_find_strong = bool(req.get('find_strong', False))
+                                    other_find_strong = bool(other_data.get('find_strong', False))
+                                    # KHONG GHEP DAU NEU LECH TREN 1000 RANKPOINT (TRU KHI NGUOI CO RANK THAP HON BAT 'TIM DOI THU MANH')
+                                    if diff > 1000:
+                                        can_match = (other_trophy > my_trophy and my_find_strong) or (my_trophy > other_trophy and other_find_strong)
+                                        if not can_match:
+                                            continue
+                                    # ƯU TIÊN CÁC TÀI KHOẢN TỪ 1000 TRỞ XUỐNG BẮT CẶP VỚI NHAU
+                                    if my_trophy <= 1000:
+                                        tier = 0 if other_trophy <= 1000 else 1
+                                    else:
+                                        tier = 0 if other_trophy > 1000 else 1
+                                candidates.append((tier, diff, other_id, other_data))
 
-                    if candidates:
-                        candidates.sort(key=lambda x: (x[0], x[1]))
-                        best_tier, best_diff, other_id, other_data = candidates[0]
-                        PVP_HTTP_WAITING.pop(other_id, None)
-                        seed = random.randint(1, 65535)
-                        match_id = f"m_{int(time.time()*1000)}_{random.randint(100, 999)}"
-                        matched_oppo = {
-                            "name": other_data['name'],
-                            "level": other_data['level'],
-                            "trophy": other_data.get('trophy', 800),
-                            "cards": other_data['cards'],
-                            "extra_cards": other_data['extra_cards'],
-                            "avatar": other_data['avatar'],
-                            "gold_cup": other_data.get('gold_cup', 0),
-                            "silver_cup": other_data.get('silver_cup', 0),
-                            "bronze_cup": other_data.get('bronze_cup', 0),
-                            "is_real_player": True
-                        }
-                        other_first = random.choice([True, False])
-                        PVP_HTTP_MATCHED[other_id] = {
-                            "code": 200,
-                            "status": "matched",
-                            "match_id": match_id,
-                            "seed": seed,
-                            "is_attacker": other_first,
-                            "first": other_first,
-                            "is_real_player": True,
-                            "oppo_online": True,
-                            "oppo": {
+                        if candidates:
+                            candidates.sort(key=lambda x: (x[0], x[1]))
+                            best_tier, best_diff, other_id, other_data = candidates[0]
+                            PVP_HTTP_WAITING.pop(other_id, None)
+                            seed = random.randint(1, 65535)
+                            match_id = f"m_{int(time.time()*1000)}_{random.randint(100, 999)}"
+                            matched_oppo = {
+                                "name": other_data['name'],
+                                "level": other_data['level'],
+                                "trophy": other_data.get('trophy', 800),
+                                "cards": other_data['cards'],
+                                "extra_cards": other_data['extra_cards'],
+                                "avatar": other_data['avatar'],
+                                "gold_cup": other_data.get('gold_cup', 0),
+                                "silver_cup": other_data.get('silver_cup', 0),
+                                "bronze_cup": other_data.get('bronze_cup', 0),
+                                "is_real_player": True
+                            }
+                            other_first = random.choice([True, False])
+                            PVP_HTTP_MATCHED[other_id] = {
+                                "code": 200,
+                                "status": "matched",
+                                "match_id": match_id,
+                                "seed": seed,
+                                "is_attacker": other_first,
+                                "first": other_first,
+                                "is_real_player": True,
+                                "oppo_online": True,
+                                "oppo": {
+                                    "name": my_name,
+                                    "level": my_level,
+                                    "trophy": my_trophy,
+                                    "cards": my_cards,
+                                    "extra_cards": my_extra,
+                                    "avatar": my_avatar,
+                                    "gold_cup": my_gc,
+                                    "silver_cup": my_sc,
+                                    "bronze_cup": my_bc,
+                                    "is_real_player": True
+                                }
+                            }
+                            resp = {
+                                "code": 200,
+                                "status": "matched",
+                                "match_id": match_id,
+                                "seed": seed,
+                                "is_attacker": not other_first,
+                                "first": not other_first,
+                                "is_real_player": True,
+                                "oppo_online": True,
+                                "oppo": matched_oppo
+                            }
+                            p1_uid = str(other_id if other_first else acc_id)
+                            p2_uid = str(acc_id if other_first else other_id)
+                            ACTIVE_MATCHES[match_id] = {
+                                "p1": None, "p2": None,
+                                "p1_user": p1_uid, "p2_user": p2_uid,
+                                "p1_reconnect_token": 0, "p2_reconnect_token": 0,
+                                "turn_bonus": 0, "pending_actions": [],
+                                "last_action_time": time.time(),
+                                "created_at": time.time()
+                            }
+                            print(f"[PVP MATCH ({my_mode})] Paired {my_name} with {matched_oppo['name']}! Match ID: {match_id} (other_first={other_first})")
+
+                        if not matched_oppo:
+                            # Add self to queue with trophy and cups
+                            PVP_HTTP_WAITING[acc_id] = {
+                                "time": now,
+                                "mode": my_mode,
                                 "name": my_name,
                                 "level": my_level,
-                                "trophy": my_trophy,
                                 "cards": my_cards,
                                 "extra_cards": my_extra,
                                 "avatar": my_avatar,
+                                "trophy": my_trophy,
                                 "gold_cup": my_gc,
                                 "silver_cup": my_sc,
                                 "bronze_cup": my_bc,
-                                "is_real_player": True
+                                "find_strong": bool(req.get('find_strong', False))
                             }
-                        }
-                        resp = {
-                            "code": 200,
-                            "status": "matched",
-                            "match_id": match_id,
-                            "seed": seed,
-                            "is_attacker": not other_first,
-                            "first": not other_first,
-                            "is_real_player": True,
-                            "oppo_online": True,
-                            "oppo": matched_oppo
-                        }
-                        print(f"[PVP MATCH ({my_mode})] Paired {my_name} with {matched_oppo['name']}! Match ID: {match_id} (other_first={other_first})")
 
-                    if not matched_oppo:
-                        # Add self to queue with trophy and cups
-                        PVP_HTTP_WAITING[acc_id] = {
-                            "time": now,
-                            "mode": my_mode,
-                            "name": my_name,
-                            "level": my_level,
-                            "cards": my_cards,
-                            "extra_cards": my_extra,
-                            "avatar": my_avatar,
-                            "trophy": my_trophy,
-                            "gold_cup": my_gc,
-                            "silver_cup": my_sc,
-                            "bronze_cup": my_bc,
-                            "find_strong": bool(req.get('find_strong', False))
-                        }
-                        # Wait up to 45s for human
-                        matched_during_wait = False
-                        for _ in range(90):
-                            time.sleep(0.5)
+                if not matched_oppo:
+                    # Wait up to 45s for human
+                    matched_during_wait = False
+                    for _ in range(90):
+                        time.sleep(0.5)
+                        with PVP_LOCK:
                             if acc_id in PVP_HTTP_MATCHED:
                                 resp = PVP_HTTP_MATCHED.pop(acc_id)
                                 matched_during_wait = True
@@ -3817,9 +3834,14 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 self._send_json(resp)
                                 print(f"[PVP MATCH] Aborted wait loop for cancelled account {acc_id}")
                                 return
-                        
-                        if not matched_during_wait:
-                            PVP_HTTP_WAITING.pop(acc_id, None)
+                    
+                    if not matched_during_wait:
+                        with PVP_LOCK:
+                            if acc_id in PVP_HTTP_MATCHED:
+                                resp = PVP_HTTP_MATCHED.pop(acc_id)
+                                matched_during_wait = True
+                            else:
+                                PVP_HTTP_WAITING.pop(acc_id, None)
                             with get_db() as conn:
                                 with conn.cursor() as cur:
                                     cur.execute("""
@@ -5038,6 +5060,7 @@ PVP_HTTP_CANCELLED = set()
 PVP_QUEUE = []
 ACTIVE_MATCHES = {}
 WS_CLIENT_META = {}
+PVP_LOCK = threading.Lock()
 WS_CONNECTED_CLIENTS = set()
 CHAT_MESSAGES = []
 
@@ -5296,26 +5319,33 @@ async def ws_handler(websocket):
             elif t == "bind_match":
                 match_id = str(pkt.get("match_id", ""))
                 user_id = str(pkt.get("user_id", ""))
+                is_attacker = bool(pkt.get("first") or pkt.get("is_attacker"))
                 reconnected = False
                 if match_id:
-                    WS_CLIENT_META[websocket] = {"match_id": match_id, "user_id": user_id}
+                    WS_CLIENT_META[websocket] = {"match_id": match_id, "user_id": user_id, "is_attacker": is_attacker}
                     if match_id not in ACTIVE_MATCHES:
+                        slot = "p1" if is_attacker else "p2"
                         ACTIVE_MATCHES[match_id] = {
-                            "p1": websocket, "p2": None,
-                            "p1_user": user_id, "p2_user": None,
-                            "p1_reconnect_token": 0, "p2_reconnect_token": 0
+                            "p1": websocket if slot == "p1" else None,
+                            "p2": websocket if slot == "p2" else None,
+                            "p1_user": user_id if slot == "p1" else None,
+                            "p2_user": user_id if slot == "p2" else None,
+                            "p1_reconnect_token": 0, "p2_reconnect_token": 0,
+                            "turn_bonus": 0, "pending_actions": [],
+                            "last_action_time": time.time(),
+                            "created_at": time.time()
                         }
-                        print(f"[PVP WS] Match {match_id}: p1 bound (user {user_id})")
+                        print(f"[PVP WS] Match {match_id}: {slot} bound (user {user_id}, is_attacker={is_attacker})")
                     else:
                         match = ACTIVE_MATCHES[match_id]
-                        slot = None
-                        if match.get("p1_user") == user_id and user_id != "":
+                        # Determine slot strictly based on role or existing user assignment
+                        if is_attacker:
+                            slot = "p1"
+                        elif pkt.get("is_attacker") is False or pkt.get("first") is False:
+                            slot = "p2"
+                        elif match.get("p1_user") == user_id and user_id != "":
                             slot = "p1"
                         elif match.get("p2_user") == user_id and user_id != "":
-                            slot = "p2"
-                        elif match.get("p1") == websocket:
-                            slot = "p1"
-                        elif match.get("p2") == websocket:
                             slot = "p2"
                         elif match.get("p1") is None:
                             slot = "p1"
@@ -5326,7 +5356,8 @@ async def ws_handler(websocket):
 
                         old_ws = match.get(slot)
                         if old_ws != websocket:
-                            reconnected = True
+                            if old_ws is not None:
+                                reconnected = True
                             match[slot] = websocket
                             if match.get("turn_ws") == old_ws:
                                 match["turn_ws"] = websocket
@@ -5334,10 +5365,10 @@ async def ws_handler(websocket):
                                 match[f"{slot}_user"] = user_id
                             token_key = f"{slot}_reconnect_token"
                             match[token_key] = match.get(token_key, 0) + 1
-                            print(f"[PVP WS] Match {match_id}: {slot} reconnected (user {user_id}, token={match[token_key]})")
+                            print(f"[PVP WS] Match {match_id}: {slot} {'reconnected' if reconnected else 'connected'} (user {user_id}, token={match[token_key]})")
                             
                             peer_ws = match.get("p2" if slot == "p1" else "p1")
-                            if peer_ws:
+                            if peer_ws and reconnected:
                                 try:
                                     asyncio.create_task(peer_ws.send(make_pvp_frame({
                                         "t": "peer_resumed",
@@ -5358,6 +5389,18 @@ async def ws_handler(websocket):
                             except: pass
                             try: asyncio.create_task(p2.send(ready_msg))
                             except: pass
+
+                    # Flush pending actions for this connected player
+                    match = ACTIVE_MATCHES.get(match_id, {})
+                    pending = match.get("pending_actions", [])
+                    if pending:
+                        for act in list(pending):
+                            try:
+                                asyncio.create_task(websocket.send(make_pvp_frame(act)))
+                            except Exception as e:
+                                print(f"[PVP FLUSH ERR] {e}")
+                        match["pending_actions"] = []
+
                     await websocket.send(make_pvp_frame({"t": "bind_ok", "match_id": match_id, "reconnected": reconnected}))
 
             elif t == "create":
@@ -5530,32 +5573,43 @@ async def ws_handler(websocket):
                         peer_ws = match.get("p1")
                     else:
                         peer_ws = None
+
+                    # Update activity timestamp and turn
+                    match["last_action_time"] = time.time()
+                    ints = pkt.get("ints", [])
+                    card_id = ints[0] if len(ints) > 0 else 0
+                    if card_id == 1:
+                        match["turn_ws"] = peer_ws
+                        match["turn_bonus"] = 0
+                        print(f"[PVP TURN] Match {match_id}: round ended, turn switched to peer, bonus reset to 0")
+                    elif card_id not in (1, 2) and card_id != 0:
+                        match["turn_ws"] = websocket
+                        cur_bonus = match.get("turn_bonus", 0)
+                        rem_bonus = max(0, 180 - cur_bonus)
+                        if rem_bonus > 0:
+                            add_sec = min(8 if card_id == 999998 else 4, rem_bonus)
+                            match["turn_bonus"] = cur_bonus + add_sec
+                        else:
+                            add_sec = 0
+
+                        pkt["add_time"] = add_sec
+                        pkt["max_time"] = 270
+                        if "time_left" in pkt:
+                            try:
+                                pkt["time_left"] = min(270.0, float(pkt["time_left"]) + float(add_sec))
+                            except:
+                                pass
+                        print(f"[PVP TIME] Match {match_id}: +{add_sec}s round time added on server for action card {card_id} (bonus={match['turn_bonus']}/180, time_left={pkt.get('time_left')})")
+
                     if peer_ws:
                         try:
-                            # Update activity timestamp and turn
-                            match["last_action_time"] = time.time()
-                            ints = pkt.get("ints", [])
-                            card_id = ints[0] if len(ints) > 0 else 0
-                            if card_id == 1:
-                                match["turn_ws"] = peer_ws
-                                print(f"[PVP TURN] Match {match_id}: round ended, turn switched to peer")
-                            elif card_id not in (1, 2) and card_id != 0:
-                                match["turn_ws"] = websocket
-                                add_sec = 8 if card_id == 999998 else 4
-                                pkt["add_time"] = add_sec
-                                pkt["max_time"] = 150
-                                if "time_left" in pkt:
-                                    try:
-                                        pkt["time_left"] = min(150.0, float(pkt["time_left"]) + float(add_sec))
-                                    except:
-                                        pass
-                                print(f"[PVP TIME] Match {match_id}: +{add_sec}s round time added on server for action card {card_id} (time_left={pkt.get('time_left')})")
                             await peer_ws.send(make_pvp_frame(pkt))
                             print(f"[PVP ACTION] Match {match_id}: relayed ints len={len(ints)} {ints[:4] if len(ints)>=4 else ints} seq={pkt.get('seq')}")
                         except Exception as e:
                             print(f"[PVP ACTION ERR] {e}")
                     else:
-                        print(f"[PVP ACTION WARN] Match {match_id}: peer not connected yet")
+                        match.setdefault("pending_actions", []).append(pkt)
+                        print(f"[PVP ACTION BUFFER] Match {match_id}: peer not connected yet, buffered action (total {len(match['pending_actions'])})")
 
 
             elif t == "end":

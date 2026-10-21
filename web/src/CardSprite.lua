@@ -4114,24 +4114,15 @@ function var_0_0.updateInitiativeSkills(arg_90_0)
 	if not var_90_0 then return end
 	local var_90_1 = var_90_0:getInitiativeSkill(Data.SkillMode.initiative_bcs) or {}
 
-	if not arg_90_0._isController or (var_90_0._status ~= BattleData.CardStatus.board and var_90_0._status ~= BattleData.CardStatus.show and var_90_0._status ~= BattleData.CardStatus.field) then
-		arg_90_0:removeInitiativeSkills()
-		return
-	end
-
-	if arg_90_0._initiativeSkillIcons and #arg_90_0._initiativeSkillIcons == #var_90_1 and #var_90_1 > 0 then
-		for iter_90_1 = 1, #var_90_1 do
-			local var_90_3 = var_90_1[iter_90_1]
-			local btn = arg_90_0._initiativeSkillIcons[iter_90_1]
-			if btn then
-				local canUse = var_90_0._owner and var_90_0._owner:canUseInitiativeSkill(var_90_0, var_90_3) and arg_90_0._battleUi._dropLayer == nil or false
-				btn:setEnabled(canUse)
-			end
-		end
-		return
-	end
-
 	arg_90_0:removeInitiativeSkills()
+
+	if not arg_90_0._isController then
+		return
+	end
+
+	if var_90_0._status ~= BattleData.CardStatus.board then
+		return
+	end
 
 	for iter_90_1 = 1, #var_90_1 do
 		local var_90_3 = var_90_1[iter_90_1]
@@ -4165,17 +4156,11 @@ function var_0_0.updateInitiativeSkills(arg_90_0)
 			6
 		}
 
-		-- `_pos` is the board slot only once the card has landed; a Link shown while it
-		-- still arrives from the Extra Deck carries its index there (up to 15), past
-		-- this 6-slot table - that nil used to throw mid-frame (freezes the H5 canvas).
 		local var_90_6 = var_90_5[var_90_0._pos or 1] or 0
 
 		var_90_4:setTouchRect(cc.rect(var_90_6, 0, lc.w(var_90_4) + var_90_6, lc.h(var_90_4)))
 		arg_90_0._scene:seenByCamera3D(var_90_4)
-		local isGround = (var_90_0._status == BattleData.CardStatus.show or var_90_0._status == BattleData.CardStatus.field)
-		local targetParent = isGround and (arg_90_0._pFrameIcon or arg_90_0._pCardArea or arg_90_0) or arg_90_0._pEffectArea
-		local targetPos = isGround and cc.p(lc.w(targetParent) / 2 - 15 + iter_90_1 * 30, 20) or cc.p(-60 + iter_90_1 * 30, -100)
-		lc.addChildToPos(targetParent, var_90_4, targetPos)
+		lc.addChildToPos(arg_90_0._pEffectArea, var_90_4, cc.p(-60 + iter_90_1 * 30, -100))
 		var_90_4:retain()
 
 		arg_90_0._initiativeSkillIcons[iter_90_1] = var_90_4
