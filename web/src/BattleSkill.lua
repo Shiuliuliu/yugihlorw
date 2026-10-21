@@ -43700,7 +43700,6 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 				arg_8_0:setCardStatus(var_8_185, BattleData.CardStatus.leave, var_8_5, var_8_4, arg_8_3)
 			end
 
-			var_8_8:addDamage(var_8_8._fortress, var_8_8:calcFortressDamage(var_8_7), var_8_5, var_8_4, arg_8_3)
 			arg_8_0:incAtk(arg_8_1, var_8_7, false, var_8_5, var_8_4, arg_8_3)
 
 			var_8_13 = true

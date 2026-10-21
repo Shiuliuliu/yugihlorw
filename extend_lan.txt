@@ -52710,7 +52710,7 @@ Bài này trên nguyên tắc có từ khóa “Con Mắt Màu Xanh”.
 Hiến Tế Tà Ác
 Kỹ năng tay chủ động: Hiến tế 1 quái không phải Quái Link; phẩm chất UR trở xuống trên sân đối thủ; triệu hồi cao cấp quái này lên sân phe ta. (Kỹ năng này không tính là hiệu quả quái).
 Ngọn Lửa Tà Ác
-Khi bài này được triệu hồi cao cấp; khi lên sân; loại bỏ ngẫu nhiên 1 lá bài trên tay đối thủ; khiến đối thủ mất [1] LP; bản thân tăng tấn công với trị số tương đương.
+Khi bài này được triệu hồi cao cấp; khi lên sân; loại bỏ ngẫu nhiên 1 lá bài trên tay đối thủ; bản thân tăng [1] tấn công.
 Thiêu Đốt Tà Ác
 Kỹ năng chủ động: Tối đa ba lần trong một vòng; chọn một lá bài ở cả hai bên để loại trừ (xuyên thủng “lá chắn quái vật”). Nếu đó là quái vật thuộc tính lửa hoặc bóng tối; người chơi đối phương sẽ nhận được X[1] điểm sát thương từ xếp hạng sao ban đầu của mục tiêu. Kỹ năng này chỉ có thể được kích hoạt một lần.
 Thiêu Đốt-Tăng Tốc
