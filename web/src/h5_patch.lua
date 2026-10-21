@@ -7097,7 +7097,6 @@ function patchClientData()
 			_randomSeed = seed,
 			_ruleType = Data.BattleRuleType.normal,
 			_offlineKind = "room",
-			_clashGrade = 1,
 			_eventIds = {},
 			_oppoEventIds = {},
 			_player = {
@@ -8685,7 +8684,8 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 				local oppoTroopCards = (input and input._opponent and input._opponent._troopCards) or {10001, 10002, 10003, 10004, 10005}
 				local curRound = (self._player and self._player._round) or 5
 
-				local isClashRank = (self._battleType == Data.BattleType.PVP_clash or self._battleType == Data.BattleType.PVP_clash_npc or self._battleType == 211 or self._battleType == 212 or (Battle_pb and self._battleType == Battle_pb.PB_BATTLE_WORLD_LADDER) or isPvp or (input and (input._isRankLadder or input._clashGrade ~= nil)))
+				local isRoom = (self._battleType == Data.BattleType.PVP_room or (input and (input._offlineKind == "room" or input._battleType == Data.BattleType.PVP_room or input._isRoom)))
+				local isClashRank = not isRoom and (self._battleType == Data.BattleType.PVP_clash or self._battleType == Data.BattleType.PVP_clash_npc or self._battleType == 211 or self._battleType == 212 or (Battle_pb and self._battleType == Battle_pb.PB_BATTLE_WORLD_LADDER) or isPvp or (input and (input._isRankLadder or input._clashGrade ~= nil)))
 
 				local function finalizeBattleEnd(deltaTrophy, deltaGold, newTrophy, newGold, customResType, customResNum, rewardItemInfoId)
 					local realDelta = tonumber(deltaTrophy) or 0
@@ -8842,7 +8842,48 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 					end, 0.1, false)
 				end
 
-				if isClashRank and api and api.post then
+				if isRoom and api and api.post then
+					local isBot = not (input and input._isOppoOnline and input._pvpMatch)
+					local oppoTrophy = (input and input._opponent and input._opponent._trophy) or (self._opponent and self._opponent._trophy) or 800
+					local battleRounds = (self._player and self._player._round) or (input and input._player and input._player._round) or 1
+					local isSurrender = (self._isSurrender == true or (self._player and self._player._isRetreat == true))
+					api:post("pvp_reward", {
+						account_id = accId,
+						result = (res == Data.BattleResult.win) and 1 or 2,
+						battle_type = "room",
+						is_bot = isBot,
+						is_surrender = isSurrender,
+						oppo_trophy = oppoTrophy,
+						rounds = battleRounds
+					}, function(rawRes)
+						local cr = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+						local curT = (P and P._playerFindClash and P._playerFindClash._trophy) or (P and P._trophy) or 800
+						local dGold = (res == Data.BattleResult.win) and 1000 or 200
+						local nGold = ((P and P._gold) or 0) + dGold
+						if cr and cr.code == 200 then
+							dGold = tonumber(cr.delta_gold) or dGold
+							nGold = tonumber(cr.gold) or nGold
+							if P then P._gold = nGold end
+							if cr.level and P then P._level = cr.level end
+							if cr.exp and P then P._exp = cr.exp end
+							if cr.reputation ~= nil then
+								local nRep = tonumber(cr.reputation) or 50
+								if P then P._reputation = nRep end
+								if ClientData._account then
+									ClientData._account.reputation = nRep
+									if cr.next_reputation_in then
+										ClientData._account.reputation_updated_at = math.floor(ClientData.getCurrentTime()) - (900 - tonumber(cr.next_reputation_in))
+									end
+								end
+								if isSurrender then
+									ToastManager.push(string.format("Bạn đã đầu hàng! Điểm uy tín -1 (Còn %d/55).", nRep))
+								end
+							end
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
+						end
+						finalizeBattleEnd(0, dGold, curT, nGold)
+					end)
+				elseif isClashRank and api and api.post then
 					local isBot = not (input and input._isOppoOnline and input._pvpMatch)
 					local oppoTrophy = (input and input._opponent and input._opponent._trophy) or (self._opponent and self._opponent._trophy) or 800
 					local battleRounds = (self._player and self._player._round) or (input and input._player and input._player._round) or 1

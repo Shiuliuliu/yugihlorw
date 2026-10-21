@@ -14185,6 +14185,10 @@ function var_0_0.isGraveSkill3(arg_306_0, arg_306_1, arg_306_2, arg_306_3)
 	elseif arg_306_1._id == 14517 then
 		return true, B.sortCardsByBoardPos(arg_306_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_306_0:getBattleCardsByType("P", Data.CardType.monster), var_306_1._refCards[1]))), 1
 	elseif arg_306_1._id == 14522 then
+		if arg_306_0._fortress._hp >= var_306_0._fortress._hp then
+			return false
+		end
+
 		return true, B.sortCardsByBoardPos(arg_306_0:getBoardCards()), 1
 	elseif arg_306_1._id == 14523 then
 		return true, B.sortCardsByBoardPos(arg_306_0:filterCanChangeToBoardCards(B.filterInCategoryCards(arg_306_0:getBattleCardsByStar("P", var_306_2), var_306_1._refCards[1]))), 1

@@ -1801,6 +1801,10 @@ function var_0_0.onBattleEvent(arg_60_0, arg_60_1)
 	arg_60_0._battleEvent = {}
 	arg_60_0._battleEvent._type = arg_60_1._type
 	arg_60_0._battleEvent._sender = arg_60_1._sender
+	if arg_60_0._statusScheduler ~= nil then
+		lc.Scheduler:unscheduleScriptEntry(arg_60_0._statusScheduler)
+		arg_60_0._statusScheduler = nil
+	end
 	arg_60_0._statusScheduler = lc.Scheduler:scheduleScriptFunc(function(arg_61_0)
 		arg_60_0:onBattleEventFinished()
 	end, var_60_5 or 0, false)

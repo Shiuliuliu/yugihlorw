@@ -134,6 +134,7 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 			local var_3_0 = Particle.create("par_liziqiu_jz")
 
 			lc.addChildToPos(arg_1_0._battleUi._layer, var_3_0, var_1_21, 4)
+			var_3_0:runAction(lc.sequence(lc.delay(0.5), lc.remove()))
 		end))
 
 		var_1_1 = {
@@ -176,10 +177,12 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 			local var_1_36 = Particle.create("xuwang1")
 
 			lc.addChildToCenter(arg_1_0._battleUi._layer, var_1_36, CardSprite.ZOrder.efc)
+			var_1_36:runAction(lc.sequence(lc.delay(0.6), lc.remove()))
 
 			local var_1_37 = Particle.create("xuwang2")
 
 			lc.addChildToCenter(arg_1_0._battleUi._layer, var_1_37, CardSprite.ZOrder.efc)
+			var_1_37:runAction(lc.sequence(lc.delay(0.6), lc.remove()))
 		end
 	elseif var_1_0 == 4004 then
 		local var_1_38 = arg_1_0:getCardSprite(var_1_3._magicTarget)
@@ -220,10 +223,12 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 		local var_1_45 = Particle.create("par_ronghe02")
 
 		lc.addChildToCenter(arg_1_0._battleUi, var_1_45, BattleUi.ZOrder.effect)
+		var_1_45:runAction(lc.sequence(lc.delay(1.0), lc.remove()))
 
 		local var_1_46 = Particle.create("par_ronghe03")
 
 		lc.addChildToCenter(arg_1_0._battleUi, var_1_46, BattleUi.ZOrder.effect)
+		var_1_46:runAction(lc.sequence(lc.delay(1.0), lc.remove()))
 
 		var_1_1 = {
 			0.2,

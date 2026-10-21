@@ -44817,15 +44817,17 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 			var_8_13 = true
 		end
 	elseif var_8_4 == 14522 then
-		local var_8_271 = arg_8_0:getCardById(var_8_15)
+		if arg_8_0._fortress._hp < var_8_8._fortress._hp then
+			local var_8_271 = arg_8_0:getCardById(var_8_15)
 
-		if var_8_271 ~= nil then
-			arg_8_0:setCardStatus(var_8_1, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.x2gl_cost)
-			arg_8_0:incHp(arg_8_0._fortress, var_8_271._maxAtk, false, var_8_5, var_8_4, arg_8_3)
-			arg_8_0._fortress:advanceLastUnderSkill(1)
-			arg_8_0:addDamage(var_8_8._fortress, var_8_8:calcFortressDamage(var_8_271._maxAtk), var_8_5, var_8_4, arg_8_3)
+			if var_8_271 ~= nil then
+				arg_8_0:setCardStatus(var_8_1, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.x2gl_cost)
+				arg_8_0:incHp(arg_8_0._fortress, var_8_271._maxAtk, false, var_8_5, var_8_4, arg_8_3)
+				arg_8_0._fortress:advanceLastUnderSkill(1)
+				arg_8_0:addDamage(var_8_8._fortress, var_8_8:calcFortressDamage(var_8_271._maxAtk), var_8_5, var_8_4, arg_8_3)
 
-			var_8_13 = true
+				var_8_13 = true
+			end
 		end
 	elseif var_8_4 == 14525 then
 		if arg_8_3 == Data.SkillMode.initiative_grave then
@@ -106249,6 +106251,10 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 
 		return #arg_40_0:filterCanChangeToHandCards(B.filterInKeywordCards(arg_40_0:getBattleCardsByType("P", Data.CardType.monster), var_40_1._refCards[1])) > 0
 	elseif var_40_0 == 14522 then
+		if arg_40_0._fortress._hp >= var_40_4._fortress._hp then
+			return false
+		end
+
 		return #arg_40_0:getBoardCards() > 0
 	elseif var_40_0 == 14523 then
 		return #arg_40_0:filterCanChangeToBoardCards(B.filterInCategoryCards(arg_40_0:getBattleCardsByStar("P", var_40_2), var_40_1._refCards[1])) > 0

@@ -2928,7 +2928,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 clamped_diff = min(1000, diff)
                                 ratio = clamped_diff / 1000.0
 
-                                if result == 1: # Win
+                                if battle_type == 'room':
+                                    delta_trophy = 0
+                                elif result == 1: # Win
                                     if player_trophy >= oppo_trophy:
                                         # Rank cao thang rank thap: tu 30 giam dan xuong toi thieu 5 o khoang cach 1000 diem
                                         delta_trophy = max(5, int(round(30 - ratio * 25)))
@@ -2946,7 +2948,10 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 # Gold & Exp rewards:
                                 # Thang: rankpoint duoc cong x200 (vi du: +100 diem -> 20000 vang, +5 diem -> 1000 vang)
                                 # Thua: rankpoint bi tru x20 (vi du: -30 diem -> 600 vang)
-                                if result == 1:
+                                if battle_type == 'room':
+                                    delta_gold = 1000 if result == 1 else 200
+                                    delta_exp = 300 if result == 1 else 100
+                                elif result == 1:
                                     delta_gold = max(0, delta_trophy) * 200
                                     delta_exp = 300
                                 else:
@@ -2970,11 +2975,18 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 new_trophy = max(0, player_trophy + delta_trophy)
                                 new_level = calc_level(new_exp)
                                 
-                                cur.execute("""
-                                    UPDATE accounts
-                                    SET gold = %s, exp = %s, level = %s, trophy = %s, reputation = %s, reputation_updated_at = %s, daily_rank_matches = daily_rank_matches + 1
-                                    WHERE id = %s
-                                """, (new_gold, new_exp, new_level, new_trophy, new_rep, cur_rep_time, acc_id))
+                                if battle_type == 'room':
+                                    cur.execute("""
+                                        UPDATE accounts
+                                        SET gold = %s, exp = %s, level = %s, trophy = %s, reputation = %s, reputation_updated_at = %s
+                                        WHERE id = %s
+                                    """, (new_gold, new_exp, new_level, new_trophy, new_rep, cur_rep_time, acc_id))
+                                else:
+                                    cur.execute("""
+                                        UPDATE accounts
+                                        SET gold = %s, exp = %s, level = %s, trophy = %s, reputation = %s, reputation_updated_at = %s, daily_rank_matches = daily_rank_matches + 1
+                                        WHERE id = %s
+                                    """, (new_gold, new_exp, new_level, new_trophy, new_rep, cur_rep_time, acc_id))
                                 
                                 resp = {
                                     "code": 200,

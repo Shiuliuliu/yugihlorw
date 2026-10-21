@@ -9230,16 +9230,17 @@ local function var_0_9()
 					pcall(function()
 						local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
 						local api = jsbridge and jsbridge.object("jdzcApi")
+						local isRoom = (arg_410_0._battleType == Data.BattleType.PVP_room or (arg_410_0._input and (arg_410_0._input._offlineKind == "room" or arg_410_0._input._battleType == Data.BattleType.PVP_room)))
 						if api and api.post then
 							api:post("pvp_reward", {
 								account_id = accId,
 								result = (var_410_0 == Data.BattleResult.win) and 1 or 2,
-								battle_type = "clash"
+								battle_type = isRoom and "room" or "clash"
 							}, function(rawRes)
 								local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
 								if res and res.code == 200 then
 									if res.gold and P then P._gold = res.gold end
-									if res.trophy and P and P._playerFindClash then P._playerFindClash._trophy = res.trophy end
+									if not isRoom and res.trophy and P and P._playerFindClash then P._playerFindClash._trophy = res.trophy end
 									if res.level and P then P._level = res.level end
 									if res.exp and P then P._exp = res.exp end
 								end

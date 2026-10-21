@@ -907,21 +907,7 @@ function var_0_0.resetHp(arg_28_0)
 end
 
 function var_0_0.resetAtk(arg_29_0)
-	if (arg_29_0._infoId == 40736 or arg_29_0:hasSkillFast(14750)) and arg_29_0._status == BattleData.CardStatus.board then
-		local owner = arg_29_0._owner
-		if owner then
-			local count = 0
-			local graveCards = owner._graveCards or (owner.getGraveCards and owner:getGraveCards()) or {}
-			for _, gc in ipairs(graveCards) do
-				if gc and (gc:isInfoId(10083) or gc:isKeyword(15) or gc:isKeyword(7) or gc:hasSkillFast(3113) or gc._infoId == 40736) then
-					count = count + 1
-				end
-			end
-			local bonus = count * 500
-			arg_29_0._atk = 3000 + bonus
-			arg_29_0._maxAtk = 3000 + bonus
-		end
-	end
+
 	if (arg_29_0._infoId == 12324 or arg_29_0:hasSkillFast(14700)) and arg_29_0._status == BattleData.CardStatus.board and arg_29_0._htAtk then
 		arg_29_0._maxAtk = 0
 	end
@@ -9963,20 +9949,8 @@ function var_0_0.getAtk(arg_282_0)
 		return arg_282_0._tsAwakened and 16000 or 8000
 	end
 	local oppo = arg_282_0._owner and arg_282_0._owner._opponent
-	if oppo and arg_282_0._status == BattleData.CardStatus.board then
-		if oppo.updateDragonDebuff then
-			oppo:updateDragonDebuff()
-		end
-		local debuff = oppo._dragonDebuffVal or 0
-		if debuff > 0 then
-			local base = (arg_282_0._maxAtk or 0) + (arg_282_0._atkInc or 0)
-			if arg_282_0._info and arg_282_0._info._atk and arg_282_0._info._atk[1] then
-				base = math.max(base, arg_282_0._info._atk[1] + (arg_282_0._atkInc or 0))
-			end
-			local finalAtk = math.max(0, base - debuff)
-			arg_282_0._atk = finalAtk
-			return finalAtk
-		end
+	if oppo and oppo._dragonDebuffVal and oppo._dragonDebuffVal > 0 and arg_282_0._status == BattleData.CardStatus.board then
+		return math.max(0, (arg_282_0._atk or arg_282_0._maxAtk or 0) - oppo._dragonDebuffVal)
 	end
 	return arg_282_0._atk
 end

@@ -1798,9 +1798,6 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 			local c_owner = arg_38_1._owner or arg_38_0
 			local oppo = c_owner and c_owner._opponent
 			if oppo then
-				if oppo.updateDragonDebuff then
-					oppo:updateDragonDebuff()
-				end
 				local debuff = oppo._dragonDebuffVal or 0
 				if debuff > 0 then
 					arg_38_1._atk = math.max(0, arg_38_1._atk - debuff)

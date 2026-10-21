@@ -44,6 +44,10 @@ function var_0_0.createParticle(arg_2_0, arg_2_1, arg_2_2, arg_2_3, arg_2_4, arg
 		arg_2_0._scene:seenByCamera3D(var_2_0)
 	end
 
+	if var_2_0._data and var_2_0._data.duration and var_2_0._data.duration > 0 then
+		var_2_0:runAction(lc.sequence(lc.delay(var_2_0._data.duration + 0.3), lc.remove()))
+	end
+
 	return var_2_0
 end
 
