@@ -1228,6 +1228,8 @@ function var_0_0.updateCardsActive(arg_51_0)
 			iter_51_3:updateActive(false)
 		end
 	end
+
+	arg_51_0:updateBoardCardsInitialSkills()
 end
 
 function var_0_0.updateBoardCardsActive(arg_52_0)
@@ -1556,6 +1558,7 @@ function var_0_0.createChoiceMaskLayer(arg_59_0, arg_59_1, arg_59_2, arg_59_3, a
 		if arg_59_0._battleUi then
 			arg_59_0._battleUi._isAddingBoardCard = false
 			arg_59_0:updateCardsActive()
+			arg_59_0:updateBoardCardsInitialSkills(true)
 			arg_59_0._battleUi:updateRoundButton()
 		end
 	end
@@ -7401,6 +7404,7 @@ function var_0_0.cancelChoiceGrave(arg_90_0, arg_90_1, arg_90_2, arg_90_3)
 	if arg_90_0._battleUi then
 		arg_90_0._battleUi._isAddingBoardCard = false
 		arg_90_0:updateCardsActive()
+		arg_90_0:updateBoardCardsInitialSkills(true)
 		arg_90_0._battleUi:updateRoundButton()
 	end
 end

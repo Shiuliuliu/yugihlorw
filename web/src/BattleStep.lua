@@ -2940,12 +2940,6 @@ function var_0_0.beforeAccountStatus(arg_32_0)
 end
 
 function var_0_0.afterAccountStatus(arg_33_0)
-	if arg_33_0:checkFinish() then
-		arg_33_0._stepStatus = BattleData.Status.before_account_finish
-
-		return arg_33_0:step()
-	end
-
 	if arg_33_0._normalStatus ~= BattleData.Status.after_account_status then
 		arg_33_0._normalStatus = BattleData.Status.after_account_status
 		arg_33_0._eventDone = false
@@ -3344,12 +3338,6 @@ end
 function var_0_0.afterAccountSpell(arg_37_0)
 	arg_37_0._normalStatus = BattleData.Status.default
 
-	if arg_37_0:checkFinish() then
-		arg_37_0._stepStatus = BattleData.Status.before_account_finish
-
-		return arg_37_0:step()
-	end
-
 	return arg_37_0:loadStatus()
 end
 
@@ -3409,12 +3397,6 @@ end
 
 function var_0_0.afterAccountEvent(arg_41_0)
 	arg_41_0._normalStatus = BattleData.Status.default
-
-	if arg_41_0:checkFinish() then
-		arg_41_0._stepStatus = BattleData.Status.before_account_finish
-
-		return arg_41_0:step()
-	end
 
 	return arg_41_0:loadStatus()
 end
@@ -5287,53 +5269,7 @@ end
 
 function var_0_0.loadStatus(arg_76_0)
 	if arg_76_0._saved == nil or next(arg_76_0._saved) == nil then
-		arg_76_0:battleLog("[BATTLE WARN] loadStatus called with empty saved status, recovering gracefully")
-		arg_76_0._saved = {}
-		arg_76_0._normalStatus = BattleData.Status.default
-
-		if arg_76_0:checkFinish() then
-			arg_76_0._stepStatus = BattleData.Status.before_account_finish
-			return arg_76_0:step()
-		end
-
-		if arg_76_0._macroStatus == BattleData.Status.battle_start then
-			arg_76_0._stepStatus = BattleData.Status.battle_start
-			return arg_76_0:step()
-		elseif arg_76_0._macroStatus == BattleData.Status.battle_end then
-			arg_76_0._stepStatus = BattleData.Status.battle_end
-			return arg_76_0:step()
-		elseif arg_76_0._macroStatus == BattleData.Status.round_begin then
-			arg_76_0._stepStatus = BattleData.Status.round_begin
-			return arg_76_0:step()
-		elseif arg_76_0._macroStatus == BattleData.Status.deal then
-			arg_76_0._stepStatus = BattleData.Status.deal
-			return arg_76_0:step()
-		elseif arg_76_0._macroStatus == BattleData.Status.use then
-			arg_76_0._stepStatus = BattleData.Status.use
-			return arg_76_0:step()
-		elseif arg_76_0._macroStatus == BattleData.Status.action then
-			arg_76_0._stepStatus = BattleData.Status.action
-			return arg_76_0:step()
-		elseif arg_76_0._macroStatus == BattleData.Status.round_end then
-			arg_76_0._stepStatus = BattleData.Status.round_end
-			return arg_76_0:step()
-		elseif arg_76_0._macroStatus == BattleData.Status.initial_deal then
-			arg_76_0._stepStatus = BattleData.Status.initial_deal
-			return arg_76_0:step()
-		elseif arg_76_0._macroStatus == BattleData.Status.drop then
-			arg_76_0._stepStatus = BattleData.Status.drop
-			return arg_76_0:step()
-		else
-			arg_76_0._stepStatus = BattleData.Status.round_begin
-			return arg_76_0:step()
-		end
-	end
-
-	if arg_76_0:checkFinish() then
-		arg_76_0._saved = {}
-		arg_76_0._stepStatus = BattleData.Status.before_account_finish
-
-		return arg_76_0:step()
+		return
 	end
 
 	local var_76_0 = arg_76_0._saved

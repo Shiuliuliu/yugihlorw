@@ -1821,7 +1821,7 @@ function var_0_0.getType(arg_12_0)
 		elseif math.floor(var_12_4 / Data.INFO_ID_GROUP_SIZE_LARGE) <= 4 then
 			return Data.CardType.card_skill
 		else
-			if var_12_0 == arg_12_0 then
+			if var_12_0 == arg_12_0 or var_12_0 >= Data.INFO_ID_CARD_SKILL_SIZE then
 				return Data.CardType.card_skill
 			end
 			return Data.getType(var_12_0)

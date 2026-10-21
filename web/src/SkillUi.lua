@@ -539,9 +539,10 @@ function var_0_0.efcSkillShow(arg_25_0, arg_25_1, arg_25_2, arg_25_3)
 		local var_25_4 = Particle.create("par_gwsf")
 
 		lc.addChildToPos(arg_25_1._pEffectArea, var_25_4, cc.p(0, -70))
-		var_25_4:runAction(lc.sequence(1.2, lc.call(function()
+		var_25_4:runAction(cc.Sequence:create(cc.DelayTime:create(1.2), cc.CallFunc:create(function()
 			if arg_25_1 then arg_25_1._gwsfParticleActive = nil end
-		end), lc.remove()))
+			var_25_4:removeFromParent()
+		end)))
 	end
 
 	arg_25_0._scene:seenByCamera3D(var_25_2)

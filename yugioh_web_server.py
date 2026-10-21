@@ -1738,7 +1738,6 @@ def format_union_full_data(union_id, account_id=None):
             weekly_donates = []
             daily_donates = []
 
-            import datetime
             today = datetime.date.today()
             self_donate_free = 0
             self_donate_gold = 0
@@ -4927,7 +4926,6 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
                             acc = cur.fetchone()
 
-                            import datetime
                             today = datetime.date.today()
                             is_today = (mem.get('last_donate_date') == today)
                             free_cnt = (mem.get('donate_free_count') or 0) if is_today else 0

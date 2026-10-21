@@ -1817,31 +1817,10 @@ function var_0_0.onBattleEventFinished(arg_62_0)
 		arg_62_0._statusScheduler = nil
 	end
 
-	if arg_62_0._player and arg_62_0._opponent then
-		if arg_62_0._player._fortress._hp <= 0 or arg_62_0._opponent._fortress._hp <= 0 or arg_62_0._player:checkFinish() or arg_62_0._opponent:checkFinish() then
-			if not arg_62_0._isBattleFinished then
-				local actP = (arg_62_0._battleEvent and arg_62_0._battleEvent._sender) or arg_62_0._player:getActionPlayer()
-				actP._stepStatus = BattleData.Status.before_account_finish
-				return actP:step()
-			end
-		end
-	end
-
 	return arg_62_0._battleEvent._sender:step()
 end
 
 function var_0_0.tryUseCard(arg_63_0, arg_63_1)
-	if arg_63_0._player and arg_63_0._opponent then
-		if arg_63_0._player._fortress._hp <= 0 or arg_63_0._opponent._fortress._hp <= 0 or arg_63_0._player:checkFinish() or arg_63_0._opponent:checkFinish() then
-			if not arg_63_0._isBattleFinished then
-				local actP = arg_63_0._player:getActionPlayer()
-				actP._stepStatus = BattleData.Status.before_account_finish
-				return actP:step()
-			end
-			return
-		end
-	end
-
 	if not arg_63_0._isEndAllOperation then
 		arg_63_0._isEndAllOperation = arg_63_0._nameTag == "normal" and arg_63_0._playerUi:getIsEndAllOperation() or false
 
@@ -1878,6 +1857,7 @@ function var_0_0.tryUseCard(arg_63_0, arg_63_1)
 
 		if arg_63_0._playerUi then
 			arg_63_0._playerUi:updateCardsActive()
+			arg_63_0._playerUi:updateBoardCardsInitialSkills(true)
 		end
 
 		if arg_63_0._isEnableDrap then
@@ -1926,6 +1906,7 @@ function var_0_0.operateBegin(arg_66_0)
 	arg_66_0._isAddingBoardCard = false
 
 	var_66_1:updateCardsActive()
+	var_66_1:updateBoardCardsInitialSkills()
 	arg_66_0:updateRoundButton()
 
 	if arg_66_0._needSoftGuide then
@@ -2045,21 +2026,15 @@ function var_0_0.addBoardCardEnded(arg_72_0, arg_72_1)
 
 	if var_72_0 then
 		var_72_0:updateCardsActive()
+		var_72_0:updateBoardCardsInitialSkills()
 	end
 
 	if arg_72_0._playerUi and arg_72_0._playerUi ~= var_72_0 then
 		arg_72_0._playerUi:updateCardsActive()
+		arg_72_0._playerUi:updateBoardCardsInitialSkills()
 	end
 
 	arg_72_0:updateRoundButton()
-
-	if arg_72_0._player and arg_72_0._opponent and not arg_72_0._isBattleFinished then
-		if arg_72_0._player:checkFinish() or arg_72_0._opponent:checkFinish() then
-			local actP = arg_72_0._player:getActionPlayer()
-			actP._stepStatus = BattleData.Status.before_account_finish
-			return actP:step()
-		end
-	end
 
 	if arg_72_0._isOperating and arg_72_0._needSoftGuide then
 		arg_72_0:addSoftGuide()
@@ -3220,17 +3195,6 @@ function var_0_0.isGuideWorldBattle(arg_101_0, arg_101_1)
 end
 
 function var_0_0.oppoTryUseCard(arg_102_0)
-	if arg_102_0._player and arg_102_0._opponent then
-		if arg_102_0._player._fortress._hp <= 0 or arg_102_0._opponent._fortress._hp <= 0 or arg_102_0._player:checkFinish() or arg_102_0._opponent:checkFinish() then
-			if not arg_102_0._isBattleFinished then
-				local actP = arg_102_0._player:getActionPlayer()
-				actP._stepStatus = BattleData.Status.before_account_finish
-				return actP:step()
-			end
-			return false
-		end
-	end
-
 	if #ClientData._usedCardsToAdd > 0 then
 		local var_102_0 = B.parseOperations(arg_102_0._opponent._isAttacker, ClientData._usedCardsToAdd, false)
 

@@ -12,7 +12,7 @@ function var_0_0.castSkill(arg_1_0, arg_1_1, arg_1_2, arg_1_3)
 		return
 	end
 
-	if var_1_1._owner and var_1_1._owner._opponent and arg_1_2._id ~= 14632 then
+	if var_1_1 and var_1_1._owner and var_1_1._owner._opponent and arg_1_2._id ~= 14632 then
 		local oppo_b = var_1_1._owner._opponent._boardCards
 		if oppo_b then
 			for iter_al = 1, #oppo_b do
@@ -82209,9 +82209,9 @@ function var_0_0.canUseInitiativeSkill(arg_36_0, arg_36_1, arg_36_2)
 		return false
 	end
 
-	if arg_36_0._battleType == Data.BattleType.PVP_room and arg_36_0._round == 1 then
-		return false
-	end
+	-- if arg_36_0._battleType == Data.BattleType.PVP_room and arg_36_0._round == 1 then
+	-- 	return false
+	-- end
 
 	if arg_36_0._opponent then
 		local var_oppo_al = arg_36_0._opponent:getBattleCardsBySkillFast("B", 14632)
