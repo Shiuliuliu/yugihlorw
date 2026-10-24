@@ -484,12 +484,12 @@ function var_0_0.checkActivityButtons(arg_28_0)
 
 	arg_28_0._btnTieba:setVisible(lc.PLATFORM == cc.PLATFORM_OS_IPHONE or lc.PLATFORM == cc.PLATFORM_OS_IPAD or lc.PLATFORM == cc.PLATFORM_OS_ANDROID and P:getMaxCharacterLevel() >= 35)
 
-	local var_28_0 = ClientData.getValidActivityByType(803)
+	local var_28_0 = ClientData.getValidActivityByType(803) or (Data and Data._activityInfo and Data._activityInfo[22])
 	local var_28_1 = ClientData.getValidActivityByType(804)
 	local var_28_2 = ClientData.getValidActivityByType(534)
 	local var_28_3 = ClientData.getValidActivityByType(535)
 
-	if var_28_0 and #var_28_0._icon > 0 then
+	if var_28_0 and var_28_0._id ~= 22 and #var_28_0._icon > 0 and lc.FrameCache:getSpriteFrame(var_28_0._icon) then
 		arg_28_0._btnActivityExchange:loadTextureNormal(var_28_0._icon, ccui.TextureResType.plistType)
 	end
 
@@ -833,7 +833,7 @@ function var_0_0.onButtonClick(arg_49_0, arg_49_1)
 			ToastManager.push(Str(STR.FRAME_HALL_LOCKED))
 		end
 	elseif arg_49_1 == arg_49_0._btnActivityExchange then
-		require("ActivityExchangeForm").create():show()
+		require("ActivityExchangeForm").create(22):show()
 	elseif arg_49_1 == arg_49_0._btnActivityExchange2 then
 		if arg_49_1._act and arg_49_1._act._type[1] == 534 then
 			require("EnvelopeForm").create():show()

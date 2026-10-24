@@ -186,6 +186,8 @@ function var_0_0.createKeyword(arg_9_0)
 		kwStr = "Tiên nghịch"
 	elseif var_9_4._keyword == 302 then
 		kwStr = "Hiệp sĩ mặt nạ"
+	elseif var_9_4._keyword == 303 then
+		kwStr = "liqi"
 	else
 		kwStr = Str(STR.CARD_KEYWORD_BEGIN + var_9_4._keyword)
 	end

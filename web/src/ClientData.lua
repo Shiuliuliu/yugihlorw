@@ -2001,19 +2001,18 @@ function var_0_0.getPicIdByInfoId(arg_108_0)
 end
 
 function var_0_0.getPropIconName(arg_109_0, arg_109_1)
-	if arg_109_1 then
-		local var_109_0 = string.format("props_ico_%d", ClientData.getPicIdByInfoId(arg_109_0))
-
-		if not lc.FrameCache:getSpriteFrame(var_109_0) then
-			var_109_0 = "card_icon_quality_00"
-		end
-
+	local picId = ClientData.getPicIdByInfoId(arg_109_0)
+	if arg_109_1 or (picId >= 7030 and picId <= 7037) then
+		local var_109_0 = string.format("props_ico_%d", picId)
 		return var_109_0
 	else
-		local var_109_1 = string.format("img_icon_props_s%d", ClientData.getPicIdByInfoId(arg_109_0))
+		local var_109_1 = string.format("img_icon_props_s%d", picId)
 
 		if not lc.FrameCache:getSpriteFrame(var_109_1) then
-			var_109_1 = "card_icon_quality_00"
+			local fallbackLarge = string.format("props_ico_%d", picId)
+			if lc.FrameCache:getSpriteFrame(fallbackLarge) then
+				return fallbackLarge
+			end
 		end
 
 		return var_109_1

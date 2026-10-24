@@ -183,6 +183,17 @@ function var_0_0.updateView(arg_4_0)
 	var_4_15:loadTextureNormal(arg_4_0._troopType == var_0_0.TroopType.extend and "troop_selected" or "troop_unselected", ccui.TextureResType.plistType)
 	var_4_15._icon:setPosition(cc.p(lc.cw(var_4_15), lc.h(var_4_15) - 25))
 	var_4_15:setEnabled(arg_4_0._troopType ~= var_0_0.TroopType.extend)
+
+	if not arg_4_0._btnCopyDeck then
+		local btnCopy = ClientView.createScale9ShaderButton("img_btn_1_s", function()
+			if arg_4_0._troop then
+				require("DeckCodeHelper").copyCurrentTroop(nil, arg_4_0._troop)
+			end
+		end, ClientView.CRECT_BUTTON_S, 160, 48)
+		btnCopy:addLabel("Sao chép Deck")
+		lc.addChildToPos(var_4_13, btnCopy, cc.p(lc.w(var_4_13) - lc.cw(btnCopy) - 10, lc.h(var_4_13) + 40))
+		arg_4_0._btnCopyDeck = btnCopy
+	end
 end
 
 function var_0_0.updateTroopList(arg_8_0)

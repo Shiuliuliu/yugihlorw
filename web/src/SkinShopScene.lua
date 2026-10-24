@@ -74,8 +74,9 @@ end
 
 function var_0_1.syncData(arg_7_0)
 	var_0_1.super.syncData(arg_7_0)
-	arg_7_0._skinList:updatePage()
-	arg_7_0._avatarList:updatePage()
+	if arg_7_0._skinList then arg_7_0._skinList:updatePage() end
+	if arg_7_0._avatarList then arg_7_0._avatarList:updatePage() end
+	if arg_7_0._characterList then arg_7_0._characterList:updatePage() end
 end
 
 function var_0_1.createFrame(arg_8_0)
@@ -377,9 +378,8 @@ function var_0_1.updateAvatarItem(arg_30_0, arg_30_1, arg_30_2)
 		end
 
 		arg_30_1._btn:setEnabled(var_30_3)
-
-		function arg_30_1._btn._callback()
-			arg_30_0:onBtn(arg_30_1._btn)
+		function arg_30_1._btn._callback(arg_btn)
+			arg_30_0:onBtn(arg_btn or arg_30_1._btn)
 		end
 	end
 end
@@ -444,7 +444,7 @@ function var_0_1.updateCharacterItem(arg_35_0, arg_35_1, arg_35_2)
 	local var_35_1 = arg_35_2._id
 	local var_35_2 = Data._characterInfo[var_35_0]
 	local var_35_3 = P._characters[var_35_0]
-	local var_35_4 = var_35_3._level > 0
+	local var_35_4 = (var_35_3 and var_35_3._level > 0) or true
 	local var_35_5 = P._playerCard:hasSkin(var_35_1, false)
 	local var_35_6 = P._playerCard:hasSkin(var_35_1, true)
 	local var_35_7 = var_35_3._skinId == var_35_1
@@ -477,12 +477,12 @@ function var_0_1.updateCharacterItem(arg_35_0, arg_35_1, arg_35_2)
 			end
 		end
 	else
-		function arg_35_1._btn._callback()
-			arg_35_0:onBtn(arg_35_1._btn)
+		function arg_35_1._btn._callback(arg_btn)
+			arg_35_0:onBtn(arg_btn or arg_35_1._btn)
 		end
 
 		arg_35_1._btn._label:setString(var_35_4 and Str(STR.BUY) or Str(STR.LOCKED))
-		arg_35_1._btn:setDisabledShader(ClientView.SHADER_DISABLE)
+		arg_35_1._btn:setDisabledShader(var_35_4 and nil or ClientView.SHADER_DISABLE)
 		arg_35_1._btn:setEnabled(var_35_4)
 	end
 end
@@ -508,13 +508,10 @@ function var_0_1.filterAvatarData(arg_41_0, arg_41_1, arg_41_2, arg_41_3, arg_41
 end
 
 function var_0_1.onBtn(arg_42_0, arg_42_1)
-	if arg_42_1 and arg_42_1._callback then
-		arg_42_1._callback()
-		return
-	end
-
+	if not arg_42_1 or not arg_42_1._skinId then return end
 	local var_42_0 = arg_42_1._skinId
-	local var_42_1 = Data._skinInfo[var_42_0]._infoId
+	local skinInfo = Data._skinInfo and Data._skinInfo[var_42_0]
+	if not skinInfo then return end
 
 	require("SkinBuyForm").create(var_42_0):show()
 end

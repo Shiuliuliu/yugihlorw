@@ -1366,7 +1366,7 @@ function var_0_0.getCardIconName(arg_35_0)
 		[40742] = true, [40743] = true, [40744] = true
 	}
 
-	if lc.FrameCache:getSpriteFrame(var_35_1) == nil and not customCards[var_35_0] then
+	if lc.FrameCache:getSpriteFrame(var_35_1) == nil and not customCards[var_35_0] and (not var_35_0 or var_35_0 < 10000) then
 		local var_35_2 = Data.getType(arg_35_0)
 		local defaultName
 		if var_35_2 == Data.CardType.monster then

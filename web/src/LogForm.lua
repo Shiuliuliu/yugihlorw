@@ -196,7 +196,7 @@ function var_0_0.setOrCreateItem(arg_9_0, arg_9_1, arg_9_2)
 		if var_9_4 then
 			var_9_5 = ClientView.createIconLabelArea(var_9_4, "", 140)
 
-			lc.addChildToPos(var_9_1, var_9_5, cc.p(600, 110))
+			lc.addChildToPos(var_9_1, var_9_5, cc.p(520, 110))
 
 			var_9_1._trophyArea = var_9_5
 
@@ -248,6 +248,16 @@ function var_0_0.setOrCreateItem(arg_9_0, arg_9_1, arg_9_2)
 		lc.addChildToPos(var_9_1, var_9_12, cc.p(lc.x(var_9_11), lc.h(var_9_1) / 2 - lc.h(var_9_12) / 2))
 
 		var_9_1._btnShare = var_9_12
+
+		local var_9_video = ClientView.createScale9ShaderButton("img_btn_2_s", function(arg_10_1)
+			require("ExportVideoForm").create(nil, var_9_1._log):show()
+		end, ClientView.CRECT_BUTTON_S, 120, 52)
+
+		var_9_video:addLabel("Tải Video")
+		var_9_video:setDisabledShader(ClientView.SHADER_DISABLE)
+		lc.addChildToPos(var_9_1, var_9_video, cc.p(lc.x(var_9_11) - 135, lc.h(var_9_1) / 2))
+
+		var_9_1._btnDownloadVideo = var_9_video
 	end
 
 	local var_9_13 = (arg_9_1 and arg_9_1._item) or (arg_9_1 and arg_9_1.getChildren and #arg_9_1:getChildren() > 0 and arg_9_1:getChildren()[1]) or arg_9_1
@@ -286,6 +296,9 @@ function var_0_0.setOrCreateItem(arg_9_0, arg_9_1, arg_9_2)
 	var_9_13._resultImg:setSpriteFrame(var_9_15 == Data.BattleResult.win and "img_win" or var_9_15 == Data.BattleResult.draw and "img_draw" or "img_lose")
 	var_9_13._bar:setColor(var_9_15 == Data.BattleResult.win and cc.c3b(236, 112, 64) or var_9_15 == Data.BattleResult.draw and cc.c3b(102, 194, 128) or lc.Color3B.white)
 	var_9_13._btnReplay:setEnabled(arg_9_2._isAvailable)
+	if var_9_13._btnDownloadVideo then
+		var_9_13._btnDownloadVideo:setEnabled(arg_9_2._isAvailable)
+	end
 	var_9_13._btnShare:setEnabled(arg_9_2._isAvailable and not P._playerMessage:isLogShared(arg_9_2._id))
 
 	if var_9_15 == Data.BattleResult.lose then

@@ -35541,7 +35541,7 @@ Quái 11 Sao X3
 0
 Chân Ái Phá Thiên
 Xe Lửa Tháp Pháo Hạng Nặng-Đại Bác Gustav
-Quái 10 Sao X2
+10 sao x2 và nguyên liệu bắt buộc phải có từ khóa "Xe lửa"
 0
 Đại Bác Gustav
 No.81 Xe Pháo Hạng Nặng-Đòn Bắn Siêu Việt
@@ -57297,3 +57297,11 @@ Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu
 Kiếm sĩ diệt rồng tập sự
 [Chiến Binh - Hiệu Quả - Link]\n1 quái có từ khóa "Kiếm hủy diệt" hoặc "Kiếm sĩ diệt rồng".\n(Lá bài này luôn có từ khóa "Kiếm hủy diệt" và "Kiếm sĩ diệt rồng".)\n(1) Kĩ năng chủ động bộ bài thêm: Chọn 1 quái tộc "rồng" trên sân đối phương đưa vào mộ, sau đó triệu hồi đặc biệt bài này lên sân phe ta (xuyên qua tường chắn quái).\n(2) Kĩ năng chủ động (1 lượt 1 lần): Chọn lấy tối đa 2 quái thú có từ khóa "Kiếm hủy diệt" từ bộ bài lên tay.\n(3) Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa "Kiếm sĩ diệt rồng" trong bộ bài phe ta.
 Kiếm sĩ diệt rồng tập sự
+Sucs vat Alice
+[Phù Thủy / Thường / Điều Chỉnh]
+Sucs vat Alice
+Nak - Thứ nguyên vệ thần
+[Chiến Binh - Hiệu Quả - Link]\n1 quái GR có từ khóa "liqi".\n(1) Khi vào sân: Nhận được rào chắn Quái vật, Phép thuật, Bẫy.\n(2) Khi có mặt: Tăng công bằng số lượng bài trên tay x1000.\n(3) Khi tấn công: Rút 1 lá bài.\n(4) Khi có mặt: Khóa tất cả quái thú trên sân phe ta ngoại trừ bản thân.\n(5) Lá bài này có thể tấn công hai lần trong mỗi lượt chiến đấu.
+Nak - Thứ nguyên vệ thần
+Thứ Nguyên Chuyển Hóa
+Khi có mặt; tăng công bằng số lượng bài trên tay x[1]

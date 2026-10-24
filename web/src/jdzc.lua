@@ -7417,11 +7417,27 @@ local function var_0_9()
 						end)
 						ToastManager.push("Đối thủ đã rời trận, bạn đã giành chiến thắng!")
 					end
-				end, function(peerResult)
+				end, function(peerResult, reason, winnerSlot)
 					local scene = lc._runningScene or ClientView._scene
 					local bUi = scene and scene._battleUi
 					if bUi and not bUi._isBattleEndSended then
+						local oppoHp = bUi._opponent and bUi._opponent._fortress and bUi._opponent._fortress._hp
+						local playerHp = bUi._player and bUi._player._fortress and bUi._player._fortress._hp
+						local isLocalSurrender = bUi._isSurrender or (bUi._player and (bUi._player._isSurrender or bUi._player._isRetreat))
+						local isOppoSurrender = bUi._opponent and (bUi._opponent._isSurrender or bUi._opponent._isRetreat)
+						local isExodia = (bUi._player and bUi._player._winBy3190) or (bUi._opponent and bUi._opponent._winBy3190)
+						local isGodWin = (bUi._player and bUi._player._winBy3798) or (bUi._opponent and bUi._opponent._winBy3798)
+						local isDeckOut = (bUi._player and bUi._player._macroStatus == BattleData.Status.round_begin and bUi._player:getIsPileEmpty()) or (bUi._opponent and bUi._opponent._macroStatus == BattleData.Status.round_begin and bUi._opponent:getIsPileEmpty())
+
 						local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
+						if isOppoSurrender or (oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0)) then
+							myRes = Data.BattleResult.win
+						elseif isLocalSurrender or (playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0)) then
+							myRes = Data.BattleResult.lose
+						elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isDeckOut) then
+							print("[PVP END] Rejected premature peer loss: Player HP is " .. tostring(playerHp) .. ", Oppo HP is " .. tostring(oppoHp))
+							return
+						end
 						bUi._forceResult = myRes
 						bUi:sendBattleEnd(false, myRes)
 					end

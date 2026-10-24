@@ -83,19 +83,20 @@ function var_0_1.init(arg_2_0)
 	arg_2_0._loginLayer = loginLayer
 
 	-- Dim backdrop behind dialog
-	local overlay = cc.LayerColor:create(cc.c4b(0, 0, 0, 190))
+	local overlay = cc.LayerColor:create(cc.c4b(0, 0, 0, 195))
 	loginLayer:addChild(overlay, 0)
 
-	-- Dialog Window Frame (600 x 500) - beautifully proportioned
-	local dialogW, dialogH = 600, 500
+	-- Dialog Window Frame (500 x 400 for login, 500 x 480 for register) - perfectly compact & balanced
+	local dialogW, dialogH = 500, 400
 	local frameBox = ClientView.createFrameBox(cc.size(dialogW, dialogH))
 	lc.addChildToPos(loginLayer, frameBox, cc.p(ClientView.SCR_CW, ClientView.SCR_CH), 1)
 	arg_2_0._loginFrameBox = frameBox
 
 	-- Title banner mounted at top edge of dialog frame
 	local titleBg = ccui.Scale9Sprite:createWithSpriteFrameName("img_form_title_bg_2", ClientView.CRECT_FORM_TITLE_BG2)
-	titleBg:setContentSize(dialogW - 120, 56)
+	titleBg:setContentSize(dialogW - 100, 52)
 	lc.addChildToPos(loginLayer, titleBg, cc.p(ClientView.SCR_CW, ClientView.SCR_CH + dialogH / 2 - 4), 3)
+	arg_2_0._loginTitleBg = titleBg
 
 	local lblTitle = cc.Label:createWithTTF("ĐĂNG NHẬP", ClientView.TTF_FONT, ClientView.FontSize.B2)
 	lblTitle:setColor(cc.c3b(255, 230, 80))
@@ -103,11 +104,10 @@ function var_0_1.init(arg_2_0)
 	arg_2_0._lblLoginTitle = lblTitle
 
 	-- Mode Tabs: Login & Register side-by-side
-	local tabY = ClientView.SCR_CH + 165
 	local tabLoginBtn = ClientView.createScale9ShaderButton("img_btn_1_s", function()
 		arg_2_0:setLoginMode(1)
-	end, ClientView.CRECT_BUTTON_S, 140, 44)
-	lc.addChildToPos(loginLayer, tabLoginBtn, cc.p(ClientView.SCR_CW - 80, tabY), 2)
+	end, ClientView.CRECT_BUTTON_S, 130, 42)
+	lc.addChildToPos(loginLayer, tabLoginBtn, cc.p(ClientView.SCR_CW - 75, ClientView.SCR_CH + 130), 2)
 	local tabLoginLbl = cc.Label:createWithTTF("Đăng nhập", ClientView.TTF_FONT, ClientView.FontSize.S1)
 	tabLoginLbl:setColor(lc.Color3B.white)
 	lc.addChildToCenter(tabLoginBtn, tabLoginLbl)
@@ -116,116 +116,112 @@ function var_0_1.init(arg_2_0)
 
 	local tabRegBtn = ClientView.createScale9ShaderButton("img_btn_2_s", function()
 		arg_2_0:setLoginMode(2)
-	end, ClientView.CRECT_BUTTON_S, 140, 44)
-	lc.addChildToPos(loginLayer, tabRegBtn, cc.p(ClientView.SCR_CW + 80, tabY), 2)
+	end, ClientView.CRECT_BUTTON_S, 130, 42)
+	lc.addChildToPos(loginLayer, tabRegBtn, cc.p(ClientView.SCR_CW + 75, ClientView.SCR_CH + 130), 2)
 	local tabRegLbl = cc.Label:createWithTTF("Đăng ký", ClientView.TTF_FONT, ClientView.FontSize.S1)
 	tabRegLbl:setColor(lc.Color3B.white)
 	lc.addChildToCenter(tabRegBtn, tabRegLbl)
 	arg_2_0._tabRegBtn = tabRegBtn
 	arg_2_0._tabRegLbl = tabRegLbl
 
-	-- Row geometry: Label at cx - 90 (anchor right), EditBox at cx + 65 (width 280)
-	local labelX = ClientView.SCR_CW - 90
-	local editX  = ClientView.SCR_CW + 65
-	local editW, editH = 280, 42
+	-- Row geometry: Label at cx - 80 (anchor right), EditBox at cx + 60 (width 260)
+	local labelX = ClientView.SCR_CW - 80
+	local editX  = ClientView.SCR_CW + 60
+	local editW, editH = 260, 40
 
 	-- Row 1: Username
-	local row1Y = ClientView.SCR_CH + 105
 	local lblUser = cc.Label:createWithTTF("Tài khoản:", ClientView.TTF_FONT, ClientView.FontSize.S1)
 	lblUser:setAnchorPoint(1, 0.5)
 	lblUser:setColor(cc.c3b(245, 225, 170))
-	lc.addChildToPos(loginLayer, lblUser, cc.p(labelX, row1Y), 2)
+	lc.addChildToPos(loginLayer, lblUser, cc.p(labelX, ClientView.SCR_CH + 72), 2)
+	arg_2_0._lblUser = lblUser
 
 	local editUser = ClientView.createEditBox("img_com_bg_3", ClientView.CRECT_COM_BG3, cc.size(editW, editH), "Nhập tên tài khoản", true, 20)
 	editUser:setFontColor(lc.Color4B.white)
-	lc.addChildToPos(loginLayer, editUser, cc.p(editX, row1Y), 2)
+	lc.addChildToPos(loginLayer, editUser, cc.p(editX, ClientView.SCR_CH + 72), 2)
 	arg_2_0._editUser = editUser
 
 	-- Row 2: Password
-	local row2Y = ClientView.SCR_CH + 55
 	local lblPass = cc.Label:createWithTTF("Mật khẩu:", ClientView.TTF_FONT, ClientView.FontSize.S1)
 	lblPass:setAnchorPoint(1, 0.5)
 	lblPass:setColor(cc.c3b(245, 225, 170))
-	lc.addChildToPos(loginLayer, lblPass, cc.p(labelX, row2Y), 2)
+	lc.addChildToPos(loginLayer, lblPass, cc.p(labelX, ClientView.SCR_CH + 18), 2)
+	arg_2_0._lblPass = lblPass
 
 	local editPass = ClientView.createEditBox("img_com_bg_3", ClientView.CRECT_COM_BG3, cc.size(editW, editH), "Nhập mật khẩu", true, 32)
 	editPass:setInputFlag(cc.EDITBOX_INPUT_FLAG_PASSWORD)
 	editPass:setFontColor(lc.Color4B.white)
-	lc.addChildToPos(loginLayer, editPass, cc.p(editX, row2Y), 2)
+	lc.addChildToPos(loginLayer, editPass, cc.p(editX, ClientView.SCR_CH + 18), 2)
 	arg_2_0._editPass = editPass
 
 	-- Row 3: Confirm password (register mode only)
-	local row3Y = ClientView.SCR_CH + 5
 	local lblConfirm = cc.Label:createWithTTF("Nhập lại:", ClientView.TTF_FONT, ClientView.FontSize.S1)
 	lblConfirm:setAnchorPoint(1, 0.5)
 	lblConfirm:setColor(cc.c3b(245, 225, 170))
-	lc.addChildToPos(loginLayer, lblConfirm, cc.p(labelX, row3Y), 2)
+	lc.addChildToPos(loginLayer, lblConfirm, cc.p(labelX, ClientView.SCR_CH + 15), 2)
 	arg_2_0._lblConfirm = lblConfirm
 
 	local editConfirm = ClientView.createEditBox("img_com_bg_3", ClientView.CRECT_COM_BG3, cc.size(editW, editH), "Nhập lại mật khẩu", true, 32)
 	editConfirm:setInputFlag(cc.EDITBOX_INPUT_FLAG_PASSWORD)
 	editConfirm:setFontColor(lc.Color4B.white)
-	lc.addChildToPos(loginLayer, editConfirm, cc.p(editX, row3Y), 2)
+	lc.addChildToPos(loginLayer, editConfirm, cc.p(editX, ClientView.SCR_CH + 15), 2)
 	arg_2_0._editConfirm = editConfirm
-
-	arg_2_0._lblConfirm:setVisible(false)
-	arg_2_0._editConfirm:setVisible(false)
+	lblConfirm:setVisible(false)
+	editConfirm:setVisible(false)
 
 	-- Row 4: Character Name (register mode only)
-	local row4Y = ClientView.SCR_CH - 45
 	local lblCharName = cc.Label:createWithTTF("Tên nhân vật:", ClientView.TTF_FONT, ClientView.FontSize.S1)
 	lblCharName:setAnchorPoint(1, 0.5)
 	lblCharName:setColor(cc.c3b(245, 225, 170))
-	lc.addChildToPos(loginLayer, lblCharName, cc.p(labelX, row4Y), 2)
+	lc.addChildToPos(loginLayer, lblCharName, cc.p(labelX, ClientView.SCR_CH - 35), 2)
 	arg_2_0._lblCharName = lblCharName
 
 	local editCharName = ClientView.createEditBox("img_com_bg_3", ClientView.CRECT_COM_BG3, cc.size(editW, editH), "Nhập tên nhân vật", true, 20)
 	editCharName:setFontColor(lc.Color4B.white)
-	lc.addChildToPos(loginLayer, editCharName, cc.p(editX, row4Y), 2)
+	lc.addChildToPos(loginLayer, editCharName, cc.p(editX, ClientView.SCR_CH - 35), 2)
 	arg_2_0._editCharName = editCharName
-
-	arg_2_0._lblCharName:setVisible(false)
-	arg_2_0._editCharName:setVisible(false)
-
-	-- Message / Error label
-	local lblMsg = cc.Label:createWithTTF("", ClientView.TTF_FONT, ClientView.FontSize.S2)
-	lblMsg:setColor(cc.c3b(255, 90, 80))
-	lc.addChildToPos(loginLayer, lblMsg, cc.p(ClientView.SCR_CW, ClientView.SCR_CH - 92), 2)
-	arg_2_0._lblLoginMsg = lblMsg
-
-	-- Skip tutorial unconditionally
-	arg_2_0._skipTutorial = true
+	lblCharName:setVisible(false)
+	editCharName:setVisible(false)
 
 	-- Remember Login checkbox
 	local savedRemember = lc.UserDefault:getBoolForKey("REMEMBER_LOGIN", true)
 	arg_2_0._rememberLogin = savedRemember
-	local rememberStr = arg_2_0._rememberLogin and "[✓] Lưu tài khoản & mật khẩu" or "[  ] Lưu tài khoản & mật khẩu"
+	local rememberStr = arg_2_0._rememberLogin and "[✓] Ghi nhớ tài khoản & mật khẩu" or "[  ] Ghi nhớ tài khoản & mật khẩu"
 	local rememberBox = cc.Label:createWithTTF(rememberStr, ClientView.TTF_FONT, ClientView.FontSize.S2)
 	rememberBox:setColor(arg_2_0._rememberLogin and lc.Color3B.green or lc.Color3B.white)
-	lc.addChildToPos(loginLayer, rememberBox, cc.p(ClientView.SCR_CW, ClientView.SCR_CH - 122), 2)
+	lc.addChildToPos(loginLayer, rememberBox, cc.p(ClientView.SCR_CW, ClientView.SCR_CH - 32), 2)
 	arg_2_0._rememberBoxLabel = rememberBox
 
 	local rememberBtn = ClientView.createShaderButton("load_region_bg", function()
 		arg_2_0._rememberLogin = not arg_2_0._rememberLogin
 		if arg_2_0._rememberLogin then
-			arg_2_0._rememberBoxLabel:setString("[✓] Lưu tài khoản & mật khẩu")
+			arg_2_0._rememberBoxLabel:setString("[✓] Ghi nhớ tài khoản & mật khẩu")
 			arg_2_0._rememberBoxLabel:setColor(lc.Color3B.green)
 		else
-			arg_2_0._rememberBoxLabel:setString("[  ] Lưu tài khoản & mật khẩu")
+			arg_2_0._rememberBoxLabel:setString("[  ] Ghi nhớ tài khoản & mật khẩu")
 			arg_2_0._rememberBoxLabel:setColor(lc.Color3B.white)
 		end
 	end)
-	rememberBtn:setContentSize(300, 32)
+	rememberBtn:setContentSize(280, 30)
 	rememberBtn:setOpacity(0)
-	lc.addChildToPos(loginLayer, rememberBtn, cc.p(ClientView.SCR_CW, ClientView.SCR_CH - 122), 3)
+	lc.addChildToPos(loginLayer, rememberBtn, cc.p(ClientView.SCR_CW, ClientView.SCR_CH - 32), 3)
 	arg_2_0._rememberBtn = rememberBtn
 
-	-- Submit Button (Centered, solid green button)
+	-- Message / Error label
+	local lblMsg = cc.Label:createWithTTF("", ClientView.TTF_FONT, ClientView.FontSize.S2)
+	lblMsg:setColor(cc.c3b(255, 90, 80))
+	lc.addChildToPos(loginLayer, lblMsg, cc.p(ClientView.SCR_CW, ClientView.SCR_CH - 65), 2)
+	arg_2_0._lblLoginMsg = lblMsg
+
+	-- Skip tutorial unconditionally
+	arg_2_0._skipTutorial = true
+
+	-- Submit Button (Centered, solid green button with gold text)
 	local btnSubmit = ClientView.createScale9ShaderButton("img_btn_1_s", function()
 		arg_2_0:onLoginSubmit()
-	end, ClientView.CRECT_BUTTON_S, 250, 56)
-	btnSubmit:addLabel(Str(STR.START))
-	lc.addChildToPos(loginLayer, btnSubmit, cc.p(ClientView.SCR_CW, ClientView.SCR_CH - 178), 2)
+	end, ClientView.CRECT_BUTTON_S, 250, 50)
+	btnSubmit:addLabel("VÀO GAME")
+	lc.addChildToPos(loginLayer, btnSubmit, cc.p(ClientView.SCR_CW, ClientView.SCR_CH - 118), 2)
 	arg_2_0._btnLoginSubmit = btnSubmit
 
 	arg_2_0:updateLoginFields()
@@ -368,7 +364,24 @@ function var_0_1.setLoginMode(arg_lm_0, arg_lm_1)
 	arg_lm_0._loginMode = arg_lm_1
 	arg_lm_0._loginMsg = ""
 
-	if arg_lm_1 == 1 then
+	local isReg = (arg_lm_1 == 2)
+	local curH = isReg and 480 or 400
+	local dialogW = 500
+
+	if arg_lm_0._loginFrameBox then
+		arg_lm_0._loginFrameBox:removeFromParent()
+	end
+	arg_lm_0._loginFrameBox = ClientView.createFrameBox(cc.size(dialogW, curH))
+	lc.addChildToPos(arg_lm_0._loginLayer, arg_lm_0._loginFrameBox, cc.p(ClientView.SCR_CW, ClientView.SCR_CH), 1)
+
+	if arg_lm_0._loginTitleBg then
+		arg_lm_0._loginTitleBg:setPositionY(ClientView.SCR_CH + curH / 2 - 4)
+	end
+
+	local labelX = ClientView.SCR_CW - 80
+	local editX  = ClientView.SCR_CW + 60
+
+	if not isReg then
 		arg_lm_0._lblLoginTitle:setString("ĐĂNG NHẬP")
 		if arg_lm_0._tabLoginBtn.setDisplayFrame then
 			arg_lm_0._tabLoginBtn:setDisplayFrame("img_btn_1_s")
@@ -377,14 +390,34 @@ function var_0_1.setLoginMode(arg_lm_0, arg_lm_1)
 			arg_lm_0._tabRegBtn:setDisplayFrame("img_btn_2_s")
 		end
 		if arg_lm_0._btnLoginSubmit and arg_lm_0._btnLoginSubmit._label then
-			arg_lm_0._btnLoginSubmit._label:setString("BẮT ĐẦU")
+			arg_lm_0._btnLoginSubmit._label:setString("VÀO GAME")
 		end
+
+		arg_lm_0._tabLoginBtn:setPositionY(ClientView.SCR_CH + 130)
+		arg_lm_0._tabRegBtn:setPositionY(ClientView.SCR_CH + 130)
+
+		arg_lm_0._lblUser:setPosition(labelX, ClientView.SCR_CH + 72)
+		arg_lm_0._editUser:setPosition(editX, ClientView.SCR_CH + 72)
+
+		arg_lm_0._lblPass:setPosition(labelX, ClientView.SCR_CH + 18)
+		arg_lm_0._editPass:setPosition(editX, ClientView.SCR_CH + 18)
+
 		if arg_lm_0._lblConfirm then arg_lm_0._lblConfirm:setVisible(false) end
 		if arg_lm_0._editConfirm then arg_lm_0._editConfirm:setVisible(false) end
 		if arg_lm_0._lblCharName then arg_lm_0._lblCharName:setVisible(false) end
 		if arg_lm_0._editCharName then arg_lm_0._editCharName:setVisible(false) end
-		if arg_lm_0._rememberBoxLabel then arg_lm_0._rememberBoxLabel:setVisible(true) end
-		if arg_lm_0._rememberBtn then arg_lm_0._rememberBtn:setVisible(true) end
+
+		if arg_lm_0._rememberBoxLabel then
+			arg_lm_0._rememberBoxLabel:setVisible(true)
+			arg_lm_0._rememberBoxLabel:setPosition(ClientView.SCR_CW, ClientView.SCR_CH - 32)
+		end
+		if arg_lm_0._rememberBtn then
+			arg_lm_0._rememberBtn:setVisible(true)
+			arg_lm_0._rememberBtn:setPosition(ClientView.SCR_CW, ClientView.SCR_CH - 32)
+		end
+
+		arg_lm_0._lblLoginMsg:setPosition(ClientView.SCR_CW, ClientView.SCR_CH - 65)
+		arg_lm_0._btnLoginSubmit:setPosition(ClientView.SCR_CW, ClientView.SCR_CH - 118)
 	else
 		arg_lm_0._lblLoginTitle:setString("ĐĂNG KÝ")
 		if arg_lm_0._tabLoginBtn.setDisplayFrame then
@@ -396,13 +429,41 @@ function var_0_1.setLoginMode(arg_lm_0, arg_lm_1)
 		if arg_lm_0._btnLoginSubmit and arg_lm_0._btnLoginSubmit._label then
 			arg_lm_0._btnLoginSubmit._label:setString("ĐĂNG KÝ NGAY")
 		end
-		if arg_lm_0._lblConfirm then arg_lm_0._lblConfirm:setVisible(true) end
-		if arg_lm_0._editConfirm then arg_lm_0._editConfirm:setVisible(true) end
-		if arg_lm_0._lblCharName then arg_lm_0._lblCharName:setVisible(true) end
-		if arg_lm_0._editCharName then arg_lm_0._editCharName:setVisible(true) end
+
+		arg_lm_0._tabLoginBtn:setPositionY(ClientView.SCR_CH + 172)
+		arg_lm_0._tabRegBtn:setPositionY(ClientView.SCR_CH + 172)
+
+		arg_lm_0._lblUser:setPosition(labelX, ClientView.SCR_CH + 115)
+		arg_lm_0._editUser:setPosition(editX, ClientView.SCR_CH + 115)
+
+		arg_lm_0._lblPass:setPosition(labelX, ClientView.SCR_CH + 65)
+		arg_lm_0._editPass:setPosition(editX, ClientView.SCR_CH + 65)
+
+		if arg_lm_0._lblConfirm then
+			arg_lm_0._lblConfirm:setVisible(true)
+			arg_lm_0._lblConfirm:setPosition(labelX, ClientView.SCR_CH + 15)
+		end
+		if arg_lm_0._editConfirm then
+			arg_lm_0._editConfirm:setVisible(true)
+			arg_lm_0._editConfirm:setPosition(editX, ClientView.SCR_CH + 15)
+		end
+
+		if arg_lm_0._lblCharName then
+			arg_lm_0._lblCharName:setVisible(true)
+			arg_lm_0._lblCharName:setPosition(labelX, ClientView.SCR_CH - 35)
+		end
+		if arg_lm_0._editCharName then
+			arg_lm_0._editCharName:setVisible(true)
+			arg_lm_0._editCharName:setPosition(editX, ClientView.SCR_CH - 35)
+		end
+
 		if arg_lm_0._rememberBoxLabel then arg_lm_0._rememberBoxLabel:setVisible(false) end
 		if arg_lm_0._rememberBtn then arg_lm_0._rememberBtn:setVisible(false) end
+
+		arg_lm_0._lblLoginMsg:setPosition(ClientView.SCR_CW, ClientView.SCR_CH - 80)
+		arg_lm_0._btnLoginSubmit:setPosition(ClientView.SCR_CW, ClientView.SCR_CH - 145)
 	end
+
 	arg_lm_0:updateLoginFields()
 end
 

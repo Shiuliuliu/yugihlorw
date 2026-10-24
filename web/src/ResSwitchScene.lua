@@ -310,7 +310,20 @@ function var_0_0.preloadBattleDragonBones(arg_18_0)
 		"tuika",
 		"chaoliangsucai1",
 		"chaoliangsucai2",
-		"chaoliangsucai3"
+		"chaoliangsucai3",
+		"szfs",
+		"cdtx",
+		"gjxz",
+		"zhxz",
+		"tsgj",
+		"tsgf",
+		"qbd",
+		"wlws",
+		"spsw",
+		"jinu",
+		"dalian01",
+		"dalian03",
+		"biaoji"
 	}
 
 	for iter_18_0, iter_18_1 in ipairs(var_18_0) do

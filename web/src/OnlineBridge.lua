@@ -158,6 +158,8 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins, ef
 	local unlocked_by_card = {}
 	local equipped_by_card = {}
 	local global_unlocked = {}
+	local equipped_char_skin = {}
+	local equipped_card_skin = {}
 
 	for _, eff in ipairs(effects_data or {}) do
 		local cid = tonumber(eff.card_id) or 0
@@ -165,15 +167,20 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins, ef
 		local is_eq = tonumber(eff.is_equipped) or 0
 		if eid > 0 then
 			local sInfo = Data._skinInfo and Data._skinInfo[eid]
-			if (cid == 0 or not cid) and sInfo and sInfo._infoId and sInfo._infoId > 0 and eid >= 52000 and eid < 55000 then
+			if (cid == 0 or not cid) and sInfo and sInfo._infoId and sInfo._infoId > 0 and eid >= 50000 and eid < 55000 then
 				cid = sInfo._infoId
+			end
+			if eid >= 54000 and eid < 55000 and cid > 0 and is_eq == 1 then
+				equipped_char_skin[cid] = eid
+			elseif eid >= 50000 and eid < 52000 and cid > 0 and is_eq == 1 then
+				equipped_card_skin[cid] = eid
 			end
 			if cid == 0 then
 				global_unlocked[eid] = true
 			else
 				unlocked_by_card[cid] = unlocked_by_card[cid] or {}
 				unlocked_by_card[cid][eid] = true
-				if is_eq == 1 then
+				if is_eq == 1 and eid >= 53000 and eid < 54000 then
 					equipped_by_card[cid] = equipped_by_card[cid] or {}
 					table.insert(equipped_by_card[cid], eid)
 				end
@@ -250,7 +257,7 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins, ef
 			if #s_ids > 0 or #def_effs > 0 then
 				table.insert(skin_list, pbMock({
 					info_id = cid,
-					default_skin = 0,
+					default_skin = equipped_card_skin[cid] or 0,
 					skin_id = s_ids,
 					expire = s_exp,
 					default_effects = def_effs
@@ -284,7 +291,7 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins, ef
 			end
 			table.insert(skin_list, pbMock({
 				info_id = cid,
-				default_skin = 0,
+				default_skin = equipped_card_skin[cid] or 0,
 				skin_id = s_ids,
 				expire = s_exp,
 				default_effects = def_effs
@@ -303,7 +310,7 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins, ef
 			local def_effs = equipped_by_card[cid] or {}
 			table.insert(skin_list, pbMock({
 				info_id = cid,
-				default_skin = 0,
+				default_skin = equipped_card_skin[cid] or 0,
 				skin_id = s_ids,
 				expire = s_exp,
 				default_effects = def_effs
@@ -335,7 +342,7 @@ function OnlineBridge.buildLoginData(acc, cards, decks, cur_levels, checkins, ef
 				id = id_num,
 				level = tonumber(acc.level) or 50,
 				exp = 0,
-				skin = 0,
+				skin = equipped_char_skin[id_num] or 0,
 				avatar = this_avatar,
 				break_out = 0
 			}))

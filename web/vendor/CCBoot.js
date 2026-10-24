@@ -1262,7 +1262,7 @@ var _tmpCanvas1 = document.createElement("canvas"),
     _tmpCanvas2 = document.createElement("canvas");
 
 cc.create3DContext = function (canvas, opt_attribs) {
-    var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+    var names = ["webgl2", "webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
     var context = null;
     for (var ii = 0; ii < names.length; ++ii) {
         try {
@@ -1862,41 +1862,6 @@ var _initSys = function () {
             if(context) {
                 _supportWebGL = true;
             }
-
-            if (_supportWebGL && sys.os === sys.OS_ANDROID) {
-                var browserVer = parseFloat(sys.browserVersion);
-                switch (sys.browserType) {
-                case sys.BROWSER_TYPE_MOBILE_QQ:
-                case sys.BROWSER_TYPE_BAIDU:
-                case sys.BROWSER_TYPE_BAIDU_APP:
-                    // QQ & Baidu Brwoser 6.2+ (using blink kernel)
-                    if (browserVer >= 6.2) {
-                        _supportWebGL = true;
-                    }
-                    else {
-                        _supportWebGL = false;
-                    }
-                    break;
-                case sys.BROWSER_TYPE_CHROME:
-                    // Chrome on android supports WebGL from v.30
-                    if(browserVer >= 30.0) {
-                      _supportWebGL = true;
-                    } else {
-                      _supportWebGL = false;
-                    }
-                    break;
-                case sys.BROWSER_TYPE_ANDROID:
-                    // Android 5+ default browser
-                    if (sys.osMainVersion && sys.osMainVersion >= 5) {
-                        _supportWebGL = true;
-                    }
-                    break;
-                case sys.BROWSER_TYPE_UNKNOWN:
-                case sys.BROWSER_TYPE_360:
-                case sys.BROWSER_TYPE_MIUI:
-                    _supportWebGL = false;
-                }
-            }
         }
         catch (e) {}
         tmpCanvas = null;
@@ -2051,9 +2016,14 @@ function _determineRenderType(config) {
         cc._renderType = cc.game.RENDER_TYPE_CANVAS;
         cc._supportRender = true;
     }
-    else if (userRenderMode === 2 && cc.sys.capabilities["opengl"]) {
-        cc._renderType = cc.game.RENDER_TYPE_WEBGL;
-        cc._supportRender = true;
+    else if (userRenderMode === 2) {
+        if (cc.sys.capabilities["opengl"]) {
+            cc._renderType = cc.game.RENDER_TYPE_WEBGL;
+            cc._supportRender = true;
+        } else if (cc.sys.capabilities["canvas"]) {
+            cc._renderType = cc.game.RENDER_TYPE_CANVAS;
+            cc._supportRender = true;
+        }
     }
 }
 
@@ -2321,6 +2291,7 @@ cc.game = /** @lends cc.game# */{
     setFrameRate: function (frameRate) {
         var self = this, config = self.config, CONFIG_KEY = self.CONFIG_KEY;
         config[CONFIG_KEY.frameRate] = frameRate;
+        self._targetFps = frameRate;
         if (self._intervalId)
             window.cancelAnimationFrame(self._intervalId);
         self._paused = true;
@@ -2504,18 +2475,13 @@ cc.game = /** @lends cc.game# */{
     _setAnimFrame: function () {
         this._lastTime = new Date();
         this._frameTime = 1000 / cc.game.config[cc.game.CONFIG_KEY.frameRate];
-        if((cc.sys.os === cc.sys.OS_IOS && cc.sys.browserType === cc.sys.BROWSER_TYPE_WECHAT) || cc.game.config[cc.game.CONFIG_KEY.frameRate] !== 60) {
-            window.requestAnimFrame = this._stTime;
-            window.cancelAnimationFrame = this._ctTime;
-        }
-        else {
-            window.requestAnimFrame = window.requestAnimationFrame ||
+        window.requestAnimFrame = window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
             window.oRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
             this._stTime;
-            window.cancelAnimationFrame = window.cancelAnimationFrame ||
+        window.cancelAnimationFrame = window.cancelAnimationFrame ||
             window.cancelRequestAnimationFrame ||
             window.msCancelRequestAnimationFrame ||
             window.mozCancelRequestAnimationFrame ||
@@ -2526,7 +2492,6 @@ cc.game = /** @lends cc.game# */{
             window.webkitCancelAnimationFrame ||
             window.oCancelAnimationFrame ||
             this._ctTime;
-        }
     },
     _stTime: function(callback){
         var currTime = new Date().getTime();
@@ -2544,18 +2509,43 @@ cc.game = /** @lends cc.game# */{
         var self = this, callback, config = self.config, CONFIG_KEY = self.CONFIG_KEY,
             director = cc.director;
 
-        director.setDisplayStats(config[CONFIG_KEY.showFPS]);
+        var showFps = false;
+        try {
+            showFps = localStorage.getItem('game_show_fps') === '1';
+        } catch(e) {}
+        director.setDisplayStats(showFps || config[CONFIG_KEY.showFPS]);
+
+        var lastTime = (window.performance && window.performance.now) ? window.performance.now() : Date.now();
 
         callback = function () {
             if (!self._paused) {
-                director.mainLoop();
-                if(self._intervalId)
-                    window.cancelAnimationFrame(self._intervalId);
+                var targetFps = self._targetFps;
+                if (targetFps === undefined) {
+                    try {
+                        var savedFps = localStorage.getItem('game_fps_limit');
+                        targetFps = savedFps !== null ? parseInt(savedFps, 10) : (config[CONFIG_KEY.frameRate] || 60);
+                    } catch(e) {
+                        targetFps = config[CONFIG_KEY.frameRate] || 60;
+                    }
+                    self._targetFps = targetFps;
+                }
+
+                if (targetFps > 0) {
+                    var now = (window.performance && window.performance.now) ? window.performance.now() : Date.now();
+                    var interval = 1000 / targetFps;
+                    var elapsed = now - lastTime;
+                    if (elapsed >= interval - 1.5) {
+                        lastTime = now - (elapsed % interval);
+                        director.mainLoop();
+                    }
+                } else {
+                    director.mainLoop();
+                }
                 self._intervalId = window.requestAnimFrame(callback);
             }
         };
 
-        window.requestAnimFrame(callback);
+        self._intervalId = window.requestAnimFrame(callback);
         self._paused = false;
     },
 
@@ -2672,8 +2662,8 @@ cc.game = /** @lends cc.game# */{
             this._renderContext = cc._renderContext = cc.webglContext
              = cc.create3DContext(localCanvas, {
                 'stencil': true,
-                'preserveDrawingBuffer': true,
-                'antialias': !cc.sys.isMobile,
+                'preserveDrawingBuffer': false,
+                'antialias': true,
                 'alpha': false,
                 'powerPreference': 'high-performance'
             });

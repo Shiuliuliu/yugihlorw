@@ -822,7 +822,108 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
         # -------------------------------------------------------------
         # 1. Rút Gói Bài / Mua Bài (Tavern / Gacha / Lottery)
         # -------------------------------------------------------------
-        if self.path == '/api/buy_package':
+        if self.path == '/api/shop_exchange_prop':
+            acc_id = req.get('account_id') or req.get('user_id') or req.get('id')
+            exchange_id = int(req.get('exchange_id') or req.get('id') or 1)
+            count = int(req.get('count', 1))
+
+            EXCHANGE_CONFIGS = {
+                1: {
+                    'name': 'Trò Chơi Ngàn Năm Đổi Slifer',
+                    'req': {7031: 1, 7032: 1, 7033: 1, 7034: 1, 7035: 1, 7036: 1, 7037: 1},
+                    'reward_type': 'card', 'reward_id': 10436, 'reward_count': 1
+                },
+                2: {
+                    'name': 'Đổi 10 Gói Thẻ Bài',
+                    'req': {7032: 1, 7034: 1, 7035: 1, 7036: 1, 7037: 1},
+                    'reward_type': 'prop', 'reward_id': 7110, 'reward_count': 10
+                },
+                3: {
+                    'name': 'Đổi Thẻ Bài Hiếm',
+                    'req': {7033: 1, 7035: 1, 7036: 1, 7037: 1},
+                    'reward_type': 'card', 'reward_id': 10430, 'reward_count': 1
+                },
+                4: {
+                    'name': 'Đổi 100 Mảnh Ghép Thẻ',
+                    'req': {7034: 1, 7036: 1, 7037: 1},
+                    'reward_type': 'prop', 'reward_id': 7112, 'reward_count': 100
+                },
+                5: {
+                    'name': 'Đổi 300 Kim Cương',
+                    'req': {7035: 1, 7036: 1, 7037: 1},
+                    'reward_type': 'ingot', 'reward_id': 1, 'reward_count': 300
+                }
+            }
+
+            if not acc_id:
+                resp = {"code": 400, "msg": "Missing account_id"}
+            elif exchange_id not in EXCHANGE_CONFIGS:
+                resp = {"code": 400, "msg": f"Invalid exchange_id {exchange_id}"}
+            else:
+                cfg = EXCHANGE_CONFIGS[exchange_id]
+                with get_db() as conn:
+                    with conn.cursor() as cur:
+                        enough = True
+                        for prop_id, need_qty in cfg['req'].items():
+                            total_need = need_qty * count
+                            cur.execute("SELECT count FROM user_props WHERE account_id = %s AND prop_id = %s", (acc_id, prop_id))
+                            r = cur.fetchone()
+                            cur_have = r['count'] if r else 0
+                            if cur_have < total_need:
+                                enough = False
+                                break
+
+                        if not enough:
+                            resp = {"code": 400, "msg": "Không đủ bảo vật để đổi thưởng!"}
+                        else:
+                            for prop_id, need_qty in cfg['req'].items():
+                                total_need = need_qty * count
+                                cur.execute("UPDATE user_props SET count = count - %s WHERE account_id = %s AND prop_id = %s", (total_need, acc_id, prop_id))
+                                cur.execute("DELETE FROM user_props WHERE account_id = %s AND prop_id = %s AND count <= 0", (acc_id, prop_id))
+
+                            total_reward = cfg['reward_count'] * count
+                            if cfg['reward_type'] == 'card':
+                                cur.execute("""
+                                    INSERT INTO user_cards (account_id, card_id, count)
+                                    VALUES (%s, %s, %s)
+                                    ON DUPLICATE KEY UPDATE count = count + %s
+                                """, (acc_id, cfg['reward_id'], total_reward, total_reward))
+                            elif cfg['reward_type'] == 'prop':
+                                cur.execute("""
+                                    INSERT INTO user_props (account_id, prop_id, count)
+                                    VALUES (%s, %s, %s)
+                                    ON DUPLICATE KEY UPDATE count = count + %s
+                                """, (acc_id, cfg['reward_id'], total_reward, total_reward))
+                            elif cfg['reward_type'] == 'ingot':
+                                cur.execute("UPDATE accounts SET gem = gem + %s WHERE id = %s", (total_reward, acc_id))
+
+                            cur.execute("SELECT prop_id, count FROM user_props WHERE account_id = %s", (acc_id,))
+                            updated_props = {int(r['prop_id']): int(r['count']) for r in cur.fetchall()}
+
+                            cur.execute("SELECT gem, gold FROM accounts WHERE id = %s", (acc_id,))
+                            row = cur.fetchone()
+                            if isinstance(row, dict):
+                                acc_info = row
+                            elif row:
+                                acc_info = {'gem': row[0], 'gold': row[1]}
+                            else:
+                                acc_info = {}
+
+                            resp = {
+                                "code": 200,
+                                "msg": f"Đổi {cfg['name']} thành công!",
+                                "exchange_id": exchange_id,
+                                "reward_type": cfg['reward_type'],
+                                'reward_id': cfg['reward_id'],
+                                'reward_count': total_reward,
+                                'props': updated_props,
+                                'ingot': acc_info.get('ingot', 0),
+                                'gold': acc_info.get('gold', 0)
+                            }
+                            print(f"[BAOVAT EXCHANGE (SHOP)] Acc {acc_id} exchanged {cfg['name']} (x{count}) -> {cfg['reward_type']} {cfg['reward_id']} x{total_reward}")
+
+
+        elif self.path == '/api/buy_package':
             acc_id = req.get('account_id')
             cost_type = req.get('cost_type', 'gold')
             raw_count = int(req.get('count', 1))
@@ -962,12 +1063,16 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
 
             special_fixed = {
                 15: (12330, 7000, 3),
+                16: (12336, 50000, 3),
+                17: (40745, 20000, 3),
                 59: (40209, 200000, 1),
                 60: (20005, 5000, 1),
                 61: (20051, 100000, 1),
                 62: (20030, 100000, 1),
                 63: (40713, 500000, 1),
                 546: (12330, 7000, 3),
+                547: (12336, 50000, 3),
+                548: (40745, 20000, 3),
                 583: (12330, 7000, 3),
             }
             if prod_id in special_fixed:
@@ -987,6 +1092,10 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                 server_cost, server_cost_type, is_legit_item = 500000, 1, True
             elif card_id == 12330:
                 server_cost, server_cost_type, is_legit_item = 7000, 3, True
+            elif card_id == 12336:
+                server_cost, server_cost_type, is_legit_item = 50000, 3, True
+            elif card_id == 40745:
+                server_cost, server_cost_type, is_legit_item = 20000, 3, True
             elif card_id == 30592:
                 server_cost, server_cost_type, is_legit_item = 50000, 3, True
             elif card_id == 40731:
@@ -1019,7 +1128,7 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                     is_legit_item = True
 
             card_info = ALL_CARDS_MAP.get(card_id)
-            is_gr = (card_info and card_info.get('quality') == 'GR')
+            is_gr = (card_info and card_info.get('quality') == 'GR' and card_id != 12336)
 
             if not acc_id or card_id <= 0:
                 resp = {"code": 400, "msg": "Thông tin thẻ bài hoặc tài khoản không hợp lệ!"}

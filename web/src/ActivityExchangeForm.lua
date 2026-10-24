@@ -25,7 +25,7 @@ function var_0_0.init(arg_2_0, arg_2_1)
 
 	if arg_2_0._type then
 		var_2_0, var_2_1 = {
-			Str(STR.EXCHANGE)
+			(arg_2_0._type == 22 and "Bảo Vật Ngàn Năm" or Str(STR.EXCHANGE))
 		}, {}
 	else
 		var_2_0, var_2_1 = {
@@ -342,8 +342,12 @@ function var_0_0.setOrCreateItem(arg_15_0, arg_15_1, arg_15_2)
 
 			if var_16_1._visibleType == 1 and not P._playerActivity:isPrivilegeValid() then
 				return ToastManager.push(Str(STR.EXCHANGE_FORBID))
-			elseif var_16_8 >= Data.CardType.monster and var_16_8 <= Data.CardType.rare and var_16_7._maxCount <= P._playerCard:getCardCount(var_16_5) then
-				return require("Dialog").showDialog(Str(STR.EXCHANGE_CARD_LIMIT), var_16_6)
+			elseif var_16_8 >= Data.CardType.monster and var_16_8 <= Data.CardType.rare then
+				if var_16_7 and var_16_7._maxCount and var_16_7._maxCount <= P._playerCard:getCardCount(var_16_5) then
+					return require("Dialog").showDialog(Str(STR.EXCHANGE_CARD_LIMIT), var_16_6)
+				else
+					return var_16_6()
+				end
 			elseif var_16_5 == Data.ResType.ingot and var_16_2[1] then
 				local var_16_9 = Data.getType(var_16_2[1])
 

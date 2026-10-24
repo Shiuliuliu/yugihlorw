@@ -138,7 +138,7 @@ async def battle_ws_handler(websocket):
                                 "turn_slot": "p1",
                                 "turn_ws": None,
                                 "turn_start_time": time.time(),
-                                "turn_duration": 60,
+                                "turn_duration": 90,
                                 "last_action_time": time.time(),
                                 "spectators": {websocket}
                             }
@@ -155,7 +155,7 @@ async def battle_ws_handler(websocket):
                         # Gửi ngay time_sync cho spectator nếu trận đấu đang chạy
                         cur_m = ACTIVE_MATCHES.get(match_id)
                         if cur_m and cur_m.get("turn_ws"):
-                            cur_tl = max(0, cur_m.get("turn_duration", 60) - (time.time() - cur_m.get("turn_start_time", time.time())))
+                            cur_tl = max(0, cur_m.get("turn_duration", 90) - (time.time() - cur_m.get("turn_start_time", time.time())))
                             await safe_send(websocket, make_pvp_frame({
                                 "t": "time_sync",
                                 "match_id": match_id,
@@ -194,7 +194,7 @@ async def battle_ws_handler(websocket):
                             "turn_slot": "p1",
                             "turn_ws": websocket if slot == "p1" else None,
                             "turn_start_time": time.time(),
-                            "turn_duration": 60,
+                            "turn_duration": 90,
                             "last_action_time": time.time(),
                             "spectators": set()
                         }
@@ -253,7 +253,7 @@ async def battle_ws_handler(websocket):
                                 match["turn_slot"] = "p1"
                                 match["turn_ws"] = websocket
                                 match["turn_start_time"] = time.time()
-                                match["turn_duration"] = 60
+                                match["turn_duration"] = 90
                                 match["last_action_time"] = time.time()
                             print(f"[BATTLE WS] Match {match_id}: {slot} bound (user {user_id}, first={is_first})")
 
@@ -265,9 +265,9 @@ async def battle_ws_handler(websocket):
                                 match["turn_slot"] = "p1"
                                 match["turn_ws"] = p1
                                 match["turn_start_time"] = time.time()
-                                match["turn_duration"] = 60
+                                match["turn_duration"] = 90
                                 match["last_action_time"] = time.time()
-                            ready_msg = make_pvp_frame({"t": "peer_ready", "turn_duration": 60, "time_left": 60})
+                            ready_msg = make_pvp_frame({"t": "peer_ready", "turn_duration": 90, "time_left": 60})
                             asyncio.create_task(safe_send(p1, ready_msg))
                             asyncio.create_task(safe_send(p2, ready_msg))
 
@@ -321,14 +321,22 @@ async def battle_ws_handler(websocket):
                                 match["turn_slot"] = next_slot
                                 match["turn_ws"] = peer_ws
                                 match["turn_start_time"] = now_ts
-                                match["turn_duration"] = 60
+                                match["turn_duration"] = 90
+                                match["turn_bonus"] = 0.0
                                 match["round"] = match.get("round", 1) + 1
-                                pkt["time_left"] = 60
-                                pkt["turn_duration"] = 60
+                                pkt["time_left"] = 90
+                                pkt["turn_duration"] = 90
                                 print(f"[BATTLE TURN] Match {match_id}: round ended, turn switched to {next_slot}")
+                            elif card_id == 999998:
+                                continue
                             elif card_id not in (1, 2) and card_id != 0:
-                                pkt["add_time"] = 6
-                                pkt["max_time"] = 120
+                                cur_bonus = float(match.get("turn_bonus", 0.0))
+                                rem_bonus = max(0.0, 150.0 - cur_bonus)
+                                add_sec = min(6.0, rem_bonus)
+                                match["turn_bonus"] = cur_bonus + add_sec
+
+                                pkt["add_time"] = add_sec
+                                pkt["max_time"] = 240
 
                                 client_time_left = None
                                 if "time_left" in pkt:
@@ -337,17 +345,17 @@ async def battle_ws_handler(websocket):
                                     except (ValueError, TypeError):
                                         pass
 
-                                if client_time_left is not None and client_time_left > 0:
-                                    # Đồng bộ trực tiếp thời gian server với đồng hồ hiển thị của client
-                                    new_time_left = min(120.0, client_time_left)
-                                    pkt["time_left"] = new_time_left
-                                    match["turn_duration"] = new_time_left
-                                    match["turn_start_time"] = now_ts
-                                    print(f"[BATTLE TIME] Match {match_id}: synced round time to {new_time_left:.1f}s for card {card_id}")
-                                else:
-                                    match["turn_duration"] = min(120, match.get("turn_duration", 60) + 6)
-                                    match["turn_start_time"] = now_ts
-                                    print(f"[BATTLE TIME] Match {match_id}: +6s round time added for card {card_id}")
+                                elapsed = now_ts - match.get("turn_start_time", now_ts)
+                                current_server_left = max(0.0, match.get("turn_duration", 90) - elapsed)
+                                # Base = 90s, +6s per action up to 150s max bonus (240s / 4 minutes total cap)
+                                new_time_left = min(240.0, current_server_left + add_sec)
+                                if client_time_left is not None and client_time_left > 0 and abs(client_time_left - current_server_left) <= 15.0:
+                                    new_time_left = min(240.0, max(new_time_left, client_time_left))
+
+                                pkt["time_left"] = new_time_left
+                                match["turn_duration"] = new_time_left
+                                match["turn_start_time"] = now_ts
+                                print(f"[BATTLE TIME] Match {match_id}: round time +{add_sec:.0f}s -> {new_time_left:.1f}s (bonus={match['turn_bonus']:.0f}/150s, max 240s) for card {card_id}")
 
                             pkt["from"] = sender_slot
                             relayed_frame = make_pvp_frame(pkt)
@@ -432,12 +440,12 @@ async def battle_ws_handler(websocket):
                             raw_res = str(pkt.get("result", "1")).lower()
                             sender_won = (raw_res == "1" or raw_res == "win")
 
-                            # Chống gian lận: Nếu claim timeout nhưng đối thủ chưa hề hết thời gian
+                            # Chống gian lận / tự thua: Không cho phép xử thắng bằng timeout khi đối thủ vẫn đang kết nối
                             turn_ws = match.get("turn_ws")
                             last_action = match.get("last_action_time", 0)
                             reason = str(pkt.get("reason", "")).lower()
-                            if sender_won and turn_ws and websocket != turn_ws and reason == "timeout" and (time.time() - last_action < 120):
-                                print(f"[BATTLE END BLOCKED] Match {match_id}: non-turn player claimed victory while turn player active")
+                            if sender_won and reason == "timeout":
+                                print(f"[BATTLE END BLOCKED] Match {match_id}: claim victory via timeout blocked (both players connected)")
                                 continue
 
                             peer_res = "2" if sender_won else "1"
@@ -554,39 +562,50 @@ async def battle_ws_handler(websocket):
 
                     host_user = str(WS_CLIENT_META.get(host_ws, {}).get("user_id") or "")
                     guest_user = str(pkt.get("info", {}).get("id") or pkt.get("user_id") or "")
-                    turn_ws = host_ws if host_first else guest_ws
-                    turn_slot = "p1" if host_first else "p2"
+                    p1_ws = host_ws if host_first else guest_ws
+                    p2_ws = guest_ws if host_first else host_ws
+                    p1_user = host_user if host_first else guest_user
+                    p2_user = guest_user if host_first else host_user
+                    p1_deck = room["host_deck"] if host_first else pkt.get("deck")
+                    p2_deck = pkt.get("deck") if host_first else room["host_deck"]
+                    p1_info = room["host_info"] if host_first else pkt.get("info")
+                    p2_info = pkt.get("info") if host_first else room["host_info"]
+
                     ACTIVE_MATCHES[match_id] = {
-                        "p1": host_ws, "p2": guest_ws,
-                        "p1_user": host_user, "p2_user": guest_user,
+                        "p1": p1_ws, "p2": p2_ws,
+                        "p1_user": p1_user, "p2_user": p2_user,
                         "p1_reconnect_token": 0, "p2_reconnect_token": 0,
-                        "turn_slot": turn_slot,
-                        "turn_ws": turn_ws,
+                        "turn_slot": "p1",
+                        "turn_ws": p1_ws,
                         "turn_start_time": time.time(),
-                        "turn_duration": 60,
-                        "last_action_time": time.time()
+                        "turn_duration": 90,
+                        "last_action_time": time.time(),
+                        "spectators": set()
                     }
-                    WS_CLIENT_META[host_ws] = {"match_id": match_id, "user_id": host_user}
-                    WS_CLIENT_META[guest_ws] = {"match_id": match_id, "user_id": guest_user}
+                    WS_CLIENT_META[p1_ws] = {"match_id": match_id, "user_id": p1_user, "slot": "p1"}
+                    WS_CLIENT_META[p2_ws] = {"match_id": match_id, "user_id": p2_user, "slot": "p2"}
 
-                    host_deck = room["host_deck"]
-                    guest_deck = pkt.get("deck")
-
-                    await host_ws.send(make_pvp_frame({
+                    await p1_ws.send(make_pvp_frame({
                         "t": "matched",
                         "match_id": match_id,
                         "seed": seed,
-                        "first": host_first,
-                        "peer_deck": guest_deck,
-                        "peer": pkt.get("info")
+                        "first": True,
+                        "slot": "p1",
+                        "turn_duration": 90,
+                        "time_left": 90,
+                        "peer_deck": p2_deck,
+                        "peer": p2_info
                     }))
-                    await guest_ws.send(make_pvp_frame({
+                    await p2_ws.send(make_pvp_frame({
                         "t": "matched",
                         "match_id": match_id,
                         "seed": seed,
-                        "first": not host_first,
-                        "peer_deck": host_deck,
-                        "peer": room["host_info"]
+                        "first": False,
+                        "slot": "p2",
+                        "turn_duration": 90,
+                        "time_left": 90,
+                        "peer_deck": p1_deck,
+                        "peer": p1_info
                     }))
                     del PVP_ROOMS[code]
                     print(f"[BATTLE ROOM] Room {code} matched! Match ID {match_id} (host_first={host_first})")
@@ -627,36 +646,50 @@ async def battle_ws_handler(websocket):
                         first = random.choice([True, False])
                         p1_user = str(WS_CLIENT_META.get(websocket, {}).get("user_id") or (pkt.get("info") or {}).get("id") or "")
                         p2_user = str(WS_CLIENT_META.get(other_ws, {}).get("user_id") or (other_info or {}).get("id") or "")
-                        turn_ws = websocket if first else other_ws
-                        turn_slot = "p1" if first else "p2"
-                        ACTIVE_MATCHES[match_id] = {
-                            "p1": websocket, "p2": other_ws,
-                            "p1_user": p1_user, "p2_user": p2_user,
-                            "p1_reconnect_token": 0, "p2_reconnect_token": 0,
-                            "turn_slot": turn_slot,
-                            "turn_ws": turn_ws,
-                            "turn_start_time": time.time(),
-                            "turn_duration": 60,
-                            "last_action_time": time.time()
-                        }
-                        WS_CLIENT_META[websocket] = {"match_id": match_id, "user_id": p1_user}
-                        WS_CLIENT_META[other_ws] = {"match_id": match_id, "user_id": p2_user}
+                        p1_ws = websocket if first else other_ws
+                        p2_ws = other_ws if first else websocket
+                        p1_u = p1_user if first else p2_user
+                        p2_u = p2_user if first else p1_user
+                        p1_deck = pkt.get("deck") if first else other_deck
+                        p2_deck = other_deck if first else pkt.get("deck")
+                        p1_info = info if first else other_info
+                        p2_info = other_info if first else info
 
-                        await websocket.send(make_pvp_frame({
+                        ACTIVE_MATCHES[match_id] = {
+                            "p1": p1_ws, "p2": p2_ws,
+                            "p1_user": p1_u, "p2_user": p2_u,
+                            "p1_reconnect_token": 0, "p2_reconnect_token": 0,
+                            "turn_slot": "p1",
+                            "turn_ws": p1_ws,
+                            "turn_start_time": time.time(),
+                            "turn_duration": 90,
+                            "last_action_time": time.time(),
+                            "spectators": set()
+                        }
+                        WS_CLIENT_META[p1_ws] = {"match_id": match_id, "user_id": p1_u, "slot": "p1"}
+                        WS_CLIENT_META[p2_ws] = {"match_id": match_id, "user_id": p2_u, "slot": "p2"}
+
+                        await p1_ws.send(make_pvp_frame({
                             "t": "matched",
                             "match_id": match_id,
                             "seed": seed,
-                            "first": first,
-                            "peer_deck": other_deck,
-                            "peer": other_info
+                            "first": True,
+                            "slot": "p1",
+                            "turn_duration": 90,
+                            "time_left": 90,
+                            "peer_deck": p2_deck,
+                            "peer": p2_info
                         }))
-                        await other_ws.send(make_pvp_frame({
+                        await p2_ws.send(make_pvp_frame({
                             "t": "matched",
                             "match_id": match_id,
                             "seed": seed,
-                            "first": not first,
-                            "peer_deck": pkt.get("deck"),
-                            "peer": info
+                            "first": False,
+                            "slot": "p2",
+                            "turn_duration": 90,
+                            "time_left": 90,
+                            "peer_deck": p1_deck,
+                            "peer": p1_info
                         }))
                         print(f"[BATTLE QUEUE] Paired players! Match ID {match_id}")
                     except Exception as e:
@@ -681,7 +714,7 @@ async def battle_ws_handler(websocket):
                                     "p1_reconnect_token": 0, "p2_reconnect_token": 0,
                                     "turn_ws": websocket,
                                     "turn_start_time": time.time(),
-                                    "turn_duration": 50,
+                                    "turn_duration": 90,
                                     "last_action_time": time.time()
                                 }
                                 WS_CLIENT_META[websocket] = {"match_id": match_id, "user_id": str(info.get("id", ""))}
@@ -743,8 +776,8 @@ async def battle_ws_handler(websocket):
                             pass
 
                     async def delayed_peer_left(m_id, s_key, expected_token):
-                        # 45 giây chờ đối thủ kết nối lại
-                        await asyncio.sleep(45.0)
+                        # 90 giây chờ đối thủ kết nối lại
+                        await asyncio.sleep(90.0)
                         m = ACTIVE_MATCHES.get(m_id)
                         if m and m.get(s_key) is None and m.get(f"{s_key}_reconnect_token") == expected_token:
                             try:
@@ -758,7 +791,7 @@ async def battle_ws_handler(websocket):
                                         "msg": "Đối thủ đã rời trận đấu! Bạn giành chiến thắng!"
                                     }))
                                     await safe_send(p_ws, make_pvp_frame({"t": "peer_left", "match_id": m_id}))
-                                    print(f"[BATTLE TIMEOUT] Match {m_id}: {s_key} failed to reconnect after 45s, declared victory for remaining player")
+                                    print(f"[BATTLE TIMEOUT] Match {m_id}: {s_key} failed to reconnect after 90s, declared victory for remaining player")
                                 for spec_ws in list(m.get("spectators", set())):
                                     winner_slot = "p2" if s_key == "p1" else "p1"
                                     asyncio.create_task(safe_send(spec_ws, make_pvp_frame({
@@ -804,11 +837,12 @@ async def server_timeout_monitor():
                 next_turn_ws = match.get(next_slot)
 
                 turn_start = match.get("turn_start_time", now)
-                turn_dur = match.get("turn_duration", 60)
+                turn_dur = match.get("turn_duration", 90)
                 time_left = max(0, turn_dur - (now - turn_start))
 
                 # Broadcast time_sync định kỳ mỗi 2 giây tới các client đang kết nối (bao gồm cả khán giả)
-                if int(now) % 2 == 0:
+                if now - match.get("last_sync_time", 0) >= 2.0:
+                    match["last_sync_time"] = now
                     sync_pkt = {
                         "t": "time_sync",
                         "match_id": match_id,
@@ -826,44 +860,17 @@ async def server_timeout_monitor():
                 # 1. Trường hợp người đang đi lượt bị MẤT KẾT NỐI (curr_turn_ws is None):
                 if curr_turn_ws is None:
                     dc_time = match.get(f"{curr_slot}_dc_time", turn_start)
-                    # Chờ hết giờ lượt đi hoặc tối đa 12s kể từ khi ngắt kết nối
-                    if (now - turn_start) >= turn_dur or (now - dc_time) >= 12.0:
+                    # Chờ hết giờ lượt đi hoặc tối đa 45s kể từ khi ngắt kết nối
+                    if (now - turn_start) >= turn_dur or (now - dc_time) >= 45.0:
                         timeouts_key = f"{curr_slot}_timeouts"
                         match[timeouts_key] = match.get(timeouts_key, 0) + 1
                         print(f"[BATTLE TIMEOUT DC] Match {match_id}: {curr_slot} disconnected, auto-switching turn to {next_slot} (timeouts={match[timeouts_key]})")
 
-                        # Nếu mất kết nối 2 lượt liên tiếp -> Xử thua bỏ cuộc
-                        if match[timeouts_key] >= 2:
-                            print(f"[BATTLE DC FORFEIT] Match {match_id}: {curr_slot} forfeited due to DC")
-                            match["ended"] = True
-                            for spec_ws in list(match.get("spectators", set())):
-                                if spec_ws in WS_CLIENT_META:
-                                    WS_CLIENT_META[spec_ws].pop("match_id", None)
-                            ACTIVE_MATCHES.pop(match_id, None)
-                            if next_turn_ws:
-                                asyncio.create_task(safe_send(next_turn_ws, make_pvp_frame({
-                                    "t": "end",
-                                    "match_id": match_id,
-                                    "result": "1",
-                                    "reason": "timeout",
-                                    "msg": "Đối thủ mất kết nối quá lâu! Bạn đã giành chiến thắng!"
-                                })))
-                            for spec_ws in list(match.get("spectators", set())):
-                                asyncio.create_task(safe_send(spec_ws, make_pvp_frame({
-                                    "t": "end",
-                                    "match_id": match_id,
-                                    "result": "1" if next_slot == "p1" else "2",
-                                    "winner": next_slot,
-                                    "reason": "timeout",
-                                    "msg": "Một đấu thủ mất kết nối quá lâu! Trận đấu kết thúc!"
-                                })))
-                            continue
-
-                        # Chuyển lượt sang cho người chơi còn kết nối
+                        # Chuyển lượt sang cho người chơi còn kết nối (để delayed_peer_left 90s xử lý nếu thực sự bỏ cuộc)
                         match["turn_slot"] = next_slot
                         match["turn_ws"] = next_turn_ws
                         match["turn_start_time"] = now
-                        match["turn_duration"] = 60
+                        match["turn_duration"] = 90
                         cur_r = match.get("round", 1) + 1
                         match["round"] = cur_r
                         match["last_action_time"] = now
@@ -888,54 +895,19 @@ async def server_timeout_monitor():
                             asyncio.create_task(safe_send(spec_ws, make_pvp_frame(oppo_action_pkt)))
                     continue
 
-                # 2. Trường hợp người chơi còn kết nối nhưng HẾT THỜI GIAN LƯỢT ĐI (AFK):
+                # 2. Trường hợp người chơi còn kết nối nhưng HẾT THỜI GIAN LƯỢT ĐI:
                 if (now - turn_start) >= turn_dur:
                     timeouts_key = f"{curr_slot}_timeouts"
                     match[timeouts_key] = match.get(timeouts_key, 0) + 1
-                    print(f"[BATTLE TIMEOUT] Match {match_id}: {curr_slot} timed out (consecutive={match[timeouts_key]})")
+                    print(f"[BATTLE TIMEOUT] Match {match_id}: {curr_slot} timed out, auto-passing turn to {next_slot}")
 
-                    # AFK Check: If a player times out 2 consecutive turns without moving, forfeit match!
-                    if match[timeouts_key] >= 2:
-                        print(f"[BATTLE TIMEOUT FORFEIT] Match {match_id}: {curr_slot} forfeited due to 2 consecutive timeouts")
-                        match["ended"] = True
-                        for spec_ws in list(match.get("spectators", set())):
-                            if spec_ws in WS_CLIENT_META:
-                                WS_CLIENT_META[spec_ws].pop("match_id", None)
-                        ACTIVE_MATCHES.pop(match_id, None)
-
-                        # Winner is next_turn_ws, loser is curr_turn_ws
-                        if next_turn_ws:
-                            asyncio.create_task(safe_send(next_turn_ws, make_pvp_frame({
-                                "t": "end",
-                                "match_id": match_id,
-                                "result": "1",
-                                "reason": "timeout",
-                                "msg": "Đối thủ hết thời gian quá nhiều lần! Bạn đã giành chiến thắng!"
-                            })))
-                        if curr_turn_ws:
-                            asyncio.create_task(safe_send(curr_turn_ws, make_pvp_frame({
-                                "t": "end",
-                                "match_id": match_id,
-                                "result": "2",
-                                "reason": "timeout",
-                                "msg": "Bạn đã hết thời gian lượt đi quá 2 lần liên tiếp và bị xử thua!"
-                            })))
-                        for spec_ws in list(match.get("spectators", set())):
-                            asyncio.create_task(safe_send(spec_ws, make_pvp_frame({
-                                "t": "end",
-                                "match_id": match_id,
-                                "result": "1" if next_slot == "p1" else "2",
-                                "winner": next_slot,
-                                "reason": "timeout",
-                                "msg": f"Một đấu thủ hết thời gian quá 2 lần liên tiếp! {'Người chơi 1' if next_slot == 'p1' else 'Người chơi 2'} giành chiến thắng!"
-                            })))
-                        continue
-
-                    # Auto-switch turn cleanly to keep both clients in perfect sync
+                    # TUYỆT ĐỐI KHÔNG XỬ THUA KHI NGƯỜI CHƠI ĐANG KẾT NỐI!
+                    # Hết thời gian chỉ tự động kết thúc lượt (force turn end) để chuyển lượt sang đối thủ,
+                    # trận đấu tiếp tục bình thường không làm người chơi bị tự thua bất ngờ.
                     match["turn_slot"] = next_slot
                     match["turn_ws"] = next_turn_ws
                     match["turn_start_time"] = now
-                    match["turn_duration"] = 60
+                    match["turn_duration"] = 90
                     cur_r = match.get("round", 1) + 1
                     match["round"] = cur_r
                     match["last_action_time"] = now
@@ -951,6 +923,12 @@ async def server_timeout_monitor():
                         asyncio.create_task(safe_send(curr_turn_ws, make_pvp_frame(force_pkt)))
 
                     # 2. To next_turn_ws (waiting opponent): Send force_oppo_turn_end and oppo_action_pkt so their client starts turn
+                    oppo_end_pkt = {
+                        "t": "force_oppo_turn_end",
+                        "match_id": match_id,
+                        "round": cur_r,
+                        "reason": "timeout"
+                    }
                     oppo_action_pkt = {
                         "t": "action",
                         "match_id": match_id,
@@ -959,17 +937,12 @@ async def server_timeout_monitor():
                         "from": curr_slot
                     }
                     if next_turn_ws:
-                        oppo_end_pkt = {
-                            "t": "force_oppo_turn_end",
-                            "match_id": match_id,
-                            "round": cur_r,
-                            "reason": "timeout"
-                        }
                         asyncio.create_task(safe_send(next_turn_ws, make_pvp_frame(oppo_end_pkt)))
                         asyncio.create_task(safe_send(next_turn_ws, make_pvp_frame(oppo_action_pkt)))
                     for spec_ws in list(match.get("spectators", set())):
                         asyncio.create_task(safe_send(spec_ws, make_pvp_frame(oppo_action_pkt)))
                     print(f"[BATTLE TIMEOUT MONITOR] Match {match_id}: round auto-switched cleanly ({curr_slot} -> {next_slot})")
+                    continue
         except Exception as e:
             await asyncio.sleep(2.0)
 

@@ -16234,4 +16234,11 @@ return {
   ["_picId"]=0,["_py"]="kmrghost",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14767,[2]=14768,},
   ["_skin"]={[1]=0,},
   ["_star"]=3,},
+  [12336]={["_atk"]={[1]=300,},
+  ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=57302,["_category"]=1,["_cost"]=0,["_descSid"]=57301,["_guideSid"]=0,["_hp"]={[1]=100,},
+  ["_id"]=12336,["_isHide"]=0,["_joinResult"]={[1]=0,},
+  ["_keyword"]=0,["_maxCount"]=3,["_nameSid"]=57300,["_nature"]=1,["_option"]=129,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="sucvatalice",["_quality"]=5,["_recruitable"]=1,["_skillId"]={[1]=0,},
+  ["_skin"]={[1]=0,},
+  ["_star"]=3,},
 }

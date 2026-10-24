@@ -149,10 +149,14 @@ function var_0_0.updateBuyArea(arg_10_0)
 	local var_10_0 = P._playerCard:hasSkin(arg_10_0._skinId, true)
 	local var_10_1 = P._playerCard:hasSkin(arg_10_0._skinId, false)
 
-	for iter_10_0 = 1, #arg_10_0._btns do
-		arg_10_0._btns[iter_10_0]._label:setString(var_10_0 and Str(STR.PURCHASED) or (not var_10_1 or iter_10_0 == 3) and Str(STR.BUY) or Str(STR.SKIN_IN_TRIAL))
-		arg_10_0._btns[iter_10_0]:setEnabled(not var_10_0 and (not var_10_1 or iter_10_0 == 3))
-		arg_10_0._priceLabels[iter_10_0]:setColor(P:getItemCount(arg_10_0._propId) >= arg_10_0._prices[iter_10_0] and lc.Color3B.white or lc.Color3B.red)
+	for iter_10_0 = 1, 3 do
+		if arg_10_0._btns[iter_10_0] then
+			arg_10_0._btns[iter_10_0]._label:setString(var_10_0 and Str(STR.PURCHASED) or (not var_10_1 or iter_10_0 == 3) and Str(STR.BUY) or Str(STR.SKIN_IN_TRIAL))
+			arg_10_0._btns[iter_10_0]:setEnabled(not var_10_0 and (not var_10_1 or iter_10_0 == 3))
+			if arg_10_0._priceLabels[iter_10_0] and arg_10_0._prices[iter_10_0] then
+				arg_10_0._priceLabels[iter_10_0]:setColor(P:getItemCount(arg_10_0._propId) >= arg_10_0._prices[iter_10_0] and lc.Color3B.white or lc.Color3B.red)
+			end
+		end
 	end
 end
 

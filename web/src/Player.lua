@@ -2682,6 +2682,10 @@ end
 function var_0_25.changeCharacterSkin(arg_164_0, arg_164_1)
 	local var_164_0 = Data._skinInfo[arg_164_1]._infoId
 
+	if arg_164_0._characters[var_164_0] and arg_164_0._characters[var_164_0]._level <= 0 then
+		arg_164_0._characters[var_164_0]._level = 1
+	end
+
 	if not arg_164_0:isCharacterUnlocked(var_164_0) then
 		return false
 	end

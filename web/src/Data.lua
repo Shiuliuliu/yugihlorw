@@ -194,7 +194,8 @@ var_0_0.CardKeyword = {
 	em = 3,
 	ys = 7,
 	hyyx = 105,
-	ysyx = 14
+	ysyx = 14,
+	liqi = 303
 }
 var_0_0.CardActivateType = {
 	material = 2,
@@ -1868,6 +1869,10 @@ function var_0_0.getSkillType(arg_13_0)
 
 	if arg_13_0 == 14744 or arg_13_0 == 14746 or arg_13_0 == 14754 or arg_13_0 == 14778 or arg_13_0 == 14780 or arg_13_0 == 14782 then
 		return var_0_0.SkillType.monster4Halo
+	end
+
+	if arg_13_0 == 14787 or arg_13_0 == 6061 then
+		return var_0_0.SkillType.monsterHalo
 	end
 
 	if arg_13_0 == 14682 or arg_13_0 == 14683 or arg_13_0 == 14690 or arg_13_0 == 14691 or arg_13_0 == 14692 or arg_13_0 == 14693 or arg_13_0 == 14717 or arg_13_0 == 14730 then

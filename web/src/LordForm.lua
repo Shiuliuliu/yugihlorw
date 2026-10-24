@@ -1,324 +1,459 @@
 local var_0_0 = class("LordForm", BaseForm)
 local var_0_1 = cc.size(862, 642)
-local var_0_2 = var_0_0.LEFT_MARGIN + 40
-local var_0_3 = var_0_0.TOP_MARGIN + 40
 local var_0_4 = 170
 local var_0_5 = 100
 
 function var_0_0.create()
 	local var_1_0 = var_0_0.new(lc.EXTEND_LAYOUT_MASK)
-
 	var_1_0:init()
-
 	return var_1_0
 end
 
 function var_0_0.init(arg_2_0)
 	var_0_0.super.init(arg_2_0, var_0_1, nil, bor(BaseForm.FLAG.PAPER_BG))
 
+	local formW = lc.w(arg_2_0._form)
+	local formH = lc.h(arg_2_0._form)
+
+	-- Group tables for managing visibility of each tab's widgets
+	arg_2_0._profileNodes = {}
+	arg_2_0._graphicsNodes = {}
+	arg_2_0._systemNodes = {}
+
+	local function addNode(tabIndex, node, pos, zOrder)
+		lc.addChildToPos(arg_2_0._form, node, pos, zOrder or 1)
+		if tabIndex == 1 then
+			table.insert(arg_2_0._profileNodes, node)
+		elseif tabIndex == 2 then
+			table.insert(arg_2_0._graphicsNodes, node)
+		elseif tabIndex == 3 then
+			table.insert(arg_2_0._systemNodes, node)
+		end
+		return node
+	end
+
+	-- =========================================================
+	-- TOP NAVIGATION TABS (Inside form header at y = 582)
+	-- =========================================================
+	local tabDefs = {
+		{ idx = 1, label = "Cá nhân",      width = 210, x = formW / 2 - 235 },
+		{ idx = 2, label = "Đồ họa & FPS", width = 230, x = formW / 2 },
+		{ idx = 3, label = "Hệ thống",     width = 210, x = formW / 2 + 235 }
+	}
+
+	arg_2_0._tabBtns = {}
+	for _, tdef in ipairs(tabDefs) do
+		local btn = ClientView.createScale9ShaderButton(tdef.idx == 1 and "img_btn_1_s" or "img_btn_2_s", function()
+			arg_2_0:showTab(tdef.idx)
+		end, ClientView.CRECT_BUTTON_S, tdef.width, 46)
+		btn:addLabel(tdef.label)
+		btn._label:setColor(tdef.idx == 1 and lc.Color3B.green or lc.Color3B.white)
+		lc.addChildToPos(arg_2_0._form, btn, cc.p(tdef.x, 582), 10)
+		arg_2_0._tabBtns[tdef.idx] = btn
+	end
+
+	-- Header divider line below tabs
+	local headerLine = ClientView.createDividingLine(760, ClientView.COLOR_DIVIDING_LINE_LIGHT)
+	lc.addChildToPos(arg_2_0._form, headerLine, cc.p(formW / 2, 545), 2)
+
+	-- =========================================================
+	-- TAB 1: CÁ NHÂN (PROFILE & CUSTOMIZATION)
+	-- =========================================================
 	local var_2_0 = UserWidget.create(P, UserWidget.Flag.NAME_UNION_VIP)
-
 	var_2_0._unionArea._name:setColor(ClientView.COLOR_TEXT_ORANGE)
-	lc.addChildToPos(arg_2_0._form, var_2_0, cc.p(var_0_2 + lc.w(var_2_0) / 2 + 10, lc.h(arg_2_0._form) - var_0_3 - lc.h(var_2_0) / 2))
-
+	addNode(1, var_2_0, cc.p(145, 475))
 	arg_2_0._userAvatar = var_2_0
 
 	local var_2_1 = lc.createSprite("img_icon_id")
-
-	lc.addChildToPos(arg_2_0._form, var_2_1, cc.p(lc.right(var_2_0) + 60, lc.y(var_2_0) + 18))
+	addNode(1, var_2_1, cc.p(260, 505))
 
 	local var_2_2 = ClientView.createTTF(ClientData.convertId(P._id), ClientView.FontSize.S1, ClientView.COLOR_TEXT_LIGHT)
+	addNode(1, var_2_2, cc.p(lc.right(var_2_1) + 8 + lc.w(var_2_2) / 2, lc.y(var_2_1) + 2))
 
-	lc.addChildToPos(arg_2_0._form, var_2_2, cc.p(lc.right(var_2_1) + 6 + lc.w(var_2_2) / 2, lc.y(var_2_1) + 2))
 	arg_2_0:updateLevelExpBar()
 
-	local var_2_3 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_3_0)
-		arg_2_0:onChangeCharacter()
-	end, ClientView.CRECT_BUTTON_S, var_0_4)
-
-	var_2_3:addLabel(Str(STR.CHANGE_CHARACTER))
-	lc.addChildToPos(arg_2_0._form, var_2_3, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_3) / 2, lc.y(arg_2_0._levelExpBar)))
-	var_2_3:setVisible(true)
-
-	local var_2_4 = ClientView.createScale9ShaderButton("img_btn_2_s", function(arg_4_0)
-		arg_2_0:onChangeName()
-	end, ClientView.CRECT_BUTTON_S, 150, 44)
-
-	var_2_4:addLabel("Sửa đổi biệt hiệu")
-	var_2_4:setVisible(true)
-	
-	local var_btn_avatar = ClientView.createScale9ShaderButton("img_btn_2_s", function()
-		arg_2_0:onChangeAvatar()
-	end, ClientView.CRECT_BUTTON_S, 150, 44)
-	var_btn_avatar:addLabel(Str(STR.CHANGE_ICON) or "Đổi Avatar")
-	lc.addChildToPos(arg_2_0._form, var_btn_avatar, cc.p(lc.left(arg_2_0._userAvatar) + lc.w(var_btn_avatar) / 2 - 10, lc.bottom(arg_2_0._userAvatar) - lc.h(var_btn_avatar) / 2 - 20))
-
-	lc.addChildToPos(arg_2_0._form, var_2_4, cc.p(lc.left(arg_2_0._userAvatar) + lc.w(var_2_4) / 2 - 10, lc.bottom(arg_2_0._userAvatar) - lc.h(var_2_4) / 2 - 72))
-
-	local var_2_5 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_5_0)
-		arg_2_0:onChangeAvatar()
-	end, ClientView.CRECT_BUTTON_S, var_0_4)
-
-	var_2_5:addLabel(Str(STR.CHANGE_ICON))
-	lc.addChildToPos(arg_2_0._form, var_2_5, cc.p(lc.right(var_2_4) + lc.w(var_2_5) / 2 + 10, lc.y(var_2_4)))
-
-	local var_2_6 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_6_0)
-		arg_2_0:onChangeAvatarFrame()
-	end, ClientView.CRECT_BUTTON_S, var_0_4)
-
-	var_2_6:addLabel(Str(STR.CHANGE_RECT))
-	lc.addChildToPos(arg_2_0._form, var_2_6, cc.p(lc.right(var_2_5) + lc.w(var_2_6) / 2 + 10, lc.y(var_2_5)))
-
-	local var_2_7 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_7_0)
-		arg_2_0:onChangeCardBack()
-	end, ClientView.CRECT_BUTTON_S, var_0_4)
-
-	var_2_7:addLabel(Str(STR.CHANGE_CARD_BACK))
-	lc.addChildToPos(arg_2_0._form, var_2_7, cc.p(lc.right(var_2_6) + lc.w(var_2_7) / 2 + 10, lc.y(var_2_5)))
-
+	-- VIP Privilege button
 	if not ClientData.isAppStoreReviewing() then
-		local var_2_8 = ClientView.createScale9ShaderButton("img_btn_3_s", function(arg_8_0)
+		local var_vip = ClientView.createScale9ShaderButton("img_btn_3_s", function()
 			arg_2_0:onShowVIP()
-		end, ClientView.CRECT_BUTTON_S, var_0_4)
+		end, ClientView.CRECT_BUTTON_S, 160, 44)
+		var_vip:addLabel("VIP " .. Str(STR.PRIVILEGE))
+		var_vip._label:setColor(ClientView.COLOR_TEXT_INGOT)
+		addNode(1, var_vip, cc.p(715, 505))
+		var_vip:setVisible(not ClientData.isHideCharge())
+	end
 
-		var_2_8:addLabel("VIP " .. Str(STR.PRIVILEGE))
-		var_2_8._label:setColor(ClientView.COLOR_TEXT_INGOT)
-		lc.addChildToPos(arg_2_0._form, var_2_8, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_8) / 2, lc.top(arg_2_0._userAvatar) - lc.h(var_2_8) / 2 + 10))
-		var_2_8:setVisible(not ClientData.isHideCharge())
+	-- Change Character button
+	local var_change_char = ClientView.createScale9ShaderButton("img_btn_1_s", function()
+		arg_2_0:onChangeCharacter()
+	end, ClientView.CRECT_BUTTON_S, 160, 44)
+	var_change_char:addLabel(Str(STR.CHANGE_CHARACTER))
+	addNode(1, var_change_char, cc.p(715, 445))
 
-		local var_2_9 = ClientView.createScale9ShaderButton("img_btn_3_s", function(arg_9_0)
+	-- Divider 1
+	local line1 = ClientView.createDividingLine(760, ClientView.COLOR_DIVIDING_LINE_LIGHT)
+	addNode(1, line1, cc.p(formW / 2, 390))
+
+	-- Customization Title
+	local lblCustom = cc.Label:createWithTTF("TÙY BIẾN NHÂN VẬT & THẺ BÀI", ClientView.TTF_FONT, ClientView.FontSize.M1)
+	lblCustom:setColor(ClientView.COLOR_TEXT_ORANGE)
+	addNode(1, lblCustom, cc.p(formW / 2, 355))
+
+	-- Row of 4 Customization Buttons at y = 295
+	local y_cust = 295
+	local btnName = ClientView.createScale9ShaderButton("img_btn_2_s", function()
+		arg_2_0:onChangeName()
+	end, ClientView.CRECT_BUTTON_S, 155, 46)
+	btnName:addLabel("Sửa biệt hiệu")
+	addNode(1, btnName, cc.p(140, y_cust))
+
+	local btnAvatar = ClientView.createScale9ShaderButton("img_btn_2_s", function()
+		arg_2_0:onChangeAvatar()
+	end, ClientView.CRECT_BUTTON_S, 155, 46)
+	btnAvatar:addLabel(Str(STR.CHANGE_ICON) or "Đổi Avatar")
+	addNode(1, btnAvatar, cc.p(330, y_cust))
+
+	local btnFrame = ClientView.createScale9ShaderButton("img_btn_2_s", function()
+		arg_2_0:onChangeAvatarFrame()
+	end, ClientView.CRECT_BUTTON_S, 155, 46)
+	btnFrame:addLabel(Str(STR.CHANGE_RECT) or "Đổi Khung")
+	addNode(1, btnFrame, cc.p(520, y_cust))
+
+	local btnCardBack = ClientView.createScale9ShaderButton("img_btn_2_s", function()
+		arg_2_0:onChangeCardBack()
+	end, ClientView.CRECT_BUTTON_S, 155, 46)
+	btnCardBack:addLabel(Str(STR.CHANGE_CARD_BACK) or "Đổi Mặt Lưng")
+	addNode(1, btnCardBack, cc.p(710, y_cust))
+
+	-- Divider 2
+	local line2 = ClientView.createDividingLine(760, ClientView.COLOR_DIVIDING_LINE_LIGHT)
+	addNode(1, line2, cc.p(formW / 2, 230))
+
+	-- Bottom rewards row
+	if not ClientData.isAppStoreReviewing() then
+		local btnCode = ClientView.createScale9ShaderButton("img_btn_3_s", function()
 			arg_2_0:onShowExchangeCode()
-		end, ClientView.CRECT_BUTTON_S, var_0_4)
+		end, ClientView.CRECT_BUTTON_S, 220, 50)
+		btnCode:addLabel(Str(STR.EXCHANGE_CODE))
+		btnCode._label:setColor(ClientView.COLOR_TEXT_INGOT)
+		addNode(1, btnCode, cc.p(formW / 2 - 130, 145))
 
-		var_2_9:addLabel(Str(STR.EXCHANGE_CODE))
-		var_2_9._label:setColor(ClientView.COLOR_TEXT_INGOT)
-		lc.addChildToPos(arg_2_0._form, var_2_9, cc.p(lc.x(var_2_8), 64))
+		local btnVipPriv = ClientView.createScale9ShaderButton("img_btn_3_s", function()
+			arg_2_0:onShowVIP()
+		end, ClientView.CRECT_BUTTON_S, 220, 50)
+		btnVipPriv:addLabel("Đặc Quyền VIP")
+		btnVipPriv._label:setColor(ClientView.COLOR_TEXT_INGOT)
+		addNode(1, btnVipPriv, cc.p(formW / 2 + 130, 145))
+		btnVipPriv:setVisible(not ClientData.isHideCharge())
 	end
 
 	if ClientData.isShowAgreement() then
-		local var_2_10 = ClientView.createScale9ShaderButton("img_btn_1_s", ClientView.openUserProtocol, ClientView.CRECT_BUTTON_S, var_0_4)
-
-		var_2_10:addLabel(Str(STR.AGREEMENT))
-		lc.addChildToPos(arg_2_0._form, var_2_10, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_10) * 1.5, 64))
+		local btnAgree = ClientView.createScale9ShaderButton("img_btn_1_s", ClientView.openUserProtocol, ClientView.CRECT_BUTTON_S, 180, 40)
+		btnAgree:addLabel(Str(STR.AGREEMENT))
+		addNode(1, btnAgree, cc.p(formW / 2, 75))
 	end
 
-	local var_2_11 = ClientView.createDividingLine(lc.w(arg_2_0._frame) - ClientView.FRAME_INNER_LEFT - ClientView.FRAME_INNER_RIGHT, ClientView.COLOR_DIVIDING_LINE_LIGHT)
+	-- =========================================================
+	-- TAB 2: ĐỒ HỌA & FPS (5-STEP FPS + 3-STEP GRAPHICS + STATS)
+	-- =========================================================
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	local curFps = api and api.getFpsLimit and tonumber(api:getFpsLimit()) or 60
+	local curQuality = api and api.getGraphicQuality and tonumber(api:getGraphicQuality()) or 3
+	local isFpsShown = api and api.isDisplayFps and api:isDisplayFps() or false
 
-	lc.addChildToPos(arg_2_0._form, var_2_11, cc.p(lc.w(arg_2_0._form) / 2, lc.bottom(var_2_4) - 20))
+	-- Section 1: FPS Limit
+	local lblFpsTitle = cc.Label:createWithTTF("TỐC ĐỘ KHUNG HÌNH (FPS)", ClientView.TTF_FONT, ClientView.FontSize.M1)
+	lblFpsTitle:setColor(ClientView.COLOR_TEXT_ORANGE)
+	addNode(2, lblFpsTitle, cc.p(formW / 2, 510))
 
-	local y_row1 = lc.bottom(var_2_11) - 36
-	local y_row2 = y_row1 - 46
-	local y_row3 = y_row2 - 46
+	local fpsOpts = {
+		{ fps = 30,  label = "30 FPS" },
+		{ fps = 60,  label = "60 FPS" },
+		{ fps = 90,  label = "90 FPS" },
+		{ fps = 120, label = "120 FPS" },
+		{ fps = 0,   label = "Không giới hạn" }
+	}
 
-	-- Row 1: Music toggle & Music volume slider | Pos toggle
-	local var_2_13 = cc.Label:createWithTTF(Str(STR.AUDIO_MUSIC), ClientView.TTF_FONT, ClientView.FontSize.S2)
-	var_2_13:setColor(ClientView.COLOR_LABEL_LIGHT)
-	lc.addChildToPos(arg_2_0._form, var_2_13, cc.p(lc.left(var_2_4) + lc.w(var_2_13) / 2, y_row1))
+	arg_2_0._fpsBtns = {}
+	local fpsX = { 127, 279, 431, 583, 735 }
+	for idx, opt in ipairs(fpsOpts) do
+		local isSel = (opt.fps == curFps)
+		local btn = ClientView.createScale9ShaderButton(isSel and "img_btn_1_s" or "img_btn_2_s", function()
+			arg_2_0:onSelectFps(opt.fps)
+		end, ClientView.CRECT_BUTTON_S, 132, 46)
+		btn:addLabel(opt.label)
+		btn._label:setColor(isSel and lc.Color3B.green or lc.Color3B.white)
+		addNode(2, btn, cc.p(fpsX[idx], 445))
+		arg_2_0._fpsBtns[opt.fps] = btn
+	end
 
-	local var_2_12 = ClientView.createScale9ShaderButton(ClientData._isMusicOn and "img_btn_1_s" or "img_btn_2_s", function(arg_10_0)
-		arg_2_0:onSwitchMusic(arg_10_0)
+	-- Divider FPS
+	local lineFps = ClientView.createDividingLine(760, ClientView.COLOR_DIVIDING_LINE_LIGHT)
+	addNode(2, lineFps, cc.p(formW / 2, 380))
+
+	-- Section 2: Graphic Quality
+	local lblQualTitle = cc.Label:createWithTTF("CHẤT LƯỢNG ĐỒ HỌA", ClientView.TTF_FONT, ClientView.FontSize.M1)
+	lblQualTitle:setColor(ClientView.COLOR_TEXT_ORANGE)
+	addNode(2, lblQualTitle, cc.p(formW / 2, 330))
+
+	local qualOpts = {
+		{ q = 1, label = "Nhanh" },
+		{ q = 2, label = "Đẹp" },
+		{ q = 3, label = "Tuyệt sắc" }
+	}
+
+	arg_2_0._qualBtns = {}
+	local qualX = { 186, 431, 676 }
+	for idx, opt in ipairs(qualOpts) do
+		local isSel = (opt.q == curQuality)
+		local btn = ClientView.createScale9ShaderButton(isSel and "img_btn_1_s" or "img_btn_2_s", function()
+			arg_2_0:onSelectQuality(opt.q)
+		end, ClientView.CRECT_BUTTON_S, 210, 48)
+		btn:addLabel(opt.label)
+		btn._label:setColor(isSel and lc.Color3B.green or lc.Color3B.white)
+		addNode(2, btn, cc.p(qualX[idx], 265))
+		arg_2_0._qualBtns[opt.q] = btn
+	end
+
+	-- Divider Quality
+	local lineQual = ClientView.createDividingLine(760, ClientView.COLOR_DIVIDING_LINE_LIGHT)
+	addNode(2, lineQual, cc.p(formW / 2, 200))
+
+	-- Section 3: Display FPS counter
+	local lblStats = cc.Label:createWithTTF("Hiển thị chỉ số FPS ở góc màn hình:", ClientView.TTF_FONT, ClientView.FontSize.S1)
+	lblStats:setColor(ClientView.COLOR_LABEL_LIGHT)
+	addNode(2, lblStats, cc.p(320, 135))
+
+	local btnStats = ClientView.createScale9ShaderButton(isFpsShown and "img_btn_1_s" or "img_btn_2_s", function(btnSelf)
+		arg_2_0:onToggleDisplayFps(btnSelf)
+	end, ClientView.CRECT_BUTTON_S, 130, 42)
+	btnStats:addLabel(isFpsShown and "BẬT" or "TẮT")
+	btnStats._label:setColor(isFpsShown and lc.Color3B.green or lc.Color3B.white)
+	addNode(2, btnStats, cc.p(610, 135))
+	arg_2_0._btnStats = btnStats
+
+	-- =========================================================
+	-- TAB 3: HỆ THỐNG (AUDIO, BATTLE SETTINGS, SERVER & ACCOUNT)
+	-- =========================================================
+	-- Row 1: Nhạc nền & Khóa vị trí at y = 495
+	local lblMusic = cc.Label:createWithTTF(Str(STR.AUDIO_MUSIC) or "Nhạc nền", ClientView.TTF_FONT, ClientView.FontSize.S1)
+	lblMusic:setColor(ClientView.COLOR_LABEL_LIGHT)
+	addNode(3, lblMusic, cc.p(120, 495))
+
+	local btnMusic = ClientView.createScale9ShaderButton(ClientData._isMusicOn and "img_btn_1_s" or "img_btn_2_s", function(btnSelf)
+		arg_2_0:onSwitchMusic(btnSelf)
 	end, ClientView.CRECT_BUTTON_S, 84, 40)
-	var_2_12:addLabel(ClientData._isMusicOn and Str(STR.ON) or Str(STR.OFF))
-	lc.addChildToPos(arg_2_0._form, var_2_12, cc.p(lc.right(var_2_13) + 10 + lc.w(var_2_12) / 2, y_row1))
-	arg_2_0._btnMusic = var_2_12
+	btnMusic:addLabel(ClientData._isMusicOn and Str(STR.ON) or Str(STR.OFF))
+	addNode(3, btnMusic, cc.p(220, 495))
+	arg_2_0._btnMusic = btnMusic
 
 	local sliderMusic = ClientView.createVolumeSlider(140, 22, ClientData.getMusicVolume(), function(val)
 		ClientData.setMusicVolume(val)
 		if val > 0 and not ClientData._isMusicOn then
 			ClientData.toggleAudio(lc.Audio.Behavior.music, true)
-			var_2_12._label:setString(Str(STR.ON))
-			var_2_12:loadTextureNormal("img_btn_1_s", ccui.TextureResType.plistType)
+			btnMusic._label:setString(Str(STR.ON))
+			btnMusic:loadTextureNormal("img_btn_1_s", ccui.TextureResType.plistType)
 		elseif val == 0 and ClientData._isMusicOn then
 			ClientData.toggleAudio(lc.Audio.Behavior.music, false)
-			var_2_12._label:setString(Str(STR.OFF))
-			var_2_12:loadTextureNormal("img_btn_2_s", ccui.TextureResType.plistType)
+			btnMusic._label:setString(Str(STR.OFF))
+			btnMusic:loadTextureNormal("img_btn_2_s", ccui.TextureResType.plistType)
 		end
 	end)
-	lc.addChildToPos(arg_2_0._form, sliderMusic, cc.p(lc.right(var_2_12) + 12 + 140 / 2, y_row1))
+	addNode(3, sliderMusic, cc.p(375, 495))
 	arg_2_0._sliderMusic = sliderMusic
 
-	local var_2_16 = ClientView.createScale9ShaderButton(ClientData._isPosOn and "img_btn_1_s" or "img_btn_2_s", function(arg_12_0)
-		arg_2_0:onSwitchPos(arg_12_0)
+	-- Battle setting: Khóa vị trí
+	local lblPos = cc.Label:createWithTTF(Str(STR.POS_LABEL, true) or "Khóa vị trí thẻ:", ClientView.TTF_FONT, ClientView.FontSize.S1)
+	lblPos:setColor(ClientView.COLOR_LABEL_LIGHT)
+	addNode(3, lblPos, cc.p(585, 495))
+
+	local btnPos = ClientView.createScale9ShaderButton(ClientData._isPosOn and "img_btn_1_s" or "img_btn_2_s", function(btnSelf)
+		arg_2_0:onSwitchPos(btnSelf)
 	end, ClientView.CRECT_BUTTON_S, 84, 40)
-	var_2_16:addLabel(ClientData._isPosOn and Str(STR.ON) or Str(STR.OFF))
-	lc.addChildToPos(arg_2_0._form, var_2_16, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_16) / 2 - 20, y_row1))
+	btnPos:addLabel(ClientData._isPosOn and Str(STR.ON) or Str(STR.OFF))
+	addNode(3, btnPos, cc.p(710, 495))
+	btnPos:setVisible(P:getMaxCharacterLevel() >= ClientData.POS_UNLOCK_LEVEL)
+	lblPos:setVisible(btnPos:isVisible())
 
-	local var_2_17 = cc.Label:createWithTTF(Str(STR.POS_LABEL, true), ClientView.TTF_FONT, ClientView.FontSize.S2)
-	var_2_17:setColor(ClientView.COLOR_LABEL_LIGHT)
-	lc.addChildToPos(arg_2_0._form, var_2_17, cc.p(lc.left(var_2_16) - lc.w(var_2_17) / 2 - 10, y_row1))
-	var_2_16:setVisible(P:getMaxCharacterLevel() >= ClientData.POS_UNLOCK_LEVEL)
-	var_2_17:setVisible(var_2_16:isVisible())
+	-- Row 2: Hiệu ứng & Tự kết thúc lượt at y = 425
+	local lblEffect = cc.Label:createWithTTF(Str(STR.AUDIO_EFFECT) or "Hiệu ứng", ClientView.TTF_FONT, ClientView.FontSize.S1)
+	lblEffect:setColor(ClientView.COLOR_LABEL_LIGHT)
+	addNode(3, lblEffect, cc.p(120, 425))
 
-	-- Row 2: Effect toggle & Effect volume slider | Round toggle
-	local var_2_15 = cc.Label:createWithTTF(Str(STR.AUDIO_EFFECT), ClientView.TTF_FONT, ClientView.FontSize.S2)
-	var_2_15:setColor(ClientView.COLOR_LABEL_LIGHT)
-	lc.addChildToPos(arg_2_0._form, var_2_15, cc.p(lc.left(var_2_4) + lc.w(var_2_15) / 2, y_row2))
-
-	local var_2_14 = ClientView.createScale9ShaderButton(ClientData._isEffectOn and "img_btn_1_s" or "img_btn_2_s", function(arg_11_0)
-		arg_2_0:onSwitchEffect(arg_11_0)
+	local btnEffect = ClientView.createScale9ShaderButton(ClientData._isEffectOn and "img_btn_1_s" or "img_btn_2_s", function(btnSelf)
+		arg_2_0:onSwitchEffect(btnSelf)
 	end, ClientView.CRECT_BUTTON_S, 84, 40)
-	var_2_14:addLabel(ClientData._isEffectOn and Str(STR.ON) or Str(STR.OFF))
-	lc.addChildToPos(arg_2_0._form, var_2_14, cc.p(lc.right(var_2_15) + 10 + lc.w(var_2_14) / 2, y_row2))
-	arg_2_0._btnEffect = var_2_14
+	btnEffect:addLabel(ClientData._isEffectOn and Str(STR.ON) or Str(STR.OFF))
+	addNode(3, btnEffect, cc.p(220, 425))
+	arg_2_0._btnEffect = btnEffect
 
 	local sliderEffect = ClientView.createVolumeSlider(140, 22, ClientData.getEffectVolume(), function(val)
 		ClientData.setEffectVolume(val)
 		if val > 0 and not ClientData._isEffectOn then
 			ClientData.toggleAudio(lc.Audio.Behavior.effect, true)
-			var_2_14._label:setString(Str(STR.ON))
-			var_2_14:loadTextureNormal("img_btn_1_s", ccui.TextureResType.plistType)
+			btnEffect._label:setString(Str(STR.ON))
+			btnEffect:loadTextureNormal("img_btn_1_s", ccui.TextureResType.plistType)
 		elseif val == 0 and ClientData._isEffectOn then
 			ClientData.toggleAudio(lc.Audio.Behavior.effect, false)
-			var_2_14._label:setString(Str(STR.OFF))
-			var_2_14:loadTextureNormal("img_btn_2_s", ccui.TextureResType.plistType)
+			btnEffect._label:setString(Str(STR.OFF))
+			btnEffect:loadTextureNormal("img_btn_2_s", ccui.TextureResType.plistType)
 		end
 	end)
-	lc.addChildToPos(arg_2_0._form, sliderEffect, cc.p(lc.right(var_2_14) + 12 + 140 / 2, y_row2))
+	addNode(3, sliderEffect, cc.p(375, 425))
 	arg_2_0._sliderEffect = sliderEffect
 
-	local var_2_18 = ClientView.createScale9ShaderButton(P._isNewRound and "img_btn_1_s" or "img_btn_2_s", function(arg_13_0)
-		arg_2_0:onSwitchRound(arg_13_0)
+	-- Battle setting: Tự kết thúc lượt
+	local lblRound = cc.Label:createWithTTF(Str(STR.NEW_ROUND_LABEL, true) or "Tự kết thúc lượt:", ClientView.TTF_FONT, ClientView.FontSize.S1)
+	lblRound:setColor(ClientView.COLOR_LABEL_LIGHT)
+	addNode(3, lblRound, cc.p(585, 425))
+
+	local btnRound = ClientView.createScale9ShaderButton(P._isNewRound and "img_btn_1_s" or "img_btn_2_s", function(btnSelf)
+		arg_2_0:onSwitchRound(btnSelf)
 	end, ClientView.CRECT_BUTTON_S, 84, 40)
-	var_2_18:addLabel(P._isNewRound and Str(STR.ON) or Str(STR.OFF))
-	lc.addChildToPos(arg_2_0._form, var_2_18, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_18) / 2 - 20, y_row2))
+	btnRound:addLabel(P._isNewRound and Str(STR.ON) or Str(STR.OFF))
+	addNode(3, btnRound, cc.p(710, 425))
 
-	local var_2_19 = cc.Label:createWithTTF(Str(STR.NEW_ROUND_LABEL, true), ClientView.TTF_FONT, ClientView.FontSize.S2)
-	var_2_19:setColor(ClientView.COLOR_LABEL_LIGHT)
-	lc.addChildToPos(arg_2_0._form, var_2_19, cc.p(lc.left(var_2_18) - lc.w(var_2_19) / 2 - 10, y_row2))
+	-- Divider System 1
+	local lineSys1 = ClientView.createDividingLine(760, ClientView.COLOR_DIVIDING_LINE_LIGHT)
+	addNode(3, lineSys1, cc.p(formW / 2, 370))
 
-	-- Row 3: Region Info | Change Region | Help
-	local var_2_21 = lc.createSprite({
+	-- Section: Server & Account
+	local lblSrvTitle = cc.Label:createWithTTF("MÁY CHỦ & TÀI KHOẢN", ClientView.TTF_FONT, ClientView.FontSize.M1)
+	lblSrvTitle:setColor(ClientView.COLOR_TEXT_ORANGE)
+	addNode(3, lblSrvTitle, cc.p(formW / 2, 335))
+
+	local srvBg = lc.createSprite({
 		_name = "img_com_bg_2",
 		_crect = ClientView.CRECT_COM_BG2,
-		_size = cc.size(230, 40)
+		_size = cc.size(240, 44)
 	})
-	var_2_21:setColor(lc.Color3B.black)
-	var_2_21:setOpacity(150)
-	lc.addChildToPos(arg_2_0._form, var_2_21, cc.p(lc.left(var_2_4) + lc.w(var_2_21) / 2, y_row3), -1)
+	srvBg:setColor(lc.Color3B.black)
+	srvBg:setOpacity(150)
+	addNode(3, srvBg, cc.p(210, 275), 0)
 
-	local var_2_22 = ClientData._userRegion
-	local var_2_23 = ClientView.createTTF(ClientData.genFullRegionName(var_2_22._id, var_2_22._name, true), ClientView.FontSize.S1)
-	var_2_23:setScale(0.8)
-	lc.addChildToPos(arg_2_0._form, var_2_23, cc.p(lc.left(var_2_4) + lc.sw(var_2_23) / 2 + 10, y_row3))
+	local curRegion = ClientData._userRegion or { _id = 1, _name = "S1 - Quyết Chiến Chi Thành" }
+	local srvName = ClientView.createTTF(ClientData.genFullRegionName(curRegion._id, curRegion._name, true), ClientView.FontSize.S1)
+	srvName:setScale(0.85)
+	lc.addChildToCenter(srvBg, srvName)
 
-	local var_2_20 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_14_0)
+	local btnChangeRegion = ClientView.createScale9ShaderButton("img_btn_1_s", function()
 		arg_2_0:onChangeRegion()
-	end, ClientView.CRECT_BUTTON_S, var_0_4)
-	var_2_20:addLabel(Str(STR.CHANGE_REGION))
-	lc.addChildToPos(arg_2_0._form, var_2_20, cc.p(lc.right(var_2_21) + 12 + lc.w(var_2_20) / 2, y_row3))
+	end, ClientView.CRECT_BUTTON_S, 140, 44)
+	btnChangeRegion:addLabel(Str(STR.CHANGE_REGION))
+	addNode(3, btnChangeRegion, cc.p(420, 275))
 
-	local var_2_24 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_15_0)
+	local btnLogout = ClientView.createScale9ShaderButton("img_btn_1", function()
+		arg_2_0:onChangeUser()
+	end, ClientView.CRECT_BUTTON_S, 160, 44)
+	btnLogout:addLabel(Str(STR.CHANGE_USER))
+	addNode(3, btnLogout, cc.p(640, 275))
+
+	-- Divider System 2
+	local lineSys2 = ClientView.createDividingLine(760, ClientView.COLOR_DIVIDING_LINE_LIGHT)
+	addNode(3, lineSys2, cc.p(formW / 2, 215))
+
+	-- Section: Help & Info
+	local btnHelp = ClientView.createScale9ShaderButton("img_btn_1_s", function()
 		arg_2_0:onHelp()
-	end, ClientView.CRECT_BUTTON_S, 110, 40)
-	var_2_24:addLabel(Str(STR.HELP))
-	lc.addChildToPos(arg_2_0._form, var_2_24, cc.p(lc.right(var_2_20) + 12 + lc.w(var_2_24) / 2, y_row3))
+	end, ClientView.CRECT_BUTTON_S, 210, 46)
+	btnHelp:addLabel(Str(STR.HELP) or "Hướng dẫn luật chơi")
+	addNode(3, btnHelp, cc.p(300, 155))
 
-	local var_2_25 = lc.App:getChannelName()
-
-	if ClientData.isVivo() and false then
-		local var_2_26 = ClientView.createScale9ShaderButton("img_btn_1", function(arg_16_0)
-			require("Dialog").showDialog(Str(STR.CONFIRM_CLOSE_ACCOUNT), function()
-				ClientData.sendBanLogin()
-
-				ClientData._regions = {}
-
-				ClientData.saveUserRegion()
-				lc.App:userLogout()
-				ClientView.getActiveIndicator():show(Str(STR.WAITING))
-			end, nil, nil, function()
-				lc.App:openURL("http://sh.smbbgo.com/mzsm/090921252395.html")
-			end)
-		end, ClientView.CRECT_BUTTON_S, var_0_4)
-
-		var_2_26:addLabel(Str(STR.CLOSE_ACCOUNT))
-		lc.addChildToPos(arg_2_0._form, var_2_26, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_26) / 2, lc.y(var_2_20)))
-	elseif var_2_25 ~= "ASDK" and var_2_25 ~= "YIXIN" and not ClientData.isAppStoreReviewing() then
-		local var_2_27 = ClientView.createScale9ShaderButton("img_btn_1", function(arg_19_0)
-			arg_2_0:onChangeUser()
-		end, ClientView.CRECT_BUTTON_S, var_0_4)
-
-		var_2_27:addLabel(Str(STR.CHANGE_USER))
-		lc.addChildToPos(arg_2_0._form, var_2_27, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_27) / 2, lc.y(var_2_20)))
-	end
-
-	if var_2_25 == "FACEBOOK" then
-		local var_2_28 = ClientView.createScale9ShaderButton(P._canBind and "img_btn_2_s" or "img_btn_1_s", function(arg_20_0)
-			arg_2_0:onBindUser()
-		end, ClientView.CRECT_BUTTON_S, var_0_4)
-
-		var_2_28:addLabel(Str(P._canBind and STR.BIND_GCID or STR.BIND_GCID_BOUND))
-		lc.addChildToPos(arg_2_0._form, var_2_28, cc.p(btnNotice:getPosition()))
-
-		if lc.FrameCache:getSpriteFrame("img_facebook") then
-			local var_2_29 = lc.createSprite("img_facebook")
-
-			lc.addChildToPos(var_2_28, var_2_29, cc.p(28, lc.h(var_2_28) / 2 + 1))
-			var_2_28._label:setPositionX(lc.x(var_2_28._label) + 16)
-		end
-
-		arg_2_0._btnBind = var_2_28
-
-		btnNotice:setPosition(cc.p(lc.x(var_2_6), lc.y(btnIllustration)))
-	end
-
-	local var_2_30 = ClientView.createDividingLine(lc.w(arg_2_0._frame) - ClientView.FRAME_INNER_LEFT - ClientView.FRAME_INNER_RIGHT, ClientView.COLOR_DIVIDING_LINE_LIGHT)
-
-	lc.addChildToPos(arg_2_0._form, var_2_30, cc.p(lc.w(arg_2_0._form) / 2, lc.bottom(var_2_20) - 20))
-
-	local var_2_31 = lc.bottom(var_2_30) - 20
-	local var_2_32 = var_0_3 + 20
-	local var_2_33 = {}
-
-	for iter_2_0, iter_2_1 in pairs(Data._aboutInfo) do
-		if not ClientData.isAppStoreReviewing() and (lc.PLATFORM ~= cc.PLATFORM_OS_ANDROID or ClientData.isYYB()) then
-			table.insert(var_2_33, iter_2_1)
-		end
-	end
-
-	table.sort(var_2_33, function(arg_21_0, arg_21_1)
-		return arg_21_0._id < arg_21_1._id
-	end)
-
-	for iter_2_2 = 1, #var_2_33 do
-		local var_2_34 = Str(var_2_33[iter_2_2]._descSid)
-
-		if iter_2_2 == 2 and ClientData.isYYB() then
-			var_2_34 = "658936992"
-		end
-
-		local var_2_35, var_2_36 = ClientView.createKeyValueLabel(Str(var_2_33[iter_2_2]._nameSid), var_2_34, ClientView.FontSize.M1)
-
-		var_2_35:setScale(0.7)
-		var_2_36:setScale(0.7)
-		var_2_35:addToParent(arg_2_0._form, cc.p(var_2_32, var_2_31))
-
-		var_2_31 = var_2_31 - 34
-	end
-
-	local var_2_37 = ClientView.createScale9ShaderButton("img_btn_1_s", function(arg_22_0)
+	local btnAbout = ClientView.createScale9ShaderButton("img_btn_1_s", function()
 		arg_2_0:onAbout()
-	end, ClientView.CRECT_BUTTON_S, var_0_4)
+	end, ClientView.CRECT_BUTTON_S, 210, 46)
+	btnAbout:addLabel(Str(STR.ABOUT) or "Thông tin game")
+	addNode(3, btnAbout, cc.p(560, 155))
 
-	var_2_37:addLabel(Str(STR.ABOUT))
-	lc.addChildToPos(arg_2_0._form, var_2_37, cc.p(lc.w(arg_2_0._form) - var_0_2 - lc.w(var_2_37) / 2, lc.y(var_2_20)))
-	var_2_37:setVisible(false)
+	-- Version and copyright at bottom
+	local lblVer = ClientView.createBMFont(ClientView.BMFont.huali_20, Str(STR.VERSION) .. ClientData.getDisplayVersion())
+	lblVer:setScale(0.8)
+	addNode(3, lblVer, cc.p(formW / 2, 85))
 
-	if ClientData.isRateValid() then
-		local var_2_38 = ClientView.createScale9ShaderButton("img_btn_2_s", function(arg_23_0)
-			arg_2_0:onRate()
-		end, ClientView.CRECT_BUTTON_S, var_0_4)
+	local lblFanmade = cc.Label:createWithTTF("Dự án Fan-made phi thương mại · Yu-Gi-Oh! © Konami & Kazuki Takahashi", ClientView.TTF_FONT, ClientView.FontSize.S2)
+	lblFanmade:setColor(ClientView.COLOR_LABEL_LIGHT)
+	addNode(3, lblFanmade, cc.p(formW / 2, 55))
 
-		var_2_38:addLabel(Str(STR.RATE))
-		lc.addChildToPos(arg_2_0._form, var_2_38, cc.p(lc.left(btnAbout) - 10 - lc.w(var_2_38) / 2, marginTop))
+	-- Show Tab 1 initially
+	arg_2_0:showTab(1)
+end
+
+function var_0_0.showTab(arg_self, tabIndex)
+	arg_self._curTab = tabIndex
+
+	for _, node in ipairs(arg_self._profileNodes or {}) do
+		node:setVisible(tabIndex == 1)
+	end
+	for _, node in ipairs(arg_self._graphicsNodes or {}) do
+		node:setVisible(tabIndex == 2)
+	end
+	for _, node in ipairs(arg_self._systemNodes or {}) do
+		node:setVisible(tabIndex == 3)
 	end
 
-	arg_2_0._isShowResourceUI = true
-
-	local var_2_39 = ClientView.createBMFont(ClientView.BMFont.huali_20, Str(STR.VERSION) .. ClientData.getDisplayVersion())
-
-	var_2_39:setScale(0.8)
-	lc.addChildToPos(arg_2_0, var_2_39, cc.p(lc.w(arg_2_0) / 2, 50))
+	-- Update Tab Button Styles
+	for idx, btn in ipairs(arg_self._tabBtns or {}) do
+		local isFocus = (idx == tabIndex)
+		btn:loadTextureNormal(isFocus and "img_btn_1_s" or "img_btn_2_s", ccui.TextureResType.plistType)
+		btn._label:setColor(isFocus and lc.Color3B.green or lc.Color3B.white)
+	end
 end
+
+-- =========================================================
+-- GRAPHICS & FPS CONTROLS
+-- =========================================================
+
+function var_0_0.onSelectFps(arg_self, fps)
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	if api and api.setFpsLimit then
+		api:setFpsLimit(fps)
+	end
+
+	for val, btn in pairs(arg_self._fpsBtns or {}) do
+		local isSel = (val == fps)
+		btn:loadTextureNormal(isSel and "img_btn_1_s" or "img_btn_2_s", ccui.TextureResType.plistType)
+		btn._label:setColor(isSel and lc.Color3B.green or lc.Color3B.white)
+	end
+
+	local msg = (fps == 0) and "Đã mở khóa FPS không giới hạn!" or ("Đã cài đặt tốc độ khung hình: " .. fps .. " FPS")
+	ToastManager.push(msg)
+end
+
+function var_0_0.onSelectQuality(arg_self, quality)
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	if api and api.setGraphicQuality then
+		api:setGraphicQuality(quality)
+	end
+
+	for val, btn in pairs(arg_self._qualBtns or {}) do
+		local isSel = (val == quality)
+		btn:loadTextureNormal(isSel and "img_btn_1_s" or "img_btn_2_s", ccui.TextureResType.plistType)
+		btn._label:setColor(isSel and lc.Color3B.green or lc.Color3B.white)
+	end
+
+	local names = { [1] = "Nhanh (1.0x)", [2] = "Đẹp (1.5x)", [3] = "Tuyệt sắc (2.0x Retina)" }
+	ToastManager.push("Đã chọn chất lượng hình ảnh: " .. (names[quality] or "Tuyệt sắc"))
+end
+
+function var_0_0.onToggleDisplayFps(arg_self, btn)
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	local curState = api and api.isDisplayFps and api:isDisplayFps() or false
+	local newState = not curState
+
+	if api and api.toggleDisplayFps then
+		api:toggleDisplayFps(newState)
+	end
+
+	btn:loadTextureNormal(newState and "img_btn_1_s" or "img_btn_2_s", ccui.TextureResType.plistType)
+	btn._label:setString(newState and "BẬT" or "TẮT")
+	btn._label:setColor(newState and lc.Color3B.green or lc.Color3B.white)
+
+	ToastManager.push(newState and "Đã bật hiển thị chỉ số FPS" or "Đã tắt hiển thị chỉ số FPS")
+end
+
+-- =========================================================
+-- PROFILE & SYSTEM CONTROLS
+-- =========================================================
 
 function var_0_0.onEnter(arg_24_0)
 	var_0_0.super.onEnter(arg_24_0)
@@ -328,46 +463,34 @@ function var_0_0.onEnter(arg_24_0)
 	local var_24_0 = lc.addEventListener(Data.Event.name_dirty, function(arg_25_0)
 		arg_24_0._userAvatar:setName(P._name)
 	end)
-
 	table.insert(arg_24_0._listeners, var_24_0)
 
 	local var_24_1 = lc.addEventListener(Data.Event.icon_dirty, function(arg_26_0)
 		arg_24_0._userAvatar:setAvatar(P)
 	end)
-
 	table.insert(arg_24_0._listeners, var_24_1)
 
 	local var_24_2 = lc.addEventListener(Data.Event.avatar_frame_dirty, function(arg_27_0)
 		arg_24_0._userAvatar:setAvatar(P)
 		arg_24_0._userAvatar:setVip(P._vip)
 	end)
-
 	table.insert(arg_24_0._listeners, var_24_2)
 
 	local var_24_3 = lc.addEventListener(Data.Event.vip_dirty, function(arg_28_0)
 		arg_24_0._userAvatar:setVip(P._vip)
 	end)
-
 	table.insert(arg_24_0._listeners, var_24_3)
 
 	local var_24_4 = lc.addEventListener(Data.Event.character_dirty, function(arg_29_0)
 		arg_24_0._userAvatar:setAvatar(P)
 		arg_24_0:updateLevelExpBar()
 	end)
-
 	table.insert(arg_24_0._listeners, var_24_4)
 
 	local var_24_5 = lc.addEventListener(GuideManager.Event.seek, function(arg_30_0)
 		arg_24_0:onGuide(arg_30_0)
 	end)
-
 	table.insert(arg_24_0._listeners, var_24_5)
-
-	local var_24_6 = lc.addEventListener(Data.Event.bind_gcid_dirty, function(arg_31_0)
-		arg_24_0:updateBindBtn()
-	end)
-
-	table.insert(arg_24_0._listeners, var_24_6)
 
 	if GuideManager.getCurStepName() == "enter setting" then
 		GuideManager.finishStepLater()
@@ -427,21 +550,9 @@ function var_0_0.onChangeUser(arg_42_0)
 		end)
 	else
 		ClientData._regions = {}
-
 		ClientData.saveUserRegion()
 		lc.App:userLogout()
 		ClientView.getActiveIndicator():show(Str(STR.WAITING))
-	end
-end
-
-function var_0_0.onBindUser(arg_44_0)
-	if P._canBind then
-		if lc.App.facebookLogin ~= nil then
-			lc.App:facebookLogin()
-			ClientView.getActiveIndicator():show(Str(STR.WAITING))
-		end
-	else
-		ToastManager.push(Str(STR.BIND_GCID_BOUND_LONG))
 	end
 end
 
@@ -479,30 +590,8 @@ function var_0_0.onSwitchRound(arg_48_0, arg_48_1)
 	arg_48_1:setContentSize(cc.size(var_0_5, ClientView.CRECT_BUTTON_S.height))
 end
 
-function var_0_0.onShowIllustration(arg_49_0)
-	require("IllustrationForm").create():show()
-end
-
-function var_0_0.onPushNotice(arg_50_0)
-	require("PushNoticeForm").create():show()
-end
-
 function var_0_0.onAbout(arg_51_0)
 	require("AboutForm").create():show()
-end
-
-function var_0_0.onRate(arg_52_0)
-	require("RateForm").create():show()
-end
-
-function var_0_0.onShowActionFinished(arg_53_0)
-	arg_53_0:onGuide(nil)
-end
-
-function var_0_0.onHideActionFinished(arg_54_0)
-	if GuideManager.getCurStepName() == "leave setting" then
-		GuideManager.finishStep()
-	end
 end
 
 function var_0_0.onGuide(arg_55_0, arg_55_1)
@@ -517,33 +606,30 @@ function var_0_0.onGuide(arg_55_0, arg_55_1)
 	end
 end
 
-function var_0_0.updateBindBtn(arg_56_0)
-	if arg_56_0._btnBind ~= nil then
-		arg_56_0._btnBind._label:setString(Str(P._canBind and STR.BIND_GCID or STR.BIND_GCID_BOUND))
-		arg_56_0._btnBind:loadTextureNormal(P._canBind and "img_btn_2" or "img_btn_1", ccui.TextureResType.plistType)
-	end
-end
-
 function var_0_0.updateLevelExpBar(arg_57_0)
 	if arg_57_0._levelExpBar ~= nil then
 		arg_57_0._levelExpBar:removeFromParent()
 	end
 
 	local var_57_0 = P._characters[P:getCharacterId()]
-	local var_57_1 = ClientView.createLevelExpBar(var_57_0._level, var_57_0._exp, P:getLevelupExp(var_57_0._level), 332)
+	local var_57_1 = ClientView.createLevelExpBar(var_57_0._level, var_57_0._exp, P:getLevelupExp(var_57_0._level), 310)
 
 	if var_57_0._level >= P:getMaxLevel(P:getCharacterId()) then
 		var_57_1._label:setString(Str(STR.MAX_LEVEL))
 	end
 
-	lc.addChildToPos(arg_57_0._form, var_57_1, cc.p(lc.left(arg_57_0._userAvatar) + lc.cw(var_57_1) + 184, lc.bottom(arg_57_0._userAvatar) - 28))
+	lc.addChildToPos(arg_57_0._form, var_57_1, cc.p(lc.left(arg_57_0._userAvatar) + lc.cw(var_57_1) + 160, lc.bottom(arg_57_0._userAvatar) - 25))
 
 	arg_57_0._levelExpBar = var_57_1
+	table.insert(arg_57_0._profileNodes, var_57_1)
 
 	local var_57_2 = ClientView.createBMFont(ClientView.BMFont.huali_26, Str(Data._characterInfo[var_57_0._id]._nameSid))
-
 	var_57_2:setAnchorPoint(0, 0.5)
-	lc.addChildToPos(var_57_1, var_57_2, cc.p(-180, lc.ch(var_57_1)))
+	lc.addChildToPos(var_57_1, var_57_2, cc.p(-160, lc.ch(var_57_1)))
+
+	if arg_57_0._curTab and arg_57_0._curTab ~= 1 then
+		var_57_1:setVisible(false)
+	end
 end
 
 return var_0_0

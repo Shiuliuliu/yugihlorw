@@ -540,6 +540,66 @@ local function patchData()
 				Data._skillInfo[14786]._nameSid = 57295
 				Data._skillInfo[14786]._descSid = 57296
 			end
+			if Data._monsterInfo and Data._monsterInfo[12336] then
+				Data._monsterInfo[12336]._keyword = 303
+			end
+			if Data._rareInfo and Data._rareInfo[40731] then
+				Data._rareInfo[40731]._keyword = 303
+			end
+			if Data._skillInfo and not Data._skillInfo[14787] then
+				Data._skillInfo[14787] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57307, _effectVal = { 0 }, _id = 14787, _isIgnoreDefend = 1, _modes = { 1 }, _nameSid = 57306, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 1, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1000 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14787] then
+				Data._skillInfo[14787]._nameSid = 57306
+				Data._skillInfo[14787]._descSid = 57307
+			end
+			if Data._rareInfo and not Data._rareInfo[40745] then
+				Data._rareInfo[40745] = {
+					_atk = { 0 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57305,
+					_category = 6,
+					_cost = 0,
+					_descSid = 57304,
+					_guideSid = 0,
+					_hp = { 0 },
+					_id = 40745,
+					_isHide = 0,
+					_joinComponent = { 0 },
+					_joinResult = { 0 },
+					_keyword = 303,
+					_link = { 1 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "Q==5&&K==303",
+					_linkCount = "#==1",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57303,
+					_nature = 1,
+					_option = 8194,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "nak",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 3043, 14787, 1076, 6629, 3191 },
+					_skin = { 0 },
+					_star = 0,
+					_syncComponent = { { 0 } }
+				}
+			end
+			if Data._rareInfo and Data._rareInfo[40745] then
+				Data._rareInfo[40745]._quality = 4
+				Data._rareInfo[40745]._keyword = 303
+				Data._rareInfo[40745]._linkCandidate = "Q==5&&K==303"
+				Data._rareInfo[40745]._nameSid = 57303
+				Data._rareInfo[40745]._descSid = 57304
+				Data._rareInfo[40745]._briefNameSid = 57305
+			end
+
 		end
 
 		current = nil
@@ -1042,12 +1102,14 @@ function patchClientData()
 						elseif opp_sc > 0 then oppCrown = { info_id = 7205, num = opp_sc }
 						elseif opp_bc > 0 then oppCrown = { info_id = 7206, num = opp_bc }
 						end
+						local oppTrophy = tonumber(rep.opponent_trophy) or 800
+						local pTrophy = tonumber(rep.player_trophy) or (P and P._trophy) or 800
 						local oppInfo = {
 							id = 2,
 							name = rep.opponent_name or "Seto_Kaiba",
 							level = rep.opponent_level or 50,
 							avatar = rep.opponent_avatar or 201,
-							trophy = 800,
+							trophy = oppTrophy,
 							gold = 10000,
 							grain = 10000,
 							ingot = 1000,
@@ -1071,7 +1133,7 @@ function patchClientData()
 							name = (P and P._name) or "Duelist",
 							level = (P and P._level) or 50,
 							avatar = (P and P._avatar) or 101,
-							trophy = (P and P._trophy) or 800,
+							trophy = pTrophy,
 							gold = 10000,
 							grain = 10000,
 							ingot = 1000,
@@ -1093,9 +1155,11 @@ function patchClientData()
 						end
 
 						local bResType = (rep.result == 1 and Data.BattleResult.win) or (rep.result == 2 and Data.BattleResult.lose) or Data.BattleResult.draw
+						local repTs = tonumber(rep.timestamp) or os.time()
+						if repTs < 10000000000 then repTs = repTs * 1000 end
 						local singleLogData = {
 							id = rep.replay_id,
-							timestamp = (rep.timestamp or os.time()) * 1000,
+							timestamp = repTs,
 							result_type = bResType,
 							battle_type = rep.battle_type or 17,
 							replay_id = rep.replay_id,
@@ -1257,7 +1321,8 @@ function patchClientData()
 
 					local repRes = (rd.result == 1 and Data.BattleResult.win) or (rd.result == 2 and Data.BattleResult.lose) or Data.BattleResult.draw
 
-					local isPlayerAttacker = true
+					local isPlayerAttacker = (rd.is_attacker ~= nil) and (rd.is_attacker == true or rd.is_attacker == 1) or true
+					if rd.is_attacker == nil then
 					local pCard = nil
 					for i = 1, #pData._usedCards do
 						local v = pData._usedCards[i]
@@ -1284,16 +1349,26 @@ function patchClientData()
 						end
 					end
 
+					end
+					local pTr = tonumber(pData._trophy) or tonumber(rd.player_trophy) or (P and P._trophy) or 800
+					local oTr = tonumber(oData._trophy) or tonumber(rd.opponent_trophy) or 800
+					pData._trophy = pTr
+					oData._trophy = oTr
+
 					local repLog = ClientData._replayingLog or {
 						_id = replayId,
 						_replayId = replayId,
 						_resultType = repRes,
 						_isAttack = isPlayerAttacker,
 						_trophy = rd.trophy_change or 25,
-						_oppoTrophy = 800,
-						_player = require("User").create({ id = (P and P._id) or 1, name = pData._name or "Duelist", level = pData._level or 50, avatar = pData._avatar or 101, trophy = pData._trophy or 800 }),
-						_opponent = require("User").create({ id = 2, name = oData._name or "Opponent", level = oData._level or 50, avatar = oData._avatar or 201, trophy = oData._trophy or 800 })
+						_oppoTrophy = rd.trophy_change or 25,
+						_player = require("User").create({ id = (P and P._id) or 1, name = pData._name or "Duelist", level = pData._level or 50, avatar = pData._avatar or 101, trophy = pTr }),
+						_opponent = require("User").create({ id = 2, name = oData._name or "Opponent", level = oData._level or 50, avatar = oData._avatar or 201, trophy = oTr })
 					}
+					if repLog._player then repLog._player._trophy = pTr end
+					if repLog._opponent then repLog._opponent._trophy = oTr end
+					repLog._trophy = rd.trophy_change or 25
+					repLog._oppoTrophy = rd.trophy_change or 25
 					repLog._log = repLog
 
 					local input = {
@@ -1321,8 +1396,13 @@ function patchClientData()
 					local curSceneId = (lc._runningScene and lc._runningScene._sceneId) or ClientData.SceneId.city
 					ClientData._fromSceneId = curSceneId
 
-					local swScene = require("ResSwitchScene").create(curSceneId, ClientData.SceneId.battle, input)
-					lc.replaceScene(swScene)
+					if lc._runningScene and lc._runningScene.onReplay then
+						lc._runningScene:onReplay(input)
+					else
+						ClientView.popScene(true)
+						local swScene = require("ResSwitchScene").create(curSceneId, ClientData.SceneId.battle, input)
+						lc.replaceScene(swScene)
+					end
 				else
 					ToastManager.push((res and res.msg) or "Không tìm thấy dữ liệu trận đấu!")
 				end
@@ -3226,7 +3306,7 @@ function patchClientData()
 							local card_val = tonumber(ints[1]) or 0
 							local isCardAction = (card_val ~= BattleData.UseCardId.round and card_val ~= BattleData.UseCardId.retreat and card_val ~= 0)
 							local bonusSec = tonumber(addTime) or (isCardAction and 6 or 0)
-							local maxSec = tonumber(maxTime) or 120
+							local maxSec = math.min(240, tonumber(maxTime) or 240)
 							local exactTime = tonumber(timeLeft)
 
 							local scene = lc._runningScene or ClientView._scene
@@ -3249,6 +3329,16 @@ function patchClientData()
 							if bUi and type(bUi.oppoTryUseCard) == "function" then
 								handled = bUi:oppoTryUseCard()
 							end
+							if card_val == BattleData.UseCardId.round and not handled and bUi then
+								lc.performWithDelay(bUi, function()
+									if bUi and not bUi._isBattleFinished and bUi._opponent then
+										bUi._isWaitting = true
+										if not bUi:oppoTryUseCard() and type(bUi.forceOppoTurnEnd) == "function" then
+											bUi:forceOppoTurnEnd()
+										end
+									end
+								end, 0.3)
+							end
 						end
 					end, function()
 						local scene = lc._runningScene or ClientView._scene
@@ -3263,17 +3353,26 @@ function patchClientData()
 							end
 							ToastManager.push("Đối thủ đã rời trận, bạn đã giành chiến thắng!")
 						end
-					end, function(peerResult)
+					end, function(peerResult, reason, winnerSlot)
 						local scene = lc._runningScene or ClientView._scene
 						local bUi = scene and scene._battleUi
 						if bUi and not bUi._isBattleEndSended then
 							local oppoHp = bUi._opponent and bUi._opponent._fortress and bUi._opponent._fortress._hp
 							local playerHp = bUi._player and bUi._player._fortress and bUi._player._fortress._hp
+							local isLocalSurrender = bUi._isSurrender or (bUi._player and (bUi._player._isSurrender or bUi._player._isRetreat))
+							local isOppoSurrender = bUi._opponent and (bUi._opponent._isSurrender or bUi._opponent._isRetreat)
+							local isExodia = (bUi._player and bUi._player._winBy3190) or (bUi._opponent and bUi._opponent._winBy3190)
+							local isGodWin = (bUi._player and bUi._player._winBy3798) or (bUi._opponent and bUi._opponent._winBy3798)
+							local isDeckOut = (bUi._player and bUi._player._macroStatus == BattleData.Status.round_begin and bUi._player:getIsPileEmpty()) or (bUi._opponent and bUi._opponent._macroStatus == BattleData.Status.round_begin and bUi._opponent:getIsPileEmpty())
+
 							local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
-							if oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0) then
+							if isOppoSurrender or (oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0)) then
 								myRes = Data.BattleResult.win
-							elseif playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0) then
+							elseif isLocalSurrender or (playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0)) then
 								myRes = Data.BattleResult.lose
+							elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isDeckOut) then
+								print("[PVP END] Rejected premature peer loss: Player HP is " .. tostring(playerHp) .. ", Oppo HP is " .. tostring(oppoHp))
+								return
 							end
 							bUi._forceResult = myRes
 							bUi:sendBattleEnd(false, myRes)
@@ -3504,7 +3603,7 @@ function patchClientData()
 		local scene = lc._runningScene or ClientView._scene
 		local bUi = scene and scene._battleUi
 		if isCardAction and bUi and bUi._isOnlinePvp and type(bUi.addPvpRoundSeconds) == "function" then
-			bUi:addPvpRoundSeconds(6, 120)
+			bUi:addPvpRoundSeconds(6, 240)
 		elseif isCardAction and player and player._isOnlinePvp and type(player.addRoundDuration) == "function" then
 			player:addRoundDuration()
 		end
@@ -3541,9 +3640,10 @@ function patchClientData()
 					end
 				end
 				local curTimeLeft = nil
-				if bUi and bUi._roundRealStartTime then
-					local totalDur = bUi._roundDuration or 60
-					curTimeLeft = math.max(0, totalDur - (os.time() - bUi._roundRealStartTime))
+				if bUi then
+					local curNow = os.time()
+					local curEnd = bUi._roundEndTime or ((bUi._roundRealStartTime or curNow) + (bUi._roundDuration or 90))
+					curTimeLeft = math.max(0, curEnd - curNow)
 				end
 				pcall(function()
 					pvpNet:sendAction(ClientData._currentMatchId, json.encode(ints), curTimeLeft)
@@ -3736,8 +3836,16 @@ function patchClientData()
 		local myAccId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
 		local sid = tonumber(skinId) or 0
 		local sInfo = Data._skinInfo and Data._skinInfo[sid]
-		local price = (sInfo and sInfo._price) or 100
-		local cardId = (sInfo and sInfo._infoId) or 0
+		local stIdx = (tonumber(skinType) == 3 and 1) or (tonumber(skinType) == 7 and 2) or 3
+		local rawPrice = sInfo and sInfo._price
+		local price = 100
+		if type(rawPrice) == "table" then
+			price = tonumber(rawPrice[stIdx] or rawPrice[3] or rawPrice[1]) or 100
+		elseif tonumber(rawPrice) then
+			price = tonumber(rawPrice)
+		end
+		local resType = (sInfo and tonumber(sInfo._resType)) or 3
+		local cardId = (sInfo and tonumber(sInfo._infoId)) or 0
 		local api = jsbridge and jsbridge.object("jdzcApi")
 		if api and api.post then
 			api:post("buy_skin", {
@@ -3745,6 +3853,7 @@ function patchClientData()
 				skin_id = sid,
 				skin_type = skinType or 0,
 				price = price,
+				res_type = resType,
 				card_id = cardId
 			}, function(rawRes)
 				local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
@@ -3752,6 +3861,10 @@ function patchClientData()
 					if res.gem ~= nil and P then
 						P._ingot = tonumber(res.gem) or P._ingot
 						P:sendIngotDirty()
+					end
+					if res.gold ~= nil and P then
+						P._gold = tonumber(res.gold) or P._gold
+						lc.sendEvent(Data.Event.gold_dirty)
 					end
 				end
 			end)
@@ -5137,7 +5250,7 @@ function patchClientData()
 		[56811] = "Cửu Thiên Huyền Sát-Tru Tiên",
 		[56812] = "Kĩ năng chủ động mộ: 1 lượt 1 lần, khi trên sân phe ta có <Kỳ Baby>, loại bỏ bản thân khỏi mộ để thêm 1 lá <Cửu Thiên Huyền Sát> từ bộ bài lên tay.",
 		[56813] = "A Lương",
-		[56814] = "Không thể Triệu Hồi Đặc Biệt. Lá bài này trên sân không thể bị phá hủy bởi bất kỳ hiệu ứng nào. Khi lên sân, nhận [Khiên Chắn Quái]. 1 lượt 1 lần, khi đối phương kích hoạt bài Phép/Bẫy: Vô hiệu hóa và phá hủy lá bài đó. Tăng ATK/DEF bằng [Số Sao x 200]. Bắt đầu mỗi lượt, tăng 1 sao (tối đa 14 sao). [Thập Tam Cảnh]: Khi đạt 13 sao trở lên, đối phương không thể kích hoạt hiệu ứng bài trên sân. [Thập Tứ Cảnh]: Khi đạt 14 sao, đối phương không thể kích hoạt bất kỳ hiệu ứng bài nào.",
+		[56814] = "[Chiến Binh / Hiệu Ứng]\nKhông thể Triệu Hồi Đặc Biệt.",
 		[56815] = "A Lương-Cấm Đoán",
 		[56816] = "Không thể Triệu Hồi Đặc Biệt.",
 		[56817] = "A Lương-Bất Hoại",
@@ -5149,7 +5262,7 @@ function patchClientData()
 		[56823] = "A Lương-Vô Thượng Kiếm Đạo",
 		[56824] = "Tăng ATK/DEF bằng [Số Sao x 200]. Bắt đầu mỗi lượt, tăng 1 sao (tối đa 14 sao). [Thập Tam Cảnh]: Khi đạt 13 sao trở lên, đối phương không thể kích hoạt hiệu ứng bài trên sân. [Thập Tứ Cảnh]: Khi đạt 14 sao, đối phương không thể kích hoạt bất kỳ hiệu ứng bài nào.",
 		[56825] = "Quỷ Lệ",
-		[56826] = "Kháng Phật - Kháng Đạo - Kháng Ma: Khi lên sân, nhận [Tường Chắn Quái / Phép / Bẫy]. Đạo Pháp - Thái Cực Huyền Thanh (Kỹ năng chủ động): 1 lượt 1 lần, chọn 1 bài Phép mang từ khóa “Tru tiên” từ Bộ Bài thêm vào tay. Phật Pháp - Kim Cương Bất Hoại: 1 lượt 1 lần, bỏ qua 1 lần lá bài này bị phá hủy. Ma Pháp - Hấp Huyết Vô Tình: 1 lượt 1 lần, khi đối phương kích hoạt bài Phép/Bẫy: Hi sinh 1000 LP, vô hiệu hóa và phá hủy lá bài đó.",
+		[56826] = "[Phù Thủy / Hiệu Ứng]",
 		[56827] = "Quỷ Lệ-Tam Giới Chướng",
 		[56828] = "Khi lên sân nhận [Tường Chắn Quái / Phép / Bẫy].",
 		[56829] = "Quỷ Lệ-Tìm Kiếm Pháp Bảo",
@@ -5165,7 +5278,7 @@ function patchClientData()
 		[56839] = "Đọa Nhập Ma Đạo-Hấp Thu",
 		[56840] = "Kỹ năng mộ chủ động: Chọn và phá hủy 1 quái thú Thuộc Tính Ám trên sân phe ta, hồi phục LP cho bản thân bằng ATK của quái thú vừa bị tiêu diệt.",
 		[56841] = "Kỳ Baby",
-		[56842] = "Thiên Gia Thần Kiếm - Hàn Khí: Chừng nào lá bài này còn tồn tại trên sân, mỗi khi đối phương Triệu Hồi Thường hoặc Triệu Hồi Đặc Biệt quái thú, quái thú đó lập tức bị chuyển sang Thế Thủ và bị khóa trong 1 lượt. Chấp Niệm: Khi có <Quỷ Lệ> trên sân phe ta, lá bài này có thể Triệu Hồi Thường mà không cần hiến tế.",
+		[56842] = "[Phù Thủy / Hiệu Ứng]\nKhi có <Quỷ Lệ> trên sân, lá bài này có thể Triệu Hồi Thường không cần hiến tế.",
 		[56843] = "Kỳ Baby-Khống Chế Trận Địa",
 		[56844] = "Chừng nào lá bài này còn tồn tại trên sân, mỗi khi đối phương Triệu Hồi Thường hoặc Triệu Hồi Đặc Biệt quái thú, quái thú đó lập tức bị chuyển sang Thế Thủ và bị khóa trong 1 lượt.",
 		[56845] = "Kỳ Baby-Chấp Niệm",
@@ -5186,7 +5299,7 @@ function patchClientData()
 		[56859] = "Thần Khiển-Nghi Thức Triệu Hồi",
 		[56860] = "Khi trên tay phe ta có <Bát hoang hỏa long>, ngoại trừ <Bát hoang hỏa long> khi tổng số sao quái trên sân / trên tay phe ta có >= 10 (hoặc khi trên sân phe ta có <Thú thần>, không cần hiến tế), có thể kích hoạt: Triệu hồi nghi thức <Bát hoang hỏa long> từ tay.",
 		[56861] = "Bát hoang hỏa long",
-		[56862] = "Không thể triệu hồi thường, lần đầu triệu hồi đặc biệt cần hiệu ứng của <Thần khiển> để triệu hồi đặc biệt.\nKĩ năng chỉ kích hoạt 1 lần vào lần lá bài này được triệu hồi nghi thức, gây thiệt hại cho đối phương bằng 1 nửa LP hiện tại của họ.\nKhi lên sân, phá hủy tất cả bài phép môi trường trên sân 2 bên.\nKhi lá bài này trên sân, 2 bên không thể sử dụng bài phép môi trường.\nKhi lên sân nhận Khiên chắn quái, phép, bẫy.\nKhi lá bài này trên sân, hiệu quả tăng LP của đối thủ trở thành nhận sát thương.\nMỗi khi đối phương triệu hồi/triệu hồi đặc biệt quái thú, đối phương nhận 200 thiệt hại (tăng lên thành 400 nếu đối phương có trên 8000 LP).\nKhi lá bài này bị phá hủy, phá hủy tất cả bài trên sân phe ta, phe ta chịu thiệt hại bằng số bài bị phá hủy x 500.",
+		[56862] = "[Rồng / Nghi Thức / Hiệu Ứng]\nPhải được Triệu Hồi Nghi Thức bởi hiệu ứng của lá bài <Thần khiển>.",
 		[56863] = "Bát Hoang-Tường Chắn Tam Giới",
 		[56864] = "Khi lên sân nhận Khiên chắn quái, phép, bẫy.",
 		[56865] = "Bát Hoang-Huyền Hỏa Phệ Hồn",
@@ -5238,9 +5351,9 @@ function patchClientData()
 		[49313] = "Chủ động: Bản thân bài này chưa tấn công sẽ có thể dùng. Hi sinh bản thân; chọn và Triệu Hồi Đặc Biệt 1 quái có từ khóa “Mắt Xanh” từ bộ bài thêm phe ta; sau khi kích hoạt, phe ta chỉ có thể triệu hồi/triệu hồi đặc biệt quái có từ khóa “Mắt Xanh”.",
 		[53162] = "Ngân Hà-Chiến Ý",
 		[53163] = "Mỗi lượt tối đa 2 lần. Khi bài này nằm trên tay; khi đối thủ Triệu Hồi Đặc Biệt quái sẽ kích hoạt. Hi sinh bản thân; vô hiệu hóa và phá hủy quái đối thủ (xuyên thấu “Tường Chắn Quái”); nếu trên sân phe ta có quái có từ khóa “Ngân Hà”, “Ánh Sáng” hoặc “Sóng Ánh Sáng”, ngẫu nhiên lấy 1 <Rồng Chiến Ngân Hà> hoặc 1 quái có từ khóa “Ngân Hà”·“Ánh Sáng”·“Sóng Ánh Sáng” từ bộ bài phe ta vào tay.",
-		[56842] = "Khi có mặt trên sân, quái thú đối phương được Triệu Hồi hoặc Triệu Hồi Đặc Biệt sẽ bị khóa trong thế phòng thủ 1 lượt (không thể đổi tư thế trong lượt đó). Nếu trên sân phe ta có <Quỷ Lệ>, lá bài này có thể Triệu Hồi Thường mà không cần quái tế, đồng thời nhận tường chắn quái/phép/bẫy.",
+		[56842] = "[Phù Thủy / Hiệu Ứng]\nKhi có <Quỷ Lệ> trên sân, lá bài này có thể Triệu Hồi Thường không cần hiến tế.",
 		[56887] = "Đạo Huyền",
-		[56888] = "Không thể Triệu Hồi Thường. Có thể Triệu Hồi Đặc Biệt từ trên tay bằng cách hiến tế 2 quái thú [Phù Thủy] trên sân. Khi lên sân: lấy 1 [Tru Tiên Kiếm] từ Bộ bài lên tay. [Kích hoạt trên sân - 1 lần/lượt]: Trục xuất 1 Ma pháp/Cạm bẫy trong Mộ -> phá hủy 1 lá bài trên sân đối phương (xuyên tường). [Kích hoạt trên sân - 1 lần/lượt, khi trang bị Tru Tiên Kiếm]: Tiêu diệt toàn bộ quái thú đối phương (xuyên tường), đưa bản thân vào Mộ -> Triệu Hồi Đặc Biệt [Đạo Huyền Tâm Ma] từ Bộ bài/Tay/Mộ.",
+		[56888] = "[Phù Thủy / Hiệu Ứng]\nKhông thể Triệu Hồi Thường. Có thể Triệu Hồi Đặc Biệt từ trên tay bằng cách hiến tế 2 quái thú Phù Thủy trên sân.",
 		[56889] = "Đạo Huyền",
 		[56890] = "Đạo Huyền-Chân Nhân Quy Tắc",
 		[56891] = "Không thể Triệu Hồi Thường. Hiến tế 2 [Phù Thủy] trên sân để Triệu Hồi Đặc Biệt từ trên tay.",
@@ -5251,7 +5364,7 @@ function patchClientData()
 		[56896] = "Đạo Huyền-Tru Tiên Kiếm Trận",
 		[56897] = "1 lần/lượt, khi trang bị Tru Tiên Kiếm: Phá hủy toàn bộ quái thú đối thủ (xuyên tường), đưa bản thân vào Mộ để Triệu Hồi Đặc Biệt [Đạo Huyền Tâm Ma] từ Bộ bài, Tay hoặc Mộ.",
 		[56898] = "Đạo Huyền Tâm Ma",
-		[56899] = "Không thể Triệu Hồi Thường hoặc Triệu Hồi Đặc Biệt trừ hiệu ứng của [Đạo Huyền]. Khi lên sân: Tiêu diệt toàn bộ quái thú khác trên sân ta, đồng thời nhận tường chắn Quái thú. Tối đa 3 lần 1 lượt: Khi đối thủ kích hoạt Ma pháp/Cạm bẫy -> Vô hiệu hóa và phá hủy lá đó, bản thân nhận 500 Công, phe ta nhận 500 sát thương. Bản thân không thể bị phá hủy bởi chiến đấu. Cuối mỗi lượt: Điểm gốc của ta nhận 1000 sát thương; nếu Điểm gốc <= 1000, trục xuất lá này.",
+		[56899] = "[Phù Thủy / Hiệu Ứng]\nKhông thể Triệu Hồi Thường. Chỉ có thể Triệu Hồi Đặc Biệt bởi hiệu ứng của <Đạo Huyền>.",
 		[56900] = "Đạo Huyền Tâm Ma",
 		[56901] = "Tâm Ma-Nhập Ma Tẫn Diệt",
 		[56902] = "Khi lên sân: Phá hủy toàn bộ quái thú khác trên sân ta, nhận khiên chắn Quái thú.",
@@ -5262,7 +5375,7 @@ function patchClientData()
 		[56907] = "Tâm Ma-Phệ Hồn Phản Phệ",
 		[56908] = "Cuối mỗi lượt, trừ 1000 Điểm gốc của ta. Nếu Điểm gốc <= 1000, trục xuất lá này.",
 		[56909] = "Bích Dao",
-		[56910] = "[Kích hoạt trên tay - 1 lần/lượt]: Bỏ 1 lá bài trên tay vào Mộ -> Triệu Hồi Đặc Biệt lá này lên sân. [Kích hoạt trên sân - 1 lần/lượt]: Lấy 1 [Đọa Nhập Ma Đạo] từ Bộ bài lên tay. [Hiệu ứng trên tay]: Khi có [Quỷ Lệ] trên sân ta và đối thủ kích hoạt Ma pháp/Cạm bẫy -> đưa lá này từ tay vào Mộ để vô hiệu hóa và phá hủy lá đó. [Kích hoạt trong Mộ - 1 lần/lượt]: Khi có [Quỷ Lệ] trên sân -> trục xuất lá này khỏi Mộ, tất cả [Quỷ Lệ] trên sân tăng 1000 Công.",
+		[56910] = "[Phù Thủy / Hiệu Ứng]\nCó thể Triệu Hồi Đặc Biệt từ trên tay bằng cách bỏ 1 lá bài trên tay vào Mộ.",
 		[56911] = "Bích Dao",
 		[56912] = "Bích Dao-Si Tình Tương Phùng",
 		[56913] = "1 lần/lượt trên tay: Bỏ 1 lá bài trên tay vào Mộ để Triệu Hồi Đặc Biệt lá này lên sân.",
@@ -5275,7 +5388,7 @@ function patchClientData()
 		-- Thu than (12320) & skills (14676, 14672, 14673, 14674, 14675)
 		[56930] = "Thú thần",
 		[56931] = "Thú thần",
-		[56932] = "Lá bài này không thể triệu hồi đặc biệt, chỉ có thể triệu hồi thường bằng cách hiến tế 3 quái thú.\nKĩ năng chủ động 1: 1 lượt 1 lần, chọn: lấy 1 quái thú nghi lễ có từ khóa “Tru tiên” từ bộ bài lên tay, sau đó lấy thêm 1 lá <Thần khiển> từ mộ bài/bộ bài lên tay.\nKĩ năng chủ động 2 (kĩ năng này và kĩ năng chủ động 1 chỉ có thể dùng 1 loại): Trong lượt này nhận atk bằng số LP của đối thủ hiện có.\nNhận khiên quái, phép, bẫy.\nKhi trên sân phe ta còn quái khác, lá bài này không thể bị chọn làm mục tiêu.",
+		[56932] = "[Ảo Thần / Hiệu Ứng]\nLá bài này không thể triệu hồi đặc biệt, chỉ có thể triệu hồi thường bằng cách hiến tế 3 quái thú.",
 		[56933] = "Thú Thần-Hiến Tế Thần Thú",
 		[56934] = "Lá bài này không thể triệu hồi đặc biệt, chỉ có thể triệu hồi thường bằng cách hiến tế 3 quái thú.",
 		[56935] = "Thú Thần-Tru Tiên Nghi Lễ",
@@ -5296,7 +5409,7 @@ function patchClientData()
 		[52631] = "1 lần trong một vòng. Khi ở trên sân; khi phe của bạn triệu hồi một Quái Vật liên kết phía trên link[1]; hãy rút một lá bài.",
 		-- Kỳ - Phàm (40727) & Kỹ năng (14677, 14678, 14679, 14680, 14681, 14682, 14683)
 		[56943] = "Kỳ - Phàm",
-		[56944] = "[Quái vật Dung Hợp]\n<Quỷ Lệ> + <Kỳ Baby>\n[Kỹ năng chủ động bộ bài thêm]: Chọn nguyên liệu dung hợp từ bài trên tay/trên sân đưa vào Mộ -> Triệu hồi Dung Hợp lá bài này.\n[Kỹ năng chủ động trên sân - 1 lần/lượt]: Lấy 1 lá bài quái thú có từ khóa \"Tru tiên\" từ Bộ bài lên tay.\nKhi lên sân: Nhận 1 tầng Tường chắn Năng lượng Quái, Phép, Bẫy.\nKhi trên sân: Quái thú đối phương được Triệu Hồi/Triệu Hồi Đặc Biệt sẽ bị khóa trong thế phòng thủ 1 lượt; đồng thời phe ta hồi LP bằng [Số sao quái đó x 100].\nNếu LP phe ta < 8000: Lá bài này nhận Công bằng [8000 - LP hiện tại].\nQuỷ Lệ-Kim Cương Bất Hoại: Không thể bị phá hủy bởi chiến đấu, 1 lượt 1 lần bỏ qua 1 lần phá hủy bởi hiệu ứng thẻ bài.\nQuỷ Lệ-Hấp Huyết Vô Tình: Khi tiêu diệt quái thú hoặc gây sát thương chiến đấu, phe ta hồi LP tương ứng.\nKhi lá bài này bị đối phương phá hủy: Triệu Hồi Đặc Biệt <Quỷ Lệ> và <Kỳ Baby> từ Mộ lên sân.",
+		[56944] = "[Phù Thủy / Dung Hợp / Hiệu Ứng]\n<Quỷ Lệ> + <Kỳ Baby>",
 		[56945] = "Kỳ - Phàm",
 		[56946] = "Dung Hợp Kỳ Linh",
 		[56947] = "Kỹ năng chủ động từ Extra Deck chọn nguyên liệu từ tay/sân đưa vào Mộ để Triệu Hồi Dung Hợp.",
@@ -5324,7 +5437,7 @@ function patchClientData()
 		[56968] = "Khi lá bài này vào Mộ từ trên sân: Lấy 1 lá [Huyền Hỏa Giám] từ Bộ bài lên tay.",
 		-- Tiểu Bạch (12321) & Kỹ năng (14687, 14688, 14689, 14690)
 		[56969] = "Tiểu Bạch",
-		[56970] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (trên tay hoặc trong mộ - 1 lượt 1 lần): Đưa 1 lá [Huyền Hỏa Giám] từ trên tay hoặc trên sân vào Mộ; Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi lên sân: Nhận 1 tầng Khiên Chắn Quái Thú.\n+ Kĩ năng chủ động (trên sân - 1 lượt 1 lần): Chiếm quyền điều khiển 1 quái thú trên sân đối thủ (xuyên thấu Khiên Chắn Quái).\n+ Khi lá bài này bị phá hủy: Loại bỏ 1 lá [Huyền Hỏa Giám] trong Mộ thay vì bị phá hủy.",
+		[56970] = "[Thú / Hiệu Ứng]\nCó thể Triệu Hồi Đặc Biệt từ trên tay hoặc trong Mộ bằng cách gửi 1 lá [Huyền Hỏa Giám] vào Mộ.",
 		[56971] = "Tiểu Bạch",
 		[56972] = "Tiểu Bạch-Huyền Hỏa Giáng Thế",
 		[56973] = "1 lượt 1 lần (trên tay hoặc trong mộ): Đưa 1 lá [Huyền Hỏa Giám] trên tay hoặc trên sân vào Mộ; Triệu Hồi Đặc Biệt lá bài này lên sân.",
@@ -5336,7 +5449,7 @@ function patchClientData()
 		[56979] = "Khi lá bài này bị phá hủy: Loại bỏ 1 lá [Huyền Hỏa Giám] trong Mộ thay vì bị phá hủy.",
 		-- Quỷ Lệ - Sát (40728) & Kỹ năng (14691, 14692, 14693)
 		[56980] = "Quỷ Lệ - Sát",
-		[56981] = "[Quái thú Xyz / Hiệu Ứng]\n2 quái thú 7 sao có từ khóa \"Tru tiên\"\n+ Huyết Đao: Khi tiêu diệt quái thú trong chiến đấu, bản thân tăng Công.\n+ Đoạt Ý Chí: Khi tiêu diệt quái thú trong chiến đấu, loại bỏ mục tiêu.\n+ Đòn Ảo Ảnh: Tăng sức tấn công khi giao chiến.\n+ Xuyên Phá: Tấn công quái thú ở thế thủ gây sát thương xuyên thấu.\n+ Khi lá bài này bị ảnh hưởng bởi hiệu quả của đối phương: Phe ta nhận 500 thiệt hại, bỏ qua hiệu ứng đó.\n+ Khi lá bài này còn chỉ thị Xyz: Không thể bị phá hủy.\n+ Khi lá bài này bị tấn công và nhận thiệt hại: Tiêu hao 1 chỉ thị Xyz, chuyển toàn bộ thiệt hại thành hồi phục LP x2 lần.",
+		[56981] = "[Chiến Binh / Xyz / Hiệu Ứng]\n2 quái thú cấp 7 có từ khóa \"Tru tiên\"",
 		[56982] = "Quỷ Lệ - Sát",
 		[56983] = "Q.Lệ Sát-Nghịch Mệnh Hộ Thân",
 		[56984] = "Khi lá bài này bị ảnh hưởng bởi hiệu quả của đối phương: Phe ta nhận 500 thiệt hại, bỏ qua hiệu ứng đó.",
@@ -5346,7 +5459,7 @@ function patchClientData()
 		[56988] = "Khi lá bài này bị tấn công và nhận thiệt hại: Tiêu hao 1 chỉ thị Xyz, chuyển toàn bộ thiệt hại thành hồi phục LP x2 lần.",
 		-- Lôi Oa (12322) & Kỹ năng (14694, 14695)
 		[56989] = "Lôi Oa",
-		[56990] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (tay - mộ - 1 lượt 1 lần): Khi trên sân phe ta có quái thú có từ khóa \"Tiên nghịch\", có thể kích hoạt: Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ 1 lượt 1 lần: Khi đối phương Triệu Hồi hoặc Triệu Hồi Đặc Biệt quái thú, kích hoạt: Vô hiệu hóa toàn bộ hiệu ứng của quái thú đó trong 1 lượt.",
+		[56990] = "[Thú / Hiệu Ứng]\nKhi trên sân phe ta có quái thú có từ khóa \"Tiên nghịch\": Có thể Triệu Hồi Đặc Biệt từ trên tay hoặc trong Mộ.",
 		[56991] = "Lôi Oa",
 		[56992] = "Lôi Oa-Lôi Trạch Triệu Hồi",
 		[56993] = "1 lượt 1 lần: Trên sân phe ta có quái có từ khóa \"Tiên nghịch\" có thể kích hoạt, Triệu Hồi Đặc Biệt lá bài này từ tay hoặc mộ lên sân.",
@@ -5354,7 +5467,7 @@ function patchClientData()
 		[56995] = "1 lượt 1 lần: Khi đối phương Triệu Hồi/Triệu Hồi Đặc Biệt, kích hoạt: Vô hiệu hiệu ứng của quái đó trong 1 lượt.",
 		-- Lôi Thú (12323) & Kỹ năng (14696, 14697, 14698)
 		[56996] = "Lôi Thú",
-		[56997] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng tay: 1 lượt 1 lần, khi lá bài này nằm trên tay, đối phương sử dụng bài Phép/Bẫy sẽ kích hoạt: Vô hiệu và phá hủy lá bài đó, sau đó Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi trên sân phe ta không có quái thú thuộc tính \"Lôi\", có thể Triệu Hồi Thường lá bài này không cần vật tế.\n+ Kĩ năng chủ động mộ: Lấy 1 quái thú chủng tộc \"Sấm sét\" có phẩm chất UR trở xuống từ Bộ Bài lên tay.",
+		[56997] = "[Sấm Sét / Hiệu Ứng]\nKhi trên sân phe ta không có quái thú thuộc tính \"Lôi\", có thể Triệu Hồi Thường không cần vật tế.",
 		[56998] = "Lôi Thú",
 		[56999] = "Lôi Thú-Lôi Đình Phản Kích",
 		[57000] = "1 lượt 1 lần: Khi trên tay, đối phương dùng Phép/Bẫy sẽ kích hoạt: Vô hiệu và phá hủy lá đó, sau đó Triệu Hồi Đặc Biệt lá bài này lên sân.",
@@ -5364,7 +5477,7 @@ function patchClientData()
 		[57004] = "Kĩ năng chủ động mộ: Lấy 1 quái thú chủng tộc \"Sấm sét\" có phẩm chất UR trở xuống từ Bộ Bài lên tay.",
 		-- Huyết Tổ (12324) & Kỹ năng (14699, 14700, 14701, 14702)
 		[57005] = "Huyết Tổ",
-		[57006] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động (tay - mộ): Hi sinh 1 nửa LP, Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Khi lên sân: Nhận Điểm Tấn Công (ATK) bằng số LP hiện có của phe ta.\n+ Kĩ năng chủ động (trên sân - 1 lượt 1 lần): Chọn hiến tế tối đa 2 quái thú trên sân, phe ta hồi phục LP bằng tổng ATK của các quái thú bị hiến tế.\n+ Kĩ năng chủ động (mộ loại bỏ): Trả lá bài này về Bộ Bài, phe ta rút 1 lá.",
+		[57006] = "[Ác Ma / Hiệu Ứng]\nCó thể Triệu Hồi Đặc Biệt từ trên tay hoặc trong Mộ bằng cách hi sinh 1 nửa LP.",
 		[57007] = "Huyết Tổ",
 		[57008] = "Huyết Tổ-Huyết Tế Trùng Sinh",
 		[57009] = "Kĩ năng chủ động tay - mộ: Hi sinh 1 nửa LP, Triệu Hồi Đặc Biệt lá bài này lên sân.",
@@ -5387,7 +5500,7 @@ function patchClientData()
 		[56790] = "Khi lá bài này bị phá hủy từ trên sân: Loại bỏ tất cả quái thú trong mộ 2 bên, phe ta và phe địch chịu thiệt hại bằng số quái bị loại bỏ x 100.",
 		-- Độn Thiên (12325) & Kỹ năng (14703, 14704, 14705)
 		[57016] = "Độn Thiên",
-		[57017] = "[Quái thú Hiệu Ứng]\n+ Kĩ năng chủ động trên tay (1 lượt 1 lần): Hiến tế 1 quái thú Phù Thủy thuộc tính Ám trên sân phe ta, Triệu Hồi Đặc Biệt lá bài này lên sân.\n+ Kĩ năng chủ động trên sân (1 lượt 1 lần): Lấy 1 lá <Luyện hồn tông> từ Bộ Bài lên tay.\n+ Khi trên sân phe ta có <Luyện hồn tông>: Nhận Tường Chắn Quái, Phép, Bẫy.",
+		[57017] = "[Phù Thủy / Hiệu Ứng]\nCó thể Triệu Hồi Đặc Biệt từ trên tay bằng cách hiến tế 1 quái thú Phù Thủy thuộc tính Ám trên sân.",
 		[57018] = "Độn Thiên",
 		[57019] = "Độn Thiên-Hiến Tế Xuất Thế",
 		[57020] = "Kĩ năng chủ động tay: 1 lượt 1 lần, hiến tế 1 quái Phù Thủy thuộc tính Ám trên sân phe ta, Triệu Hồi Đặc Biệt lá bài này lên sân.",
@@ -5397,7 +5510,7 @@ function patchClientData()
 		[57024] = "Khi trên sân phe ta có <Luyện hồn tông>: Nhận Tường Chắn Quái, Phép, Bẫy.",
 		-- Vương Lâm - bản tôn cổ thần (12326) & Kỹ năng (14706, 14707, 14708, 14709, 14710)
 		[57025] = "Vương Lâm - bản tôn cổ thần",
-		[57026] = "[Quái thú Hiệu Ứng]\n+ Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy, [Miệt Thị] và 1 \"chỉ thị cổ thần\" (tối đa 9).\n+ Khi trở thành mục tiêu tấn công: Vô hiệu hóa hiệu ứng của quái tấn công.\n+ 1 lượt 1 lần, đối phương kích hoạt bài phép/bẫy sẽ kích hoạt: Vô hiệu và đưa lá bài đó vào mộ phe ta, nhận 1 \"chỉ thị cổ thần\".\n+ Kĩ năng chủ động: 1 lượt 1 lần, đưa 1 bài phép/bẫy trên tay phe ta vào mộ, nhận 1 \"chỉ thị cổ thần\".\n+ Tăng ATK/DEF bằng số \"chỉ thị cổ thần\" x 300.\n+ Nếu có từ 3 \"chỉ thị cổ thần\" trở lên: Nhận Khiên Chắn Quái, Phép, Bẫy.\n+ Nếu có từ 5 \"chỉ thị cổ thần\" trở lên: Nhân đôi giá trị ATK/DEF nhận được từ \"chỉ thị cổ thần\".\n+ Nếu có từ 7 \"chỉ thị cổ thần\" trở lên: Đối phương triệu hồi/triệu hồi đặc biệt quái <= 4 sao sẽ bị mất hiệu quả quái.\n+ Nếu có 9 \"chỉ thị cổ thần\": Đối phương triệu hồi/triệu hồi đặc biệt quái có ATK <= 2000 sẽ lập tức bị tiêu diệt.",
+		[57026] = "[Cổ Thần / Hiệu Ứng]",
 		[57027] = "Vương Lâm - bản tôn cổ thần",
 		[57028] = "Bản Tôn-Cổ Thần Hộ Thể",
 		[57029] = "Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy, 1 \"chỉ thị cổ thần\" (tối đa 9) và [Miệt Thị].",
@@ -5411,7 +5524,7 @@ function patchClientData()
 		[57037] = "Từ 7 chỉ thị trở lên: Đối phương triệu hồi quái <= 4 sao bị mất hiệu ứng. Có 9 chỉ thị: Đối phương triệu hồi quái ATK <= 2000 lập tức bị tiêu diệt.",
 		-- Lăng Thiên Hậu (40729) & Kỹ năng (14711, 14712, 14713, 14714)
 		[57038] = "Lăng Thiên Hậu",
-		[57039] = "2+ quái thú có từ khóa \"Thánh Kỵ\" (kể cả quái từ Bộ Bài Thêm)",
+		[57039] = "[Chiến Binh / Link / Hiệu Ứng]\n2 quái thú có từ khóa \"Thánh Kỵ\" trở lên",
 		[57040] = "Lăng Thiên Hậu",
 		[57041] = "Lăng Thiên Hậu",
 		[57042] = "Lăng Thiên-Vương Khí",
@@ -5433,7 +5546,7 @@ function patchClientData()
 		[57057] = "1 lượt tối đa 3 lần: Triệu hồi đặc biệt 1 quái \"Thánh Kỵ\" từ Mộ ở tư thế thủ (không thể đổi tư thế lượt này).",
 		-- Đỗ kiến - tiên vệ (12327) & Kỹ năng (14717, 14718)
 		[57058] = "Đỗ kiến - tiên vệ",
-		[57059] = "[Quái thú Hiệu Ứng]\n+ Kỹ năng tay chủ động: Khi trên sân phe ta không có quái: Triệu Hồi Đặc Biệt lá bài này từ trên tay.\n+ Khi có mặt trên sân: Đối phương không thể tấn công quái thú khác ngoài lá bài này.\n+ Khi bị phá hủy trong chiến đấu và đưa vào Mộ: Đối phương bỏ ngẫu nhiên 1 lá bài trên tay.\n+ Khi bài này rời sân hoặc rời khỏi bài trên tay và đưa vào Mộ: Lá bài này sẽ bị loại bỏ.\n+ Bỏ qua hiệu ứng từ bài Quái thú, Phép thuật và Bẫy của đối thủ (Kháng Quái, Phép, Bẫy).",
+		[57059] = "[Côn Trùng / Hiệu Ứng]\nKhi trên sân phe ta không có quái thú: Có thể Triệu Hồi Đặc Biệt từ trên tay.",
 		[57060] = "Đỗ kiến - tiên vệ",
 		[57061] = "Tiên Vệ-Hàng Thế",
 		[57062] = "Kỹ năng tay chủ động: Khi trên sân phe ta không có quái sẽ có thể dùng; Triệu Hồi Đặc Biệt bài này từ bài trên tay.",
@@ -5441,7 +5554,7 @@ function patchClientData()
 		[57064] = "Khi bị phá hủy trong chiến đấu và đưa vào Mộ; đối phương bỏ ngẫu nhiên 1 lá bài trên tay.",
 		-- Thác sâm (40730) & Kỹ năng (14719, 14720, 14721)
 		[57065] = "Thác sâm",
-		[57066] = "[Thần - Hiệu Ứng - XYZ]\n3 quái 8 sao có từ khóa \"Tiên nghịch\"\n+ Lá bài này có \"chỉ thị xyz\": Bị vô hiệu (không thể tấn công và hành động), bị hiệu ứng trói.\n+ Lá bài này không thể bị hiến tế.\n+ Khi vào Mộ sẽ bị loại bỏ.\n+ 1 lượt tối đa 3 lần: Khi trở thành mục tiêu hiệu quả đối phương, xóa 1 \"chỉ thị xyz\" vô hiệu và phá hủy bài phát động của đối phương.\n+ Kỹ năng chủ động (1 lượt 1 lần): Bỏ 1 chỉ thị xyz, đưa toàn bộ bài trên tay vào Mộ.\n+ Khi lá bài này không còn \"chỉ thị xyz\": Nhân đôi ATK/DEF (16000/16000), xóa hiệu ứng trói và nhận Khiên Chắn Quái, Phép, Bẫy.",
+		[57066] = "[Thần Sáng Thế / Xyz / Hiệu Ứng]\n3 quái thú cấp 8 có từ khóa \"Tiên nghịch\"",
 		[57067] = "Thác sâm",
 		[57068] = "Thác Sâm-Phong Ấn Cổ Thần",
 		[57069] = "Có chỉ thị XYZ: Bị vô hiệu (không thể tấn công), nhận hiệu ứng trói. Không thể bị hiến tế. Vào Mộ bị loại bỏ. Khi hết chỉ thị XYZ: x2 ATK/DEF, nhận Khiên Chắn Quái, Phép, Bẫy.",
@@ -5459,7 +5572,7 @@ function patchClientData()
 		[57128] = "Kỹ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ, triệu hồi đặc biệt 1 <12328> từ Mộ lên sân.",
 		-- Vương Lâm - phân thân (12328) & Kỹ năng (14723, 14724, 14725)
 		[57079] = "Vương Lâm - phân thân",
-		[57080] = "[Phù Thủy - Hiệu Ứng]\n+ Khi lên sân: Lấy 1 lá <Đạo hóa hoàng tuyền> từ bộ bài lên tay.\n+ Kỹ năng chủ động 1: Chọn 1 quái trên sân đối phương để loại bỏ (xuyên qua Tường Chắn Quái 12008), đối phương chịu thiệt hại bằng 1/2 điểm ATK của quái bị loại bỏ.\n+ Kỹ năng chủ động 2: Chọn 1 quái trong Mộ phe ta triệu hồi đặc biệt lên sân, phe ta rút 1 lá bài.\n(Kỹ năng chủ động 1 và 2 mỗi lượt chỉ được dùng 1 loại).",
+		[57080] = "[Phù Thủy / Hiệu Ứng]",
 		[57081] = "Vương Lâm - phân thân",
 		[57082] = "Cực Cảnh-Tru Diệt Phá Trận",
 		[57083] = "Kỹ năng chủ động 1: Chọn 1 quái trên sân đối phương để loại bỏ (xuyên qua Tường Chắn Quái 12008), đối phương chịu thiệt hại bằng 1/2 điểm ATK của quái bị loại bỏ (dùng chung lượt với kỹ năng 2).",
@@ -5475,7 +5588,7 @@ function patchClientData()
 		[36639] = "Có thể tấn công mỗi quái trên sân đối thủ 1 lần; không thể tấn công trực tiếp đối thủ.",
 		-- Phô Lô Ti Nô (40731) & Kỹ năng (14727, 14728)
 		[57090] = "Phô Lô Ti Nô",
-		[57091] = "[Chiến Binh - Hiệu Ứng - Link 2]\n2 quái thú bất kì\n+ Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.\n+ Kỹ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Mặt ngửa: Nhận Cánh Bổ Nhào, Liên Trảm và tăng 500 ATK cho mỗi quái thú trên sân đối phương.\n- Mặt sấp: Nhận Khiên Chắn.",
+		[57091] = "[Chiến Binh / Link-2 / Hiệu Ứng]\n2 quái thú bất kì",
 		[57092] = "Phô Lô Ti Nô",
 		[57093] = "Vũ Điệu Lãng Hoa",
 		[57094] = "Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.",
@@ -5483,7 +5596,7 @@ function patchClientData()
 		[57096] = "Kỹ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Mặt ngửa: Nhận Cánh Bổ Nhào, Liên Trảm và tăng 500 ATK cho mỗi quái thú trên sân đối phương.\n- Mặt sấp: Nhận Khiên Chắn.",
 		-- Vương Lâm - Cổ yêu (40732) & Kỹ năng (14729, 14730)
 		[57097] = "Vương Lâm - Cổ yêu",
-		[57098] = "[Xác Sống - Hiệu Quả - Đồng Bộ]\n<Vương Lâm - Phân Thân> (12328) + 1 quái điều chỉnh có từ khóa \"Tiên nghịch\" trở lên.\n+ Kỹ năng chủ động bộ bài thêm: 1 lượt 1 lần, chọn 1 quái có từ khóa \"Tiên nghịch\" trên sân phe ta, quái đó nhận \"Nhịp Điệu Synchron\".\n+ Cánh Bổ Nhào: Khi tấn công, quái vật trên sân, tay hoặc mộ của đối thủ không thể kích hoạt hiệu ứng quái vật và đối thủ không thể kích hoạt hiệu ứng phép thuật hoặc bẫy trên sân.\n+ Không bị ảnh hưởng bởi hiệu ứng lá bài khác trong lượt được triệu hồi đồng bộ.\n+ Triệu hồi đồng bộ lá bài này không thể bị vô hiệu hóa.\n+ Khi bị phá hủy: Triệu hồi đặc biệt <Vương Lâm - Phân Thân> từ mộ bài lên sân.",
+		[57098] = "[Xác Sống / Đồng Bộ / Hiệu Ứng]\n<Vương Lâm - Phân Thân> + 1 quái thú Điều Chỉnh có từ khóa \"Tiên nghịch\" trở lên",
 		[57099] = "Vương Lâm - Cổ yêu",
 		[57100] = "Cổ Yêu-Đồng Bộ Kêu Gọi",
 		[57101] = "Kỹ năng chủ động bộ bài thêm (1 lượt 1 lần): Chọn 1 quái có từ khóa \"Tiên nghịch\" trên sân phe ta, quái đó nhận \"Nhịp Điệu Synchron\".",
@@ -5491,7 +5604,7 @@ function patchClientData()
 		[57103] = "Khi bị phá hủy: Triệu hồi đặc biệt <Vương Lâm - Phân Thân> từ mộ bài lên sân.",
 		-- Lý Mộ Uyển (12329) & Kỹ năng (14731, 14732)
 		[57104] = "Lý Mộ Uyển",
-		[57105] = "[Phù Thủy - Hiệu Ứng - Điều Chỉnh]\n+ Kỹ năng chủ động trên tay: 1 lượt 1 lần, chọn lấy 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ bộ bài lên tay, sau đó triệu hồi đặc biệt bản thân lên sân.\n+ Kỹ năng chủ động trong Mộ: 1 lượt 1 lần, loại bỏ bản thân, chọn 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ trên tay, triệu hồi đặc biệt lên sân.",
+		[57105] = "[Phù Thủy / Điều Chỉnh / Hiệu Ứng]",
 		[57106] = "Lý Mộ Uyển",
 		[57107] = "Uyển Nhi-Tương Phùng",
 		[57108] = "Kỹ năng chủ động trên tay (1 lượt 1 lần): Chọn lấy 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ bộ bài lên tay, sau đó triệu hồi đặc biệt bản thân lên sân.",
@@ -5499,7 +5612,7 @@ function patchClientData()
 		[57110] = "Kỹ năng chủ động trong Mộ (1 lượt 1 lần): Loại bỏ bản thân, chọn 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ trên tay, triệu hồi đặc biệt lên sân.",
 		-- Vương Lâm - Hợp Đạo (40733) & Kỹ năng (14736, 14737)
 		[57111] = "Vương Lâm - Hợp Đạo",
-		[57112] = "[Huyễn Thần - Dung Hợp - Hiệu Ứng]\n<12326> + <12328>\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n+ Khi lá bài này bị phá hủy: Phe ta nhận Tường Chắn Sinh Mệnh (1 lượt).\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi ở trên sân: Hai bên không thể Triệu Hồi Đặc Biệt quái từ Mộ.\n+ Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị.\n+ Nhận 1 tầng Tường Chắn Chiến Đấu.",
+		[57112] = "[Huyễn Thần / Dung Hợp / Hiệu Ứng]\n<Vương Lâm - bản tôn cổ thần> + <Vương Lâm - phân thân>",
 		[57113] = "Vương Lâm - Hợp Đạo",
 		[57114] = "Hợp Đạo - Thiên Đạo Trấn Áp",
 		[57115] = "Khi ở trên sân: Hai bên không thể triệu hồi đặc biệt quái từ Mộ. Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị. Nhận 1 tầng Tường Chắn Chiến Đấu.",
@@ -5518,18 +5631,18 @@ function patchClientData()
 		-- Tuyết Nữ Băng Giá (40648) & Kỹ năng (13838)
 		[51763] = "Kỹ năng bộ bài thêm chủ động: Mỗi lượt chỉ 1 lần. Khi trên sân không có quái và trên tay có từ 2 lá bài trở lên có thể dùng: Loại bỏ ngẫu nhiên 2 lá bài trên tay phe ta; Chọn tối đa [1] quái trên sân đối thủ đưa vào mộ bài loại bỏ (bỏ qua “Tường Chắn Quái”), sau đó Triệu Hồi Đặc Biệt bản thân bài này lên sân.",
 		-- Thần âm phủ đóng cửa thế giới (40551) & Kỹ năng (14739)
-		[35716] = "[Quái Hiệu Quả - Link 5]\nQuái hiệu quả x2 trở lên.\n+ Khi lá bài này trên sân: Phe ta không thể triệu hồi quái từ Bộ bài thêm.",
+		[35716] = "[Ác Ma / Link-5 / Hiệu Ứng]\n2 quái thú Hiệu Ứng trở lên",
 		[57129] = "Thần Âm Phủ - Phong Tỏa Bài Thêm",
 		[57130] = "Khi lá bài này trên sân: Phe ta không thể triệu hồi quái từ Bộ bài thêm.",
 		-- Mèo bắt tay (12330) & Kỹ năng (14740)
 		[57131] = "Mèo bắt tay",
-		[57132] = "[Thú - Hiệu Ứng]\n+ 1 lượt tối đa 3 lần: Khi lá bài này nằm trên tay, đối phương kích hoạt hiệu ứng từ bài trên tay, sẽ kích hoạt: Đưa lá bài này vào Mộ, vô hiệu hiệu ứng đó và đẩy lá bài đó về cuối bộ bài, đối phương rút 1 lá, lấy 1 lá <Mèo bắt tay> từ Bộ bài lên tay.",
+		[57132] = "[Thú / Hiệu Ứng]",
 		[57133] = "Mèo bắt tay",
 		[57134] = "Mèo Bắt Tay - Chặn Tay",
 		[57135] = "1 lượt tối đa 3 lần: Khi ở trên tay, đối phương kích hoạt hiệu ứng từ bài trên tay: Đưa lá bài này vào Mộ, vô hiệu hiệu ứng đó và đẩy lá bài đó về cuối bộ bài, đối phương rút 1 lá, lấy 1 lá <Mèo bắt tay> từ Bộ bài lên tay.",
 		-- KMR-Zio (12331) & Kỹ năng (14741, 14742)
 		[57136] = "KMR-Zio",
-		[57137] = "[Chiến Binh - Hiệu Ứng]\n+ 1 lượt 1 lần, khi được triệu hồi/triệu hồi đặc biệt lên sân: Lấy 1 lá [Chuyển dạng] từ Bộ bài lên tay.\n+ Kỹ năng chủ động Mộ (1 lượt 1 lần): Chọn lấy 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ Bộ bài lên tay.",
+		[57137] = "[Chiến Binh / Hiệu Ứng]",
 		[57138] = "KMR-Zio",
 		[57139] = "KMR-Zio - Dẫn Đạo",
 		[57140] = "1 lượt 1 lần, khi được triệu hồi hoặc triệu hồi đặc biệt lên sân: Lấy 1 lá [Chuyển dạng] từ Bộ bài lên tay.",
@@ -5543,7 +5656,7 @@ function patchClientData()
 		[57147] = "Chọn 1 quái Dung Hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Bộ bài thêm phe ta; hy sinh nguyên liệu dung hợp đang có mặt trên sân/trên tay phe ta; Triệu Hồi Dung Hợp quái đã chọn, sau đó trong lượt này chỉ có thể triệu hồi quái có từ khóa \"Hiệp sĩ mặt nạ\".",
 		-- KMR-W (12332) & Kỹ năng (14744, 14745)
 		[57148] = "KMR-W",
-		[57149] = "[Chiến Binh - Hiệu Ứng]\n+ Khi trên sân phe ta không có quái hoặc có quái có từ khóa \"Hiệp sĩ mặt nạ\", có thể triệu hồi thường quái lên sân không cần vật tế.\n+ Kỹ năng chủ động: Hy sinh bản thân, chọn Triệu Hồi Đặc Biệt [KMR-W-Fang] từ Bộ bài thêm lên sân.",
+		[57149] = "[Chiến Binh / Hiệu Ứng]\nKhi trên sân phe ta không có quái thú hoặc có quái thú mang từ khóa \"Hiệp sĩ mặt nạ\", có thể Triệu Hồi Thường không cần vật tế.",
 		[57150] = "KMR-W",
 		[57151] = "KMR-W - Lộng Gió",
 		[57152] = "Khi trên sân phe ta không có quái hoặc có quái có từ khóa \"Hiệp sĩ mặt nạ\", có thể triệu hồi thường quái lên sân không cần vật tế.",
@@ -5551,22 +5664,22 @@ function patchClientData()
 		[57154] = "Kỹ năng chủ động: Hy sinh bản thân, chọn Triệu Hồi Đặc Biệt [KMR-W-Fang] từ Bộ bài thêm lên sân.",
 		-- KMR-W-Fang (40734)
 		[57155] = "KMR-W-Fang",
-		[57156] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n+ Phải dùng hiệu quả của KMR-W để triệu hồi.\n+ Thiên Sứ-Xung Kích: 1 lượt 1 lần, chọn 1 lá bài trên sân đối thủ đưa vào Mộ Loại Bỏ (bỏ qua Tường Chắn Quái).\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.",
+		[57156] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\nPhải triệu hồi bởi hiệu ứng của <KMR-W>.",
 		[57157] = "KMR-W-Fang",
 		-- KMR-Zio-W (40735) & Kỹ năng (14746)
 		[57158] = "KMR-Zio-W",
-		[57159] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n<KMR-Zio> + <KMR-W>\n+ Tấn công nhân đôi khi chiến đấu với quái thuộc tính Quang hoặc Ám (bỏ qua Tường Chắn Quái).\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi lá bài này trên sân, quái thuộc tính Quang/Ám trên sân đối phương không thể tấn công.",
+		[57159] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\n<KMR-Zio> + <KMR-W>",
 		[57160] = "KMR-Zio-W",
 		[57161] = "KMR-Zio-W - Vương Quyền Phong Ấn",
 		[57162] = "Khi lá bài này trên sân: Quái thuộc tính Quang và Ám trên sân đối phương không thể tấn công.",
 		-- KMR-Ozu (12333) & Kỹ năng (14747)
 		[57163] = "KMR-Ozu",
-		[57164] = "[Chiến Binh - Hiệu Ứng]\n+ Kỹ năng chủ động tay (1 lượt 1 lần): Triệu hồi Đặc Biệt bản thân, sau đó tung 3 đồng xu. Phe ta rút số lá bài bằng số xu mặt ngửa. Sau đó trong lượt này, phe ta chỉ có thể Triệu Hồi/Triệu Hồi Đặc Biệt quái thú có từ khóa \"Hiệp sĩ mặt nạ\".",
+		[57164] = "[Chiến Binh / Hiệu Ứng]",
 		[57165] = "KMR-Ozu",
 		[57166] = "KMR-Ozu - Giới Khởi Động",
 		[57167] = "Kỹ năng chủ động trên tay (1 lượt 1 lần): Triệu hồi Đặc Biệt bản thân, sau đó tung 3 đồng xu. Phe ta rút số lá bài bằng số xu mặt ngửa. Sau đó trong lượt này, phe ta chỉ có thể Triệu Hồi/Triệu Hồi Đặc Biệt quái thú có từ khóa \"Hiệp sĩ mặt nạ\".",
 		[57168] = "KMR-Wizard",
-		[57169] = "[Chiến Binh - Hiệu Ứng]\n+ Bỏ 1 lá bài trên tay: Triệu Hồi Đặc Biệt lá bài này từ trên tay.\n+ Kỹ năng chủ động (1 lượt 1 lần): Chọn lấy 1 lá bài Phép có từ khóa \"Hiệp sĩ mặt nạ\" từ Bộ bài hoặc Mộ lên tay.",
+		[57169] = "[Chiến Binh / Hiệu Ứng]\nCó thể Triệu Hồi Đặc Biệt từ trên tay bằng cách bỏ 1 lá bài trên tay vào Mộ.",
 		[57170] = "KMR-Wizard",
 		[57171] = "KMR-Wizard - Nhẫn Thuật Ma Pháp",
 		[57172] = "Kỹ năng chủ động (1 lượt 1 lần): Chọn lấy 1 lá bài Phép có từ khóa \"Hiệp sĩ mặt nạ\" từ Bộ bài hoặc Mộ lên tay.",
@@ -5576,7 +5689,7 @@ function patchClientData()
 		[57176] = "Rider kick - Toàn Lực Tất Sát",
 		[57177] = "Khi trên sân phe ta có quái thú có từ khóa \"Hiệp sĩ mặt nạ\": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường Chắn Quái). Sau đó trong lượt này, quái thú có từ khóa \"Hiệp sĩ mặt nạ\" phe ta không thể tấn công.",
 		[57178] = "Chị Em Harpie Lady - Tam Giác Mê Hoặc",
-		[57179] = "[Thú Có Cánh - Dung Hợp - Hiệu Ứng]\n3 quái thú \"Harpie Lady\"\nPhải được Triệu hồi Dung hợp trước tiên.\n(1) Tên lá bài này được coi là \"Harpie Lady\" khi ở trên sân hoặc trong Mộ.\n(2) Tăng 500 Công cho mỗi \"Harpie Lady\" trong Mộ của bạn. Nhận Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Mỗi lượt 1 lần (Hiệu ứng Nhanh): Bạn có thể phá hủy toàn bộ Ma pháp và Cạm bẫy đối thủ điều khiển.",
+		[57179] = "[Thú Có Cánh / Dung Hợp / Hiệu Ứng]\n3 quái thú \"Harpie Lady\"",
 		[57180] = "Chị Em Harpie Lady - Tam Giác Mê Hoặc",
 		[57181] = "Tam Giác Mê Hoặc - Phong Bão Quét Sạch",
 		[57182] = "Mỗi lượt một lần: Phá hủy toàn bộ Ma pháp và Cạm bẫy mà đối thủ điều khiển.",
@@ -5588,7 +5701,7 @@ function patchClientData()
 		[57188] = "Tam Kính Kiều Diễm - Dung Hợp Kính Soi",
 		[57189] = "Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; Triệu hồi Dung hợp 1 quái thú Dung hợp thuộc tính ĐẤT hoặc GIÓ từ Bộ bài Phụ, sử dụng quái thú trên tay hoặc trên sân làm nguyên liệu.",
 		[57190] = "KMR-Zio-Wizard",
-		[57191] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + \"KMR-Wizard\"\n(1) Đối phương không thể sử dụng bài Phép.\n(2) Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Tất cả bài Phép/Bẫy trên sân phe ta không thể bị phá hủy.",
+		[57191] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\n<KMR-Zio> + <KMR-Wizard>",
 		[57192] = "KMR-Zio-Wizard",
 		[57193] = "KMR-Zio-Wizard - Phong Tỏa Ma Thuật",
 		[57194] = "Khi có mặt: Đối phương không thể sử dụng bài Phép.",
@@ -5614,31 +5727,31 @@ function patchClientData()
 		[57220] = "Tam Giác Mê Hoặc",
 		[57221] = "Tăng 500 Công cho mỗi \"Harpie Lady\" trong Mộ của bạn.",
 		[57222] = "KMR-Decade",
-		[57223] = "[Chiến Binh - Link - Hiệu Ứng]\n1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\"\n(1) Kỹ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.",
+		[57223] = "[Chiến Binh / Link-1 / Hiệu Ứng]\n1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\"",
 		[57224] = "KMR-Decade",
 		[57225] = "KMR-Decade - Thông Đạo Kỵ Sĩ",
 		[57226] = "1 lượt 1 lần, đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.",
 		[57227] = "KMR-Omazio",
-		[57228] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + 1 quái thú Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" + 1 quái thú có từ khóa \"Hiệp sĩ mặt nạ\"\n(1) Mỗi lượt nhận 1 lần Khiên Chiến Đấu.\n(2) Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài của bạn; Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ, và quái thú đó không thể đổi tư thế trong lượt này.",
+		[57228] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\n<KMR-Zio> + 1 quái thú Dung Hợp \"Hiệp sĩ mặt nạ\" + 1 quái thú \"Hiệp sĩ mặt nạ\"",
 		[57229] = "KMR-Omazio",
 		[57230] = "KMR-Omazio - Ma Vương Khởi Động",
 		[57231] = "1 lượt 1 lần: Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa \"Hiệp sĩ mặt nạ\" trong Mộ, trên tay hoặc trong Bộ bài để Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ (không thể đổi tư thế trong lượt này).",
 		[57232] = "KMR-Zio-Ozu",
-		[57233] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + \"KMR-Ozu\"\n(1) Kỹ năng chủ động 1 (kỹ năng này và kỹ năng chủ động 2 chỉ có thể dùng 1 loại 1 lượt): 1 lượt 1 lần, tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.\n(2) Kỹ năng chủ động 2 (kỹ năng này và kỹ năng chủ động 1 chỉ có thể dùng 1 loại 1 lượt): 1 lượt 1 lần, tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.",
+		[57233] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\n<KMR-Zio> + <KMR-Ozu>",
 		[57234] = "KMR-Zio-Ozu",
 		[57235] = "KMR-Zio-Ozu - Đoạt Thủ Bài",
 		[57236] = "1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.",
 		[57237] = "KMR-Zio-Ozu - Đoạt Trường Bài",
 		[57238] = "1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.",
 		[57239] = "KMR-Ghost",
-		[57240] = "[Chiến Binh - Hiệu Ứng]\n(1) 1 lượt tối đa 2 lần, khi lá bài này nằm trên tay, đối phương rút được quái thú sẽ kích hoạt: đưa lá bài này vào Mộ, loại bỏ lá bài đối phương vừa rút được.\n(2) Kỹ năng chủ động Mộ (1 lượt 1 lần): Triệu hồi Đặc biệt bản thân lên sân và nhận được \"quá tải\" (khi rời sân sẽ bị \"loại bỏ\").",
+		[57240] = "[Chiến Binh / Hiệu Ứng]",
 		[57241] = "KMR-Ghost",
 		[57242] = "KMR-Ghost - Đoạt Hồn Rút Bài",
 		[57243] = "1 lượt tối đa 2 lần, khi lá bài này nằm trên tay, đối phương rút được quái thú sẽ kích hoạt: đưa lá bài này vào Mộ, loại bỏ lá bài đối phương vừa rút được.",
 		[57244] = "KMR-Ghost - Quá Tải Hồi Sinh",
 		[57245] = "Kỹ năng chủ động Mộ (1 lượt 1 lần): Triệu hồi Đặc biệt bản thân lên sân và nhận được \"quá tải\" (khi rời sân sẽ bị \"loại bỏ\").",
 		[57246] = "KMR-Zio-Ghost",
-		[57247] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n\"KMR-Zio\" + \"KMR-Ghost\"\n(1) Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).\n(2) Kỹ năng chủ động (1 lượt 1 lần): Chọn 1 quái trên sân đối phương, loại bỏ bản thân và quái mục tiêu (xuyên qua tường chắn quái).",
+		[57247] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\n<KMR-Zio> + <KMR-Ghost>",
 		[57248] = "KMR-Zio-Ghost",
 		[57249] = "KMR-Zio-Ghost - Linh Hồn Chặn Đứng",
 		[57250] = "Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).",
@@ -5657,7 +5770,7 @@ function patchClientData()
 		[57259] = "Kĩ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Nếu ngửa: phe ta và địch rút 1 lá bài.\n- Nếu úp: phe địch rút 1 lá bài, phe ta nhận 2000 thiệt hại.\n|\\yellow\\Hỏi: \"ủa tại sao phe địch được rút bài mà phe ta bị lại bị trừ LP?\"|\n|\\yellow\\Đáp: \"Bởi vì : 1 là chân thành đổi lấy chân thành.|\n|\\yellow\\2 là chân thành đổi lấy chân tướng sự thật\".|\n|\\yellow\\\"Tỉnh táo lên những người anh em,|\n|\\yellow\\mình đáng được trân trọng hơn thế - đừng làm lốp giống ad\".|",
 		-- Chiến binh amazon cưỡi rồng bay harpie (40742) & Kỹ năng (14773, 14774)
 		[57260] = "Chiến binh amazon cưỡi rồng bay harpie",
-		[57261] = "[Chiến Binh - Dung Hợp - Hiệu Ứng]\n10084 + quái tộc chiến binh có từ khóa \"amazon\".\n(Lá bài này luôn được coi là có từ khóa \"amazon\" và \"harpie\".)\n(1) Dung Hợp Kỳ Linh.\n(2) Tăng 300 Công và Thủ với mỗi quái thú \"amazon\" trên sân phe ta. Tăng 300 Công với mỗi quái thú \"harpie\" trên sân phe ta.\n(3) Khi trên sân phe ta có quái \"harpie\" hoặc \"amazon\", nhận \"Tấn công trực tiếp\".\n(4) Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn 1 quái dung hợp có từ khóa \"harpie\" hoặc \"amazon\" trong extradeck, triệu hồi vô điều kiện lên sân.",
+		[57261] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\n<Amazoness Swords Woman> + 1 quái thú tộc Chiến Binh có từ khóa \"Amazoness\"",
 		[57262] = "Chiến binh amazon cưỡi rồng bay harpie",
 		[57263] = "Chiến Binh Cưỡi Rồng - Tấn Công Trực Tiếp",
 		[57264] = "Khi trên sân phe ta có quái \"harpie\" hoặc \"amazon\", nhận \"Tấn công trực tiếp\".",
@@ -5665,7 +5778,7 @@ function patchClientData()
 		[57266] = "Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn 1 quái dung hợp có từ khóa \"harpie\" hoặc \"amazon\" trong extradeck, triệu hồi vô điều kiện lên sân.",
 		-- Kiếm sĩ diệt rồng huyền thoại (40743) & Kỹ năng (14775, 14776, 14777)
 		[57267] = "Kiếm sĩ diệt rồng huyền thoại",
-		[57268] = "[Chiến Binh - Đồng Bộ - Hiệu Ứng]\n10058 + 1 quái điều chỉnh.\n(1) Quái đối phương bị giảm 200 ATK cho mỗi quái tộc Rồng trên sân và trong Mộ 2 bên.\n(2) Kĩ năng chủ động (1 lượt 1 lần): Bỏ 1 lá bài trên tay, Triệu Hồi Đặc Biệt 1 quái có từ khóa \"Kiếm Phá Hủy\" từ bộ bài lên sân.\n(3) Khi lá bài này bị phá hủy bởi chiến đấu hoặc hiệu quả: Phá hủy tất cả quái tộc Rồng trên sân đối phương (xuyên qua khiên bảo vệ).",
+		[57268] = "[Chiến Binh / Đồng Bộ / Hiệu Ứng]\n<Buster Blader> + 1 quái thú Điều Chỉnh",
 		[57269] = "Kiếm sĩ diệt rồng huyền thoại",
 		[57270] = "Huyền Thoại Diệt Rồng - Uy Áp",
 		[57271] = "Quái đối phương bị giảm 200 ATK cho mỗi quái tộc Rồng trên sân và trong Mộ 2 bên.",
@@ -5686,9 +5799,9 @@ function patchClientData()
 		[57285] = "Khi lá bài này trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái thú tộc \"rồng\" từ extradeck sẽ kích hoạt: đưa lá bài này vào mộ, loại bỏ quái thú đối phương vừa triệu hồi.",
 		[57286] = "Kiếm Phá Phép Thuật - Cầu Pháp",
 		[57287] = "Kĩ năng chủ động Mộ: Chọn lấy 1 lá bài phép có từ khóa \"kiếm phá hủy\" từ bộ bài lên tay.",
-		[57288] = "[Rồng - Điều Chỉnh - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến quái tộc Rồng của đối phương không thể kích hoạt hiệu ứng.\n(2) Khi trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái tộc \"Rồng\": Đưa lá này vào Mộ, loại bỏ quái đối phương vừa triệu hồi.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 quái có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
-		[57289] = "[Cơ Giới - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến đối phương không thể kích hoạt hiệu ứng quái thú trong Mộ.\n(2) Khi trên tay, đối phương rút được quái tộc \"Rồng\": Đưa lá này vào Mộ, loại bỏ lá bài đối phương vừa rút được.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 bẫy có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
-		[57290] = "[Phép Thuật - Hiệu Ứng]\n(1) Kĩ năng chủ động (trên sân): Trang bị lá bài này cho 1 \"Kiếm sĩ diệt rồng\" trên sân. Quái được trang bị khiến đối phương không thể kích hoạt bài Phép/Bẫy đã đặt.\n(2) Khi trên tay, đối phương triệu hồi/triệu hồi đặc biệt quái tộc \"Rồng\" từ extradeck: Đưa lá này vào Mộ, loại bỏ quái đối phương vừa triệu hồi.\n(3) Kĩ năng chủ động Mộ (1 lượt 1 lần): Chọn 1 phép có từ khóa \"Kiếm Phá Hủy\" từ Bộ bài lên tay.",
+		[57288] = "[Rồng / Điều Chỉnh / Hiệu Ứng]",
+		[57289] = "[Cơ Giới / Hiệu Ứng]",
+		[57290] = "[Phép Thuật / Hiệu Ứng]",
 		-- Kiếm sĩ diệt rồng tập sự (40744) & Kỹ năng (14784, 14785, 14786)
 		[57291] = "Diệt Rồng Tập Sự - Hàng Long",
 		[57292] = "Kĩ năng chủ động bộ bài thêm: Chọn 1 quái tộc \"rồng\" trên sân đối phương đưa vào mộ, sau đó triệu hồi đặc biệt bài này lên sân phe ta (xuyên qua tường chắn quái).",
@@ -5697,8 +5810,10 @@ function patchClientData()
 		[57295] = "Diệt Rồng Tập Sự - Truyền Thừa",
 		[57296] = "Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa \"Kiếm sĩ diệt rồng\" trong bộ bài phe ta.",
 		[57297] = "Kiếm sĩ diệt rồng tập sự",
-		[57298] = "[Chiến Binh - Hiệu Quả - Link]\n1 quái có từ khóa \"Kiếm hủy diệt\" hoặc \"Kiếm sĩ diệt rồng\".\n(Lá bài này luôn có từ khóa \"Kiếm hủy diệt\" và \"Kiếm sĩ diệt rồng\".)\n(1) Kĩ năng chủ động bộ bài thêm: Chọn 1 quái tộc \"rồng\" trên sân đối phương đưa vào mộ, sau đó triệu hồi đặc biệt bài này lên sân phe ta (xuyên qua tường chắn quái).\n(2) Kĩ năng chủ động (1 lượt 1 lần): Chọn lấy tối đa 2 quái thú có từ khóa \"Kiếm hủy diệt\" từ bộ bài lên tay.\n(3) Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa \"Kiếm sĩ diệt rồng\" trong bộ bài phe ta.",
+		[57298] = "[Chiến Binh / Link-1 / Hiệu Ứng]\n1 quái thú có từ khóa \"Kiếm Phá Hủy\" hoặc \"Kiếm Sĩ Diệt Rồng\"",
 		[57299] = "Kiếm sĩ diệt rồng tập sự",
+		-- Xe Lửa Tháp Pháo Hạng Nặng-Đại Bác Gustav (40508)
+		[35544] = "10 sao x2 và nguyên liệu bắt buộc phải có từ khóa \"Xe lửa\"",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
@@ -5903,7 +6018,19 @@ function patchClientData()
 		["props.png.sfb"] = true,
 		["find.jpm"] = true,
 		["find.png.sfb"] = true,
+		["cards_back.jpm"] = true,
+		["cards_back.png.sfb"] = true,
+		["cards_back_2.jpm"] = true,
+		["cards_back_2.png.sfb"] = true,
+		["cards_back_3.jpm"] = true,
+		["cards_back_3.png.sfb"] = true,
+		["cards_back_4.jpm"] = true,
+		["cards_back_4.png.sfb"] = true,
 	}
+	for _ci = 1, 10 do
+		RESIDENT_CONTAINERS["cards_img_" .. _ci .. ".jpm"] = true
+		RESIDENT_CONTAINERS["cards_img_" .. _ci .. ".png.sfb"] = true
+	end
 
 	ClientData.unloadLCRes = function(names)
 		if type(names) ~= "table" then
@@ -7171,7 +7298,7 @@ function patchClientData()
 					local card_val = tonumber(ints[1]) or 0
 					local isCardAction = (card_val ~= BattleData.UseCardId.round and card_val ~= BattleData.UseCardId.retreat and card_val ~= 0)
 					local bonusSec = tonumber(addTime) or (isCardAction and 6 or 0)
-					local maxSec = tonumber(maxTime) or 120
+					local maxSec = math.min(240, tonumber(maxTime) or 240)
 					local exactTime = tonumber(timeLeft)
 
 					local scene = lc._runningScene or ClientView._scene
@@ -7216,8 +7343,15 @@ function patchClientData()
 							if bUi and type(bUi.oppoTryUseCard) == "function" then
 								handled = bUi:oppoTryUseCard()
 							end
-							if card_val == BattleData.UseCardId.round and not handled and bUi and type(bUi.forceOppoTurnEnd) == "function" then
-								bUi:forceOppoTurnEnd()
+							if card_val == BattleData.UseCardId.round and not handled and bUi then
+								lc.performWithDelay(bUi, function()
+									if bUi and not bUi._isBattleFinished and bUi._opponent then
+										bUi._isWaitting = true
+										if not bUi:oppoTryUseCard() and type(bUi.forceOppoTurnEnd) == "function" then
+											bUi:forceOppoTurnEnd()
+										end
+									end
+								end, 0.4)
 							end
 						end
 					else
@@ -7229,8 +7363,15 @@ function patchClientData()
 						if bUi and type(bUi.oppoTryUseCard) == "function" then
 							handled = bUi:oppoTryUseCard()
 						end
-						if card_val == BattleData.UseCardId.round and not handled and bUi and type(bUi.forceOppoTurnEnd) == "function" then
-							bUi:forceOppoTurnEnd()
+						if card_val == BattleData.UseCardId.round and not handled and bUi then
+							lc.performWithDelay(bUi, function()
+								if bUi and not bUi._isBattleFinished and bUi._opponent then
+									bUi._isWaitting = true
+									if not bUi:oppoTryUseCard() and type(bUi.forceOppoTurnEnd) == "function" then
+										bUi:forceOppoTurnEnd()
+									end
+								end
+							end, 0.4)
 						end
 					end
 				end
@@ -7268,11 +7409,20 @@ function patchClientData()
 					else
 						local oppoHp = bUi._opponent and bUi._opponent._fortress and bUi._opponent._fortress._hp
 						local playerHp = bUi._player and bUi._player._fortress and bUi._player._fortress._hp
+						local isLocalSurrender = bUi._isSurrender or (bUi._player and (bUi._player._isSurrender or bUi._player._isRetreat))
+						local isOppoSurrender = bUi._opponent and (bUi._opponent._isSurrender or bUi._opponent._isRetreat)
+						local isExodia = (bUi._player and bUi._player._winBy3190) or (bUi._opponent and bUi._opponent._winBy3190)
+						local isGodWin = (bUi._player and bUi._player._winBy3798) or (bUi._opponent and bUi._opponent._winBy3798)
+						local isDeckOut = (bUi._player and bUi._player._macroStatus == BattleData.Status.round_begin and bUi._player:getIsPileEmpty()) or (bUi._opponent and bUi._opponent._macroStatus == BattleData.Status.round_begin and bUi._opponent:getIsPileEmpty())
+
 						local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
-						if oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0) then
+						if isOppoSurrender or (oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0)) then
 							myRes = Data.BattleResult.win
-						elseif playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0) then
+						elseif isLocalSurrender or (playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0)) then
 							myRes = Data.BattleResult.lose
+						elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isDeckOut) then
+							print("[PVP END] Rejected premature peer loss: Player HP is " .. tostring(playerHp) .. ", Oppo HP is " .. tostring(oppoHp))
+							return
 						end
 						bUi._forceResult = myRes
 						bUi:sendBattleEnd(false, myRes)
@@ -7482,6 +7632,10 @@ function patchClientData()
     end
 
     ClientData.recordMatchResult = function(opponentName, opponentLevel, opponentAvatar, result, btype, trophyChange, replayData)
+        local bt = tonumber(btype) or Battle_pb.PB_BATTLE_MATCH
+        if bt < 200 and bt ~= 17 and bt ~= (Data.BattleType and Data.BattleType.PVP_room or 17) then
+            return
+        end
         local myAccId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
         local api = jsbridge and jsbridge.object("jdzcApi")
         if api and api.post then
@@ -8160,48 +8314,7 @@ local function patchCardSprite(CardSprite)
 
 	-- __isCard is set directly in CardSprite.lua m.init
 
-	CardSprite.runAction = function(self, action)
-		local function onActionComplete()
-			if not self._card then return end
-			if not self:getParent() then return end
-			if self._touchEvent and (self._touchEvent._status == CardSprite.TouchStatus.grabbed or self._touchEvent._status == CardSprite.TouchStatus.moved) then return end
-			-- ponytail: skip repositioning for cards no longer on hand/board
-			local cStatus = self._card._status
-			if self._status == CardSprite.Status.dead
-				or cStatus == BattleData.CardStatus.grave
-				or cStatus == BattleData.CardStatus.leave
-				or cStatus == BattleData.CardStatus.dead then
-				return
-			end
-			if cStatus == BattleData.CardStatus.hand then
-				if self._ownerUi and self._ownerUi.getHandCardSprite and self._ownerUi:getHandCardSprite(self._card) == self and self._ownerUi.calHandCardPosAndRot then
-					local pos, rot = self._ownerUi:calHandCardPosAndRot(self)
-					if pos and pos.x and pos.y then
-						self:setPosition(pos)
-					end
-					if rot then
-						self:setRotation3D(rot)
-					end
-				end
-			elseif cStatus == BattleData.CardStatus.board then
-				if self._ownerUi and self._ownerUi.getBoardCardSprite then
-					local bSprite = self._ownerUi:getBoardCardSprite(self._card)
-					if bSprite == self and self._ownerUi.calBoardCardPos then
-						local pos = self._ownerUi:calBoardCardPos(self)
-						if pos and pos.x and pos.y then
-							self:setPosition(pos)
-						end
-					end
-				end
-			end
-		end
-
-		if action and action._dontFixPos then
-			cc.Node.runAction(self, action)
-		else
-			cc.Node.runAction(self, lc.sequence(action, lc.call(onActionComplete)))
-		end
-	end
+	-- CardSprite.runAction handled in CardSprite.lua
 
 	local oldPlayBoardToGrave = CardSprite.playBoardToGrave
 	if oldPlayBoardToGrave then
@@ -8391,6 +8504,8 @@ local function patchCardSprite(CardSprite)
 				lc.addChildToPos(self._pEffectArea, db, cc.p(0, 0))
 				if self._scene and self._scene.seenByCamera3D then
 					self._scene:seenByCamera3D(db)
+				elseif db.setCameraMask then
+					db:setCameraMask(ClientData and ClientData.CAMERA_3D_FLAG or 2)
 				end
 				self._statusEfc = self._statusEfc or {}
 				self._statusEfc[markName] = db
@@ -8474,9 +8589,9 @@ local function patchCardSprite(CardSprite)
 		local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or cid == 40734 or cid == 40736
 		local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or cid == 40734 or cid == 40736
 		local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or cid == 40734 or cid == 40736
-		local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or cid == 40737 or cid == 40739
-		local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or cid == 40737 or cid == 40739
-		local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or cid == 40737 or cid == 40739
+		local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or cid == 40737 or cid == 40739 or cid == 40745
+		local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or cid == 40737 or cid == 40739 or cid == 40745
+		local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or cid == 40737 or cid == 40739 or cid == 40745
 
 		if not has12008 and not has12009 and not has12010 and not has12002 and not has12003 and not has12004 then
 			return ret
@@ -8514,9 +8629,9 @@ local function patchCardSprite(CardSprite)
 		local has12008 = (card.hasSkillFast and card:hasSkillFast(12008)) or cid == 40734 or cid == 40736
 		local has12009 = (card.hasSkillFast and card:hasSkillFast(12009)) or cid == 40734 or cid == 40736
 		local has12010 = (card.hasSkillFast and card:hasSkillFast(12010)) or cid == 40734 or cid == 40736
-		local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or cid == 40737 or cid == 40739
-		local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or cid == 40737 or cid == 40739
-		local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or cid == 40737 or cid == 40739
+		local has12002 = (card.hasSkillFast and card:hasSkillFast(12002)) or cid == 40737 or cid == 40739 or cid == 40745
+		local has12003 = (card.hasSkillFast and card:hasSkillFast(12003)) or cid == 40737 or cid == 40739 or cid == 40745
+		local has12004 = (card.hasSkillFast and card:hasSkillFast(12004)) or cid == 40737 or cid == 40739 or cid == 40745
 
 		if not has12008 and not has12009 and not has12010 and not has12002 and not has12003 and not has12004 then
 			return ret
@@ -8624,7 +8739,7 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 			local oppoHp = self._opponent and self._opponent._fortress and self._opponent._fortress._hp
 			local playerHp = self._player and self._player._fortress and self._player._fortress._hp
 			local isHpDead = (oppoHp and oppoHp <= 0) or (playerHp and playerHp <= 0)
-			local isSurrender = (self._forceResult ~= nil) or (self._player and (self._player._isSurrender or self._player._isRetreat)) or (self._opponent and (self._opponent._isSurrender or self._opponent._isRetreat))
+			local isSurrender = (self._isSurrender == true) or (self._player and (self._player._isSurrender or self._player._isRetreat)) or (self._opponent and (self._opponent._isSurrender or self._opponent._isRetreat))
 			local isExodia = (self._player and self._player._winBy3190) or (self._opponent and self._opponent._winBy3190)
 			local isGodWin = (self._player and self._player._winBy3798) or (self._opponent and self._opponent._winBy3798)
 			local isDeckOut = (self._player and self._player._macroStatus == BattleData.Status.round_begin and self._player:getIsPileEmpty()) or (self._opponent and self._opponent._macroStatus == BattleData.Status.round_begin and self._opponent:getIsPileEmpty())
@@ -8801,8 +8916,11 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 						end
 					end)
 
-					-- Save match replay with actual deltaTrophy and recorded operations
-					if api and api.post then
+					-- Check if this match was an adventure / story / PVE duel
+					local isPveMatch = (levelId and levelId > 0) or (input and input._levelId and input._levelId > 0) or (self._battleType == 101 or self._battleType == 131) or (self._battleType and self._battleType < 200 and self._battleType ~= 17 and self._battleType ~= (Data.BattleType and Data.BattleType.PVP_room or 17))
+
+					-- Save match replay with actual deltaTrophy and recorded operations (PVP matches ONLY)
+					if not isPveMatch and api and api.post then
 						api:post("save_replay", {
 							account_id = accId,
 							replay_id = repId,
@@ -8812,8 +8930,11 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 							result = (res == Data.BattleResult.win) and 1 or 2,
 							battle_type = self._battleType or 17,
 							trophy_change = deltaTrophy,
+							player_trophy = finalTrophy,
+							opponent_trophy = oppoTrophy,
 							replay_data = {
 								seed = (input and input._randomSeed) or 12345,
+								is_attacker = (self._player and self._player._isAttacker) or (input and input._isAttacker) or false,
 								round = curRound,
 								result = (res == Data.BattleResult.win) and 1 or 2,
 								trophy_change = deltaTrophy,
@@ -8822,6 +8943,7 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 									_name = (P and P._name) or "Duelist",
 									_level = (P and P._level) or 1,
 									_avatar = (P and P._avatar) or 101,
+									_trophy = finalTrophy,
 									_troopCards = myTroopCards,
 									_troopLevels = (input and input._player and input._player._troopLevels) or {},
 									_fortressHp = (input and input._player and input._player._fortressHp) or (self._player and self._player._fortressHp) or 8000,
@@ -8831,6 +8953,7 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 									_name = oppoName,
 									_level = oppoLevel,
 									_avatar = oppoAvatar,
+									_trophy = oppoTrophy,
 									_troopCards = oppoTroopCards,
 									_troopLevels = (input and input._opponent and input._opponent._troopLevels) or {},
 									_fortressHp = (input and input._opponent and input._opponent._fortressHp) or (self._opponent and self._opponent._fortressHp) or 8000,
@@ -8840,31 +8963,33 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 						})
 					end
 
-					-- Add to local player log
-					pcall(function()
-						if P and P._playerLog then
-							local newLog = require("Log").new(true, {
-								id = repId,
-								timestamp = os.time() * 1000,
-								result_type = (res == Data.BattleResult.win) and Data.BattleResult.win or Data.BattleResult.lose,
-								battle_type = self._battleType or Battle_pb.PB_BATTLE_WORLD_LADDER,
-								is_available = true,
-								replay_id = repId,
-								trophy = deltaTrophy,
-								trophy_ex = 0,
-								player_info = { id = accId, name = (P and P._name) or "Duelist", level = (P and P._level) or 1, avatar = (P and P._avatar) or 101, trophy = pb.rank2 },
-								opponent_info = { id = 9999, name = oppoName, level = oppoLevel, avatar = oppoAvatar, trophy = (input and input._opponent and input._opponent._trophy) or 800 }
-							})
-							P._playerLog:addLog(newLog, Battle_pb.PB_BATTLE_WORLD_LADDER)
-							P._playerLog:addLog(newLog, Battle_pb.PB_BATTLE_PLAYER)
-							P._playerLog:addLog(newLog, Battle_pb.PB_BATTLE_MATCH)
-							P._playerLog._isClashLogsReady = true
-							P._playerLog._isRoomLogsReady = true
-							P._playerLog:sendLogDirty(require("PlayerLog").Event.clash_log_dirty)
-							P._playerLog:sendLogDirty(require("PlayerLog").Event.room_log_dirty)
-							P._playerLog:sendLogDirty(require("PlayerLog").Event.attack_log_dirty)
-						end
-					end)
+					-- Add to local player log (PVP matches ONLY)
+					if not isPveMatch then
+						pcall(function()
+							if P and P._playerLog then
+								local newLog = require("Log").new(true, {
+									id = repId,
+									timestamp = os.time() * 1000,
+									result_type = (res == Data.BattleResult.win) and Data.BattleResult.win or Data.BattleResult.lose,
+									battle_type = self._battleType or Battle_pb.PB_BATTLE_WORLD_LADDER,
+									is_available = true,
+									replay_id = repId,
+									trophy = deltaTrophy,
+									trophy_ex = 0,
+									player_info = { id = accId, name = (P and P._name) or "Duelist", level = (P and P._level) or 1, avatar = (P and P._avatar) or 101, trophy = pb.rank2 },
+									opponent_info = { id = 9999, name = oppoName, level = oppoLevel, avatar = oppoAvatar, trophy = (input and input._opponent and input._opponent._trophy) or 800 }
+								})
+								P._playerLog:addLog(newLog, Battle_pb.PB_BATTLE_WORLD_LADDER)
+								P._playerLog:addLog(newLog, Battle_pb.PB_BATTLE_PLAYER)
+								P._playerLog:addLog(newLog, Battle_pb.PB_BATTLE_MATCH)
+								P._playerLog._isClashLogsReady = true
+								P._playerLog._isRoomLogsReady = true
+								P._playerLog:sendLogDirty(require("PlayerLog").Event.clash_log_dirty)
+								P._playerLog:sendLogDirty(require("PlayerLog").Event.room_log_dirty)
+								P._playerLog:sendLogDirty(require("PlayerLog").Event.attack_log_dirty)
+							end
+						end)
+					end
 
 					local schedId
 					schedId = lc.Scheduler:scheduleScriptFunc(function()
@@ -8923,6 +9048,18 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 								end
 							end
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
+							local bvId, bvCnt = nil, nil
+							if cr.baovat and P and P._propBag then
+								pcall(function()
+									local bId = tonumber(cr.baovat.id)
+									local bCount = tonumber(cr.baovat.count) or 1
+									bvId, bvCnt = bId, bCount
+									P._propBag:changeProps(bId, bCount)
+									lc.sendEvent(Data.Event.prop_dirty, bId)
+								end)
+							end
+							finalizeBattleEnd(0, dGold, curT, nGold, nil, bvCnt, bvId)
+							return
 						end
 						finalizeBattleEnd(0, dGold, curT, nGold)
 					end)
@@ -8965,8 +9102,18 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 							end
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.trophy_dirty))
+							local bvId, bvCnt = nil, nil
+							if cr.baovat and P and P._propBag then
+								pcall(function()
+									local bId = tonumber(cr.baovat.id)
+									local bCount = tonumber(cr.baovat.count) or 1
+									bvId, bvCnt = bId, bCount
+									P._propBag:changeProps(bId, bCount)
+									lc.sendEvent(Data.Event.prop_dirty, bId)
+								end)
+							end
 
-							finalizeBattleEnd(dTrophy, dGold, nTrophy, nGold)
+							finalizeBattleEnd(dTrophy, dGold, nTrophy, nGold, nil, bvCnt, bvId)
 						else
 							-- Fallback on API non-200
 							local curT = (P and P._playerFindClash and P._playerFindClash._trophy) or 800
@@ -9000,14 +9147,16 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 							stars = 3
 						}, function(rawRes)
 							local cr = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+							local bvId, bvCnt = nil, nil
 							if cr and cr.code == 200 then
 								if cr.gold and P then P._gold = cr.gold end
 								if cr.next_level and P and P._playerWorld then
 									local diff = math.max(1, math.min(4, math.floor(levelId / 10000)))
 									P._playerWorld._curLevel[diff] = math.max(P._playerWorld._curLevel[diff] or 0, cr.next_level)
 								end
+
 							end
-							finalizeBattleEnd(1, 1000, ((P and P._playerFindClash and P._playerFindClash._trophy) or 800) + 1, (P and P._gold) or 1000)
+							finalizeBattleEnd(1, 1000, ((P and P._playerFindClash and P._playerFindClash._trophy) or 800) + 1, (P and P._gold) or 1000, nil, bvCnt, bvId)
 						end)
 					else
 						finalizeBattleEnd(1, 1000, ((P and P._playerFindClash and P._playerFindClash._trophy) or 800) + 1, (P and P._gold) or 1000)
@@ -10281,9 +10430,10 @@ function M.patchLateClientData()
 			if (53001 <= effId and effId <= 53022) then effType = 2
 			elseif (53101 <= effId and effId <= 53122) then effType = 3
 			elseif (53201 <= effId and effId <= 53222) then effType = 4
+			elseif (50000 <= effId and effId < 55000) then effType = 1
 			end
 
-			if effType > 0 and cardInfoId > 0 and lc and lc.UserDefault and lc.UserDefault.setStringForKey then
+			if effType >= 2 and cardInfoId > 0 and lc and lc.UserDefault and lc.UserDefault.setStringForKey then
 				local savedStr = lc.UserDefault:getStringForKey("card_effects_" .. cardInfoId, "")
 				local sData = {}
 				if savedStr ~= "" then
@@ -10337,6 +10487,86 @@ pcall(M.patchAudio)
 if _G.PlayerBattle and not _G.PlayerBattle.getGraveCards then
 	_G.PlayerBattle.getGraveCards = function(self)
 		return self._graveCards or {}
+	end
+end
+
+-- -------------------------------------------------------------
+-- B\xc3\xa1o V\xe1\xba\xadt Ng\xc3\xa0n N\xc4\x83m (Millennium Items Activity 22 & Exchange Sync)
+-- -------------------------------------------------------------
+if Data and Data._activityInfo and Data._activityInfo[22] then
+	Data._activityInfo[22]._beginTime = "2020.1.1.0.0"
+	Data._activityInfo[22]._endTime = "2035.12.31.23.59"
+	Data._activityInfo[22]._visibleTime = "2020.1.1.0.0-2035.12.31.23.59"
+end
+if Data and Data._bonusInfo and Data._bonusInfo[4101] then
+	Data._bonusInfo[4101]._rid = { [1] = 40744 }
+end
+if Data and Data._bonusInfo and Data._bonusInfo[4102] then
+	Data._bonusInfo[4102]._rid = { [1] = 40743 }
+	Data._bonusInfo[4102]._count = { [1] = 1 }
+end
+if Data and Data._exchangeInfo then
+	if Data._exchangeInfo[1] then Data._exchangeInfo[1]._number = { 20, 20, 20, 20, 20, 20, 20 } end
+	if Data._exchangeInfo[2] then Data._exchangeInfo[2]._number = { 20, 20, 20, 20, 20 } end
+	if Data._exchangeInfo[3] then Data._exchangeInfo[3]._number = { 20, 20, 20, 20 } end
+end
+
+local _oldSendActivityExchange = ClientData and ClientData.sendActivityExchange
+if ClientData then
+	ClientData.sendActivityExchange = function(exchangeId)
+		if _oldSendActivityExchange then
+			pcall(function() _oldSendActivityExchange(exchangeId) end)
+		end
+		local api = jsbridge and jsbridge.object("jdzcApi")
+		if api and api.post and ClientData._account and ClientData._account.id then
+			pcall(function()
+				api:post("shop_exchange_prop", {
+					account_id = ClientData._account.id,
+					exchange_id = exchangeId,
+					count = 1
+				}, function(rawRes)
+					local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+					if res and res.code == 200 then
+						if res.msg then ToastManager.push(res.msg) end
+						if res.ingot and P then P._ingot = tonumber(res.ingot) or P._ingot end
+						if res.gold and P then P._gold = tonumber(res.gold) or P._gold end
+						if res.props and P and P._propBag then
+							for pid, pcount in pairs(res.props) do
+								local iid = tonumber(pid) or 0
+								if iid > 0 then
+									local curNum = (P._propBag._props[iid] and P._propBag._props[iid]._num) or 0
+									local diff = (tonumber(pcount) or 0) - curNum
+									if diff ~= 0 then
+										P._propBag:changeProps(iid, diff)
+									end
+								end
+							end
+						end
+						if res.reward_type == "card" and res.reward_id and P and P._playerCard then
+							local cid = tonumber(res.reward_id)
+							local ccount = tonumber(res.reward_count) or 1
+							pcall(function()
+								P._playerCard:addCard(cid, ccount)
+								if P._playerCard.sendCardListDirty then
+									local ctype = Data.getType(cid)
+									P._playerCard:sendCardListDirty(ctype)
+								end
+							end)
+							if lc and lc.Dispatcher and Data and Data.Event then
+								lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.card_dirty))
+							end
+						end
+						if lc and lc.Dispatcher and Data and Data.Event then
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.prop_dirty))
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
+							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.ingot_dirty))
+						end
+					elseif res and res.msg then
+						ToastManager.push(res.msg)
+					end
+				end)
+			end)
+		end
 	end
 end
 

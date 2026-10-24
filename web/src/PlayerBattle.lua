@@ -719,7 +719,7 @@ function var_0_0.incAtk(arg_10_0, arg_10_1, arg_10_2, arg_10_3, arg_10_4, arg_10
 			return
 		end
 	end
-	local isIgnore = (arg_10_5 == 14673 or arg_10_4 == arg_10_1._id)
+	local isIgnore = (arg_10_5 == 14673 or arg_10_5 == 14787 or arg_10_4 == arg_10_1._id)
 	table.insert(arg_10_1._underSkills, {
 		_cid = arg_10_4,
 		_sid = arg_10_5,
@@ -2344,7 +2344,7 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 		return false
 	end
 
-	if var_51_0 == arg_51_1 or arg_51_2._cid == arg_51_1._id or arg_51_2._sid == 14632 or arg_51_2._sid == 14719 or arg_51_2._sid == 14777 or (arg_51_2._sid >= 14706 and arg_51_2._sid <= 14710) then
+	if var_51_0 == arg_51_1 or arg_51_2._cid == arg_51_1._id or arg_51_2._sid == 14632 or arg_51_2._sid == 14719 or arg_51_2._sid == 14777 or arg_51_2._sid == 14787 or (arg_51_2._sid >= 14706 and arg_51_2._sid <= 14710) then
 		return false
 	end
 
@@ -2421,21 +2421,12 @@ function var_0_0.addRoundDuration(arg_52_0)
 		var_52_0 = 6
 	end
 
-	local var_52_1 = arg_52_0._round == 1 and arg_52_0._roundTimeMax1 or arg_52_0._roundTimeMax
-	if not var_52_1 or var_52_1 <= 0 then
-		var_52_1 = 120
-	end
+	local var_52_1 = 240
 
 	if ClientData._battleRoundStartInfo then
 		local curTotal = ClientData._battleRoundStartInfo._endTime - ClientData._battleRoundStartInfo._beginTime
 		local var_52_2 = math.min(var_52_1, curTotal + var_52_0)
 		ClientData._battleRoundStartInfo._endTime = ClientData._battleRoundStartInfo._beginTime + var_52_2
-	end
-
-	local scene = lc._runningScene
-	local battleUi = scene and (scene._battleUi or (scene._scene and scene._scene._battleUi))
-	if battleUi and battleUi._isOnlinePvp and type(battleUi.addPvpRoundSeconds) == "function" then
-		battleUi:addPvpRoundSeconds(var_52_0, var_52_1)
 	end
 end
 

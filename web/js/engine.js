@@ -646,7 +646,23 @@
 		    'card_ico_12329': 'res/new/thumb/card_ico_12329.png',
     'card_ico_12329_3': 'res/new/thumb/card_ico_12329_3.png',
 'card_ico_40732': 'res/new/thumb/card_ico_40732.png',
-		'card_ico_40732_3': 'res/new/thumb/card_ico_40732_3.png'
+		'card_ico_40732_3': 'res/new/thumb/card_ico_40732_3.png',
+		'card_nature_01': 'res/cards_img_1/card_nature_01.png',
+		'card_nature_02': 'res/cards_img_1/card_nature_02.png',
+		'card_nature_03': 'res/cards_img_1/card_nature_03.png',
+		'card_nature_04': 'res/cards_img_1/card_nature_04.png',
+		'card_nature_05': 'res/cards_img_1/card_nature_05.png',
+		'card_nature_06': 'res/cards_img_1/card_nature_06.png',
+		'card_nature_07': 'res/cards_img_1/card_nature_07.png',
+		'card_nature_magic': 'res/cards_img_1/card_nature_magic.png',
+		'card_nature_trap': 'res/cards_img_1/card_nature_trap.png',
+		'card_frame_bottom_link': 'res/cards_img_1/card_frame_bottom_link.png',
+		'card_frame_bottom_magic': 'res/cards_img_1/card_frame_bottom_magic.png',
+		'card_frame_bottom_monster': 'res/cards_img_1/card_frame_bottom_monster.png',
+		'card_frame_bottom_trap': 'res/cards_img_1/card_frame_bottom_trap.png',
+		'img_btn_exchange1': 'res/new/img_btn_exchange1.png',
+		'img_btn_exchange2': 'res/new/img_btn_exchange1.png',
+		'img_btn_exchange4': 'res/new/img_btn_exchange1.png'
 	};
 	global.CUSTOM_FRAME_IMAGE_MAP = CUSTOM_FRAME_IMAGE_MAP;
 
@@ -724,6 +740,11 @@
 	}
 
 	cc.spriteFrameCache.getSpriteFrame = function (name) {
+		var custom = (global.jdzcRes && global.jdzcRes.CUSTOM_ICON_REPLACEMENTS) || global.CUSTOM_ICON_REPLACEMENTS;
+		if ((custom && custom[name]) || (CUSTOM_FRAME_IMAGE_MAP && CUSTOM_FRAME_IMAGE_MAP[name])) {
+			var cf = getCustomSpriteFrame(name);
+			if (cf) return cf;
+		}
 		var f = lookupFrame(name);
 		if (f && !isBlankFrame(f)) return f;
 		var customFrame = getCustomSpriteFrame(name);
@@ -1308,10 +1329,24 @@
 		var baseSpriteUploadData = cc.Sprite.WebGLRenderCmd.prototype.uploadData;
 		cc.Sprite.WebGLRenderCmd.prototype.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
 			var node = this._node;
-			if (node && (node.__isBattleUi || node.__inBattleUi) && node._rect && node._rect.width > 1200 && node._rect.height > 600) {
+			if (node && (node.__isBattleUi || node.__inBattleUi) && node._rect && node._rect.width >= 60 && node._rect.height >= 60 && !getUprightRoot(node)) {
 				var locTexture = node._texture;
 				if (!(locTexture && locTexture._textureLoaded && node._rect.width && node._rect.height) || !this._displayedOpacity)
 					return false;
+
+				var isLargeFrame = (node._rect.width > 1200 && node._rect.height > 600);
+				var NX = isLargeFrame ? 16 : 4;
+				var NY = isLargeFrame ? 8 : 4;
+				var neededFloats = NX * NY * 4 * 6;
+				var offset = vertexDataOffset;
+				if (offset + neededFloats > f32buffer.length) {
+					if (cc.renderer && cc.renderer._batchRendering) {
+						cc.renderer._batchRendering();
+						offset = 0;
+					} else {
+						return baseSpriteUploadData.apply(this, arguments);
+					}
+				}
 
 				var opacity = this._displayedOpacity;
 				var r = this._displayedColor.r, g = this._displayedColor.g, b = this._displayedColor.b;
@@ -1329,20 +1364,10 @@
 				var by = node._offsetPosition.y, ty = by + node._rect.height;
 
 				var uvs = this._vertices;
-				var u_left = uvs[1].u, u_right = uvs[3].u;
-				var v_bot = uvs[1].v, v_top = uvs[0].v;
-
-				var NX = 8, NY = 8;
-				var neededFloats = NX * NY * 4 * 6;
-				var offset = vertexDataOffset;
-				if (offset + neededFloats > f32buffer.length) {
-					if (cc.renderer && cc.renderer._batchRendering) {
-						cc.renderer._batchRendering();
-						offset = 0;
-					} else {
-						return 0;
-					}
-				}
+				var u0 = uvs[0].u, v0 = uvs[0].v;
+				var u1 = uvs[1].u, v1 = uvs[1].v;
+				var u2 = uvs[2].u, v2 = uvs[2].v;
+				var u3 = uvs[3].u, v3 = uvs[3].v;
 
 				var winSize = cc.director._winSizeInPoints || cc.director.getWinSize();
 				var camX = winSize.width * 0.5;
@@ -1357,39 +1382,50 @@
 				var offsetY = anchorY - camY;
 
 				for (var iy = 0; iy < NY; iy++) {
-					var y0 = by + (iy / NY) * (ty - by);
-					var y1 = by + ((iy + 1) / NY) * (ty - by);
-					var cv0 = v_bot + (iy / NY) * (v_top - v_bot);
-					var cv1 = v_bot + ((iy + 1) / NY) * (v_top - v_bot);
+					var ty0 = iy / NY, ty1 = (iy + 1) / NY;
+					var y0 = by + ty0 * (ty - by);
+					var y1 = by + ty1 * (ty - by);
 
 					for (var ix = 0; ix < NX; ix++) {
-						var x0 = lx + (ix / NX) * (rx - lx);
-						var x1 = lx + ((ix + 1) / NX) * (rx - lx);
-						var cu0 = u_left + (ix / NX) * (u_right - u_left);
-						var cu1 = u_left + ((ix + 1) / NX) * (u_right - u_left);
+						var tx0 = ix / NX, tx1 = (ix + 1) / NX;
+						var x0 = lx + tx0 * (rx - lx);
+						var x1 = lx + tx1 * (rx - lx);
 
-						// p0
+						// Bilinear UV interpolation (handles both rotated and unrotated atlas rects)
+						var p0u = (1 - ty1) * ((1 - tx0) * u1 + tx0 * u3) + ty1 * ((1 - tx0) * u0 + tx0 * u2);
+						var p0v = (1 - ty1) * ((1 - tx0) * v1 + tx0 * v3) + ty1 * ((1 - tx0) * v0 + tx0 * v2);
+
+						var p1u = (1 - ty0) * ((1 - tx0) * u1 + tx0 * u3) + ty0 * ((1 - tx0) * u0 + tx0 * u2);
+						var p1v = (1 - ty0) * ((1 - tx0) * v1 + tx0 * v3) + ty0 * ((1 - tx0) * v0 + tx0 * v2);
+
+						var p2u = (1 - ty1) * ((1 - tx1) * u1 + tx1 * u3) + ty1 * ((1 - tx1) * u0 + tx1 * u2);
+						var p2v = (1 - ty1) * ((1 - tx1) * v1 + tx1 * v3) + ty1 * ((1 - tx1) * v0 + tx1 * v2);
+
+						var p3u = (1 - ty0) * ((1 - tx1) * u1 + tx1 * u3) + ty0 * ((1 - tx1) * u0 + tx1 * u2);
+						var p3v = (1 - ty0) * ((1 - tx1) * v1 + tx1 * v3) + ty0 * ((1 - tx1) * v0 + tx1 * v2);
+
+						// p0 (x0, y1)
 						var wx0 = x0 * wt.a + y1 * wt.c + wt.tx, wy0 = x0 * wt.b + y1 * wt.d + wt.ty;
 						var dx0 = wx0 - anchorX, dy0 = wy0 - anchorY;
 						var dz0 = zEye - dy0 * sinT; if (dz0 <= 10) dz0 = 10;
 						var k0 = zEye / dz0;
 						var p0x = camX + dx0 * k0, p0y = camY + (offsetY + dy0 * cosT) * k0;
 
-						// p1
+						// p1 (x0, y0)
 						var wx1 = x0 * wt.a + y0 * wt.c + wt.tx, wy1 = x0 * wt.b + y0 * wt.d + wt.ty;
 						var dx1 = wx1 - anchorX, dy1 = wy1 - anchorY;
 						var dz1 = zEye - dy1 * sinT; if (dz1 <= 10) dz1 = 10;
 						var k1 = zEye / dz1;
 						var p1x = camX + dx1 * k1, p1y = camY + (offsetY + dy1 * cosT) * k1;
 
-						// p2
+						// p2 (x1, y1)
 						var wx2 = x1 * wt.a + y1 * wt.c + wt.tx, wy2 = x1 * wt.b + y1 * wt.d + wt.ty;
 						var dx2 = wx2 - anchorX, dy2 = wy2 - anchorY;
 						var dz2 = zEye - dy2 * sinT; if (dz2 <= 10) dz2 = 10;
 						var k2 = zEye / dz2;
 						var p2x = camX + dx2 * k2, p2y = camY + (offsetY + dy2 * cosT) * k2;
 
-						// p3
+						// p3 (x1, y0)
 						var wx3 = x1 * wt.a + y0 * wt.c + wt.tx, wy3 = x1 * wt.b + y0 * wt.d + wt.ty;
 						var dx3 = wx3 - anchorX, dy3 = wy3 - anchorY;
 						var dz3 = zEye - dy3 * sinT; if (dz3 <= 10) dz3 = 10;
@@ -1398,22 +1434,22 @@
 
 						f32buffer[offset] = p0x; f32buffer[offset + 1] = p0y; f32buffer[offset + 2] = z;
 						ui32buffer[offset + 3] = color;
-						f32buffer[offset + 4] = cu0; f32buffer[offset + 5] = cv1;
+						f32buffer[offset + 4] = p0u; f32buffer[offset + 5] = p0v;
 						offset += 6;
 
 						f32buffer[offset] = p1x; f32buffer[offset + 1] = p1y; f32buffer[offset + 2] = z;
 						ui32buffer[offset + 3] = color;
-						f32buffer[offset + 4] = cu0; f32buffer[offset + 5] = cv0;
+						f32buffer[offset + 4] = p1u; f32buffer[offset + 5] = p1v;
 						offset += 6;
 
 						f32buffer[offset] = p2x; f32buffer[offset + 1] = p2y; f32buffer[offset + 2] = z;
 						ui32buffer[offset + 3] = color;
-						f32buffer[offset + 4] = cu1; f32buffer[offset + 5] = cv1;
+						f32buffer[offset + 4] = p2u; f32buffer[offset + 5] = p2v;
 						offset += 6;
 
 						f32buffer[offset] = p3x; f32buffer[offset + 1] = p3y; f32buffer[offset + 2] = z;
 						ui32buffer[offset + 3] = color;
-						f32buffer[offset + 4] = cu1; f32buffer[offset + 5] = cv0;
+						f32buffer[offset + 4] = p3u; f32buffer[offset + 5] = p3v;
 						offset += 6;
 					}
 				}
@@ -2347,12 +2383,48 @@
 	var binCache = {};
 	global.binCache = binCache;
 
+	global.jdzcLoadDbBundle = function () {
+		if (global._dbBundlePromise) return global._dbBundlePromise;
+		var base = (config.resBase || 'res/').replace(/\/+$/, '') + '/';
+		var url = base + 'db_bundle.bin' + (config.version ? '?v=' + config.version : '');
+		global._dbBundlePromise = fetch(url)
+			.then(function (res) {
+				if (!res.ok) throw new Error('HTTP ' + res.status);
+				return res.arrayBuffer();
+			})
+			.then(function (buf) {
+				var view = new DataView(buf);
+				var headerLen = view.getUint32(0, true);
+				var headerStr = new TextDecoder('utf-8').decode(new Uint8Array(buf, 4, headerLen));
+				var header = JSON.parse(headerStr);
+				var bodyOffset = 4 + headerLen;
+				var rawBytes = new Uint8Array(buf);
+				for (var key in header) {
+					var entry = header[key];
+					var off = bodyOffset + entry[0];
+					var len = entry[1];
+					var slice = rawBytes.buffer.slice(off, off + len);
+					binCache[key] = slice;
+				}
+				cc.log('[DB] db_bundle.bin loaded ' + Object.keys(header).length + ' entries into binCache');
+				return true;
+			})
+			.catch(function (err) {
+				cc.log('[DB] db_bundle.bin notice: ' + err);
+				return false;
+			});
+		return global._dbBundlePromise;
+	};
+
 	global.jdzcPreloadBattleEffects = function () {
 		var effects = [
 			'szkp', 'xuanzhong', 'kapaisiwang', 'beiji', 'jdgj',
 			'tssh', 'blzz', 'guanchuan', 'wlfy', 'zh', 'tuika',
 			'touyingbi', 'yaosaizi', 'cmdlbz',
-			'chaoliangsucai1', 'chaoliangsucai2', 'chaoliangsucai3'
+			'chaoliangsucai1', 'chaoliangsucai2', 'chaoliangsucai3',
+			'szfs', 'cdtx', 'gjxz', 'zhxz', 'tsgj', 'tsgf',
+			'qbd', 'wlws', 'spsw', 'jinu', 'dalian01', 'dalian03',
+			'biaoji', 'biaoji2'
 		];
 		var promises = [];
 		var base = (config.resBase || 'res/').replace(/\/+$/, '') + '/';
@@ -2799,6 +2871,15 @@
 		isPlaying: function () { return this._playing; },
 		setSpeed: function (speed) { this._speed = speed; return this; },
 		getSpeed: function () { return this._speed; },
+		setTimeScale: function (ts) { return this.setSpeed(ts); },
+		getAnimation: function () {
+			var self = this;
+			return {
+				play: function (n) { return self.play(n); },
+				stop: function () { return self.stop(); },
+				gotoAndPlay: function (n, loop) { return self.gotoAndPlay(n, loop); }
+			};
+		},
 	});
 
 	cc.DragonBonesNode.create = function () { return new cc.DragonBonesNode(); };
@@ -3575,8 +3656,11 @@
 	 * uploads is only rebuilt when the node's transform is marked dirty, so
 	 * a sprite that got its art late keeps four vertices at the same point
 	 * and draws nothing at all. We need to force a full re-render. */
+	var baseSpriteSetTexture = cc.Sprite && cc.Sprite.prototype ? cc.Sprite.prototype.setTexture : null;
+
 	function attachTexture(sprite, texture) {
 		if (!sprite || !texture) return;
+		if (sprite.__wantedTexture && sprite.__wantedTexture !== texture) return;
 
 		/* Not everything waiting for a texture is a cc.Sprite. A ccui widget
 		 * keeps its picture in a renderer of its own and has no setTexture at
@@ -3602,9 +3686,18 @@
 			return;
 		}
 
-		sprite.setTexture(texture);
-		sprite.setTextureRect(cc.rect(0, 0,
-			texture.getPixelsWide(), texture.getPixelsHigh()));
+		var oldSize = sprite.getContentSize ? sprite.getContentSize() : { width: 0, height: 0 };
+		var wasZeroSize = (oldSize.width === 0 || oldSize.height === 0);
+
+		if (baseSpriteSetTexture) {
+			baseSpriteSetTexture.call(sprite, texture);
+		} else {
+			sprite.setTexture(texture);
+		}
+		var tw = texture.getPixelsWide(), th = texture.getPixelsHigh();
+		if (tw > 0 && th > 0) {
+			sprite.setTextureRect(cc.rect(0, 0, tw, th));
+		}
 		/* Force the renderer to rebuild the quad by marking the node dirty.
 		 * Multiple approaches needed because different cocos2d-html5 builds
 		 * handle dirty flags differently. */
@@ -3621,10 +3714,56 @@
 		}
 		/* Force content size update if it was set from manifest */
 		var size = sprite.getContentSize();
-		if (size.width === 0 || size.height === 0) {
-			sprite.setContentSize(cc.size(
-				texture.getPixelsWide(), texture.getPixelsHigh()));
+		if ((size.width === 0 || size.height === 0) && tw > 0 && th > 0) {
+			sprite.setContentSize(cc.size(tw, th));
 		}
+		/* If children (such as CardSprite's _pEffectArea and _pBottomEffectArea)
+		 * were added via lc.addChildToCenter while sprite had 0x0 size, they got
+		 * placed at (0, 0) (bottom-left corner). Re-center them now. */
+		if (wasZeroSize && tw > 0 && th > 0 && sprite.getChildren) {
+			var children = sprite.getChildren();
+			for (var ci = 0; children && ci < children.length; ci++) {
+				var child = children[ci];
+				if (child && child.getPosition) {
+					var cpos = child.getPosition();
+					if (cpos.x === 0 && cpos.y === 0) {
+						child.setPosition(cc.p(tw / 2, th / 2));
+					}
+				}
+			}
+		}
+	}
+
+	if (baseSpriteSetTexture) {
+		cc.Sprite.prototype.setTexture = function (texture) {
+			if (!texture) {
+				this.__wantedTexture = null;
+				return baseSpriteSetTexture.call(this, null);
+			}
+			if (typeof texture === 'string') {
+				texture = cc.textureCache.addImage(texture);
+			}
+			this.__wantedTexture = texture;
+			if (texture && typeof texture.isLoaded === 'function' && texture.isLoaded()) {
+				attachTexture(this, texture);
+				return;
+			}
+			baseSpriteSetTexture.call(this, texture);
+			if (texture && texture._contentSize && texture._contentSize.width > 0 && texture._contentSize.height > 0) {
+				var curSz = this.getContentSize();
+				if (curSz.width === 0 || curSz.height === 0) {
+					this.setContentSize(cc.size(texture._contentSize.width, texture._contentSize.height));
+				}
+			}
+			if (texture && typeof texture.addEventListener === 'function') {
+				var self = this;
+				texture.addEventListener('load', function () {
+					if (self.__wantedTexture === texture) {
+						attachTexture(self, texture);
+					}
+				});
+			}
+		};
 	}
 
 	global.jdzcAttachTexture = attachTexture;

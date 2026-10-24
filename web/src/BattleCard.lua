@@ -252,9 +252,9 @@ function var_0_0.resetMonster(arg_17_0)
 			arg_17_0._maxHp = 16000
 			arg_17_0._negativeStatus[BattleData.NegativeType.manacle] = false
 			arg_17_0._negativeStatus[BattleData.NegativeType.atkFrozen] = false
-			if arg_17_0._owner then
-				arg_17_0._owner:incShield(arg_17_0, { 12002, 12003, 12004 }, false, false, arg_17_0._id, 14719, Data.SkillMode.using)
-			end
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
 		else
 			arg_17_0._atk = 8000
 			arg_17_0._hp = 8000
@@ -273,8 +273,13 @@ function var_0_0.resetMonster(arg_17_0)
 		arg_17_0._hp = 2800 + bonus
 		arg_17_0._maxAtk = 2000
 		arg_17_0._maxHp = 2800
-		if marks >= 3 and arg_17_0._owner then
-			arg_17_0._owner:incShield(arg_17_0, { 12002, 12003, 12004, 12008, 12009, 12010 }, false, false, arg_17_0._id, 14707, Data.SkillMode.using)
+		if marks >= 3 then
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = true
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = true
+			arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
 		end
 	end
 
@@ -282,18 +287,12 @@ function var_0_0.resetMonster(arg_17_0)
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = true
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = true
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
-		if arg_17_0._owner then
-			arg_17_0._owner:incShield(arg_17_0, { 12008, 12009, 12010 }, false, false, arg_17_0._id, 12008, Data.SkillMode.using)
-		end
 	end
 
-	if (arg_17_0:hasSkillFast(12002) or (arg_17_0._info and B.tableContain(arg_17_0._info._skillId, 12002)) or arg_17_0:isInfoId(40737) or arg_17_0:isInfoId(40739)) and arg_17_0._status == BattleData.CardStatus.board then
+	if (arg_17_0:hasSkillFast(12002) or (arg_17_0._info and B.tableContain(arg_17_0._info._skillId, 12002)) or arg_17_0:isInfoId(40737) or arg_17_0:isInfoId(40739) or arg_17_0:isInfoId(40745) or arg_17_0._infoId == 40745) and arg_17_0._status == BattleData.CardStatus.board then
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
-		if arg_17_0._owner then
-			arg_17_0._owner:incShield(arg_17_0, { 12002, 12003, 12004 }, false, false, arg_17_0._id, 12002, Data.SkillMode.using)
-		end
 	end
 
 	arg_17_0._monsterTarget = nil
@@ -1109,9 +1108,9 @@ function var_0_0.hasBuff(arg_36_0, arg_36_1, arg_36_2)
 		   (arg_36_2 == BattleData.PositiveType.shieldOppoTrap and (arg_36_0:hasSkillFast(12010) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12010)) or arg_36_0:isInfoId(40734) or arg_36_0:isInfoId(40736))) then
 			return true
 		end
-		if (arg_36_2 == BattleData.PositiveType.shieldExMonster and (arg_36_0:hasSkillFast(12002) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12002)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739))) or
-		   (arg_36_2 == BattleData.PositiveType.shieldExMagic and (arg_36_0:hasSkillFast(12003) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12003)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739))) or
-		   (arg_36_2 == BattleData.PositiveType.shieldExTrap and (arg_36_0:hasSkillFast(12004) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12004)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739))) then
+		if (arg_36_2 == BattleData.PositiveType.shieldExMonster and (arg_36_0:hasSkillFast(12002) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12002)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739) or arg_36_0:isInfoId(40745))) or
+		   (arg_36_2 == BattleData.PositiveType.shieldExMagic and (arg_36_0:hasSkillFast(12003) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12003)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739) or arg_36_0:isInfoId(40745))) or
+		   (arg_36_2 == BattleData.PositiveType.shieldExTrap and (arg_36_0:hasSkillFast(12004) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12004)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739) or arg_36_0:isInfoId(40745))) then
 			return true
 		end
 	end
@@ -1239,7 +1238,7 @@ function var_0_0.hasShieldInType(arg_40_0, arg_40_1, arg_40_2)
 		end
 	end
 
-	if not arg_40_2 and (arg_40_0:isInfoId(40734) or arg_40_0._infoId == 40734 or arg_40_0:isInfoId(40736) or arg_40_0._infoId == 40736 or arg_40_0:hasSkillFast(12008)) and arg_40_0._status == BattleData.CardStatus.board then
+	if not arg_40_2 and (arg_40_0:isInfoId(40734) or arg_40_0._infoId == 40734 or arg_40_0:isInfoId(40736) or arg_40_0._infoId == 40736 or arg_40_0:isInfoId(40745) or arg_40_0._infoId == 40745 or arg_40_0:hasSkillFast(12008)) and arg_40_0._status == BattleData.CardStatus.board then
 		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
 			return true
 		end
@@ -1332,7 +1331,7 @@ function var_0_0.hasShieldExInType(arg_41_0, arg_41_1, arg_41_2)
 		end
 	end
 
-	if not arg_41_2 and (arg_41_0:isInfoId(40734) or arg_41_0._infoId == 40734 or arg_41_0:isInfoId(40736) or arg_41_0._infoId == 40736 or arg_41_0:isInfoId(40737) or arg_41_0._infoId == 40737 or arg_41_0:isInfoId(40739) or arg_41_0._infoId == 40739 or arg_41_0:hasSkillFast(12008) or arg_41_0:hasSkillFast(12002)) and arg_41_0._status == BattleData.CardStatus.board then
+	if not arg_41_2 and (arg_41_0:isInfoId(40734) or arg_41_0._infoId == 40734 or arg_41_0:isInfoId(40736) or arg_41_0._infoId == 40736 or arg_41_0:isInfoId(40737) or arg_41_0._infoId == 40737 or arg_41_0:isInfoId(40739) or arg_41_0._infoId == 40739 or arg_41_0:isInfoId(40745) or arg_41_0._infoId == 40745 or arg_41_0:hasSkillFast(12008) or arg_41_0:hasSkillFast(12002)) and arg_41_0._status == BattleData.CardStatus.board then
 		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
 			return true
 		end
@@ -2480,7 +2479,12 @@ function var_0_0.addGodMark(arg_89_0, arg_89_1, arg_89_2, arg_89_3, arg_89_4, ar
 			arg_89_0._maxAtk = 2000
 			arg_89_0._maxHp = 2800
 			if marks >= 3 then
-				arg_89_0._owner:incShield(arg_89_0, { 12002, 12003, 12004, 12008, 12009, 12010 }, false, false, arg_89_0._id, 14707, Data.SkillMode.using)
+				arg_89_0._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
+				arg_89_0._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
+				arg_89_0._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
+				arg_89_0._positiveStatus[BattleData.PositiveType.shieldOppoMonster] = true
+				arg_89_0._positiveStatus[BattleData.PositiveType.shieldOppoMagic] = true
+				arg_89_0._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
 			end
 		end
 
@@ -2869,9 +2873,9 @@ function var_0_0.removeMark(arg_104_0, arg_104_1, arg_104_2, arg_104_3)
 					arg_104_0._hp = 16000
 					arg_104_0._maxAtk = 16000
 					arg_104_0._maxHp = 16000
-					if arg_104_0._owner then
-						arg_104_0._owner:incShield(arg_104_0, { 12002, 12003, 12004 }, false, false, arg_104_0._id, 14719, Data.SkillMode.using)
-					end
+					arg_104_0._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
+					arg_104_0._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
+					arg_104_0._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
 				end
 			else
 				arg_104_0._negativeStatus[BattleData.NegativeType.manacle] = true
@@ -5983,7 +5987,7 @@ function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
 		end
 	end
 
-	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739) then
+	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739 or arg_127_0:isInfoId(40745) or arg_127_0._infoId == 40745) then
 		return true
 	end
 
@@ -6915,7 +6919,7 @@ function var_0_0.isProtectedBy6189(arg_157_0)
 end
 
 function var_0_0.disableUnderSkill(arg_158_0, arg_158_1, arg_158_2, arg_158_3, arg_158_4)
-	if arg_158_1._ignoreDisable == true or arg_158_1._sid == 14673 or arg_158_1._sid == 14719 or arg_158_1._sid == 14720 or arg_158_1._sid == 14721 or (arg_158_1._sid >= 14706 and arg_158_1._sid <= 14710) then
+	if arg_158_1._ignoreDisable == true or arg_158_1._sid == 14673 or arg_158_1._sid == 14719 or arg_158_1._sid == 14720 or arg_158_1._sid == 14721 or arg_158_1._sid == 14787 or (arg_158_1._sid >= 14706 and arg_158_1._sid <= 14710) then
 		return false
 	end
 
@@ -6930,7 +6934,7 @@ function var_0_0.disableUnderSkill(arg_158_0, arg_158_1, arg_158_2, arg_158_3, a
 		return false
 	end
 
-	if (arg_158_0:isInfoId(12326) or arg_158_0._infoId == 12326) and ((var_158_0 ~= nil and var_158_0._owner == arg_158_0._owner) or arg_158_1._cid == 0 or arg_158_1._cid == nil) then
+	if (arg_158_0:isInfoId(12326) or arg_158_0._infoId == 12326 or arg_158_0:isInfoId(40745) or arg_158_0._infoId == 40745) and ((var_158_0 ~= nil and var_158_0._owner == arg_158_0._owner) or arg_158_1._cid == 0 or arg_158_1._cid == nil) then
 		return false
 	end
 
@@ -7013,7 +7017,7 @@ function var_0_0.disableUnderSkillByType(arg_160_0, arg_160_1, arg_160_2, arg_16
 	for iter_160_0 = 1, #arg_160_0._underSkills do
 		local var_160_1 = arg_160_0._underSkills[iter_160_0]
 
-		if var_160_1._disabled ~= true and var_160_1._sid ~= 14673 and var_160_1._sid ~= 14719 and var_160_1._sid ~= 14720 and var_160_1._sid ~= 14721 and not (var_160_1._sid >= 14706 and var_160_1._sid <= 14710) and var_160_1._cid ~= arg_160_0._id and math.floor(var_160_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_160_1 and var_160_1._mode ~= Data.SkillMode.halo and var_160_1._mode ~= Data.SkillMode.under_attack and var_160_1._mode ~= Data.SkillMode.under_attack_damage and var_160_1._mode ~= Data.SkillMode.under_spell_damage and arg_160_0:disableUnderSkill(var_160_1, arg_160_2, arg_160_3, arg_160_4) then
+		if var_160_1._disabled ~= true and var_160_1._sid ~= 14673 and var_160_1._sid ~= 14719 and var_160_1._sid ~= 14720 and var_160_1._sid ~= 14721 and var_160_1._sid ~= 14787 and not (var_160_1._sid >= 14706 and var_160_1._sid <= 14710) and var_160_1._cid ~= arg_160_0._id and math.floor(var_160_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_160_1 and var_160_1._mode ~= Data.SkillMode.halo and var_160_1._mode ~= Data.SkillMode.under_attack and var_160_1._mode ~= Data.SkillMode.under_attack_damage and var_160_1._mode ~= Data.SkillMode.under_spell_damage and arg_160_0:disableUnderSkill(var_160_1, arg_160_2, arg_160_3, arg_160_4) then
 			var_160_0 = true
 		end
 	end
@@ -7047,7 +7051,7 @@ function var_0_0.disableUnderSkillByOppoType(arg_161_0, arg_161_1, arg_161_2, ar
 			ignoreDefendOk = true
 		end
 
-		if var_161_1._disabled ~= true and var_161_1._sid ~= 14719 and var_161_1._sid ~= 14720 and var_161_1._sid ~= 14721 and var_161_1._sid ~= 14777 and not (var_161_1._sid >= 14706 and var_161_1._sid <= 14710) and var_161_1._cid ~= arg_161_0._id and math.floor(var_161_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_161_1 and isOppo and ignoreDefendOk and var_161_1._mode ~= Data.SkillMode.halo and var_161_1._mode ~= Data.SkillMode.under_attack and var_161_1._mode ~= Data.SkillMode.under_attack_damage and var_161_1._mode ~= Data.SkillMode.under_spell_damage and arg_161_0:disableUnderSkill(var_161_1, arg_161_2, arg_161_3, arg_161_4) then
+		if var_161_1._disabled ~= true and var_161_1._sid ~= 14719 and var_161_1._sid ~= 14720 and var_161_1._sid ~= 14721 and var_161_1._sid ~= 14777 and var_161_1._sid ~= 14787 and not (var_161_1._sid >= 14706 and var_161_1._sid <= 14710) and var_161_1._cid ~= arg_161_0._id and math.floor(var_161_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_161_1 and isOppo and ignoreDefendOk and var_161_1._mode ~= Data.SkillMode.halo and var_161_1._mode ~= Data.SkillMode.under_attack and var_161_1._mode ~= Data.SkillMode.under_attack_damage and var_161_1._mode ~= Data.SkillMode.under_spell_damage and arg_161_0:disableUnderSkill(var_161_1, arg_161_2, arg_161_3, arg_161_4) then
 			var_161_0 = true
 		end
 	end

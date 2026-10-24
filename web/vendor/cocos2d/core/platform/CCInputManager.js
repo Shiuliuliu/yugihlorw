@@ -226,6 +226,10 @@ cc.inputManager = /** @lends cc.inputManager# */{
      * @return {Object}
      */
     getHTMLElementPosition: function (element) {
+        var now = (window.performance && window.performance.now) ? window.performance.now() : Date.now();
+        if (element._cachedPos && (now - element._cachedPosTime < 150)) {
+            return element._cachedPos;
+        }
         var docElem = document.documentElement;
         var win = window;
         var box = null;
@@ -239,12 +243,15 @@ cc.inputManager = /** @lends cc.inputManager# */{
                 height: parseInt(element.style.height)
             };
         }
-        return {
+        var pos = {
             left: box.left + win.pageXOffset - docElem.clientLeft,
             top: box.top + win.pageYOffset - docElem.clientTop,
             width: box.width,
             height: box.height
         };
+        element._cachedPos = pos;
+        element._cachedPosTime = now;
+        return pos;
     },
 
     /**

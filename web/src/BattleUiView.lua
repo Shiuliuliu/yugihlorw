@@ -101,7 +101,27 @@ function var_0_0.showResult(arg_4_0)
 		var_4_1 = BattleResultDialog.Type.world_boss_result
 	end
 
-	if arg_4_0._battleType == (Data.BattleType.PVP_room and arg_4_0._isObserver) or arg_4_0._battleType == Data.BattleType.recommend_train then
+	if arg_4_0._baseBattleType == Data.BattleType.base_replay then
+		local repLog = arg_4_0._input and arg_4_0._input._replayingLog
+		local pRes = (arg_4_0._player and arg_4_0._player._resultType) or (repLog and repLog._resultType) or Data.BattleResult.draw
+		local pUser = (repLog and repLog._player) or arg_4_0._player
+		local oUser = (repLog and repLog._opponent) or arg_4_0._opponent
+		if arg_4_0._player and pUser and not pUser._trophy then
+			pUser._trophy = arg_4_0._player._trophy
+		end
+		if arg_4_0._opponent and oUser and not oUser._trophy then
+			oUser._trophy = arg_4_0._opponent._trophy
+		end
+		var_4_0 = {
+			_resultType = pRes,
+			_player = pUser,
+			_opponent = oUser,
+			_battleType = arg_4_0._replayType or arg_4_0._battleType,
+			_trophy = (repLog and repLog._trophy) or 0,
+			_oppoTrophy = (repLog and repLog._oppoTrophy) or (repLog and repLog._trophy) or 0,
+			_log = repLog
+		}
+	elseif arg_4_0._battleType == (Data.BattleType.PVP_room and arg_4_0._isObserver) or arg_4_0._battleType == Data.BattleType.recommend_train then
 		var_4_0 = {
 			_resultType = arg_4_0._player._resultType,
 			_player = arg_4_0._player,
@@ -405,8 +425,7 @@ function var_0_0.enterFilmMode(arg_18_0, arg_18_1, arg_18_2)
 
 	var_18_7(arg_18_0._btnSetting)
 	if arg_18_0._btnAuto then
-		arg_18_0._btnAuto:setVisible(false)
-		arg_18_0._btnAuto:setTouchEnabled(false)
+		var_18_7(arg_18_0._btnAuto)
 	end
 	var_18_7(arg_18_0._btnSpeed)
 end
@@ -432,8 +451,7 @@ function var_0_0.leaveFilmMode(arg_20_0)
 
 		var_20_3(arg_20_0._btnSetting)
 		if arg_20_0._btnAuto then
-			arg_20_0._btnAuto:setVisible(false)
-			arg_20_0._btnAuto:setTouchEnabled(false)
+			var_20_3(arg_20_0._btnAuto)
 		end
 		if not arg_20_0._isOnlinePvp and arg_20_0._baseBattleType ~= Data.BattleType.base_PVP then
 			var_20_3(arg_20_0._btnSpeed)
@@ -850,12 +868,12 @@ function var_0_0.updateRoundButton(arg_50_0)
 
 	if arg_50_0._dropLayer then
 		arg_50_0._btnEndRound:setTouchEnabled(false)
-	elseif arg_50_0._player._macroStatus == BattleData.Status.round_begin then
+	elseif ((arg_50_0._playerUi and arg_50_0._playerUi._isController) and arg_50_0._player or arg_50_0._opponent)._macroStatus == BattleData.Status.round_begin then
 		arg_50_0._btnEndRound:setTouchEnabled(false)
 		arg_50_0._btnEndRound:loadTextureNormal("bat_btn_6", ccui.TextureResType.plistType)
 		arg_50_0._pRoundTitle:setSpriteFrame("bat_label_atk")
 		if arg_50_0._pRoundText then arg_50_0._pRoundText:setString("TẤN CÔNG") end
-	elseif arg_50_0._opponent._macroStatus == BattleData.Status.round_begin then
+	elseif ((arg_50_0._playerUi and arg_50_0._playerUi._isController) and arg_50_0._opponent or arg_50_0._player)._macroStatus == BattleData.Status.round_begin then
 		arg_50_0._btnEndRound:setTouchEnabled(false)
 		arg_50_0._btnEndRound:loadTextureNormal("bat_btn_6", ccui.TextureResType.plistType)
 		arg_50_0._pRoundTitle:setSpriteFrame("bat_label_def")
@@ -992,7 +1010,6 @@ function var_0_0.showDropHand(arg_53_0)
 	arg_53_0._btnSetting:setTouchEnabled(false)
 	arg_53_0._btnReplay:setTouchEnabled(false)
 	if arg_53_0._btnAuto then
-		arg_53_0._btnAuto:setVisible(false)
 		arg_53_0._btnAuto:setTouchEnabled(false)
 	end
 	arg_53_0._btnSpeed:setTouchEnabled(false)
@@ -1072,8 +1089,7 @@ function var_0_0.hideDropHand(arg_58_0)
 		arg_58_0._btnSetting:setTouchEnabled(true)
 		arg_58_0._btnReplay:setTouchEnabled(true)
 		if arg_58_0._btnAuto then
-			arg_58_0._btnAuto:setVisible(false)
-			arg_58_0._btnAuto:setTouchEnabled(false)
+			arg_58_0._btnAuto:setTouchEnabled(true)
 		end
 		if not arg_58_0._isOnlinePvp and arg_58_0._baseBattleType ~= Data.BattleType.base_PVP then
 			arg_58_0._btnSpeed:setTouchEnabled(true)

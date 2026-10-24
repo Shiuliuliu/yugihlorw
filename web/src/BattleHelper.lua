@@ -5703,6 +5703,8 @@ function var_0_0.getXYZCandidates(arg_254_0, arg_254_1, arg_254_2, arg_254_3, ar
 		var_254_4 = B.filterInKeywordCards(var_254_4, 300)
 	elseif arg_254_1._infoId == 40730 then
 		var_254_4 = B.filterInKeywordCards(var_254_4, 301)
+	elseif arg_254_1._infoId == 40508 then
+		var_254_4 = B.filterInKeywordCards(var_254_4, 192)
 	end
 
 	for iter_254_3 = 1, #var_254_4 do
@@ -5738,6 +5740,15 @@ function var_0_0.isValidXYZComponents(arg_255_0, arg_255_1, arg_255_2, arg_255_3
 		end
 		for _, c in ipairs(arg_255_2) do
 			if c:getStar() ~= 8 or not c:isKeyword(301) then
+				return false
+			end
+		end
+	elseif arg_255_1._infoId == 40508 then
+		if #B.filterInKeywordCards(arg_255_2, 192) < #arg_255_2 then
+			return false
+		end
+		for _, c in ipairs(arg_255_2) do
+			if c:getStar() ~= 10 or not c:isKeyword(192) then
 				return false
 			end
 		end
@@ -5988,7 +5999,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 	for iter_260_1 = 1, #var_260_1 do
 		local var_260_5 = var_260_1[iter_260_1]
 
-		if not var_260_4[var_260_5._id] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
+		if not var_260_4[var_260_5._id] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId == 40745 and (var_260_5._info and var_260_5._info._quality == 5 and (var_260_5:isKeyword(303) or (var_260_5._info and var_260_5._info._keyword == 303)))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and arg_260_1._infoId ~= 40745 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
 			var_260_4[var_260_5._id] = true
 			var_260_3[#var_260_3 + 1] = var_260_5
 		end

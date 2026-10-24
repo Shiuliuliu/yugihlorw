@@ -1,5 +1,5 @@
 local var_0_0 = {}
-local var_0_1 = 100
+local var_0_1 = 400
 
 function var_0_0.init()
 	var_0_0._textures = {}
@@ -29,7 +29,7 @@ end
 
 function var_0_0.loadTexture(arg_3_0, arg_3_1)
 	if var_0_0._textures == nil then var_0_0.init() end
-	if not var_0_0._textures[arg_3_0] then
+	if not var_0_0._textures[arg_3_0] or not lc.TextureCache:getTextureForKey(arg_3_0) then
 		if var_0_0._count >= var_0_1 then
 			var_0_0.unloadOldestTexture()
 		end

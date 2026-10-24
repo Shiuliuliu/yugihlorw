@@ -478,21 +478,53 @@ cc._tmp.WebGLTexture2D = function () {
             if(premultiplied)
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 
+            var pixelsWide = self._htmlElementObj.width;
+            var pixelsHigh = self._htmlElementObj.height;
+
             // Specify OpenGL texture image
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, self._htmlElementObj);
 
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            var isWebGL2 = (typeof WebGL2RenderingContext !== "undefined" && gl instanceof WebGL2RenderingContext);
+            var isPOT = (pixelsWide > 0 && pixelsHigh > 0 && (pixelsWide & (pixelsWide - 1)) === 0 && (pixelsHigh & (pixelsHigh - 1)) === 0);
+            var canMipmap = (isWebGL2 || isPOT) && pixelsWide >= 64 && pixelsHigh >= 64;
+            if (canMipmap) {
+                try {
+                    if (gl.GENERATE_MIPMAP_HINT) {
+                        gl.hint(gl.GENERATE_MIPMAP_HINT, gl.NICEST);
+                    }
+                    gl.generateMipmap(gl.TEXTURE_2D);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+                    self._hasMipmaps = true;
+                } catch (e) {
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    self._hasMipmaps = false;
+                }
+            } else {
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                self._hasMipmaps = false;
+            }
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+            try {
+                if (cc.glExt && cc.glExt.anisotropic === undefined) {
+                    cc.glExt.anisotropic = gl.getExtension("EXT_texture_filter_anisotropic") ||
+                        gl.getExtension("MOZ_EXT_texture_filter_anisotropic") ||
+                        gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic") || null;
+                    if (cc.glExt.anisotropic) {
+                        cc.glExt.maxAnisotropy = Math.min(16, gl.getParameter(cc.glExt.anisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT) || 4);
+                    }
+                }
+                if (cc.glExt && cc.glExt.anisotropic && cc.glExt.maxAnisotropy > 1) {
+                    gl.texParameterf(gl.TEXTURE_2D, cc.glExt.anisotropic.TEXTURE_MAX_ANISOTROPY_EXT, cc.glExt.maxAnisotropy);
+                }
+            } catch (e) {}
 
             self.shaderProgram = cc.shaderCache.programForKey(cc.SHADER_POSITION_TEXTURE);
             cc.glBindTexture2D(null);
             if(premultiplied)
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
-
-            var pixelsWide = self._htmlElementObj.width;
-            var pixelsHigh = self._htmlElementObj.height;
 
             self._pixelsWide = self._contentSize.width = pixelsWide;
             self._pixelsHigh = self._contentSize.height = pixelsHigh;
@@ -501,7 +533,6 @@ cc._tmp.WebGLTexture2D = function () {
             self.maxT = 1;
 
             self._hasPremultipliedAlpha = premultiplied;
-            self._hasMipmaps = false;
 
             //dispatch load event to listener.
             self.dispatchEvent("load");
@@ -605,8 +636,11 @@ cc._tmp.WebGLTexture2D = function () {
             if (!this._hasMipmaps)
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
             else
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            if (cc.glExt && cc.glExt.anisotropic && cc.glExt.maxAnisotropy > 1) {
+                gl.texParameterf(gl.TEXTURE_2D, cc.glExt.anisotropic.TEXTURE_MAX_ANISOTROPY_EXT, cc.glExt.maxAnisotropy);
+            }
         },
 
         /**

@@ -141,7 +141,7 @@
 		});
 	}
 
-	var atlasSlots = 2, atlasQueue = [];
+	var atlasSlots = 8, atlasQueue = [];
 	function withAtlasSlot(task) {
 		return new Promise(function (resolve, reject) {
 			function run() {
@@ -185,9 +185,17 @@
 		var d = out.data, a = alpha.data;
 		for (var i = 0, n = d.length; i < n; i += 4) {
 			var alphaVal = a[i];
-			d[i] = (d[i] * alphaVal) / 255;
-			d[i + 1] = (d[i + 1] * alphaVal) / 255;
-			d[i + 2] = (d[i + 2] * alphaVal) / 255;
+			if (alphaVal === 255) {
+				d[i + 3] = 255;
+				continue;
+			}
+			if (alphaVal === 0) {
+				d[i] = d[i + 1] = d[i + 2] = d[i + 3] = 0;
+				continue;
+			}
+			d[i] = ((d[i] * alphaVal) / 255) | 0;
+			d[i + 1] = ((d[i + 1] * alphaVal) / 255) | 0;
+			d[i + 2] = ((d[i + 2] * alphaVal) / 255) | 0;
 			d[i + 3] = alphaVal;
 		}
 
@@ -322,7 +330,23 @@
 		'card_ico_40732': { path: 'res/new/thumb/card_ico_40732.png', w: 82, h: 82 },
 		'card_ico_40732_3': { path: 'res/new/thumb/card_ico_40732_3.png', w: 82, h: 82 },
 		'card_ico_12330': { path: 'res/new/thumb/card_ico_12330.png', w: 82, h: 82 },
-		'card_ico_12330_3': { path: 'res/new/thumb/card_ico_12330_3.png', w: 82, h: 82 }
+		'card_ico_12330_3': { path: 'res/new/thumb/card_ico_12330_3.png', w: 82, h: 82 },
+		'card_nature_01': { path: 'res/cards_img_1/card_nature_01.png', w: 48, h: 50 },
+		'card_nature_02': { path: 'res/cards_img_1/card_nature_02.png', w: 48, h: 50 },
+		'card_nature_03': { path: 'res/cards_img_1/card_nature_03.png', w: 48, h: 50 },
+		'card_nature_04': { path: 'res/cards_img_1/card_nature_04.png', w: 48, h: 50 },
+		'card_nature_05': { path: 'res/cards_img_1/card_nature_05.png', w: 48, h: 50 },
+		'card_nature_06': { path: 'res/cards_img_1/card_nature_06.png', w: 48, h: 50 },
+		'card_nature_07': { path: 'res/cards_img_1/card_nature_07.png', w: 48, h: 50 },
+		'card_nature_magic': { path: 'res/cards_img_1/card_nature_magic.png', w: 48, h: 50 },
+		'card_nature_trap': { path: 'res/cards_img_1/card_nature_trap.png', w: 48, h: 50 },
+		'card_frame_bottom_link': { path: 'res/cards_img_1/card_frame_bottom_link.png', w: 246, h: 68 },
+		'card_frame_bottom_magic': { path: 'res/cards_img_1/card_frame_bottom_magic.png', w: 246, h: 68 },
+		'card_frame_bottom_monster': { path: 'res/cards_img_1/card_frame_bottom_monster.png', w: 246, h: 68 },
+		'card_frame_bottom_trap': { path: 'res/cards_img_1/card_frame_bottom_trap.png', w: 246, h: 68 },
+		'img_btn_exchange1': { path: 'res/new/img_btn_exchange1.png', w: 118, h: 118 },
+		'img_btn_exchange2': { path: 'res/new/img_btn_exchange1.png', w: 118, h: 118 },
+		'img_btn_exchange4': { path: 'res/new/img_btn_exchange1.png', w: 118, h: 118 }
 	};
 	global.CUSTOM_ICON_REPLACEMENTS = CUSTOM_ICON_REPLACEMENTS;
 	R.CUSTOM_ICON_REPLACEMENTS = CUSTOM_ICON_REPLACEMENTS;
@@ -483,15 +507,8 @@
 	function emptyTexture(key) {
 		var tex = new cc.Texture2D();
 		tex._hasPremultipliedAlpha = true;
-		if (key && R.manifest && R.manifest.sizes) {
-			var normalized = key.replace(/\.jpm$/, '.jpg');
-			var size = R.manifest.sizes[key] ||
-				   R.manifest.sizes[normalized] ||
-				   R.manifest.sizes[key.replace(/^res\//, '')] ||
-				   R.manifest.sizes[normalized.replace(/^res\//, '')] ||
-				   R.manifest.sizes['res/' + key.replace(/^res\//, '')] ||
-				   R.manifest.sizes['res/' + normalized.replace(/^res\//, '')];
-			// cc.log('[EMPTY_TEX]', key, 'size:', JSON.stringify(size));
+		if (key) {
+			var size = R.sizeOf(key);
 			if (size && size[0] && size[1]) {
 				tex._contentSize.width = size[0];
 				tex._contentSize.height = size[1];
@@ -937,12 +954,21 @@
 
 	/* [width, height] of a loose image, known before it downloads */
 	R.sizeOf = function (path) {
-		if (!R.manifest || !R.manifest.sizes || !path) return null;
+		if (!path) return null;
 		if (typeof path === 'string') path = path.split('?')[0];
-		var norm = path.replace(/\.jpm$/, '.jpg');
-		return R.manifest.sizes[path] || R.manifest.sizes[norm] ||
-		       R.manifest.sizes[path.replace(/^res\//, '')] ||
-		       R.manifest.sizes[norm.replace(/^res\//, '')] || null;
+		if (R.manifest && R.manifest.sizes) {
+			var norm = path.replace(/\.jpm$/, '.jpg');
+			var found = R.manifest.sizes[path] || R.manifest.sizes[norm] ||
+			            R.manifest.sizes[path.replace(/^res\//, '')] ||
+			            R.manifest.sizes[norm.replace(/^res\//, '')] ||
+			            R.manifest.sizes['res/' + path.replace(/^res\//, '')] ||
+			            R.manifest.sizes['res/' + norm.replace(/^res\//, '')];
+			if (found) return found;
+		}
+		if (/^\d+(_\d+)?\.(jpm|jpg)$/.test(path) || /thumb_(monster|magic|trap|rare)\/\d+(_\d+)?\.(jpm|jpg)$/.test(path)) {
+			return [256, 256];
+		}
+		return null;
 	};
 
 	/* Small text resources the game reads synchronously (plists, bitmap font
@@ -1116,7 +1142,7 @@
 		entries.forEach(function (name) {
 			if (/\.(jpg|png|jpm)$/.test(name) &&
 			    !cc.textureCache.getTextureForKey(name)) {
-				cc.textureCache._textures[name] = emptyTexture();
+				cc.textureCache._textures[name] = emptyTexture(name);
 			}
 		});
 

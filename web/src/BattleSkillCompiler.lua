@@ -284,6 +284,8 @@ function PropNode.value(arg_13_0, arg_13_1)
 		return arg_13_1:getStar()
 	elseif arg_13_0._type == "D" then
 		return arg_13_1._infoId
+	elseif arg_13_0._type == "Q" then
+		return arg_13_1._info and arg_13_1._info._quality or 0
 	else
 		return 0
 	end

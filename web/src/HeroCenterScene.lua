@@ -49,23 +49,24 @@ function var_0_1.init(arg_2_0, arg_2_1)
 		Str(STR.RARE) .. Str(STR.MONSTER)
 	}, lc.top(arg_2_0._frame) - 60, lc.left(arg_2_0._frame) - 124, 450, 100)
 
-	local var_2_0 = ClientView.createScale9ShaderButton("img_btn_1_s", function()
-		local var_3_0 = require("RecommendTroopListForm").create()
-		local var_3_1 = var_3_0.hide
+	local isNormalTroop = Data.isNormalTroop(arg_2_0._curTroopIndex)
+	arg_2_0._btnRecommend = nil
 
-		function var_3_0.hide(arg_4_0)
-			var_3_1(arg_4_0)
-			arg_2_0:updateTroopList()
-		end
+	local btnPaste = ClientView.createScale9ShaderButton("img_btn_2_s", function()
+		require("DeckCodeHelper").showPasteDialog(arg_2_0, arg_2_0._curTroopIndex)
+	end, ClientView.CRECT_BUTTON_S, 130, 56)
+	btnPaste:addLabel("Dán Deck")
+	lc.addChildToPos(arg_2_0, btnPaste, cc.p(ClientView.SCR_W - 24 - lc.cw(btnPaste) - ClientView.SCR_EDGE, lc.top(arg_2_0._troopArea) + 10 + lc.ch(btnPaste)))
+	btnPaste:setVisible(isNormalTroop)
+	arg_2_0._btnPasteDeck = btnPaste
 
-		arg_2_0:releaseToopList()
-		var_3_0:show()
-	end, ClientView.CRECT_BUTTON_S, 180, 56)
-
-	var_2_0:addLabel(Str(STR.RECOMMEND_TROOP))
-
-	lc.addChildToPos(arg_2_0, var_2_0, cc.p(ClientView.SCR_W - 24 - lc.cw(var_2_0) - ClientView.SCR_EDGE, lc.top(arg_2_0._troopArea) + 10 + lc.ch(var_2_0)))
-	var_2_0:setVisible(Data.isNormalTroop(arg_2_0._curTroopIndex))
+	local btnCopy = ClientView.createScale9ShaderButton("img_btn_1_s", function()
+		require("DeckCodeHelper").copyCurrentTroop(arg_2_0)
+	end, ClientView.CRECT_BUTTON_S, 150, 56)
+	btnCopy:addLabel("Sao chép Deck")
+	lc.addChildToPos(arg_2_0, btnCopy, cc.p(lc.left(btnPaste) - 10 - lc.cw(btnCopy), lc.y(btnPaste)))
+	btnCopy:setVisible(isNormalTroop)
+	arg_2_0._btnCopyDeck = btnCopy
 	arg_2_0:syncData(true)
 	arg_2_0:updateButtonFlags()
 
@@ -361,6 +362,11 @@ function var_0_1.onSelectTroop(arg_23_0, arg_23_1, arg_23_2)
 	if Data.isNormalTroop(arg_23_1) and P and type(P.setCurrentTroopIndex) == "function" then
 		P:setCurrentTroopIndex(arg_23_1, false)
 	end
+
+	local isNormal = Data.isNormalTroop(arg_23_1)
+	if arg_23_0._btnRecommend then arg_23_0._btnRecommend:setVisible(isNormal) end
+	if arg_23_0._btnPasteDeck then arg_23_0._btnPasteDeck:setVisible(isNormal) end
+	if arg_23_0._btnCopyDeck then arg_23_0._btnCopyDeck:setVisible(isNormal) end
 
 	arg_23_0:showTab(arg_23_0._tabArea._focusTabIndex and arg_23_0._tabArea._focusTabIndex or 1)
 end

@@ -77310,4 +77310,13 @@ return {
   ["_refSkills"]={[1]=0,},
   ["_removeMode"]={[1]=0,},
   ["_targetType"]=0,["_val"]={[1]=0,},},
+  [14787]={["_against"]={[1]=0,},
+  ["_avoidP2B"]=0,["_count"]=1,["_decrease"]={[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,},
+  ["_descSid"]=57307,["_effectVal"]={[1]=0,},
+  ["_id"]=14787,["_isIgnoreDefend"]=1,["_modes"]={[1]=1,},
+  ["_nameSid"]=57306,["_needExtraGem"]=0,["_needNoGem"]=0,["_option"]={[1]=0,},
+  ["_priority"]=1,["_quality"]=1,["_refCards"]={[1]=0,},
+  ["_refSkills"]={[1]=0,},
+  ["_removeMode"]={[1]=0,},
+  ["_targetType"]=0,["_val"]={[1]=1000,},},
 }

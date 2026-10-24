@@ -698,7 +698,7 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 			var_15_0 = arg_15_1._saved._pos and arg_15_0:isLinkPosEmpty(arg_15_1._saved._pos) and arg_15_1._saved._pos or arg_15_0:getEmptyLinkPos(arg_15_1)
 		else
 			local desiredPos = arg_15_1._saved._pos
-			local isDesiredEmpty = desiredPos and not arg_15_0:isBoardPosLocked(desiredPos) and (arg_15_0._boardCards[desiredPos] == nil or arg_15_0._boardCards[desiredPos] == arg_15_1 or arg_15_0._boardCards[desiredPos]._destStatus == BattleData.CardStatus.grave or arg_15_0._boardCards[desiredPos]._destStatus == BattleData.CardStatus.leave)
+			local isDesiredEmpty = desiredPos and desiredPos >= 1 and desiredPos <= Data.MAX_CARD_COUNT_ON_BOARD and not arg_15_0:isBoardPosLocked(desiredPos) and (arg_15_0._boardCards[desiredPos] == nil or arg_15_0._boardCards[desiredPos] == arg_15_1 or arg_15_0._boardCards[desiredPos]._destStatus == BattleData.CardStatus.grave or arg_15_0._boardCards[desiredPos]._destStatus == BattleData.CardStatus.leave)
 			var_15_0 = isDesiredEmpty and desiredPos or arg_15_0:getEmptyBoardPos(arg_15_1)
 		end
 
@@ -906,7 +906,7 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				arg_15_1._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = false
 				arg_15_0:decShield(arg_15_1, { 12008, 12009, 12010 }, false, arg_15_1._id, 12008)
 			end
-			if (arg_15_1:hasSkillFast(12002) or (arg_15_1._info and B.tableContain(arg_15_1._info._skillId, 12002))) and not arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMonster] then
+			if (arg_15_1:hasSkillFast(12002) or (arg_15_1._info and B.tableContain(arg_15_1._info._skillId, 12002)) or arg_15_1._infoId == 40745) and not arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMonster] then
 				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
 				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
 				arg_15_1._positiveStatus[BattleData.PositiveType.shieldExTrap] = true

@@ -94,10 +94,10 @@
 		 * units.  The bar advances only when a fetch/decoder promise resolves;
 		 * there is no timer-based fake progress. */
 		Boot.loaded = 0;
-		Boot.total = 12 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
+		Boot.total = 13 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261020v171500';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261024v225500';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
 			done(fetchJson('lua_src.json?v=' + ver)),
@@ -163,10 +163,11 @@
 				done(safe('CustomAssets', jdzcRes.preloadCustomAssets ? jdzcRes.preloadCustomAssets() : Promise.resolve())),
 				done(safe('Shaders', global.jdzcPreloadShaders ? global.jdzcPreloadShaders() : Promise.resolve())),
 				done(safe('BattleEffects', global.jdzcPreloadBattleEffects ? global.jdzcPreloadBattleEffects() : Promise.resolve())),
+				done(safe('DbBundle', global.jdzcLoadDbBundle ? global.jdzcLoadDbBundle() : Promise.resolve())),
 			]).then(function () {
 				/* Load containers with controlled concurrency (2 on iOS to avoid canvas memory exhaustion, 4 on desktop) */
 				var index = 0;
-				var concurrency = isIOS ? 2 : 4;
+				var concurrency = isIOS ? 3 : 8;
 				function loadNext() {
 					if (index >= preloadList.length) return Promise.resolve();
 					var path = preloadList[index++];
@@ -208,6 +209,9 @@
 			lua.setGlobal('JDZC_REGION', config.region || null);
 			lua.setGlobal('SCR_W', DESIGN_W);
 			lua.setGlobal('SCR_H', DESIGN_H);
+			var isMobileDevice = isIOS || (typeof cc !== 'undefined' && cc.sys && cc.sys.isMobile) || (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent));
+			lua.setGlobal('JDZC_IS_IOS', !!isIOS);
+			lua.setGlobal('JDZC_IS_MOBILE', !!isMobileDevice);
 
 			global.jdzcOnLuaError = function (msg) {
 				console.error('[lua error] ' + msg);

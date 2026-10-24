@@ -778,10 +778,17 @@ function var_0_0.createButton(arg_25_0)
 		end, ClientView.CRECT_BUTTON, var_25_0)
 
 		var_25_11:addLabel(Str(STR.REPLAY))
-		lc.addChildToPos(arg_25_0, var_25_11, cc.p(lc.w(arg_25_0) / 2 + 200, lc.y(var_25_1)))
-		lc.offset(var_25_1, -200, 0)
+		lc.addChildToPos(arg_25_0, var_25_11, cc.p(lc.w(arg_25_0) / 2, lc.y(var_25_1)))
+		var_25_1:setPositionX(lc.w(arg_25_0) / 2 - 220)
 
 		arg_25_0._pBtnReplay = var_25_11
+
+		local var_25_video = ClientView.createScale9ShaderButton("img_btn_1", function()
+			require("ExportVideoForm").create(arg_25_0._battleUi, arg_25_0._result and arg_25_0._result._log):show()
+		end, ClientView.CRECT_BUTTON, var_25_0)
+		var_25_video:addLabel("Tải Video")
+		lc.addChildToPos(arg_25_0, var_25_video, cc.p(lc.w(arg_25_0) / 2 + 220, lc.y(var_25_1)))
+		arg_25_0._pBtnVideo = var_25_video
 	end
 
 	if var_25_5 then

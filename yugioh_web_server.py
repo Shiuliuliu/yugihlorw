@@ -2566,12 +2566,16 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
 
                 special_fixed = {
                     15: (12330, 7000, 3),
+                    16: (12336, 50000, 3),
+                    17: (40745, 20000, 3),
                     59: (40209, 200000, 1),
                     60: (20005, 5000, 1),
                     61: (20051, 100000, 1),
                     62: (20030, 100000, 1),
                     63: (40713, 500000, 1),
                     546: (12330, 7000, 3),
+                    547: (12336, 50000, 3),
+                    548: (40745, 20000, 3),
                     583: (12330, 7000, 3),
                 }
                 if prod_id in special_fixed:
@@ -2593,6 +2597,10 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     server_cost, server_cost_type, is_legit_item = 500000, 1, True
                 elif card_id == 12330:
                     server_cost, server_cost_type, is_legit_item = 7000, 3, True
+                elif card_id == 12336:
+                    server_cost, server_cost_type, is_legit_item = 50000, 3, True
+                elif card_id == 40745:
+                    server_cost, server_cost_type, is_legit_item = 20000, 3, True
                 elif card_id == 30592:
                     server_cost, server_cost_type, is_legit_item = 50000, 3, True
                 elif card_id == 40731:
@@ -2625,7 +2633,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         is_legit_item = True
 
                 card_info = ALL_CARDS_MAP.get(card_id)
-                is_gr = (card_info and card_info.get('quality') == 'GR')
+                is_gr = (card_info and card_info.get('quality') == 'GR' and card_id != 12336)
 
                 if not acc_id or card_id <= 0:
                     resp = {"code": 400, "msg": "Thông tin thẻ bài hoặc tài khoản không hợp lệ!"}
@@ -2779,7 +2787,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 effect_id = int(req.get('effect_id', 0))
                 effect_type = int(req.get('effect_type', 0))
 
-                if not (2 <= effect_type <= 4) or card_id <= 0:
+                if not (1 <= effect_type <= 4) or card_id <= 0:
                     resp = {"code": 400, "msg": "Thông số không hợp lệ!"}
                 else:
                     with get_db() as conn:
@@ -2974,6 +2982,42 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 new_trophy = max(0, player_trophy + delta_trophy)
                                 new_level = calc_level(new_exp)
                                 
+                                baovat_data = None
+                                if result == 1:
+                                    # Tỉ lệ rớt Bảo Vật Ngàn Năm khi thắng PvP:
+                                    # 7031 (Trò Chơi Ngàn Năm): 2%
+                                    # 7032 (Vòng Trí Tuệ Ngàn Năm): 2%
+                                    # 7033 (Cây Gậy Ngàn Năm): 5%
+                                    # 7034 (Con Mắt Ngàn Năm): 10%
+                                    # 7035 (Vòng Cổ Ngàn Năm): 27%
+                                    # 7036 (Chìa Khóa Ngàn Năm): 27%
+                                    # 7037 (Cán Cân Ngàn Năm): 27%
+                                    baovat_id = random.choices(
+                                        [7031, 7032, 7033, 7034, 7035, 7036, 7037],
+                                        weights=[2, 2, 5, 10, 27, 27, 27],
+                                        k=1
+                                    )[0]
+                                    baovat_names = {
+                                        7031: "Trò Chơi Ngàn Năm",
+                                        7032: "Vòng Trí Tuệ Ngàn Năm",
+                                        7033: "Cây Gậy Ngàn Năm",
+                                        7034: "Con Mắt Ngàn Năm",
+                                        7035: "Vòng Cổ Ngàn Năm",
+                                        7036: "Chìa Khóa Ngàn Năm",
+                                        7037: "Cán Cân Ngàn Năm"
+                                    }
+                                    cur.execute("""
+                                        INSERT INTO user_props (account_id, prop_id, count)
+                                        VALUES (%s, %s, 1)
+                                        ON DUPLICATE KEY UPDATE count = count + 1
+                                    """, (acc_id, baovat_id))
+                                    baovat_data = {
+                                        "id": baovat_id,
+                                        "name": baovat_names[baovat_id],
+                                        "count": 1
+                                    }
+                                    print(f"[PVP BAOVAT DROP] Acc {acc_id} WIN -> Dropped {baovat_names[baovat_id]} (#{baovat_id})")
+
                                 if battle_type == 'room':
                                     cur.execute("""
                                         UPDATE accounts
@@ -2988,6 +3032,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     """, (new_gold, new_exp, new_level, new_trophy, new_rep, cur_rep_time, acc_id))
                                 
                                 resp = {
+                                    "baovat": baovat_data,
                                     "code": 200,
                                     "msg": "Cập nhật phần thưởng PvP thành công!",
                                     "gold": new_gold,
@@ -3007,6 +3052,101 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 resp = {"code": 404, "msg": "Account not found"}
                 else:
                     resp = {"code": 400, "msg": "Missing account_id"}
+
+            elif self.path == '/api/shop_exchange_prop':
+                acc_id = req.get('account_id') or req.get('user_id') or req.get('id')
+                exchange_id = int(req.get('exchange_id') or req.get('id') or 1)
+                count = int(req.get('count', 1))
+
+                # Activity 22 Millennium Item Exchanges
+                EXCHANGE_CONFIGS = {
+                    1: {
+                        'name': 'Đổi Kiếm Sĩ Diệt Rồng Tập Sự',
+                        'req': {7031: 20, 7032: 20, 7033: 20, 7034: 20, 7035: 20, 7036: 20, 7037: 20},
+                        'reward_type': 'card', 'reward_id': 40744, 'reward_count': 1
+                    },
+                    2: {
+                        'name': 'Đổi Kiếm Sĩ Diệt Rồng Huyền Thoại',
+                        'req': {7032: 20, 7034: 20, 7035: 20, 7036: 20, 7037: 20},
+                        'reward_type': 'card', 'reward_id': 40743, 'reward_count': 1
+                    },
+                    3: {
+                        'name': 'Đổi Thẻ Bài Hiếm',
+                        'req': {7033: 20, 7035: 20, 7036: 20, 7037: 20},
+                        'reward_type': 'card', 'reward_id': 10430, 'reward_count': 1
+                    },
+                    4: {
+                        'name': 'Đổi 100 Mảnh Ghép Thẻ',
+                        'req': {7034: 1, 7036: 1, 7037: 1},
+                        'reward_type': 'prop', 'reward_id': 7112, 'reward_count': 100
+                    },
+                    5: {
+                        'name': 'Đổi 300 Kim Cương',
+                        'req': {7035: 1, 7036: 1, 7037: 1},
+                        'reward_type': 'ingot', 'reward_id': 1, 'reward_count': 300
+                    }
+                }
+
+                if not acc_id:
+                    resp = {"code": 400, "msg": "Missing account_id"}
+                elif exchange_id not in EXCHANGE_CONFIGS:
+                    resp = {"code": 400, "msg": f"Invalid exchange_id {exchange_id}"}
+                else:
+                    cfg = EXCHANGE_CONFIGS[exchange_id]
+                    with get_db() as conn:
+                        with conn.cursor() as cur:
+                            enough = True
+                            for prop_id, need_qty in cfg['req'].items():
+                                total_need = need_qty * count
+                                cur.execute("SELECT count FROM user_props WHERE account_id = %s AND prop_id = %s", (acc_id, prop_id))
+                                r = cur.fetchone()
+                                cur_have = r['count'] if r else 0
+                                if cur_have < total_need:
+                                    enough = False
+                                    break
+
+                            if not enough:
+                                resp = {"code": 400, "msg": "Không đủ bảo vật để đổi thưởng!"}
+                            else:
+                                for prop_id, need_qty in cfg['req'].items():
+                                    total_need = need_qty * count
+                                    cur.execute("UPDATE user_props SET count = count - %s WHERE account_id = %s AND prop_id = %s", (total_need, acc_id, prop_id))
+                                    cur.execute("DELETE FROM user_props WHERE account_id = %s AND prop_id = %s AND count <= 0", (acc_id, prop_id))
+
+                                total_reward = cfg['reward_count'] * count
+                                if cfg['reward_type'] == 'card':
+                                    cur.execute("""
+                                        INSERT INTO user_cards (account_id, card_id, count)
+                                        VALUES (%s, %s, %s)
+                                        ON DUPLICATE KEY UPDATE count = count + %s
+                                    """, (acc_id, cfg['reward_id'], total_reward, total_reward))
+                                elif cfg['reward_type'] == 'prop':
+                                    cur.execute("""
+                                        INSERT INTO user_props (account_id, prop_id, count)
+                                        VALUES (%s, %s, %s)
+                                        ON DUPLICATE KEY UPDATE count = count + %s
+                                    """, (acc_id, cfg['reward_id'], total_reward, total_reward))
+                                elif cfg['reward_type'] == 'ingot':
+                                    cur.execute("UPDATE accounts SET gem = gem + %s WHERE id = %s", (total_reward, acc_id))
+
+                                cur.execute("SELECT prop_id, count FROM user_props WHERE account_id = %s", (acc_id,))
+                                updated_props = {int(r['prop_id']): int(r['count']) for r in cur.fetchall()}
+
+                                cur.execute("SELECT gem, gold FROM accounts WHERE id = %s", (acc_id,))
+                                acc_info = cur.fetchone() or {}
+
+                                resp = {
+                                    "code": 200,
+                                    "msg": f"Đổi {cfg['name']} thành công!",
+                                    "exchange_id": exchange_id,
+                                    "reward_type": cfg['reward_type'],
+                                    "reward_id": cfg['reward_id'],
+                                    "reward_count": total_reward,
+                                    "props": updated_props,
+                                    "ingot": acc_info.get('gem', 0), "gem": acc_info.get('gem', 0),
+                                    "gold": acc_info.get('gold', 0)
+                                }
+                                print(f"[BAOVAT EXCHANGE] Acc {acc_id} exchanged {cfg['name']} (x{count}) -> received {cfg['reward_type']} {cfg['reward_id']} x{total_reward}")
 
             elif self.path == '/api/reputation' or self.path == '/api/get_reputation':
                 acc_id = req.get('account_id') or req.get('user_id') or req.get('id')
@@ -3571,30 +3711,53 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 acc_id = req.get('account_id')
                 skin_id = int(req.get('skin_id', 0))
                 skin_type = int(req.get('skin_type', 0))
-                price = int(req.get('price', 100))
+                raw_price = req.get('price', 100)
+                if isinstance(raw_price, (list, tuple)):
+                    price = int(raw_price[0] if raw_price else 100)
+                else:
+                    try:
+                        price = int(raw_price)
+                    except (ValueError, TypeError):
+                        price = 100
+                res_type = int(req.get('res_type', 3) or 3)
                 card_id = int(req.get('card_id', 0))
                 with get_db() as conn:
                     with conn.cursor() as cur:
-                        cur.execute("SELECT gem FROM accounts WHERE id = %s", (acc_id,))
+                        cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
                         acc_row = cur.fetchone()
                         if not acc_row:
                             self._send_json({"code": 404, "msg": "Tài khoản không tồn tại!"})
                             return
-                        cur_gem = acc_row.get('gem', 0)
-                        if cur_gem < price:
-                            self._send_json({"code": 400, "msg": f"Không đủ Linh Thạch Cao Cấp (cần {price}, hiện có {cur_gem})!"})
-                            return
-                        cur.execute("UPDATE accounts SET gem = gem - %s WHERE id = %s", (price, acc_id))
+                        if res_type == 1:
+                            cur_gold = acc_row.get('gold', 0)
+                            if cur_gold < price:
+                                self._send_json({"code": 400, "msg": f"Không đủ Vàng (cần {price}, hiện có {cur_gold})!"})
+                                return
+                            cur.execute("UPDATE accounts SET gold = gold - %s WHERE id = %s", (price, acc_id))
+                        elif res_type == 7109:
+                            cur.execute("SELECT count FROM user_props WHERE account_id = %s AND prop_id = 7109", (acc_id,))
+                            pr = cur.fetchone()
+                            cur_cnt = pr['count'] if pr else 0
+                            if cur_cnt < price:
+                                self._send_json({"code": 400, "msg": f"Không đủ Pha Lê Thời Trang (cần {price}, hiện có {cur_cnt})!"})
+                                return
+                            cur.execute("UPDATE user_props SET count = count - %s WHERE account_id = %s AND prop_id = 7109", (price, acc_id))
+                        else:
+                            cur_gem = acc_row.get('gem', 0)
+                            if cur_gem < price:
+                                self._send_json({"code": 400, "msg": f"Không đủ Linh Thạch Cao Cấp (cần {price}, hiện có {cur_gem})!"})
+                                return
+                            cur.execute("UPDATE accounts SET gem = gem - %s WHERE id = %s", (price, acc_id))
                         cur.execute("""
                             INSERT INTO user_card_effects (account_id, card_id, effect_id, effect_type, is_equipped)
                             VALUES (%s, %s, %s, 1, 0)
                             ON DUPLICATE KEY UPDATE is_equipped = is_equipped
                         """, (acc_id, card_id, skin_id))
-                        cur.execute("SELECT gem FROM accounts WHERE id = %s", (acc_id,))
-                        ugem = cur.fetchone() or {'gem': 0}
-                resp = {"code": 200, "msg": "Mua avatar thành công!", "gem": ugem['gem'], "skin_id": skin_id}
+                        cur.execute("SELECT gold, gem FROM accounts WHERE id = %s", (acc_id,))
+                        uacc = cur.fetchone() or {'gold': 0, 'gem': 0}
+                resp = {"code": 200, "msg": "Mua thời trang thành công!", "gold": uacc['gold'], "gem": uacc['gem'], "skin_id": skin_id}
                 self._send_json(resp)
-                print(f"[BUY SKIN] Account {acc_id} bought skin {skin_id} for {price} gems (remaining: {ugem['gem']})")
+                print(f"[BUY SKIN] Account {acc_id} bought skin {skin_id} (card_id={card_id}) for {price} (res_type={res_type})")
                 return
 
             elif self.path == '/api/claim_achievement':
@@ -4154,8 +4317,31 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 oppo_avatar = int(req.get('opponent_avatar', 201))
                 result = int(req.get('result', 1))
                 btype = int(req.get('battle_type', 17))
+
+                # Never save Adventure / Story / PVE duels (battle_type < 200 and not 17) into match_replays / chiến báo
+                if btype < 200 and btype != 17:
+                    resp = {"code": 200, "msg": "Skipped saving PVE replay", "replay_id": rep_id}
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json; charset=utf-8')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
+                    return
+
                 trophy_chg = int(req.get('trophy_change', 0))
-                rep_data = json.dumps(req.get('replay_data', {}), ensure_ascii=False)
+                player_tr = req.get('player_trophy')
+                oppo_tr = req.get('opponent_trophy')
+                rd_obj = req.get('replay_data', {})
+                if isinstance(rd_obj, dict):
+                    if player_tr is not None:
+                        rd_obj['player_trophy'] = int(player_tr)
+                        if 'player' in rd_obj and isinstance(rd_obj['player'], dict):
+                            rd_obj['player']['_trophy'] = int(player_tr)
+                    if oppo_tr is not None:
+                        rd_obj['opponent_trophy'] = int(oppo_tr)
+                        if 'opponent' in rd_obj and isinstance(rd_obj['opponent'], dict):
+                            rd_obj['opponent']['_trophy'] = int(oppo_tr)
+                rep_data = json.dumps(rd_obj, ensure_ascii=False)
 
                 # Tự động hủy phòng PVP nếu trận đấu này xuất phát từ phòng
                 for c, r in list(CUSTOM_PVP_ROOMS.items()):
@@ -4183,23 +4369,47 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 btype = req.get('battle_type')
                 with get_db() as conn:
                     with conn.cursor() as cur:
+                        cur.execute("SELECT trophy FROM accounts WHERE id = %s", (acc_id,))
+                        acc_row = cur.fetchone()
+                        default_user_trophy = int(acc_row['trophy']) if acc_row and 'trophy' in acc_row else 800
+
                         if btype and int(btype) not in [0, 17, 211, 241]:
                             cur.execute("""
-                                SELECT replay_id, opponent_name, opponent_level, opponent_avatar, result, battle_type, trophy_change, UNIX_TIMESTAMP(created_at) as ts
+                                SELECT replay_id, opponent_name, opponent_level, opponent_avatar, result, battle_type, trophy_change, replay_data, UNIX_TIMESTAMP(created_at) as ts
                                 FROM match_replays
-                                WHERE account_id = %s AND battle_type = %s
+                                WHERE account_id = %s AND battle_type = %s AND (battle_type >= 200 OR battle_type = 17)
                                 ORDER BY id DESC LIMIT 20
                             """, (acc_id, btype))
                         else:
                             cur.execute("""
-                                SELECT replay_id, opponent_name, opponent_level, opponent_avatar, result, battle_type, trophy_change, UNIX_TIMESTAMP(created_at) as ts
+                                SELECT replay_id, opponent_name, opponent_level, opponent_avatar, result, battle_type, trophy_change, replay_data, UNIX_TIMESTAMP(created_at) as ts
                                 FROM match_replays
-                                WHERE account_id = %s
+                                WHERE account_id = %s AND (battle_type >= 200 OR battle_type = 17)
                                 ORDER BY id DESC LIMIT 20
                             """, (acc_id,))
                         rows = cur.fetchall()
+
+                        oppo_names = list(set(r['opponent_name'] for r in rows if r.get('opponent_name')))
+                        oppo_trophies = {}
+                        if oppo_names:
+                            fmt = ','.join(['%s'] * len(oppo_names))
+                            cur.execute(f"SELECT username, character_name, trophy FROM accounts WHERE character_name IN ({fmt}) OR username IN ({fmt})", oppo_names + oppo_names)
+                            for o_row in cur.fetchall():
+                                if o_row.get('character_name'):
+                                    oppo_trophies[o_row['character_name']] = int(o_row['trophy'])
+                                if o_row.get('username'):
+                                    oppo_trophies[o_row['username']] = int(o_row['trophy'])
+
                 replays = []
                 for r in rows:
+                    rd = {}
+                    if r.get('replay_data'):
+                        try:
+                            rd = json.loads(r['replay_data']) if isinstance(r['replay_data'], str) else r['replay_data']
+                        except Exception:
+                            rd = {}
+                    p_tr = rd.get('player_trophy') or rd.get('player', {}).get('_trophy') or default_user_trophy
+                    o_tr = rd.get('opponent_trophy') or rd.get('opponent', {}).get('_trophy') or oppo_trophies.get(r['opponent_name']) or 800
                     replays.append({
                         "replay_id": r['replay_id'],
                         "opponent_name": r['opponent_name'],
@@ -4208,16 +4418,33 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         "result": r['result'],
                         "battle_type": r['battle_type'],
                         "trophy_change": r['trophy_change'],
+                        "player_trophy": int(p_tr),
+                        "opponent_trophy": int(o_tr),
                         "timestamp": r['ts']
                     })
                 resp = {"code": 200, "replays": replays}
 
             elif self.path == '/api/get_replay_detail':
-                rep_id = req.get('replay_id')
+                rep_id = str(req.get('replay_id') or req.get('id') or '')
                 with get_db() as conn:
                     with conn.cursor() as cur:
-                        cur.execute("SELECT replay_data, UNIX_TIMESTAMP(created_at) as ts FROM match_replays WHERE replay_id = %s", (rep_id,))
+                        if rep_id.isdigit():
+                            cur.execute("SELECT account_id, opponent_name, replay_data, UNIX_TIMESTAMP(created_at) as ts FROM match_replays WHERE replay_id = %s OR id = %s", (rep_id, int(rep_id)))
+                        else:
+                            cur.execute("SELECT account_id, opponent_name, replay_data, UNIX_TIMESTAMP(created_at) as ts FROM match_replays WHERE replay_id = %s", (rep_id,))
                         row = cur.fetchone()
+                        if row:
+                            cur.execute("SELECT trophy FROM accounts WHERE id = %s", (row['account_id'],))
+                            acc_r = cur.fetchone()
+                            user_trophy = int(acc_r['trophy']) if acc_r else 800
+
+                            cur.execute("SELECT trophy FROM accounts WHERE character_name = %s OR username = %s LIMIT 1", (row['opponent_name'], row['opponent_name']))
+                            opp_r = cur.fetchone()
+                            opp_trophy = int(opp_r['trophy']) if opp_r else 800
+                        else:
+                            user_trophy = 800
+                            opp_trophy = 800
+
                 if row:
                     rep_data = json.loads(row['replay_data']) if isinstance(row['replay_data'], str) else row['replay_data']
                     if isinstance(rep_data, dict):
@@ -4225,9 +4452,20 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             rep_data['timestamp'] = int(row['ts'] * 1000)
                         if not rep_data.get('ts') and row.get('ts'):
                             rep_data['ts'] = row['ts']
+
+                        p_tr = rep_data.get('player_trophy') or (rep_data.get('player') and rep_data['player'].get('_trophy')) or user_trophy
+                        o_tr = rep_data.get('opponent_trophy') or (rep_data.get('opponent') and rep_data['opponent'].get('_trophy')) or opp_trophy
+
+                        rep_data['player_trophy'] = int(p_tr)
+                        rep_data['opponent_trophy'] = int(o_tr)
+                        if 'player' in rep_data and isinstance(rep_data['player'], dict):
+                            rep_data['player']['_trophy'] = int(p_tr)
+                        if 'opponent' in rep_data and isinstance(rep_data['opponent'], dict):
+                            rep_data['opponent']['_trophy'] = int(o_tr)
+
                     resp = {"code": 200, "replay_data": rep_data}
                 else:
-                    resp = {"code": 404, "msg": "Replay not found"}
+                    resp = {"code": 404, "msg": "Không tìm thấy dữ liệu trận đấu!"}
 
             elif self.path == '/api/share_replay':
                 acc_id = int(req.get('account_id', 1))
@@ -5582,24 +5820,26 @@ async def ws_handler(websocket):
                         match["turn_ws"] = peer_ws
                         match["turn_bonus"] = 0
                         print(f"[PVP TURN] Match {match_id}: round ended, turn switched to peer, bonus reset to 0")
+                    elif card_id == 999998:
+                        continue
                     elif card_id not in (1, 2) and card_id != 0:
                         match["turn_ws"] = websocket
                         cur_bonus = match.get("turn_bonus", 0)
-                        rem_bonus = max(0, 180 - cur_bonus)
+                        rem_bonus = max(0, 150 - cur_bonus)
                         if rem_bonus > 0:
-                            add_sec = min(8 if card_id == 999998 else 4, rem_bonus)
+                            add_sec = min(6, rem_bonus)
                             match["turn_bonus"] = cur_bonus + add_sec
                         else:
                             add_sec = 0
 
                         pkt["add_time"] = add_sec
-                        pkt["max_time"] = 270
+                        pkt["max_time"] = 240
                         if "time_left" in pkt:
                             try:
-                                pkt["time_left"] = min(270.0, float(pkt["time_left"]) + float(add_sec))
+                                pkt["time_left"] = min(240.0, float(pkt["time_left"]) + float(add_sec))
                             except:
                                 pass
-                        print(f"[PVP TIME] Match {match_id}: +{add_sec}s round time added on server for action card {card_id} (bonus={match['turn_bonus']}/180, time_left={pkt.get('time_left')})")
+                        print(f"[PVP TIME] Match {match_id}: +{add_sec}s round time added on server for action card {card_id} (bonus={match['turn_bonus']}/150, time_left={pkt.get('time_left')})")
 
                     if peer_ws:
                         try:
@@ -5635,7 +5875,10 @@ async def ws_handler(websocket):
                             turn_ws = match.get("turn_ws")
                             last_action = match.get("last_action_time", 0)
                             reason = str(pkt.get("reason", "")).lower()
-                            timeout_threshold = 45.0 if reason == "timeout" else 90.0
+                            if sender_won and reason == "timeout":
+                                print(f"[PVP END BLOCKED] Match {match_id}: claim victory via timeout blocked (both players connected)")
+                                return
+                            timeout_threshold = 90.0
                             if sender_won and turn_ws and websocket != turn_ws and (time.time() - last_action < timeout_threshold):
                                 print(f"[PVP END BLOCKED] Match {match_id}: non-turn player claimed victory (reason={reason}) while turn player is actively playing ({time.time()-last_action:.1f}s ago). Blocked!")
                                 return

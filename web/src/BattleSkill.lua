@@ -363,7 +363,7 @@ function var_0_0.castSkill(arg_1_0, arg_1_1, arg_1_2, arg_1_3)
 		var_1_2 = arg_1_0:castDefendSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif (var_1_0 == Data.SkillType.monsterSpell or arg_1_2._id == 6349 or arg_1_2._id == 6593 or arg_1_2._id == 6868 or arg_1_2._id == 2369 or arg_1_2._id == 2375 or arg_1_2._id == 14677 or arg_1_2._id == 14714 or arg_1_2._id == 14718 or arg_1_2._id == 14721 or arg_1_2._id == 14723 or arg_1_2._id == 14724 or arg_1_2._id == 14725 or arg_1_2._id == 14728 or arg_1_2._id == 14729 or arg_1_2._id == 14731 or arg_1_2._id == 14732 or arg_1_2._id == 14736 or arg_1_2._id == 14738 or arg_1_2._id == 14741 or arg_1_2._id == 14742 or arg_1_2._id == 14745 or arg_1_2._id == 14747 or arg_1_2._id == 14748 or arg_1_2._id == 14751 or arg_1_2._id == 14763 or arg_1_2._id == 14764 or arg_1_2._id == 14765 or arg_1_2._id == 14766 or arg_1_2._id == 14770 or arg_1_2._id == 14774 or arg_1_2._id == 14776 or arg_1_2._id == 14779 or arg_1_2._id == 14781 or arg_1_2._id == 14783 or arg_1_2._id == 14784 or arg_1_2._id == 14785 or arg_1_2._id == 14786 or arg_1_2._id == 2383 or arg_1_2._id == 2384 or arg_1_2._id == 2390 or arg_1_2._id == 2437 or arg_1_2._id == 2488 or arg_1_2._id == 2560 or arg_1_2._id == 2611 or arg_1_2._id == 2664 or arg_1_2._id == 2781 or arg_1_2._id == 9251 or arg_1_2._id == 9253 or arg_1_2._id == 9254 or arg_1_2._id == 9257 or arg_1_2._id == 9259 or arg_1_2._id == 9261 or arg_1_2._id == 9265 or arg_1_2._id == 9403 or arg_1_2._id == 9414 or arg_1_2._id == 9453 or arg_1_2._id == 9462 or arg_1_2._id == 9507 or arg_1_2._id == 9685 or arg_1_2._id == 13007 or arg_1_2._id == 13975 or arg_1_2._id == 7824) and arg_1_2._id ~= 3705 and arg_1_2._id ~= 3850 then
 		var_1_2 = arg_1_0:castMonsterSpellSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif var_1_0 == Data.SkillType.monsterHalo or arg_1_2._id == 2081 or arg_1_2._id == 2913 or arg_1_2._id == 9512 or arg_1_2._id == 13471 or arg_1_2._id == 13779 then
+	elseif var_1_0 == Data.SkillType.monsterHalo or arg_1_2._id == 14787 or arg_1_2._id == 2081 or arg_1_2._id == 2913 or arg_1_2._id == 9512 or arg_1_2._id == 13471 or arg_1_2._id == 13779 then
 		var_1_2 = arg_1_0:castMonsterHaloSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif var_1_0 == Data.SkillType.monster2Halo and arg_1_2._id ~= 9796 and arg_1_2._id ~= 9868 then
 		var_1_2 = arg_1_0:castMonster2HaloSkill(arg_1_1, arg_1_2, arg_1_3)
@@ -11165,8 +11165,8 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		end
 
 		-- Triệu hồi đặc biệt Kiếm sĩ diệt rồng tập sự (40744) lên sân phe ta
-		local spawnPos = pOwner:getEmptyBoardPos(ownerCard)
-		pOwner:setCardStatus(ownerCard, BattleData.CardStatus.board, ownerCard._id, 14784, arg_4_3, BattleData.CardStatusVal.r2b_link, spawnPos)
+		ownerCard._saved._pos = pOwner:getEmptyBoardPos(ownerCard)
+		pOwner:setCardStatus(ownerCard, BattleData.CardStatus.board, ownerCard._id, 14784, arg_4_3)
 		var_4_13 = true
 	elseif var_4_4 == 14785 then
 		local ownerCard = var_4_1 or arg_4_1
@@ -11236,7 +11236,7 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 			end
 		end
 
-		local spawnPos = arg_4_1._pos or (targetCard and pOwner:getEmptyBoardPos(targetCard))
+		local spawnPos = (arg_4_1._pos and arg_4_1._pos >= 1 and arg_4_1._pos <= Data.MAX_CARD_COUNT_ON_BOARD) and arg_4_1._pos or (targetCard and pOwner:getEmptyBoardPos(targetCard))
 
 		-- Hy sinh bản thân (đưa vào Mộ)
 		pOwner:setCardStatus(arg_4_1, BattleData.CardStatus.grave, arg_4_1._id, 14786, arg_4_3, BattleData.CardStatusVal.b2g_sacrifice)
@@ -11244,7 +11244,7 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		-- Triệu hồi đặc biệt 1 quái "Kiếm sĩ diệt rồng" trong bộ bài
 		if targetCard and pOwner then
 			targetCard._saved = targetCard._saved or {}
-			targetCard._saved._pos = spawnPos or pOwner:getEmptyBoardPos(targetCard)
+			targetCard._saved._pos = (spawnPos and spawnPos >= 1 and spawnPos <= Data.MAX_CARD_COUNT_ON_BOARD) and spawnPos or pOwner:getEmptyBoardPos(targetCard)
 			pOwner:setCardStatus(targetCard, BattleData.CardStatus.board, arg_4_1._id, 14786, arg_4_3, BattleData.CardStatusVal.p2b_attack_frozen)
 		end
 		var_4_13 = true
@@ -19138,12 +19138,14 @@ function var_0_0.castMonsterHaloSkill(arg_5_0, arg_5_1, arg_5_2, arg_5_3)
 
 			var_5_13 = true
 		end
-	elseif var_5_4 == 6061 then
+	elseif var_5_4 == 6061 or var_5_4 == 14787 then
 		local var_5_47 = #arg_5_0:getBattleCards("H")
 
 		if var_5_47 > 0 then
 			arg_5_0:incAtk(arg_5_1, var_5_47 * var_5_7, true, var_5_5, var_5_4, arg_5_3)
-			arg_5_0:incHp(arg_5_1, var_5_47 * var_5_7, true, var_5_5, var_5_4, arg_5_3)
+			if var_5_4 == 6061 then
+				arg_5_0:incHp(arg_5_1, var_5_47 * var_5_7, true, var_5_5, var_5_4, arg_5_3)
+			end
 
 			var_5_13 = true
 		end
@@ -29674,6 +29676,16 @@ function var_0_0.castMonster2HaloSkill(arg_6_0, arg_6_1, arg_6_2, arg_6_3)
 				if band(var_6_15, 2^(iter_6_42 - 1)) ~= 0 then
 					var_6_191[#var_6_191 + 1] = var_6_192[iter_6_42]
 				end
+			end
+			if #var_6_191 == 0 and #var_6_192 > 0 and arg_6_1._infoId == 40744 then
+				local matchedById = nil
+				for _, cand in ipairs(var_6_192) do
+					if cand._id == var_6_15 then
+						matchedById = cand
+						break
+					end
+				end
+				var_6_191[#var_6_191 + 1] = matchedById or var_6_192[1]
 			end
 		elseif var_6_14 == 0 then
 			local var_6_193 = var_6_15 % 100
@@ -41919,6 +41931,14 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 			arg_8_0:incAtk(arg_8_1, var_8_55._maxAtk, true, var_8_5, var_8_4, arg_8_3)
 
 			arg_8_1._mark14048 = nil
+			var_8_13 = true
+		end
+	elseif var_8_4 == 14787 then
+		local var_8_47 = #arg_8_0:getBattleCards("H")
+
+		if var_8_47 > 0 then
+			arg_8_0:incAtk(arg_8_1, var_8_47 * var_8_7, true, var_8_5, var_8_4, arg_8_3)
+
 			var_8_13 = true
 		end
 	elseif var_8_4 == 14049 then
@@ -69982,13 +70002,13 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 			end
 		end
 	elseif var_13_4 == 11002 or var_13_4 == 12002 then
-		if var_13_3 and var_13_3._owner == arg_13_1._owner and (arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719)) then
+		if var_13_3 and (var_13_3 == arg_13_1 or (var_13_3._owner == arg_13_1._owner and (arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719) or arg_13_1:isInfoId(40745) or arg_13_1._infoId == 40745))) then
 			return false
 		end
 
 		local var_13_942 = var_13_4 < 12000 and BattleData.PositiveType.shieldBegin + var_13_4 - 11001 or BattleData.PositiveType.shieldExBegin + var_13_4 - 12001
 
-		local disType = ((arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719)) and arg_13_1.disableUnderSkillByOppoType) or arg_13_1.disableUnderSkillByType
+		local disType = ((arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719) or arg_13_1:isInfoId(40745) or arg_13_1._infoId == 40745) and arg_13_1.disableUnderSkillByOppoType) or arg_13_1.disableUnderSkillByType
 		if disType(arg_13_1, Data.SkillType.monsterSpell, var_13_5, var_13_4, arg_13_3) or disType(arg_13_1, Data.SkillType.monsterHalo, var_13_5, var_13_4, arg_13_3) or disType(arg_13_1, Data.SkillType.monster2Halo, var_13_5, var_13_4, arg_13_3) or disType(arg_13_1, Data.SkillType.monster3Halo, var_13_5, var_13_4, arg_13_3) or disType(arg_13_1, Data.SkillType.monster4Halo, var_13_5, var_13_4, arg_13_3) or disType(arg_13_1, Data.SkillType.attack, var_13_5, var_13_4, arg_13_3) or disType(arg_13_1, Data.SkillType.defend, var_13_5, var_13_4, arg_13_3) then
 			if var_13_4 == 11002 then
 				arg_13_0:decPositiveStatus(arg_13_1, {
@@ -69999,13 +70019,13 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 			var_13_13 = true
 		end
 	elseif var_13_4 == 11003 or var_13_4 == 12003 then
-		if var_13_3 and var_13_3._owner == arg_13_1._owner and (arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719)) then
+		if var_13_3 and (var_13_3 == arg_13_1 or (var_13_3._owner == arg_13_1._owner and (arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719) or arg_13_1:isInfoId(40745) or arg_13_1._infoId == 40745))) then
 			return false
 		end
 
 		local var_13_943 = var_13_4 < 12000 and BattleData.PositiveType.shieldBegin + var_13_4 - 11001 or BattleData.PositiveType.shieldExBegin + var_13_4 - 12001
 
-		local disType = ((arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719)) and arg_13_1.disableUnderSkillByOppoType) or arg_13_1.disableUnderSkillByType
+		local disType = ((arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719) or arg_13_1:isInfoId(40745) or arg_13_1._infoId == 40745) and arg_13_1.disableUnderSkillByOppoType) or arg_13_1.disableUnderSkillByType
 		if disType(arg_13_1, Data.SkillType.magicSpell, var_13_5, var_13_4, arg_13_3) or disType(arg_13_1, Data.SkillType.magicHalo, var_13_5, var_13_4, arg_13_3) then
 			if var_13_4 == 11003 then
 				arg_13_0:decPositiveStatus(arg_13_1, {
@@ -70016,13 +70036,13 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 			var_13_13 = true
 		end
 	elseif var_13_4 == 11004 or var_13_4 == 12004 then
-		if var_13_3 and var_13_3._owner == arg_13_1._owner and (arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719)) then
+		if var_13_3 and (var_13_3 == arg_13_1 or (var_13_3._owner == arg_13_1._owner and (arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719) or arg_13_1:isInfoId(40745) or arg_13_1._infoId == 40745))) then
 			return false
 		end
 
 		local var_13_944 = var_13_4 < 12000 and BattleData.PositiveType.shieldBegin + var_13_4 - 11001 or BattleData.PositiveType.shieldExBegin + var_13_4 - 12001
 
-		local disType = ((arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719)) and arg_13_1.disableUnderSkillByOppoType) or arg_13_1.disableUnderSkillByType
+		local disType = ((arg_13_1:isInfoId(12326) or arg_13_1:isInfoId(40730) or arg_13_1:hasSkillFast(14719) or arg_13_1:isInfoId(40745) or arg_13_1._infoId == 40745) and arg_13_1.disableUnderSkillByOppoType) or arg_13_1.disableUnderSkillByType
 		if disType(arg_13_1, Data.SkillType.trapSpell, var_13_5, var_13_4, arg_13_3) or disType(arg_13_1, Data.SkillType.trapHalo, var_13_5, var_13_4, arg_13_3) then
 			if var_13_4 == 11004 then
 				arg_13_0:decPositiveStatus(arg_13_1, {
