@@ -5975,12 +5975,19 @@ function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
 		if arg_127_0._status == BattleData.CardStatus.board and (arg_127_0:isMonsterRare() or arg_127_0._type == Data.CardType.monster) then
 			if (arg_127_0:isKeyword(21) or arg_127_0:isKeyword(204) or (arg_127_0._info and (arg_127_0._info._keyword == 21 or arg_127_0._info._keyword == 204))) then
 				local owner = arg_127_0._owner
-				if owner and owner._boardCards then
-					for i = 1, #owner._boardCards do
-						local bc = owner._boardCards[i]
-						if bc and bc._infoId == 40535 and bc._status == BattleData.CardStatus.board then
-							return true
+				if owner then
+					if owner._has40535OnBoard ~= nil then
+						return owner._has40535OnBoard
+					end
+					if owner._boardCards then
+						for i = 1, #owner._boardCards do
+							local bc = owner._boardCards[i]
+							if bc and bc._infoId == 40535 and bc._status == BattleData.CardStatus.board then
+								owner._has40535OnBoard = true
+								return true
+							end
 						end
+						owner._has40535OnBoard = false
 					end
 				end
 			end

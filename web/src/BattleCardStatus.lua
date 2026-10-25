@@ -937,7 +937,24 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				end
 			end
 
+			if arg_15_1._infoId == 12338 or arg_15_1:isInfoId(12338) then
+				arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
+				local owner = arg_15_1._owner or arg_15_0
+				local oppo = owner and owner._opponent
+				local turnId = (owner and owner._round or 0) * 1000 + (oppo and oppo._round or 0)
+				if oppo and arg_15_1._endermanStealTurn ~= turnId then
+					arg_15_1._endermanStealTurn = turnId
+					local oppoHands = oppo:getBattleCards("H")
+					if #oppoHands > 0 and #owner:getBattleCards("H") < Data.MAX_CARD_COUNT_IN_HAND then
+						local stolen = owner:randomOne(oppoHands)
+						if stolen then
+							owner:setCardStatus(stolen, BattleData.CardStatus.hand, arg_15_1._id, 14795, Data.SkillMode.using, BattleData.CardStatusVal.h2h_oppo)
+						end
+					end
+				end
+			end
 			if arg_15_1._infoId == 40535 or arg_15_1:isInfoId(40535) or arg_15_1:hasSkillFast(14771) then
+				arg_15_0._has40535OnBoard = true
 				local allies = arg_15_0:getBoardCards()
 				for _, c in ipairs(allies) do
 					if (c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isKeyword(21) or c:isKeyword(204) or (c._info and (c._info._keyword == 21 or c._info._keyword == 204))) then

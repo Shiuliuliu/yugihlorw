@@ -1848,7 +1848,7 @@ function var_0_0.getType(arg_12_0)
 end
 
 function var_0_0.getSkillType(arg_13_0)
-	if arg_13_0 == 14677 or arg_13_0 == 14714 or arg_13_0 == 14718 or arg_13_0 == 14721 or arg_13_0 == 14723 or arg_13_0 == 14724 or arg_13_0 == 14725 or arg_13_0 == 14728 or arg_13_0 == 14729 or arg_13_0 == 14731 or arg_13_0 == 14732 or arg_13_0 == 14738 or arg_13_0 == 14741 or arg_13_0 == 14742 or arg_13_0 == 14745 or arg_13_0 == 14747 or arg_13_0 == 14748 or arg_13_0 == 14763 or arg_13_0 == 14764 or arg_13_0 == 14765 or arg_13_0 == 14766 or arg_13_0 == 14770 or arg_13_0 == 14774 or arg_13_0 == 14776 or arg_13_0 == 14779 or arg_13_0 == 14781 or arg_13_0 == 14783 or arg_13_0 == 14784 or arg_13_0 == 14785 or arg_13_0 == 14786 or arg_13_0 == 14789 then
+	if arg_13_0 == 14677 or arg_13_0 == 14714 or arg_13_0 == 14718 or arg_13_0 == 14721 or arg_13_0 == 14723 or arg_13_0 == 14724 or arg_13_0 == 14725 or arg_13_0 == 14728 or arg_13_0 == 14729 or arg_13_0 == 14731 or arg_13_0 == 14732 or arg_13_0 == 14738 or arg_13_0 == 14741 or arg_13_0 == 14742 or arg_13_0 == 14745 or arg_13_0 == 14747 or arg_13_0 == 14748 or arg_13_0 == 14763 or arg_13_0 == 14764 or arg_13_0 == 14765 or arg_13_0 == 14766 or arg_13_0 == 14770 or arg_13_0 == 14774 or arg_13_0 == 14776 or arg_13_0 == 14779 or arg_13_0 == 14781 or arg_13_0 == 14783 or arg_13_0 == 14784 or arg_13_0 == 14785 or arg_13_0 == 14786 or arg_13_0 == 14789 or arg_13_0 == 14793 or arg_13_0 == 14794 then
 		return var_0_0.SkillType.monsterSpell
 	end
 
@@ -1868,7 +1868,7 @@ function var_0_0.getSkillType(arg_13_0)
 		return var_0_0.SkillType.trapSpell
 	end
 
-	if arg_13_0 == 14744 or arg_13_0 == 14746 or arg_13_0 == 14754 or arg_13_0 == 14778 or arg_13_0 == 14780 or arg_13_0 == 14782 or arg_13_0 == 14788 or arg_13_0 == 14790 or arg_13_0 == 14792 then
+	if arg_13_0 == 14744 or arg_13_0 == 14746 or arg_13_0 == 14754 or arg_13_0 == 14778 or arg_13_0 == 14780 or arg_13_0 == 14782 or arg_13_0 == 14788 or arg_13_0 == 14790 or arg_13_0 == 14792 or arg_13_0 == 14795 then
 		return var_0_0.SkillType.monster4Halo
 	end
 

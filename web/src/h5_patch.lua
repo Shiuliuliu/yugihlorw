@@ -712,6 +712,109 @@ local function patchData()
 				Data._monsterInfo[12337]._briefNameSid = 57321
 				Data._monsterInfo[12337]._skillId = { 14792 }
 			end
+			-- Skeleton (40747)
+			if Data._rareInfo and not Data._rareInfo[40747] then
+				Data._rareInfo[40747] = {
+					_atk = { 1600 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57326,
+					_category = 17,
+					_cost = 0,
+					_descSid = 57325,
+					_guideSid = 0,
+					_hp = { 0 },
+					_id = 40747,
+					_isHide = 0,
+					_joinComponent = { 5008, 6008 },
+					_joinResult = { 0 },
+					_keyword = 304,
+					_link = { 0 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "0.0",
+					_linkCount = "0.0",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57324,
+					_nature = 3,
+					_option = 514,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "skeleton",
+					_quality = 3,
+					_recruitable = 1,
+					_skillId = { 14793 },
+					_skin = { 0 },
+					_star = 4,
+					_syncComponent = { { 0 }, { 0 } }
+				}
+			end
+			if Data._rareInfo and Data._rareInfo[40747] then
+				Data._rareInfo[40747]._quality = 3
+				Data._rareInfo[40747]._keyword = 304
+				Data._rareInfo[40747]._nameSid = 57324
+				Data._rareInfo[40747]._descSid = 57325
+				Data._rareInfo[40747]._briefNameSid = 57326
+				Data._rareInfo[40747]._skillId = { 14793 }
+			end
+
+			-- Enderman (12338)
+			if Data._monsterInfo and not Data._monsterInfo[12338] then
+				Data._monsterInfo[12338] = {
+					_atk = { 2000 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57331,
+					_category = 4,
+					_cost = 0,
+					_descSid = 57330,
+					_guideSid = 0,
+					_hp = { 1000 },
+					_id = 12338,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57329,
+					_nature = 2,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "enderman",
+					_quality = 3,
+					_recruitable = 1,
+					_skillId = { 12007, 14794, 14795 },
+					_skin = { 0 },
+					_star = 6,
+					_syncComponent = { { 0 } }
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12338] then
+				Data._monsterInfo[12338]._quality = 3
+				Data._monsterInfo[12338]._keyword = 304
+				Data._monsterInfo[12338]._nameSid = 57329
+				Data._monsterInfo[12338]._descSid = 57330
+				Data._monsterInfo[12338]._briefNameSid = 57331
+				Data._monsterInfo[12338]._skillId = { 12007, 14794, 14795 }
+			end
+
+			-- Skill 14793
+			if Data._skillInfo and not Data._skillInfo[14793] then
+				Data._skillInfo[14793] = { _against = { 0 }, _avoidP2B = 0, _count = 3, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57328, _effectVal = { 0 }, _id = 14793, _isIgnoreDefend = 1, _modes = { 33 }, _nameSid = 57327, _needExtraGem = 0, _needNoGem = 0, _option = { 3 }, _priority = 1, _quality = 3, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			-- Skill 14794
+			if Data._skillInfo and not Data._skillInfo[14794] then
+				Data._skillInfo[14794] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57333, _effectVal = { 0 }, _id = 14794, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 57332, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 3, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			-- Skill 14795
+			if Data._skillInfo and not Data._skillInfo[14795] then
+				Data._skillInfo[14795] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57335, _effectVal = { 0 }, _id = 14795, _isIgnoreDefend = 1, _modes = { 2 }, _nameSid = 57334, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 1, _quality = 3, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+
 			if Data._skillInfo and not Data._skillInfo[14792] then
 				Data._skillInfo[14792] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57323, _effectVal = { 0 }, _id = 14792, _isIgnoreDefend = 1, _modes = { 132, 134 }, _nameSid = 57322, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 3, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 			end

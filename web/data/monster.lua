@@ -16248,4 +16248,11 @@ return {
   ["_picId"]=0,["_py"]="creeper",["_quality"]=3,["_recruitable"]=1,["_skillId"]={[1]=14792,},
   ["_skin"]={[1]=0,},
   ["_star"]=3,},
+  [12338]={["_atk"]={[1]=2000,},
+  ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=57331,["_category"]=4,["_cost"]=0,["_descSid"]=57330,["_guideSid"]=0,["_hp"]={[1]=1000,},
+  ["_id"]=12338,["_isHide"]=0,["_joinResult"]={[1]=0,},
+  ["_keyword"]=304,["_maxCount"]=3,["_nameSid"]=57329,["_nature"]=2,["_option"]=2,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="enderman",["_quality"]=3,["_recruitable"]=1,["_skillId"]={[1]=12007,[2]=14794,[3]=14795,},
+  ["_skin"]={[1]=0,},
+  ["_star"]=6,},
 }

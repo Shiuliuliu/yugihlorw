@@ -57321,3 +57321,15 @@ Creeper
 Creeper
 Creeper - Tự Bộc
 Khi lá bài này trên sân, đối phương triệu hồi quái sẽ kích hoạt: phá hủy bản thân và lá bài đối phương vừa triệu hồi. Trong lượt này, ô quái thú đối phương vừa bị phá hủy sẽ không thể đặt quái.
+Skeleton
+[Xác Sống / Đồng Bộ / Hiệu Ứng]\nKĩ năng chủ động bộ bài thêm (1 lượt tối đa 3 lần): Chọn loại bỏ 1 quái có từ khóa "minecraft" trong Mộ phe ta, triệu hồi đặc biệt lá bài này lên sân.
+Skeleton
+Skeleton - Tái Sinh Xương Trắng
+Kĩ năng chủ động bộ bài thêm (1 lượt tối đa 3 lần): Chọn loại bỏ 1 quái có từ khóa "minecraft" trong Mộ phe ta, triệu hồi đặc biệt lá bài này lên sân.
+Enderman
+[Ác Quỷ / Hiệu Ứng]\n+ Không thể bị hiệu quả phá hủy (12007).\n+ Khi trên sân phe ta không có quái hoặc có quái có từ khóa "minecraft", có thể triệu hồi đặc biệt lá bài này từ tay.\n+ 1 lượt 1 lần, khi lên sân: Ngẫu nhiên lấy 1 lá bài trên tay đối phương cho vào tay phe ta.
+Enderman
+Enderman - Dịch Chuyển Tức Thời
+Kĩ năng chủ động: Khi trên sân phe ta không có quái hoặc có quái có từ khóa "minecraft", có thể triệu hồi đặc biệt lá bài này từ tay.
+Enderman - Đoạt Bài Hư Không
+1 lượt 1 lần, khi lên sân: Ngẫu nhiên lấy 1 lá bài trên tay đối phương cho vào tay phe ta.

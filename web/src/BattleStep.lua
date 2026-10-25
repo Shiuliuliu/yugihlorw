@@ -813,6 +813,13 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14766] = nil
 	arg_2_0._castedSkillCounts[14766] = nil
 	arg_2_0._opponent._castedSkillCounts[3] = nil
+	arg_2_0._castedSkillCounts[14793] = nil
+	arg_2_0._opponent._castedSkillCounts[14793] = nil
+	arg_2_0._castedSkillCounts[14794] = nil
+	arg_2_0._opponent._castedSkillCounts[14794] = nil
+	arg_2_0._castedSkillCounts[14795] = nil
+	arg_2_0._opponent._castedSkillCounts[14795] = nil
+
 	arg_2_0._summonedMonsterCounts = {}
 	arg_2_0._isSummonDisabledByInfoId = nil
 	arg_2_0._isSummonDisabledBySelfStar = {}

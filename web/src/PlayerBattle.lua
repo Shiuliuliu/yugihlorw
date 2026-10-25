@@ -301,6 +301,7 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 	if (arg_7_1:isInfoId(40535) or arg_7_1._infoId == 40535) and (arg_7_1._status == BattleData.CardStatus.board or arg_7_1._status == BattleData.CardStatus.show) and arg_7_2 ~= BattleData.CardStatus.board and arg_7_2 ~= BattleData.CardStatus.show then
 		local owner = arg_7_1._owner
 		if owner then
+			owner._has40535OnBoard = false
 			local allies = owner:getBoardCards()
 			for _, c in ipairs(allies) do
 				if c ~= arg_7_1 and (c:isKeyword(21) or c:isKeyword(204) or (c._info and (c._info._keyword == 21 or c._info._keyword == 204))) then
