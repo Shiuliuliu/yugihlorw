@@ -9938,6 +9938,18 @@ function var_0_0.getSkillLevel(arg_281_0, arg_281_1)
 end
 
 function var_0_0.getAtk(arg_282_0)
+	if arg_282_0._witherDebuffed then
+		return arg_282_0._atk
+	end
+	local owner = arg_282_0._owner
+	local oppo = owner and owner._opponent
+	local hasWither = (owner and owner._hasWitherOnBoard) or (oppo and oppo._hasWitherOnBoard)
+	if hasWither and arg_282_0._status == BattleData.CardStatus.board then
+		local isUndead = (arg_282_0._category == 17) or (arg_282_0._info and arg_282_0._info._category == 17)
+		if not isUndead then
+			return math.floor((arg_282_0._atk or arg_282_0._maxAtk or 0) / 2)
+		end
+	end
 	if (arg_282_0._infoId == 40736 or arg_282_0:hasSkillFast(14750)) and arg_282_0._status == BattleData.CardStatus.board then
 		return arg_282_0._atk or arg_282_0._maxAtk or 3000
 	end

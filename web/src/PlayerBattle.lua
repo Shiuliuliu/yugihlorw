@@ -297,6 +297,22 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		arg_7_1._overload = nil
 	end
 
+	-- Card 40748 (Wither) leaves board: restore ATK
+	if (arg_7_1:isInfoId(40748) or arg_7_1._infoId == 40748) and (arg_7_1._status == BattleData.CardStatus.board or arg_7_1._status == BattleData.CardStatus.show) and arg_7_2 ~= BattleData.CardStatus.board and arg_7_2 ~= BattleData.CardStatus.show then
+		local owner = arg_7_1._owner
+		if owner then
+			owner._hasWitherOnBoard = false
+			local oppo = owner._opponent
+			local allBoardCards = B.mergeTable({ owner:getBoardCards(), oppo and oppo:getBoardCards() or {} })
+			for _, c in ipairs(allBoardCards) do
+				if c._witherDebuffed and c._witherDebuffAmt then
+					c._atk = c._atk + c._witherDebuffAmt
+					c._witherDebuffed = nil
+					c._witherDebuffAmt = nil
+				end
+			end
+		end
+	end
 	-- Card 40535 (Rồng phá giới - Rồng phá hoại) leaves board: decShield from allied Kiếm sĩ diệt rồng
 	if (arg_7_1:isInfoId(40535) or arg_7_1._infoId == 40535) and (arg_7_1._status == BattleData.CardStatus.board or arg_7_1._status == BattleData.CardStatus.show) and arg_7_2 ~= BattleData.CardStatus.board and arg_7_2 ~= BattleData.CardStatus.show then
 		local owner = arg_7_1._owner

@@ -43445,6 +43445,8 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 			var_8_1._owner._castedSkillCounts[var_8_4] = 1
 			var_8_13 = true
 		end
+	elseif var_8_4 == 14796 then
+		var_8_13 = true
 	elseif var_8_4 == 14795 then
 		local ownerCard = var_8_1 or arg_8_1
 		local pOwner = (ownerCard and ownerCard._owner) or arg_8_0

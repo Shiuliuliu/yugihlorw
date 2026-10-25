@@ -937,6 +937,31 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				end
 			end
 
+			if arg_15_1._infoId == 40748 or arg_15_1:isInfoId(40748) then
+				arg_15_0._hasWitherOnBoard = true
+				arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
+				local oppo = arg_15_0._opponent
+				local allBoardCards = B.mergeTable({ arg_15_0:getBoardCards(), oppo and oppo:getBoardCards() or {} })
+				for _, c in ipairs(allBoardCards) do
+					if c ~= arg_15_1 and (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) then
+						local isUndead = (c._category == 17) or (c._info and c._info._category == 17)
+						if not isUndead and not c._witherDebuffed then
+							c._witherDebuffed = true
+							c._witherDebuffAmt = math.ceil(c._atk / 2)
+							c._atk = math.max(0, c._atk - c._witherDebuffAmt)
+						end
+					end
+				end
+			elseif (arg_15_0._hasWitherOnBoard or (arg_15_0._opponent and arg_15_0._opponent._hasWitherOnBoard)) then
+				if (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster) then
+					local isUndead = (arg_15_1._category == 17) or (arg_15_1._info and arg_15_1._info._category == 17)
+					if not isUndead and not arg_15_1._witherDebuffed then
+						arg_15_1._witherDebuffed = true
+						arg_15_1._witherDebuffAmt = math.ceil(arg_15_1._atk / 2)
+						arg_15_1._atk = math.max(0, arg_15_1._atk - arg_15_1._witherDebuffAmt)
+					end
+				end
+			end
 			if arg_15_1._infoId == 12338 or arg_15_1:isInfoId(12338) then
 				arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
 				local owner = arg_15_1._owner or arg_15_0

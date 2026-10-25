@@ -759,6 +759,59 @@ local function patchData()
 				Data._rareInfo[40747]._briefNameSid = 57326
 				Data._rareInfo[40747]._skillId = { 14793 }
 			end
+			-- Wither (40748)
+			if Data._rareInfo and not Data._rareInfo[40748] then
+				Data._rareInfo[40748] = {
+					_atk = { 3000 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57338,
+					_category = 17,
+					_cost = 0,
+					_descSid = 57337,
+					_guideSid = 0,
+					_hp = { 0 },
+					_id = 40748,
+					_isHide = 0,
+					_joinComponent = { 0 },
+					_joinResult = { 0 },
+					_keyword = 304,
+					_link = { 1, 2, 3 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "0.0",
+					_linkCount = "#>=2",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57336,
+					_nature = 2,
+					_option = 8194,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "wither",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 12007, 14796 },
+					_skin = { 0 },
+					_star = 0,
+					_syncComponent = { { 0 } }
+				}
+			end
+			if Data._rareInfo and Data._rareInfo[40748] then
+				Data._rareInfo[40748]._quality = 4
+				Data._rareInfo[40748]._keyword = 304
+				Data._rareInfo[40748]._nameSid = 57336
+				Data._rareInfo[40748]._descSid = 57337
+				Data._rareInfo[40748]._briefNameSid = 57338
+				Data._rareInfo[40748]._skillId = { 12007, 14796 }
+			end
+
+			-- Skill 14796
+			if Data._skillInfo and not Data._skillInfo[14796] then
+				Data._skillInfo[14796] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57340, _effectVal = { 0 }, _id = 14796, _isIgnoreDefend = 1, _modes = { 2, 131, 132 }, _nameSid = 57339, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+
 
 			-- Enderman (12338)
 			if Data._monsterInfo and not Data._monsterInfo[12338] then

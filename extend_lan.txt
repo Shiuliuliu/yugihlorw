@@ -57333,3 +57333,8 @@ Enderman - Dịch Chuyển Tức Thời
 Kĩ năng chủ động: Khi trên sân phe ta không có quái hoặc có quái có từ khóa "minecraft", có thể triệu hồi đặc biệt lá bài này từ tay.
 Enderman - Đoạt Bài Hư Không
 1 lượt 1 lần, khi lên sân: Ngẫu nhiên lấy 1 lá bài trên tay đối phương cho vào tay phe ta.
+Wither
+[Xác Sống / Link 3 / Hiệu Ứng]\n2 quái thú có từ khóa "minecraft" trở lên\n+ Không thể bị hiệu quả phá hủy (12007).\n+ Khi lá bài này trên sân, ngoại trừ quái tộc "Xác Sống", tất cả quái trên sân 2 bên bị giảm 1 nửa ATK (xuyên qua tường chắn quái).
+Wither
+Wither - Héo Rũ Tử Khí
+Khi lá bài này trên sân, ngoại trừ quái tộc "Xác Sống", tất cả quái trên sân 2 bên bị giảm 1 nửa ATK (xuyên qua tường chắn quái).
