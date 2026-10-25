@@ -838,7 +838,7 @@ local function patchData()
 					_packageId = { 0 },
 					_picId = 0,
 					_py = "enderman",
-					_quality = 3,
+					_quality = 4,
 					_recruitable = 1,
 					_skillId = { 12007, 14794, 14795 },
 					_skin = { 0 },
@@ -847,7 +847,7 @@ local function patchData()
 				}
 			end
 			if Data._monsterInfo and Data._monsterInfo[12338] then
-				Data._monsterInfo[12338]._quality = 3
+				Data._monsterInfo[12338]._quality = 4
 				Data._monsterInfo[12338]._keyword = 304
 				Data._monsterInfo[12338]._nameSid = 57329
 				Data._monsterInfo[12338]._descSid = 57330
@@ -861,11 +861,17 @@ local function patchData()
 			end
 			-- Skill 14794
 			if Data._skillInfo and not Data._skillInfo[14794] then
-				Data._skillInfo[14794] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57333, _effectVal = { 0 }, _id = 14794, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 57332, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 3, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14794] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57333, _effectVal = { 0 }, _id = 14794, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 57332, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14794] then
+				Data._skillInfo[14794]._quality = 4
 			end
 			-- Skill 14795
 			if Data._skillInfo and not Data._skillInfo[14795] then
-				Data._skillInfo[14795] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57335, _effectVal = { 0 }, _id = 14795, _isIgnoreDefend = 1, _modes = { 2 }, _nameSid = 57334, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 1, _quality = 3, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14795] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57335, _effectVal = { 0 }, _id = 14795, _isIgnoreDefend = 1, _modes = { 2 }, _nameSid = 57334, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 1, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14795] then
+				Data._skillInfo[14795]._quality = 4
 			end
 
 			if Data._skillInfo and not Data._skillInfo[14792] then
