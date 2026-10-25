@@ -4061,19 +4061,64 @@ function var_0_0.splitString(arg_132_0, arg_132_1, arg_132_2)
 end
 
 function var_0_0.preloadEffects(arg_133_0, arg_133_1)
+	if not arg_133_0._hasPreloadedBattleCommon then
+		arg_133_0._hasPreloadedBattleCommon = true
+
+		-- Preload common battle DragonBones into cache to eliminate synchronous XHR freeze
+		pcall(function()
+			DragonBones.create("zh")
+			DragonBones.create("szkp")
+			DragonBones.create("xuanzhong")
+			DragonBones.create("gjxz")
+			DragonBones.create("beiji")
+			DragonBones.create("cdtx")
+		end)
+
+		-- Preload common battle particles into texture cache
+		pcall(function()
+			lc.TextureCache:addImage("res/particle/par_kprc01.png")
+			lc.TextureCache:addImage("res/particle/par_kprc02.png")
+			lc.TextureCache:addImage("res/particle/par_yhcx.png")
+			lc.TextureCache:addImage("res/particle/par_szfs.png")
+			lc.TextureCache:addImage("res/particle/par_gwsf.png")
+			lc.TextureCache:addImage("res/particle/zhudong.png")
+			lc.TextureCache:addImage("res/particle/par_round_explode.png")
+		end)
+
+		-- Preload common battle audio effects into Web Audio cache
+		pcall(function()
+			local ae = cc.SimpleAudioEngine:getInstance()
+			if ae and ae.preloadEffect then
+				ae:preloadEffect("res/bat_audio/e_card_using.mp3")
+				ae:preloadEffect("res/bat_audio/e_card_board.mp3")
+				ae:preloadEffect("res/bat_audio/e_card_die.mp3")
+				ae:preloadEffect("res/bat_audio/e_card_cover.mp3")
+				ae:preloadEffect("res/bat_audio/e_card_deal.mp3")
+				ae:preloadEffect("res/bat_audio/e_round.mp3")
+				ae:preloadEffect("res/bat_audio/e_wzsy.mp3")
+			end
+		end)
+	end
+
 	for iter_133_0 = 1, 2 do
 		local var_133_0 = iter_133_0 == 1 and arg_133_0._player or arg_133_0._opponent
 
-		if arg_133_1 and var_133_0 and var_133_0._rareCards then
-			for _, rCard in ipairs(var_133_0._rareCards) do
-				local cid = rCard._infoId or rCard._id
-				if cid then
-					pcall(function()
-						local texName = ClientView.getCardImageName(cid)
-						if texName then
-							lc.TextureCache:addImage(texName)
+		if arg_133_1 and var_133_0 then
+			-- Preload card images across all player & opponent decks/hands/board
+			local pools = { var_133_0._rareCards, var_133_0._handCards, var_133_0._boardCards, var_133_0._pileCards }
+			for _, pool in ipairs(pools) do
+				if pool then
+					for _, card in ipairs(pool) do
+						local cid = card and (card._infoId or card._id)
+						if cid then
+							pcall(function()
+								local texName = ClientView.getCardImageName(cid)
+								if texName then
+									lc.TextureCache:addImage(texName)
+								end
+							end)
 						end
-					end)
+					end
 				end
 			end
 		end

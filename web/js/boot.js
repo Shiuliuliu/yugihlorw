@@ -54,6 +54,9 @@
 			status('running');
 			var el = document.getElementById('bootOverlay');
 			if (el) el.style.display = 'none';
+			if (global.jdzcPreloadCommonBattleEffects) {
+				setTimeout(global.jdzcPreloadCommonBattleEffects, 2000);
+			}
 		},
 	};
 

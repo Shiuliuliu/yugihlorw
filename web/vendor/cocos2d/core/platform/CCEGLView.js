@@ -937,18 +937,7 @@ cc.ContainerStrategy = cc.Class.extend(/** @lends cc.ContainerStrategy# */{
         // Setup pixel ratio for retina display
         var devicePixelRatio = view._devicePixelRatio = 1;
         if (view.isRetinaEnabled()) {
-            var customDpr = view._customDpr;
-            if (customDpr === undefined) {
-                try {
-                    var q = localStorage.getItem('game_graphic_quality');
-                    var map = { '1': 1.0, '2': 1.5, '3': 2.0 };
-                    customDpr = map[q] !== undefined ? map[q] : 2.0;
-                } catch(e) {
-                    customDpr = 2.0;
-                }
-                view._customDpr = customDpr;
-            }
-            devicePixelRatio = view._devicePixelRatio = Math.min(2.25, Math.max(customDpr, window.devicePixelRatio || 1));
+            devicePixelRatio = view._devicePixelRatio = Math.min(2, window.devicePixelRatio || 1);
         }
         // Setup canvas
         locCanvas.width = Math.round(w * devicePixelRatio);

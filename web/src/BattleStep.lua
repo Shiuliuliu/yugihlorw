@@ -746,6 +746,18 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14249] = nil
 	arg_2_0._opponent._castedSkillCounts[14250] = nil
 	arg_2_0._opponent._castedSkillCounts[14255] = nil
+	arg_2_0._isDragonSummonDisabled = nil
+	arg_2_0._opponent._isDragonSummonDisabled = nil
+	arg_2_0._mark14788 = nil
+	arg_2_0._opponent._mark14788 = nil
+	arg_2_0._castedSkillCounts[14788] = nil
+	arg_2_0._castedSkillCounts[14789] = nil
+	arg_2_0._castedSkillCounts[14790] = nil
+	arg_2_0._castedSkillCounts[14791] = nil
+	arg_2_0._opponent._castedSkillCounts[14788] = nil
+	arg_2_0._opponent._castedSkillCounts[14789] = nil
+	arg_2_0._opponent._castedSkillCounts[14790] = nil
+	arg_2_0._opponent._castedSkillCounts[14791] = nil
 	arg_2_0._opponent._castedSkillCounts[14256] = nil
 	arg_2_0._opponent._castedSkillCounts[14259] = nil
 	arg_2_0._opponent._castedSkillCounts[14279] = nil
@@ -1112,6 +1124,7 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._mark14250_1 = nil
 	arg_2_0._mark14250_2 = nil
 	arg_2_0._mark14255 = nil
+	arg_2_0._mark14788 = nil
 	arg_2_0._mark14256 = nil
 	arg_2_0._mark14305 = nil
 	arg_2_0._mark14429 = nil
@@ -1165,6 +1178,7 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._mark14250_1 = nil
 	arg_2_0._opponent._mark14250_2 = nil
 	arg_2_0._opponent._mark14255 = nil
+	arg_2_0._opponent._mark14788 = nil
 	arg_2_0._opponent._mark14256 = nil
 	arg_2_0._opponent._mark14305 = nil
 	arg_2_0._opponent._mark14306 = nil

@@ -57305,3 +57305,19 @@ Nak - Thứ nguyên vệ thần
 Nak - Thứ nguyên vệ thần
 Thứ Nguyên Chuyển Hóa
 Khi có mặt; tăng công bằng số lượng bài trên tay x[1]
+Kỵ sĩ diệt rồng
+2 quái trở lên, trong đó gồm 1 quái có từ khóa "Kiếm phá hủy".
+Kỵ sĩ diệt rồng
+Kỵ Sĩ - Giáng Long Trảm
+Mỗi lượt chỉ 1 lần. Khi bài này nằm trong bộ bài thêm; trên sân phe ta không có quái hoặc trên sân phe ta chỉ có quái có từ khóa “Kiếm sĩ diệt rồng”; đồng thời đối thủ Triệu Hồi Đặc Biệt quái tộc "rồng" sẽ có thể dùng. Hi sinh bản thân bài này; khi bài này nằm trong mộ; loại bỏ bài của đối thủ bị đưa vào mộ từ trên sân.
+Kỵ Sĩ - Tuyệt Long Uyển
+1 lượt 1 lần, Khi lá bài này được triệu hồi lên sân, ngẫu nhiên loại bỏ tối đa 2 quái tộc "rồng" trong bộ bài thêm đối thủ.
+Kỵ Sĩ - Trảm Long Quyết
+1 lượt 1 lần, khi lá bài này trên sân, đối phương triệu hồi/triệu hồi đặc biệt quái tộc "rồng" sẽ kích hoạt, đưa quái đó vào mộ (Xuyên qua tường chắn quái), sau đó lượt này đối phương không thể triệu hồi/triệu hồi đặc biệt quái tộc "rồng".
+Kỵ Sĩ - Long Uy Tận Diệt
+Khi đối thủ rời sân trong lượt đối thủ: đối thủ không thể triệu hồi thông thường hoặc Triệu Hồi Đặc Biệt quái tộc "rồng" ở lượt này. Tất cả Quái Vật tộc "rồng" của đối thủ không thể tấn công . đưa tất cả quái tộc "rồng" trên tay đối phương vào mộ.
+Creeper
+[Xác Sống - Hiệu Ứng]\nKhi lá bài này trên sân, đối phương triệu hồi quái sẽ kích hoạt: phá hủy bản thân và lá bài đối phương vừa triệu hồi. Trong lượt này, ô quái thú đối phương vừa bị phá hủy sẽ không thể đặt quái.
+Creeper
+Creeper - Tự Bộc
+Khi lá bài này trên sân, đối phương triệu hồi quái sẽ kích hoạt: phá hủy bản thân và lá bài đối phương vừa triệu hồi. Trong lượt này, ô quái thú đối phương vừa bị phá hủy sẽ không thể đặt quái.

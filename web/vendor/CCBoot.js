@@ -1262,7 +1262,7 @@ var _tmpCanvas1 = document.createElement("canvas"),
     _tmpCanvas2 = document.createElement("canvas");
 
 cc.create3DContext = function (canvas, opt_attribs) {
-    var names = ["webgl2", "webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+    var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
     var context = null;
     for (var ii = 0; ii < names.length; ++ii) {
         try {
@@ -2519,33 +2519,14 @@ cc.game = /** @lends cc.game# */{
 
         callback = function () {
             if (!self._paused) {
-                var targetFps = self._targetFps;
-                if (targetFps === undefined) {
-                    try {
-                        var savedFps = localStorage.getItem('game_fps_limit');
-                        targetFps = savedFps !== null ? parseInt(savedFps, 10) : (config[CONFIG_KEY.frameRate] || 60);
-                    } catch(e) {
-                        targetFps = config[CONFIG_KEY.frameRate] || 60;
-                    }
-                    self._targetFps = targetFps;
-                }
-
-                if (targetFps > 0) {
-                    var now = (window.performance && window.performance.now) ? window.performance.now() : Date.now();
-                    var interval = 1000 / targetFps;
-                    var elapsed = now - lastTime;
-                    if (elapsed >= interval - 1.5) {
-                        lastTime = now - (elapsed % interval);
-                        director.mainLoop();
-                    }
-                } else {
-                    director.mainLoop();
-                }
+                director.mainLoop();
+                if(self._intervalId)
+                    window.cancelAnimationFrame(self._intervalId);
                 self._intervalId = window.requestAnimFrame(callback);
             }
         };
 
-        self._intervalId = window.requestAnimFrame(callback);
+        window.requestAnimFrame(callback);
         self._paused = false;
     },
 
@@ -2662,10 +2643,9 @@ cc.game = /** @lends cc.game# */{
             this._renderContext = cc._renderContext = cc.webglContext
              = cc.create3DContext(localCanvas, {
                 'stencil': true,
-                'preserveDrawingBuffer': false,
-                'antialias': true,
-                'alpha': false,
-                'powerPreference': 'high-performance'
+                'preserveDrawingBuffer': true,
+                'antialias': !cc.sys.isMobile,
+                'alpha': false
             });
         }
         // WebGL context created successfully

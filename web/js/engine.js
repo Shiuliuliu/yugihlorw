@@ -1329,14 +1329,12 @@
 		var baseSpriteUploadData = cc.Sprite.WebGLRenderCmd.prototype.uploadData;
 		cc.Sprite.WebGLRenderCmd.prototype.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
 			var node = this._node;
-			if (node && (node.__isBattleUi || node.__inBattleUi) && node._rect && node._rect.width >= 60 && node._rect.height >= 60 && !getUprightRoot(node)) {
+			if (node && (node.__isBattleUi || node.__inBattleUi) && node._rect && node._rect.width > 1200 && node._rect.height > 600) {
 				var locTexture = node._texture;
 				if (!(locTexture && locTexture._textureLoaded && node._rect.width && node._rect.height) || !this._displayedOpacity)
 					return false;
 
-				var isLargeFrame = (node._rect.width > 1200 && node._rect.height > 600);
-				var NX = isLargeFrame ? 16 : 4;
-				var NY = isLargeFrame ? 8 : 4;
+				var NX = 16, NY = 8;
 				var neededFloats = NX * NY * 4 * 6;
 				var offset = vertexDataOffset;
 				if (offset + neededFloats > f32buffer.length) {
@@ -2466,6 +2464,10 @@
 		if (binCache[url]) return binCache[url];
 		var cleanUrl = (typeof url === 'string') ? url.split('?')[0] : url;
 		if (binCache[cleanUrl]) return binCache[cleanUrl];
+		var noRes = cleanUrl.replace(/^res\//, '');
+		if (binCache[noRes]) return binCache[noRes];
+		if (binCache['res/' + noRes]) return binCache['res/' + noRes];
+
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url, false);
 		xhr.overrideMimeType('text/plain; charset=x-user-defined');
@@ -2479,6 +2481,8 @@
 			bytes[i] = text.charCodeAt(i) & 0xff;
 		binCache[url] = bytes.buffer;
 		binCache[cleanUrl] = bytes.buffer;
+		binCache[noRes] = bytes.buffer;
+		binCache['res/' + noRes] = bytes.buffer;
 		return binCache[url];
 	}
 
@@ -2529,6 +2533,79 @@
 			});
 		}
 	};
+
+	/* Asynchronous DragonBones & Effect Preloader
+	 * Preloads _tex.bin, _ske.bin and composite masked textures into RAM
+	 * so that in-battle DragonBones.create runs instantly with 0ms delay. */
+	function preloadEffectDataAsync(cleanName) {
+		var dir = (config.resBase || 'res/') + 'effects/' + cleanName + '.lcres/';
+		var key = dir + cleanName;
+		if (dbCache[key]) return Promise.resolve(dbCache[key]);
+
+		var texUrl = dir + cleanName + '_tex.bin';
+		var skeUrl = dir + cleanName + '_ske.bin';
+		var oriJpg = dir + cleanName + '_ori.jpg';
+		var maskPng = dir + cleanName + '.png';
+
+		function fetchBin(url) {
+			if (binCache[url]) return Promise.resolve(binCache[url]);
+			var clean = (typeof url === 'string') ? url.split('?')[0] : url;
+			if (binCache[clean]) return Promise.resolve(binCache[clean]);
+			var noRes = clean.replace(/^res\//, '');
+			if (binCache[noRes]) return Promise.resolve(binCache[noRes]);
+			var finalUrl = res.versionedUrl ? res.versionedUrl(url) : url;
+			return fetch(finalUrl)
+				.then(function (r) {
+					if (!r.ok) throw new Error(r.status + ' ' + url);
+					return r.arrayBuffer();
+				})
+				.then(function (buf) {
+					binCache[url] = buf;
+					binCache[clean] = buf;
+					binCache[noRes] = buf;
+					binCache['res/' + noRes] = buf;
+					return buf;
+				})
+				.catch(function () { return null; });
+		}
+
+		return Promise.all([
+			fetchBin(texUrl),
+			fetchBin(skeUrl),
+			res.loadMaskedTexture(cleanName + '.png', oriJpg, maskPng).catch(function () {})
+		]).then(function () {
+			try {
+				return loadEffectData(dir, cleanName, cleanName);
+			} catch (e) {
+				return null;
+			}
+		});
+	}
+	global.jdzcPreloadEffect = preloadEffectDataAsync;
+
+	var BATTLE_EFFECTS_LIST = [
+		'zh', 'szkp', 'xuanzhong', 'gjxz', 'beiji', 'cdtx',
+		'chaoliangsucai1', 'chaoliangsucai2', 'chaoliangsucai3',
+		's_xuanzhong', 'szfs', 'tkl', 'xieshen', 'yishenlong', 'yishenlong2', 'zhxz', 'jiantou'
+	];
+
+	function preloadCommonBattleEffects() {
+		var idx = 0;
+		function nextBatch() {
+			if (idx >= BATTLE_EFFECTS_LIST.length) return;
+			var batch = BATTLE_EFFECTS_LIST.slice(idx, idx + 3);
+			idx += 3;
+			Promise.all(batch.map(function (name) {
+				return preloadEffectDataAsync(name);
+			})).then(function () {
+				setTimeout(nextBatch, 60);
+			}).catch(function () {
+				setTimeout(nextBatch, 60);
+			});
+		}
+		setTimeout(nextBatch, 600);
+	}
+	global.jdzcPreloadCommonBattleEffects = preloadCommonBattleEffects;
 
 	/* A bone's rotation is its skew: the two are equal for everything the
 	 * game ships, and cocos turns the other way from the armature's
@@ -3734,37 +3811,7 @@
 		}
 	}
 
-	if (baseSpriteSetTexture) {
-		cc.Sprite.prototype.setTexture = function (texture) {
-			if (!texture) {
-				this.__wantedTexture = null;
-				return baseSpriteSetTexture.call(this, null);
-			}
-			if (typeof texture === 'string') {
-				texture = cc.textureCache.addImage(texture);
-			}
-			this.__wantedTexture = texture;
-			if (texture && typeof texture.isLoaded === 'function' && texture.isLoaded()) {
-				attachTexture(this, texture);
-				return;
-			}
-			baseSpriteSetTexture.call(this, texture);
-			if (texture && texture._contentSize && texture._contentSize.width > 0 && texture._contentSize.height > 0) {
-				var curSz = this.getContentSize();
-				if (curSz.width === 0 || curSz.height === 0) {
-					this.setContentSize(cc.size(texture._contentSize.width, texture._contentSize.height));
-				}
-			}
-			if (texture && typeof texture.addEventListener === 'function') {
-				var self = this;
-				texture.addEventListener('load', function () {
-					if (self.__wantedTexture === texture) {
-						attachTexture(self, texture);
-					}
-				});
-			}
-		};
-	}
+
 
 	global.jdzcAttachTexture = attachTexture;
 

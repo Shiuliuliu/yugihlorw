@@ -16241,4 +16241,11 @@ return {
   ["_picId"]=0,["_py"]="sucvatalice",["_quality"]=5,["_recruitable"]=1,["_skillId"]={[1]=0,},
   ["_skin"]={[1]=0,},
   ["_star"]=3,},
+  [12337]={["_atk"]={[1]=1200,},
+  ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=57321,["_category"]=17,["_cost"]=0,["_descSid"]=57320,["_guideSid"]=0,["_hp"]={[1]=1000,},
+  ["_id"]=12337,["_isHide"]=0,["_joinResult"]={[1]=0,},
+  ["_keyword"]=304,["_maxCount"]=3,["_nameSid"]=57319,["_nature"]=2,["_option"]=2,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="creeper",["_quality"]=3,["_recruitable"]=1,["_skillId"]={[1]=14792,},
+  ["_skin"]={[1]=0,},
+  ["_star"]=3,},
 }

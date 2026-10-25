@@ -2313,6 +2313,24 @@ function var_0_0.getHaloModeSkills(arg_50_0, arg_50_1)
 
 			var_50_8[#var_50_8 + 1] = var_50_24
 		end
+
+		local var_50_kysi = arg_50_0:getBattleCardsByInfoId("R", 40746)[1]
+
+		if var_50_kysi ~= nil then
+			local var_50_sk = var_50_kysi:getSkillById(14788)
+
+			if var_50_sk then
+				var_50_8[#var_50_8 + 1] = var_50_sk
+			end
+		end
+
+		local var_50_creepers = arg_50_0:getBattleCardsByInfoId("B", 12337)
+		for iter_creeper = 1, #var_50_creepers do
+			local var_creeper_sk = var_50_creepers[iter_creeper]:getSkillById(14792)
+			if var_creeper_sk then
+				var_50_8[#var_50_8 + 1] = var_creeper_sk
+			end
+		end
 	end
 
 	if arg_50_1 == Data.SkillMode.halo_oppo_before_magic_trap and arg_50_0._mark14222 then

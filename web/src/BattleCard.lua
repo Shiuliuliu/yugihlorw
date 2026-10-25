@@ -9641,7 +9641,7 @@ function var_0_0.isKeyword(arg_270_0, arg_270_1, arg_270_2)
 			return true
 		end
 	end
-	if infoId == 40743 or infoId == 40744 then
+	if infoId == 40743 or infoId == 40744 or infoId == 40746 then
 		if arg_270_1 == 21 or arg_270_1 == 204 or (Data and Data.CardKeyword and (arg_270_1 == Data.CardKeyword.phjs or arg_270_1 == Data.CardKeyword.phdj)) then
 			return true
 		end
@@ -10386,11 +10386,15 @@ function var_0_0.getCardLinkPos(arg_316_0)
 	if arg_316_0._info._link == nil or arg_316_0._info._link[1] == 0 then
 		return
 	end
+	local posMap = arg_316_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_316_0._pos]
+	if not posMap then
+		return
+	end
 
 	for iter_316_0 = 1, #arg_316_0._info._link do
-		local var_316_0 = BattleData.LINK_POS[arg_316_0._pos][arg_316_0._info._link[iter_316_0]]
+		local var_316_0 = posMap[arg_316_0._info._link[iter_316_0]]
 
-		if var_316_0 > 0 then
+		if var_316_0 and var_316_0 > 0 then
 			return var_316_0
 		end
 	end
@@ -10400,13 +10404,17 @@ function var_0_0.getCardEmptyLinkPosCount(arg_317_0)
 	if arg_317_0._info._link == nil or arg_317_0._info._link[1] == 0 then
 		return 0
 	end
+	local posMap = arg_317_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_317_0._pos]
+	if not posMap then
+		return 0
+	end
 
 	local var_317_0 = 0
 
 	for iter_317_0 = 1, #arg_317_0._info._link do
-		local var_317_1 = BattleData.LINK_POS[arg_317_0._pos][arg_317_0._info._link[iter_317_0]]
+		local var_317_1 = posMap[arg_317_0._info._link[iter_317_0]]
 
-		if var_317_1 > 0 and arg_317_0._owner:isLinkPosEmpty(var_317_1) then
+		if var_317_1 and var_317_1 > 0 and arg_317_0._owner and arg_317_0._owner:isLinkPosEmpty(var_317_1) then
 			var_317_0 = var_317_0 + 1
 		end
 	end
@@ -10418,11 +10426,15 @@ function var_0_0.getCardEmptyLinkPos(arg_318_0)
 	if arg_318_0._info._link == nil or arg_318_0._info._link[1] == 0 then
 		return
 	end
+	local posMap = arg_318_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_318_0._pos]
+	if not posMap then
+		return
+	end
 
 	for iter_318_0 = 1, #arg_318_0._info._link do
-		local var_318_0 = BattleData.LINK_POS[arg_318_0._pos][arg_318_0._info._link[iter_318_0]]
+		local var_318_0 = posMap[arg_318_0._info._link[iter_318_0]]
 
-		if var_318_0 > 0 and arg_318_0._owner:isLinkPosEmpty(var_318_0) then
+		if var_318_0 and var_318_0 > 0 and arg_318_0._owner and arg_318_0._owner:isLinkPosEmpty(var_318_0) then
 			return var_318_0
 		end
 	end
@@ -10432,13 +10444,17 @@ function var_0_0.getCardEmptyOppoLinkPosCount(arg_319_0)
 	if arg_319_0._info._link == nil or arg_319_0._info._link[1] == 0 then
 		return 0
 	end
+	local posMap = arg_319_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_319_0._pos]
+	if not posMap then
+		return 0
+	end
 
 	local var_319_0 = 0
 
 	for iter_319_0 = 1, #arg_319_0._info._link do
-		local var_319_1 = BattleData.LINK_POS[arg_319_0._pos][arg_319_0._info._link[iter_319_0]]
+		local var_319_1 = posMap[arg_319_0._info._link[iter_319_0]]
 
-		if var_319_1 < 0 and arg_319_0._owner._opponent:isLinkPosEmpty(-var_319_1) then
+		if var_319_1 and var_319_1 < 0 and arg_319_0._owner and arg_319_0._owner._opponent and arg_319_0._owner._opponent:isLinkPosEmpty(-var_319_1) then
 			var_319_0 = var_319_0 + 1
 		end
 	end
@@ -10450,11 +10466,15 @@ function var_0_0.getCardEmptyOppoLinkPos(arg_320_0)
 	if arg_320_0._info._link == nil or arg_320_0._info._link[1] == 0 then
 		return
 	end
+	local posMap = arg_320_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_320_0._pos]
+	if not posMap then
+		return
+	end
 
 	for iter_320_0 = 1, #arg_320_0._info._link do
-		local var_320_0 = BattleData.LINK_POS[arg_320_0._pos][arg_320_0._info._link[iter_320_0]]
+		local var_320_0 = posMap[arg_320_0._info._link[iter_320_0]]
 
-		if var_320_0 < 0 and arg_320_0._owner._opponent:isLinkPosEmpty(-var_320_0) then
+		if var_320_0 and var_320_0 < 0 and arg_320_0._owner and arg_320_0._owner._opponent and arg_320_0._owner._opponent:isLinkPosEmpty(-var_320_0) then
 			return -var_320_0
 		end
 	end
@@ -10464,9 +10484,13 @@ function var_0_0.isCardLinkPos(arg_321_0, arg_321_1)
 	if arg_321_0._info._link == nil or arg_321_0._info._link[1] == 0 then
 		return false
 	end
+	local posMap = arg_321_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_321_0._pos]
+	if not posMap then
+		return false
+	end
 
 	for iter_321_0 = 1, #arg_321_0._info._link do
-		if BattleData.LINK_POS[arg_321_0._pos][arg_321_0._info._link[iter_321_0]] == arg_321_1 then
+		if posMap[arg_321_0._info._link[iter_321_0]] == arg_321_1 then
 			return true
 		end
 	end
@@ -10478,15 +10502,19 @@ function var_0_0.isCardEmptyLinkPos(arg_322_0, arg_322_1)
 	if arg_322_0._info._link == nil or arg_322_0._info._link[1] == 0 then
 		return false
 	end
+	local posMap = arg_322_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_322_0._pos]
+	if not posMap then
+		return false
+	end
 
 	for iter_322_0 = 1, #arg_322_0._info._link do
-		local var_322_0 = BattleData.LINK_POS[arg_322_0._pos][arg_322_0._info._link[iter_322_0]]
+		local var_322_0 = posMap[arg_322_0._info._link[iter_322_0]]
 
-		if var_322_0 > 0 and var_322_0 == arg_322_1 and arg_322_0._owner:isLinkPosEmpty(var_322_0) then
+		if var_322_0 and var_322_0 > 0 and var_322_0 == arg_322_1 and arg_322_0._owner and arg_322_0._owner:isLinkPosEmpty(var_322_0) then
 			return true
 		end
 
-		if var_322_0 < 0 and var_322_0 == arg_322_1 and arg_322_0._owner._opponent:isLinkPosEmpty(-var_322_0) then
+		if var_322_0 and var_322_0 < 0 and var_322_0 == arg_322_1 and arg_322_0._owner and arg_322_0._owner._opponent and arg_322_0._owner._opponent:isLinkPosEmpty(-var_322_0) then
 			return true
 		end
 	end
@@ -10500,17 +10528,21 @@ function var_0_0.getLinkedCards(arg_323_0, arg_323_1)
 	if arg_323_0._info._link == nil or arg_323_0._info._link[1] == 0 then
 		return var_323_0
 	end
+	local posMap = arg_323_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_323_0._pos]
+	if not posMap then
+		return var_323_0
+	end
 
 	arg_323_1 = arg_323_1 or 1
 
 	for iter_323_0 = 1, #arg_323_0._info._link do
-		local var_323_1 = BattleData.LINK_POS[arg_323_0._pos][arg_323_0._info._link[iter_323_0]]
+		local var_323_1 = posMap[arg_323_0._info._link[iter_323_0]]
 
-		if (arg_323_1 == 1 or arg_323_1 == 3) and var_323_1 > 0 and arg_323_0._owner._boardCards[var_323_1] ~= nil then
+		if (arg_323_1 == 1 or arg_323_1 == 3) and var_323_1 and var_323_1 > 0 and arg_323_0._owner and arg_323_0._owner._boardCards[var_323_1] ~= nil then
 			var_323_0[#var_323_0 + 1] = arg_323_0._owner._boardCards[var_323_1]
 		end
 
-		if (arg_323_1 == 2 or arg_323_1 == 3) and var_323_1 < 0 and arg_323_0._owner._opponent._boardCards[-var_323_1] ~= nil then
+		if (arg_323_1 == 2 or arg_323_1 == 3) and var_323_1 and var_323_1 < 0 and arg_323_0._owner and arg_323_0._owner._opponent and arg_323_0._owner._opponent._boardCards[-var_323_1] ~= nil then
 			var_323_0[#var_323_0 + 1] = arg_323_0._owner._opponent._boardCards[-var_323_1]
 		end
 	end
@@ -10524,17 +10556,21 @@ function var_0_0.getDoubleLinkedCards(arg_324_0, arg_324_1)
 	if arg_324_0._info._link == nil or arg_324_0._info._link[1] == 0 then
 		return var_324_0
 	end
+	local posMap = arg_324_0._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_324_0._pos]
+	if not posMap then
+		return var_324_0
+	end
 
 	arg_324_1 = arg_324_1 or 1
 
 	for iter_324_0 = 1, #arg_324_0._info._link do
-		local var_324_1 = BattleData.LINK_POS[arg_324_0._pos][arg_324_0._info._link[iter_324_0]]
+		local var_324_1 = posMap[arg_324_0._info._link[iter_324_0]]
 
-		if (arg_324_1 == 1 or arg_324_1 == 3) and var_324_1 > 0 and arg_324_0._owner._boardCards[var_324_1] ~= nil and arg_324_0._owner._boardCards[var_324_1]:isCardLinkPos(arg_324_0._pos) then
+		if (arg_324_1 == 1 or arg_324_1 == 3) and var_324_1 and var_324_1 > 0 and arg_324_0._owner and arg_324_0._owner._boardCards[var_324_1] ~= nil and arg_324_0._owner._boardCards[var_324_1]:isCardLinkPos(arg_324_0._pos) then
 			var_324_0[#var_324_0 + 1] = arg_324_0._owner._boardCards[var_324_1]
 		end
 
-		if (arg_324_1 == 2 or arg_324_1 == 3) and var_324_1 < 0 and arg_324_0._owner._opponent._boardCards[-var_324_1] ~= nil and arg_324_0._owner._opponent._boardCards[-var_324_1]:isCardLinkPos(-arg_324_0._pos) then
+		if (arg_324_1 == 2 or arg_324_1 == 3) and var_324_1 and var_324_1 < 0 and arg_324_0._owner and arg_324_0._owner._opponent and arg_324_0._owner._opponent._boardCards[-var_324_1] ~= nil and arg_324_0._owner._opponent._boardCards[-var_324_1]:isCardLinkPos(-arg_324_0._pos) then
 			var_324_0[#var_324_0 + 1] = arg_324_0._owner._opponent._boardCards[-var_324_1]
 		end
 	end
@@ -10543,18 +10579,22 @@ function var_0_0.getDoubleLinkedCards(arg_324_0, arg_324_1)
 end
 
 function var_0_0.isLinkedCard(arg_325_0, arg_325_1)
-	if arg_325_1._info._link == nil or arg_325_1._info._link[1] == 0 then
+	if not arg_325_1 or arg_325_1._info._link == nil or arg_325_1._info._link[1] == 0 then
+		return false
+	end
+	local posMap = arg_325_1._pos and BattleData.LINK_POS and BattleData.LINK_POS[arg_325_1._pos]
+	if not posMap then
 		return false
 	end
 
 	for iter_325_0 = 1, #arg_325_1._info._link do
-		local var_325_0 = BattleData.LINK_POS[arg_325_1._pos][arg_325_1._info._link[iter_325_0]]
+		local var_325_0 = posMap[arg_325_1._info._link[iter_325_0]]
 
-		if var_325_0 > 0 and arg_325_1._owner == arg_325_0._owner and arg_325_1._owner._boardCards[var_325_0] == arg_325_0 then
+		if var_325_0 and var_325_0 > 0 and arg_325_1._owner == arg_325_0._owner and arg_325_1._owner and arg_325_1._owner._boardCards[var_325_0] == arg_325_0 then
 			return true
 		end
 
-		if var_325_0 < 0 and arg_325_1._owner ~= arg_325_0._owner and arg_325_1._owner._opponent._boardCards[-var_325_0] == arg_325_0 then
+		if var_325_0 and var_325_0 < 0 and arg_325_1._owner ~= arg_325_0._owner and arg_325_1._owner and arg_325_1._owner._opponent and arg_325_1._owner._opponent._boardCards[-var_325_0] == arg_325_0 then
 			return true
 		end
 	end

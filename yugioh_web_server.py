@@ -2983,8 +2983,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 new_level = calc_level(new_exp)
                                 
                                 baovat_data = None
+                                baovats_list = []
                                 if result == 1:
-                                    # Tỉ lệ rớt Bảo Vật Ngàn Năm khi thắng PvP:
+                                    # Tỉ lệ rớt Bảo Vật Ngàn Năm khi thắng PvP (x2 bảo vật ngẫu nhiên):
                                     # 7031 (Trò Chơi Ngàn Năm): 2%
                                     # 7032 (Vòng Trí Tuệ Ngàn Năm): 2%
                                     # 7033 (Cây Gậy Ngàn Năm): 5%
@@ -2992,11 +2993,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     # 7035 (Vòng Cổ Ngàn Năm): 27%
                                     # 7036 (Chìa Khóa Ngàn Năm): 27%
                                     # 7037 (Cán Cân Ngàn Năm): 27%
-                                    baovat_id = random.choices(
-                                        [7031, 7032, 7033, 7034, 7035, 7036, 7037],
-                                        weights=[2, 2, 5, 10, 27, 27, 27],
-                                        k=1
-                                    )[0]
+                                    baovat_pool = [7031, 7032, 7033, 7034, 7035, 7036, 7037]
+                                    baovat_weights = [2, 2, 5, 10, 27, 27, 27]
                                     baovat_names = {
                                         7031: "Trò Chơi Ngàn Năm",
                                         7032: "Vòng Trí Tuệ Ngàn Năm",
@@ -3006,17 +3004,33 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                         7036: "Chìa Khóa Ngàn Năm",
                                         7037: "Cán Cân Ngàn Năm"
                                     }
-                                    cur.execute("""
-                                        INSERT INTO user_props (account_id, prop_id, count)
-                                        VALUES (%s, %s, 1)
-                                        ON DUPLICATE KEY UPDATE count = count + 1
-                                    """, (acc_id, baovat_id))
-                                    baovat_data = {
-                                        "id": baovat_id,
-                                        "name": baovat_names[baovat_id],
-                                        "count": 1
-                                    }
-                                    print(f"[PVP BAOVAT DROP] Acc {acc_id} WIN -> Dropped {baovat_names[baovat_id]} (#{baovat_id})")
+                                    # Chọn ngẫu nhiên 2 bảo vật độc lập (k=2)
+                                    baovat_ids = random.choices(baovat_pool, weights=baovat_weights, k=2)
+                                    for b_id in baovat_ids:
+                                        cur.execute("""
+                                            INSERT INTO user_props (account_id, prop_id, count)
+                                            VALUES (%s, %s, 1)
+                                            ON DUPLICATE KEY UPDATE count = count + 1
+                                        """, (acc_id, b_id))
+                                        baovats_list.append({
+                                            "id": b_id,
+                                            "name": baovat_names[b_id],
+                                            "count": 1
+                                        })
+                                    drop_desc = ", ".join([f"{baovat_names[b]} (#{b})" for b in baovat_ids])
+                                    print(f"[PVP BAOVAT DROP] Acc {acc_id} WIN -> Dropped x2 Bảo Vật (random): {drop_desc}")
+                                    if baovat_ids[0] == baovat_ids[1]:
+                                        baovat_data = {
+                                            "id": baovat_ids[0],
+                                            "name": baovat_names[baovat_ids[0]],
+                                            "count": 2
+                                        }
+                                    else:
+                                        baovat_data = {
+                                            "id": baovat_ids[0],
+                                            "name": baovat_names[baovat_ids[0]],
+                                            "count": 1
+                                        }
 
                                 if battle_type == 'room':
                                     cur.execute("""
@@ -3033,6 +3047,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 
                                 resp = {
                                     "baovat": baovat_data,
+                                    "baovats": baovats_list,
                                     "code": 200,
                                     "msg": "Cập nhật phần thưởng PvP thành công!",
                                     "gold": new_gold,
@@ -3061,19 +3076,19 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 # Activity 22 Millennium Item Exchanges
                 EXCHANGE_CONFIGS = {
                     1: {
-                        'name': 'Đổi Kiếm Sĩ Diệt Rồng Tập Sự',
+                        'name': 'Đổi Kỵ Sĩ Diệt Rồng',
                         'req': {7031: 20, 7032: 20, 7033: 20, 7034: 20, 7035: 20, 7036: 20, 7037: 20},
-                        'reward_type': 'card', 'reward_id': 40744, 'reward_count': 1
+                        'reward_type': 'card', 'reward_id': 40746, 'reward_count': 1
                     },
                     2: {
-                        'name': 'Đổi Kiếm Sĩ Diệt Rồng Huyền Thoại',
+                        'name': 'Đổi Kiếm Sĩ Diệt Rồng Tập Sự',
                         'req': {7032: 20, 7034: 20, 7035: 20, 7036: 20, 7037: 20},
-                        'reward_type': 'card', 'reward_id': 40743, 'reward_count': 1
+                        'reward_type': 'card', 'reward_id': 40744, 'reward_count': 1
                     },
                     3: {
-                        'name': 'Đổi Thẻ Bài Hiếm',
+                        'name': 'Đổi Kiếm Sĩ Diệt Rồng Huyền Thoại',
                         'req': {7033: 20, 7035: 20, 7036: 20, 7037: 20},
-                        'reward_type': 'card', 'reward_id': 10430, 'reward_count': 1
+                        'reward_type': 'card', 'reward_id': 40743, 'reward_count': 1
                     },
                     4: {
                         'name': 'Đổi 100 Mảnh Ghép Thẻ',

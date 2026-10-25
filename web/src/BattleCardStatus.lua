@@ -1350,7 +1350,7 @@ function var_0_0.addCardToGrave(arg_16_0, arg_16_1)
 		return
 	end
 
-	if arg_16_0._mark14255 and (arg_16_1._sourceStatus == BattleData.CardStatus.board or arg_16_1._sourceStatus == BattleData.CardStatus.show or arg_16_1._sourceStatus == BattleData.CardStatus.cover or arg_16_1._sourceStatus == BattleData.CardStatus.field) then
+	if (arg_16_0._mark14255 or arg_16_0._mark14788) and (arg_16_1._sourceStatus == BattleData.CardStatus.board or arg_16_1._sourceStatus == BattleData.CardStatus.show or arg_16_1._sourceStatus == BattleData.CardStatus.cover or arg_16_1._sourceStatus == BattleData.CardStatus.field) then
 		arg_16_1._destStatus = BattleData.CardStatus.leave
 
 		arg_16_0:addCardToLeave(arg_16_1)

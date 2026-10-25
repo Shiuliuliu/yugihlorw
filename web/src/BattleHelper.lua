@@ -5920,7 +5920,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		return {}
 	end
 
-	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738 or arg_260_1._infoId == 40744
+	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738 or arg_260_1._infoId == 40744 or arg_260_1._infoId == 40746
 	local var_260_1 = B.filterCanBeLinkedCards(arg_260_0:getBattleCards(arg_260_2), arg_260_1, var_260_0)
 
 	if arg_260_1._infoId == 40709 then
@@ -5957,13 +5957,9 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 	elseif arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 then
 		B.appendTable(var_260_1, B.filterCanBeLinkedCards(B.filterNotActionedCards(B.filterInKeywordCards(arg_260_0:getBattleCardsByType("B", Data.CardType.rare), 7)), arg_260_1, true))
 	elseif arg_260_1._infoId == 40729 then
-		local tkCards = {}
-		for _, rc in ipairs(arg_260_0:getBattleCards("R")) do
-			if rc and rc ~= arg_260_1 and B.isThanhKyMonster(rc) then
-				tkCards[#tkCards + 1] = rc
-			end
-		end
-		B.appendTable(var_260_1, B.filterCanBeLinkedCards(tkCards, arg_260_1, true))
+		-- 40729 (Lang Thien Hau - Link 5) chi su dung nguyen lieu quai Thanh Ky tren Board ("B").
+		-- var_260_1 da lay san tu dong 5924 tren Board ("B") va duoc loc o dong 6002.
+		-- Khong lay tu Extra Deck ("R") tranh lam phinh to candidate gay giat lag va crash game.
 	elseif arg_260_1._infoId == 40738 then
 		local kmrCards = {}
 		for _, rc in ipairs(arg_260_0:getBattleCardsByType("B", Data.CardType.rare)) do
@@ -6006,6 +6002,28 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 	end
 
 	return var_260_3
+end
+
+local function canCardsAchieveLink(comb, target)
+	if not comb or #comb == 0 then return false end
+	local minSum = #comb
+	if target < minSum then return false end
+	local maxSum = 0
+	for i = 1, #comb do
+		local c = comb[i]
+		maxSum = maxSum + ((c and c.getLink and c:getLink()) or 1)
+	end
+	if target > maxSum then return false end
+	local function helper(idx, cur)
+		if cur > target then return false end
+		if idx > #comb then return cur == target end
+		local card = comb[idx]
+		local linkVal = (card and card.getLink and card:getLink()) or 1
+		if helper(idx + 1, cur + 1) then return true end
+		if linkVal > 1 and helper(idx + 1, cur + linkVal) then return true end
+		return false
+	end
+	return helper(1, 0)
 end
 
 function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_3, arg_261_4, arg_261_5)
@@ -6098,6 +6116,38 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 			return true
 		end
 
+		if arg_261_1._infoId == 40746 then
+			if #arg_261_2 < 2 or #arg_261_2 > 4 then
+				return false
+			end
+			local hasSword = false
+			for _, c in ipairs(arg_261_2) do
+				if c:isKeyword(204) or (c._info and c._info._keyword == 204) then
+					hasSword = true
+					break
+				end
+			end
+			if not hasSword then
+				return false
+			end
+			local function checkSum(idx, curSum)
+				if curSum > 4 then return false end
+				if idx > #arg_261_2 then return curSum == 4 end
+				local card = arg_261_2[idx]
+				local linkVal = card:getLink()
+				if checkSum(idx + 1, curSum + 1) then return true end
+				if linkVal > 1 and checkSum(idx + 1, curSum + linkVal) then return true end
+				return false
+			end
+			if not checkSum(1, 0) then
+				return false
+			end
+			if var_261_4 and #B.filterLinkPosCards(arg_261_2, true) == 0 then
+				return false
+			end
+			return true
+		end
+
 		if arg_261_1._linkSelectedCandidatesNode and not arg_261_1._linkSelectedCandidatesNode:value(arg_261_2) then
 			return false
 		end
@@ -6111,33 +6161,71 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 					table.insert(validCards, c)
 				end
 			end
-			if #validCards >= 2 then
-				for k = 2, math.min(5, #validCards) do
-					local i_comb = 1
-					while true do
-						local comb = B.combinateTable(validCards, k, i_comb)
-						if comb == nil then break end
-						local function checkSum(idx, curSum)
-							if curSum > 5 then return false end
-							if idx > #comb then return curSum == 5 end
-							local card = comb[idx]
-							local linkVal = card:getLink()
-							if checkSum(idx + 1, curSum + 1) then return true end
-							if linkVal > 1 and checkSum(idx + 1, curSum + linkVal) then return true end
-							return false
-						end
-						if checkSum(1, 0) and (not var_261_4 or #B.filterLinkPosCards(comb, true) > 0) then
-							if arg_261_4 then
-								local var_261_6 = arg_261_1:getSkillIndexById(9298)
-								local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
+			local sumPossible = B.getSumLink(validCards)
+			if #validCards < 2 or sumPossible < 5 then
+				return false
+			end
+			for k = 2, math.min(5, #validCards) do
+				local i_comb = 1
+				while true do
+					local comb = B.combinateTable(validCards, k, i_comb)
+					if comb == nil then break end
+					if canCardsAchieveLink(comb, 5) and (not var_261_4 or #B.filterLinkPosCards(comb, true) > 0) then
+						if arg_261_4 then
+							local var_261_6 = arg_261_1:getSkillIndexById(9298)
+							local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
 
-								return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
-							else
-								return true
-							end
+							return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
+						else
+							return true
 						end
-						i_comb = i_comb + 1
 					end
+					i_comb = i_comb + 1
+					if i_comb > 500 then break end
+				end
+			end
+
+			return false
+		end
+
+		if arg_261_1._infoId == 40746 then
+			if #arg_261_2 < 2 or B.getSumLink(arg_261_2) < 4 then
+				return false
+			end
+			local hasSwordInPool = false
+			for _, c in ipairs(arg_261_2) do
+				if c:isKeyword(204) or (c._info and c._info._keyword == 204) then
+					hasSwordInPool = true
+					break
+				end
+			end
+			if not hasSwordInPool then
+				return false
+			end
+			for k = 2, math.min(4, #arg_261_2) do
+				local i_comb = 1
+				while true do
+					local comb = B.combinateTable(arg_261_2, k, i_comb)
+					if comb == nil then break end
+					local hasSw = false
+					for _, c in ipairs(comb) do
+						if c:isKeyword(204) or (c._info and c._info._keyword == 204) then
+							hasSw = true
+							break
+						end
+					end
+					if hasSw and canCardsAchieveLink(comb, 4) and (not var_261_4 or #B.filterLinkPosCards(comb, true) > 0) then
+						if arg_261_4 then
+							local var_261_6 = arg_261_1:getSkillIndexById(9298)
+							local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
+
+							return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
+						else
+							return true
+						end
+					end
+					i_comb = i_comb + 1
+					if i_comb > 500 then break end
 				end
 			end
 
@@ -6148,7 +6236,12 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 			return false
 		end
 
-		for iter_261_0 = var_261_0, var_261_1 do
+		local maxK = math.min(var_261_1, #arg_261_2)
+		if var_261_0 > maxK or B.getSumLink(arg_261_2) < var_261_1 then
+			return false
+		end
+
+		for iter_261_0 = var_261_0, maxK do
 			i = 1
 
 			while true do
@@ -6158,7 +6251,7 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 					break
 				end
 
-				if var_261_1 <= B.getSumLink(var_261_5) and (not var_261_4 or #B.filterLinkPosCards(var_261_5, true) > 0) and (not arg_261_5 or B.tableContain(var_261_5, arg_261_5)) and (not arg_261_1._linkSelectedCandidatesNode or arg_261_1._linkSelectedCandidatesNode:value(var_261_5)) then
+				if canCardsAchieveLink(var_261_5, var_261_1) and (not var_261_4 or #B.filterLinkPosCards(var_261_5, true) > 0) and (not arg_261_5 or B.tableContain(var_261_5, arg_261_5)) and (not arg_261_1._linkSelectedCandidatesNode or arg_261_1._linkSelectedCandidatesNode:value(var_261_5)) then
 					if arg_261_4 then
 						local var_261_6 = arg_261_1:getSkillIndexById(9298)
 						local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, var_261_5)
@@ -6170,6 +6263,7 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 				end
 
 				i = i + 1
+				if i > 500 then break end
 			end
 		end
 
@@ -6676,6 +6770,10 @@ function var_0_0.canSpecialSummon(arg_293_0, arg_293_1, arg_293_2, arg_293_3)
 	end
 
 	if (arg_293_1:isInfoId(40734) or Data.getOriginId(arg_293_1._infoId) == 40734) and not arg_293_1._byKmrWEffect then
+		return false
+	end
+
+	if arg_293_0._isDragonSummonDisabled and (arg_293_1:isCategory(2) or (arg_293_1._info and arg_293_1._info._category == 2)) then
 		return false
 	end
 
@@ -7392,6 +7490,10 @@ function var_0_0.canSummonRareCard(arg_294_0, arg_294_1, arg_294_2, arg_294_3)
 	end
 
 	if (arg_294_1:isInfoId(40734) or Data.getOriginId(arg_294_1._infoId) == 40734) and not arg_294_1._byKmrWEffect then
+		return false
+	end
+
+	if arg_294_0._isDragonSummonDisabled and (arg_294_1:isCategory(2) or (arg_294_1._info and arg_294_1._info._category == 2)) then
 		return false
 	end
 
@@ -15410,33 +15512,46 @@ function var_0_0.refreshLinkPos(arg_356_0)
 	arg_356_0._linkPos[Data.MAX_CARD_COUNT_ON_BOARD + 1] = true
 	arg_356_0._opponent._linkPos[Data.MAX_CARD_COUNT_ON_BOARD + 1] = true
 
-	for iter_356_0 = 1, Data.MAX_CARD_COUNT_ON_BOARD + 1 do
+	local maxPos = Data.MAX_CARD_COUNT_ON_BOARD + 1
+	for iter_356_0 = 1, maxPos do
 		local var_356_0 = arg_356_0._boardCards[iter_356_0]
 
-		if var_356_0 ~= nil and var_356_0:isLink() then
-			for iter_356_1 = 1, #var_356_0._info._link do
-				local var_356_1 = BattleData.LINK_POS[iter_356_0][var_356_0._info._link[iter_356_1]]
+		if var_356_0 ~= nil and var_356_0:isLink() and var_356_0._info and type(var_356_0._info._link) == "table" then
+			local posMap = BattleData.LINK_POS and BattleData.LINK_POS[iter_356_0]
+			if posMap then
+				for iter_356_1 = 1, #var_356_0._info._link do
+					local arrow = var_356_0._info._link[iter_356_1]
+					local var_356_1 = arrow and posMap[arrow]
 
-				if var_356_1 > 0 then
-					arg_356_0._linkPos[var_356_1] = true
-				elseif var_356_1 < 0 then
-					arg_356_0._opponent._linkPos[-var_356_1] = true
+					if var_356_1 ~= nil then
+						if var_356_1 > 0 then
+							arg_356_0._linkPos[var_356_1] = true
+						elseif var_356_1 < 0 then
+							arg_356_0._opponent._linkPos[-var_356_1] = true
+						end
+					end
 				end
 			end
 		end
 	end
 
-	for iter_356_2 = 1, Data.MAX_CARD_COUNT_ON_BOARD + 1 do
+	for iter_356_2 = 1, maxPos do
 		local var_356_2 = arg_356_0._opponent._boardCards[iter_356_2]
 
-		if var_356_2 ~= nil and var_356_2:isLink() then
-			for iter_356_3 = 1, #var_356_2._info._link do
-				local var_356_3 = BattleData.LINK_POS[iter_356_2][var_356_2._info._link[iter_356_3]]
+		if var_356_2 ~= nil and var_356_2:isLink() and var_356_2._info and type(var_356_2._info._link) == "table" then
+			local posMap = BattleData.LINK_POS and BattleData.LINK_POS[iter_356_2]
+			if posMap then
+				for iter_356_3 = 1, #var_356_2._info._link do
+					local arrow = var_356_2._info._link[iter_356_3]
+					local var_356_3 = arrow and posMap[arrow]
 
-				if var_356_3 > 0 then
-					arg_356_0._opponent._linkPos[var_356_3] = true
-				elseif var_356_3 < 0 then
-					arg_356_0._linkPos[-var_356_3] = true
+					if var_356_3 ~= nil then
+						if var_356_3 > 0 then
+							arg_356_0._opponent._linkPos[var_356_3] = true
+						elseif var_356_3 < 0 then
+							arg_356_0._linkPos[-var_356_3] = true
+						end
+					end
 				end
 			end
 		end

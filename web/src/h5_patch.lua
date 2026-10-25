@@ -599,6 +599,127 @@ local function patchData()
 				Data._rareInfo[40745]._descSid = 57304
 				Data._rareInfo[40745]._briefNameSid = 57305
 			end
+			if Data._skillInfo and not Data._skillInfo[14788] then
+				Data._skillInfo[14788] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57312, _effectVal = { 0 }, _id = 14788, _isIgnoreDefend = 1, _modes = { 132 }, _nameSid = 57311, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 1, _refCards = { 21 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14788] then
+				Data._skillInfo[14788]._nameSid = 57311
+				Data._skillInfo[14788]._descSid = 57312
+			end
+			if Data._skillInfo and not Data._skillInfo[14789] then
+				Data._skillInfo[14789] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57314, _effectVal = { 0 }, _id = 14789, _isIgnoreDefend = 1, _modes = { 2 }, _nameSid = 57313, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 1, _refCards = { 2 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 2 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14789] then
+				Data._skillInfo[14789]._nameSid = 57313
+				Data._skillInfo[14789]._descSid = 57314
+			end
+			if Data._skillInfo and not Data._skillInfo[14790] then
+				Data._skillInfo[14790] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57316, _effectVal = { 0 }, _id = 14790, _isIgnoreDefend = 1, _modes = { 132 }, _nameSid = 57315, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 1, _refCards = { 2 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14790] then
+				Data._skillInfo[14790]._nameSid = 57315
+				Data._skillInfo[14790]._descSid = 57316
+			end
+			if Data._skillInfo and not Data._skillInfo[14791] then
+				Data._skillInfo[14791] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57318, _effectVal = { 0 }, _id = 14791, _isIgnoreDefend = 1, _modes = { 4 }, _nameSid = 57317, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 1, _refCards = { 2 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14791] then
+				Data._skillInfo[14791]._nameSid = 57317
+				Data._skillInfo[14791]._descSid = 57318
+			end
+			if Data._rareInfo and not Data._rareInfo[40746] then
+				Data._rareInfo[40746] = {
+					_atk = { 2900 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57310,
+					_category = 6,
+					_cost = 0,
+					_descSid = 57309,
+					_guideSid = 0,
+					_hp = { 0 },
+					_id = 40746,
+					_isHide = 0,
+					_joinComponent = { 0 },
+					_joinResult = { 0 },
+					_keyword = 21,
+					_link = { 1, 2, 7, 8 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "0.0",
+					_linkCount = "#>=2",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57308,
+					_nature = 3,
+					_option = 8194,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "ksdr",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14788, 14789, 6199, 2797, 14790, 14791 },
+					_skin = { 0 },
+					_star = 0,
+					_syncComponent = { { 0 } }
+				}
+			end
+			if Data._rareInfo and Data._rareInfo[40746] then
+				Data._rareInfo[40746]._quality = 4
+				Data._rareInfo[40746]._keyword = 21
+				Data._rareInfo[40746]._nameSid = 57308
+				Data._rareInfo[40746]._descSid = 57309
+				Data._rareInfo[40746]._briefNameSid = 57310
+			end
+			if Data._monsterInfo and not Data._monsterInfo[12337] then
+				Data._monsterInfo[12337] = {
+					_atk = { 1200 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57321,
+					_category = 17,
+					_cost = 0,
+					_descSid = 57320,
+					_guideSid = 0,
+					_hp = { 1000 },
+					_id = 12337,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57319,
+					_nature = 2,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "creeper",
+					_quality = 3,
+					_recruitable = 1,
+					_skillId = { 14792 },
+					_skin = { 0 },
+					_star = 3,
+					_syncComponent = { { 0 } }
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12337] then
+				Data._monsterInfo[12337]._quality = 3
+				Data._monsterInfo[12337]._keyword = 304
+				Data._monsterInfo[12337]._nameSid = 57319
+				Data._monsterInfo[12337]._descSid = 57320
+				Data._monsterInfo[12337]._briefNameSid = 57321
+				Data._monsterInfo[12337]._skillId = { 14792 }
+			end
+			if Data._skillInfo and not Data._skillInfo[14792] then
+				Data._skillInfo[14792] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57323, _effectVal = { 0 }, _id = 14792, _isIgnoreDefend = 1, _modes = { 132, 134 }, _nameSid = 57322, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 3, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and Data._skillInfo[14792] then
+				Data._skillInfo[14792]._nameSid = 57322
+				Data._skillInfo[14792]._descSid = 57323
+			end
+
 
 		end
 
@@ -5814,6 +5935,18 @@ function patchClientData()
 		[57299] = "Kiếm sĩ diệt rồng tập sự",
 		-- Xe Lửa Tháp Pháo Hạng Nặng-Đại Bác Gustav (40508)
 		[35544] = "10 sao x2 và nguyên liệu bắt buộc phải có từ khóa \"Xe lửa\"",
+		-- Kỵ sĩ diệt rồng (40746) & Kỹ năng
+		[57308] = "Kỵ sĩ diệt rồng",
+		[57309] = "2 quái trở lên, trong đó gồm 1 quái có từ khóa \"Kiếm phá hủy\".",
+		[57310] = "Kỵ sĩ diệt rồng",
+		[57311] = "Kỵ Sĩ - Giáng Long Trảm",
+		[57312] = "Mỗi lượt chỉ 1 lần. Khi bài này nằm trong bộ bài thêm; trên sân phe ta không có quái hoặc trên sân phe ta chỉ có quái có từ khóa “Kiếm sĩ diệt rồng”; đồng thời đối thủ Triệu Hồi Đặc Biệt quái tộc \"rồng\" sẽ có thể dùng. Hi sinh bản thân bài này; khi bài này nằm trong mộ; loại bỏ bài của đối thủ bị đưa vào mộ từ trên sân.",
+		[57313] = "Kỵ Sĩ - Tuyệt Long Uyển",
+		[57314] = "1 lượt 1 lần, Khi lá bài này được triệu hồi lên sân, ngẫu nhiên loại bỏ tối đa 2 quái tộc \"rồng\" trong bộ bài thêm đối thủ.",
+		[57315] = "Kỵ Sĩ - Trảm Long Quyết",
+		[57316] = "1 lượt 1 lần, khi lá bài này trên sân, đối phương triệu hồi/triệu hồi đặc biệt quái tộc \"rồng\" sẽ kích hoạt, đưa quái đó vào mộ (Xuyên qua tường chắn quái), sau đó lượt này đối phương không thể triệu hồi/triệu hồi đặc biệt quái tộc \"rồng\".",
+		[57317] = "Kỵ Sĩ - Long Uy Tận Diệt",
+		[57318] = "Khi quái đối thủ rời sân trong lượt đối thủ: đối thủ không thể triệu hồi thông thường hoặc Triệu Hồi Đặc Biệt quái tộc \"rồng\" ở lượt này. Tất cả Quái Vật tộc \"rồng\" của đối thủ không thể tấn công . đưa tất cả quái tộc \"rồng\" trên tay đối phương vào mộ.",
 	}
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
@@ -8845,7 +8978,7 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 				local isRoom = (self._battleType == Data.BattleType.PVP_room or (input and (input._offlineKind == "room" or input._battleType == Data.BattleType.PVP_room or input._isRoom)))
 				local isClashRank = not isRoom and (self._battleType == Data.BattleType.PVP_clash or self._battleType == Data.BattleType.PVP_clash_npc or self._battleType == 211 or self._battleType == 212 or (Battle_pb and self._battleType == Battle_pb.PB_BATTLE_WORLD_LADDER) or isPvp or (input and (input._isRankLadder or input._clashGrade ~= nil)))
 
-				local function finalizeBattleEnd(deltaTrophy, deltaGold, newTrophy, newGold, customResType, customResNum, rewardItemInfoId)
+				local function finalizeBattleEnd(deltaTrophy, deltaGold, newTrophy, newGold, customResType, customResNum, rewardItemInfoId, extraRewardList)
 					local realDelta = tonumber(deltaTrophy) or 0
 					local finalTrophy = tonumber(newTrophy) or 0
 					local prevTrophy = finalTrophy - realDelta
@@ -8894,7 +9027,17 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 						gItem.num = deltaGold
 					end
 
-					if rewardItemInfoId and customResNum and customResNum > 0 then
+					if extraRewardList and #extraRewardList > 0 then
+						for _, rw in ipairs(extraRewardList) do
+							local rInfoId = tonumber(rw.info_id or rw.id or rw._infoId)
+							local rNum = tonumber(rw.num or rw.count or rw._count) or 1
+							if rInfoId and rNum > 0 then
+								local pItem = pb.resource:add()
+								pItem.info_id = rInfoId
+								pItem.num = rNum
+							end
+						end
+					elseif rewardItemInfoId and customResNum and customResNum > 0 then
 						local pItem = pb.resource:add()
 						pItem.info_id = rewardItemInfoId
 						pItem.num = customResNum
@@ -9048,17 +9191,28 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 								end
 							end
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
-							local bvId, bvCnt = nil, nil
-							if cr.baovat and P and P._propBag then
-								pcall(function()
-									local bId = tonumber(cr.baovat.id)
-									local bCount = tonumber(cr.baovat.count) or 1
-									bvId, bvCnt = bId, bCount
-									P._propBag:changeProps(bId, bCount)
-									lc.sendEvent(Data.Event.prop_dirty, bId)
-								end)
+							local extraRewards = {}
+							local bvItems = {}
+							if cr.baovats and type(cr.baovats) == "table" and #cr.baovats > 0 then
+								bvItems = cr.baovats
+							elseif cr.baovat then
+								bvItems = { cr.baovat }
 							end
-							finalizeBattleEnd(0, dGold, curT, nGold, nil, bvCnt, bvId)
+
+							if #bvItems > 0 and P and P._propBag then
+								for _, bv in ipairs(bvItems) do
+									pcall(function()
+										local bId = tonumber(bv.id)
+										local bCount = tonumber(bv.count) or 1
+										if bId and bCount > 0 then
+											P._propBag:changeProps(bId, bCount)
+											lc.sendEvent(Data.Event.prop_dirty, bId)
+											table.insert(extraRewards, { info_id = bId, num = bCount })
+										end
+									end)
+								end
+							end
+							finalizeBattleEnd(0, dGold, curT, nGold, nil, nil, nil, extraRewards)
 							return
 						end
 						finalizeBattleEnd(0, dGold, curT, nGold)
@@ -9102,18 +9256,29 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 							end
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.gold_dirty))
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.trophy_dirty))
-							local bvId, bvCnt = nil, nil
-							if cr.baovat and P and P._propBag then
-								pcall(function()
-									local bId = tonumber(cr.baovat.id)
-									local bCount = tonumber(cr.baovat.count) or 1
-									bvId, bvCnt = bId, bCount
-									P._propBag:changeProps(bId, bCount)
-									lc.sendEvent(Data.Event.prop_dirty, bId)
-								end)
+							local extraRewards = {}
+							local bvItems = {}
+							if cr.baovats and type(cr.baovats) == "table" and #cr.baovats > 0 then
+								bvItems = cr.baovats
+							elseif cr.baovat then
+								bvItems = { cr.baovat }
 							end
 
-							finalizeBattleEnd(dTrophy, dGold, nTrophy, nGold, nil, bvCnt, bvId)
+							if #bvItems > 0 and P and P._propBag then
+								for _, bv in ipairs(bvItems) do
+									pcall(function()
+										local bId = tonumber(bv.id)
+										local bCount = tonumber(bv.count) or 1
+										if bId and bCount > 0 then
+											P._propBag:changeProps(bId, bCount)
+											lc.sendEvent(Data.Event.prop_dirty, bId)
+											table.insert(extraRewards, { info_id = bId, num = bCount })
+										end
+									end)
+								end
+							end
+
+							finalizeBattleEnd(dTrophy, dGold, nTrophy, nGold, nil, nil, nil, extraRewards)
 						else
 							-- Fallback on API non-200
 							local curT = (P and P._playerFindClash and P._playerFindClash._trophy) or 800
@@ -10499,11 +10664,15 @@ if Data and Data._activityInfo and Data._activityInfo[22] then
 	Data._activityInfo[22]._visibleTime = "2020.1.1.0.0-2035.12.31.23.59"
 end
 if Data and Data._bonusInfo and Data._bonusInfo[4101] then
-	Data._bonusInfo[4101]._rid = { [1] = 40744 }
+	Data._bonusInfo[4101]._rid = { [1] = 40746 }
 end
 if Data and Data._bonusInfo and Data._bonusInfo[4102] then
-	Data._bonusInfo[4102]._rid = { [1] = 40743 }
+	Data._bonusInfo[4102]._rid = { [1] = 40744 }
 	Data._bonusInfo[4102]._count = { [1] = 1 }
+end
+if Data and Data._bonusInfo and Data._bonusInfo[4103] then
+	Data._bonusInfo[4103]._rid = { [1] = 40743 }
+	Data._bonusInfo[4103]._count = { [1] = 1 }
 end
 if Data and Data._exchangeInfo then
 	if Data._exchangeInfo[1] then Data._exchangeInfo[1]._number = { 20, 20, 20, 20, 20, 20, 20 } end

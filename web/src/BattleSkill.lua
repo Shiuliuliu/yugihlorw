@@ -361,11 +361,11 @@ function var_0_0.castSkill(arg_1_0, arg_1_1, arg_1_2, arg_1_3)
 		var_1_2 = arg_1_0:castAttackSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif (var_1_0 == Data.SkillType.defend or arg_1_2._id == 9008 or arg_1_2._id == 9771 or arg_1_2._id == 9417 or arg_1_2._id == 13761 or arg_1_2._id == 14682 or arg_1_2._id == 14683 or arg_1_2._id == 14717 or arg_1_2._id == 14730 or arg_1_2._id == 14737) and arg_1_2._id ~= 2081 and arg_1_2._id ~= 2243 and arg_1_2._id ~= 2318 and arg_1_2._id ~= 2324 and arg_1_2._id ~= 2369 and arg_1_2._id ~= 2375 and arg_1_2._id ~= 2383 and arg_1_2._id ~= 2384 and arg_1_2._id ~= 2390 and arg_1_2._id ~= 2437 and arg_1_2._id ~= 2488 and arg_1_2._id ~= 2560 and arg_1_2._id ~= 2611 and arg_1_2._id ~= 2664 and arg_1_2._id ~= 2781 and arg_1_2._id ~= 2913 and arg_1_2._id ~= 2982 and arg_1_2._id ~= 2985 then
 		var_1_2 = arg_1_0:castDefendSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif (var_1_0 == Data.SkillType.monsterSpell or arg_1_2._id == 6349 or arg_1_2._id == 6593 or arg_1_2._id == 6868 or arg_1_2._id == 2369 or arg_1_2._id == 2375 or arg_1_2._id == 14677 or arg_1_2._id == 14714 or arg_1_2._id == 14718 or arg_1_2._id == 14721 or arg_1_2._id == 14723 or arg_1_2._id == 14724 or arg_1_2._id == 14725 or arg_1_2._id == 14728 or arg_1_2._id == 14729 or arg_1_2._id == 14731 or arg_1_2._id == 14732 or arg_1_2._id == 14736 or arg_1_2._id == 14738 or arg_1_2._id == 14741 or arg_1_2._id == 14742 or arg_1_2._id == 14745 or arg_1_2._id == 14747 or arg_1_2._id == 14748 or arg_1_2._id == 14751 or arg_1_2._id == 14763 or arg_1_2._id == 14764 or arg_1_2._id == 14765 or arg_1_2._id == 14766 or arg_1_2._id == 14770 or arg_1_2._id == 14774 or arg_1_2._id == 14776 or arg_1_2._id == 14779 or arg_1_2._id == 14781 or arg_1_2._id == 14783 or arg_1_2._id == 14784 or arg_1_2._id == 14785 or arg_1_2._id == 14786 or arg_1_2._id == 2383 or arg_1_2._id == 2384 or arg_1_2._id == 2390 or arg_1_2._id == 2437 or arg_1_2._id == 2488 or arg_1_2._id == 2560 or arg_1_2._id == 2611 or arg_1_2._id == 2664 or arg_1_2._id == 2781 or arg_1_2._id == 9251 or arg_1_2._id == 9253 or arg_1_2._id == 9254 or arg_1_2._id == 9257 or arg_1_2._id == 9259 or arg_1_2._id == 9261 or arg_1_2._id == 9265 or arg_1_2._id == 9403 or arg_1_2._id == 9414 or arg_1_2._id == 9453 or arg_1_2._id == 9462 or arg_1_2._id == 9507 or arg_1_2._id == 9685 or arg_1_2._id == 13007 or arg_1_2._id == 13975 or arg_1_2._id == 7824) and arg_1_2._id ~= 3705 and arg_1_2._id ~= 3850 then
+	elseif (var_1_0 == Data.SkillType.monsterSpell or arg_1_2._id == 6349 or arg_1_2._id == 6593 or arg_1_2._id == 6868 or arg_1_2._id == 2369 or arg_1_2._id == 2375 or arg_1_2._id == 14677 or arg_1_2._id == 14714 or arg_1_2._id == 14718 or arg_1_2._id == 14721 or arg_1_2._id == 14723 or arg_1_2._id == 14724 or arg_1_2._id == 14725 or arg_1_2._id == 14728 or arg_1_2._id == 14729 or arg_1_2._id == 14731 or arg_1_2._id == 14732 or arg_1_2._id == 14736 or arg_1_2._id == 14738 or arg_1_2._id == 14741 or arg_1_2._id == 14742 or arg_1_2._id == 14745 or arg_1_2._id == 14747 or arg_1_2._id == 14748 or arg_1_2._id == 14751 or arg_1_2._id == 14763 or arg_1_2._id == 14764 or arg_1_2._id == 14765 or arg_1_2._id == 14766 or arg_1_2._id == 14770 or arg_1_2._id == 14774 or arg_1_2._id == 14776 or arg_1_2._id == 14779 or arg_1_2._id == 14781 or arg_1_2._id == 14783 or arg_1_2._id == 14784 or arg_1_2._id == 14785 or arg_1_2._id == 14786 or arg_1_2._id == 14789 or arg_1_2._id == 2383 or arg_1_2._id == 2384 or arg_1_2._id == 2390 or arg_1_2._id == 2437 or arg_1_2._id == 2488 or arg_1_2._id == 2560 or arg_1_2._id == 2611 or arg_1_2._id == 2664 or arg_1_2._id == 2781 or arg_1_2._id == 9251 or arg_1_2._id == 9253 or arg_1_2._id == 9254 or arg_1_2._id == 9257 or arg_1_2._id == 9259 or arg_1_2._id == 9261 or arg_1_2._id == 9265 or arg_1_2._id == 9403 or arg_1_2._id == 9414 or arg_1_2._id == 9453 or arg_1_2._id == 9462 or arg_1_2._id == 9507 or arg_1_2._id == 9685 or arg_1_2._id == 13007 or arg_1_2._id == 13975 or arg_1_2._id == 7824) and arg_1_2._id ~= 3705 and arg_1_2._id ~= 3850 then
 		var_1_2 = arg_1_0:castMonsterSpellSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif var_1_0 == Data.SkillType.monsterHalo or arg_1_2._id == 14787 or arg_1_2._id == 2081 or arg_1_2._id == 2913 or arg_1_2._id == 9512 or arg_1_2._id == 13471 or arg_1_2._id == 13779 then
 		var_1_2 = arg_1_0:castMonsterHaloSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif var_1_0 == Data.SkillType.monster2Halo and arg_1_2._id ~= 9796 and arg_1_2._id ~= 9868 then
+	elseif (var_1_0 == Data.SkillType.monster2Halo or arg_1_2._id == 14791) and arg_1_2._id ~= 9796 and arg_1_2._id ~= 9868 then
 		var_1_2 = arg_1_0:castMonster2HaloSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif var_1_0 == Data.SkillType.monster3Halo and arg_1_2._id ~= 13119 and arg_1_2._id ~= 13259 and arg_1_2._id ~= 13264 and arg_1_2._id ~= 13292 and arg_1_2._id ~= 13348 and arg_1_2._id ~= 13718 and arg_1_2._id ~= 13736 and arg_1_2._id ~= 13850 and arg_1_2._id ~= 13920 and arg_1_2._id ~= 13989 then
 		var_1_2 = arg_1_0:castMonster3HaloSkill(arg_1_1, arg_1_2, arg_1_3)
@@ -11168,6 +11168,24 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		ownerCard._saved._pos = pOwner:getEmptyBoardPos(ownerCard)
 		pOwner:setCardStatus(ownerCard, BattleData.CardStatus.board, ownerCard._id, 14784, arg_4_3)
 		var_4_13 = true
+	elseif var_4_4 == 14789 then
+		if var_4_1._owner._castedSkillCounts[var_4_4] == nil then
+			local oppoExtra = var_4_8:getBattleCards("R")
+			local dragonCards = {}
+			for _, c in ipairs(oppoExtra) do
+				if c:isMonster() and (c:isCategory(2) or (c._info and c._info._category == 2)) then
+					dragonCards[#dragonCards + 1] = c
+				end
+			end
+			if #dragonCards > 0 then
+				local targetCards = arg_4_0:randomTable(dragonCards, math.min(2, #dragonCards))
+				for _, tc in ipairs(targetCards) do
+					arg_4_0:setCardStatus(tc, BattleData.CardStatus.leave, var_4_5, var_4_4, arg_4_3)
+				end
+			end
+			var_4_1._owner._castedSkillCounts[var_4_4] = 1
+			var_4_13 = true
+		end
 	elseif var_4_4 == 14785 then
 		local ownerCard = var_4_1 or arg_4_1
 		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
@@ -27880,6 +27898,31 @@ function var_0_0.castMonster2HaloSkill(arg_6_0, arg_6_1, arg_6_2, arg_6_3)
 
 			var_6_13 = true
 		end
+	elseif var_6_4 == 14791 then
+		if arg_6_1._owner._stepStatus == BattleData.Status.wait_opponent and (arg_6_1._triggerCard == nil or arg_6_1._triggerCard._owner ~= arg_6_1._owner) then
+			local oppo = arg_6_1._owner._opponent
+			oppo._isDragonSummonDisabled = true
+
+			local oppoBoard = oppo:getBoardCards()
+			for iter_6_k = 1, #oppoBoard do
+				local bc = oppoBoard[iter_6_k]
+				if bc:isMonster() and (bc:isCategory(2) or (bc._info and bc._info._category == 2)) then
+					arg_6_0:incNegativeStatus(bc, {
+						BattleData.NegativeType.atkFrozen
+					}, false, var_6_5, var_6_4, arg_6_3)
+				end
+			end
+
+			local oppoHand = oppo:getBattleCards("H")
+			for iter_6_h = 1, #oppoHand do
+				local hc = oppoHand[iter_6_h]
+				if hc:isMonster() and (hc:isCategory(2) or (hc._info and hc._info._category == 2)) then
+					arg_6_0:setCardStatus(hc, BattleData.CardStatus.grave, var_6_5, var_6_4, arg_6_3)
+				end
+			end
+
+			var_6_13 = true
+		end
 	elseif var_6_4 == 9049 then
 		var_6_13 = arg_6_0:setCardStatusByChoice(var_6_15, var_6_5, var_6_4, arg_6_3, BattleData.CardStatus.board)
 
@@ -43330,6 +43373,68 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 				var_8_1._owner._opponent._mark14255 = true
 				var_8_13 = true
 			end
+		end
+	elseif var_8_4 == 14788 then
+		if var_8_1._owner._castedSkillCounts[var_8_4] == nil and var_8_1._status == BattleData.CardStatus.rare and B.isOppoSpecialSummon(var_8_1, arg_8_1) and (arg_8_1:isCategory(2) or (arg_8_1._info and arg_8_1._info._category == 2)) then
+			local var_8_151 = var_8_1._owner:getBoardCards()
+
+			if #var_8_151 == 0 or #B.filterInKeywordCards(var_8_151, 21) == #var_8_151 then
+				arg_8_0:setCardStatus(var_8_1, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.x2gl_cost)
+
+				var_8_1._owner._opponent._mark14788 = true
+				var_8_1._owner._castedSkillCounts[var_8_4] = 1
+				var_8_13 = true
+			end
+		end
+	elseif var_8_4 == 14790 then
+		if var_8_1._owner._castedSkillCounts[var_8_4] == nil and var_8_1._status == BattleData.CardStatus.board and arg_8_1._owner == var_8_1._owner._opponent and arg_8_1:isMonster() and (arg_8_1:isCategory(2) or (arg_8_1._info and arg_8_1._info._category == 2)) then
+			if arg_8_1.resetBuffByType then
+				if BattleData.PositiveType.shieldMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldMonster) end
+				if BattleData.PositiveType.shieldExMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldExMonster) end
+				if BattleData.PositiveType.shieldHaloMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldHaloMonster) end
+				if BattleData.PositiveType.shieldOppoMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldOppoMonster) end
+				if BattleData.PositiveType.shieldHaloOppoMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldHaloOppoMonster) end
+			end
+			arg_8_1._shields = arg_8_1._shields or {}
+			arg_8_1._shields[12008] = nil
+			arg_8_1._shields[11008] = nil
+			arg_8_1._markIgnoreOppoShield = true
+			local oppoOwner = arg_8_1._owner or var_8_8
+			oppoOwner:setCardStatus(arg_8_1, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3)
+
+			var_8_1._owner._opponent._isDragonSummonDisabled = true
+			var_8_1._owner._castedSkillCounts[var_8_4] = 1
+			var_8_13 = true
+		end
+	elseif var_8_4 == 14792 then
+		if var_8_1._status == BattleData.CardStatus.board and arg_8_1._owner == var_8_1._owner._opponent and arg_8_1:isMonster() then
+			local oppoOwner = arg_8_1._owner or var_8_8
+			local oppoPos = arg_8_1._pos
+			local creeperOwner = var_8_1._owner
+
+			if arg_8_1.resetBuffByType then
+				if BattleData.PositiveType.shieldMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldMonster) end
+				if BattleData.PositiveType.shieldExMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldExMonster) end
+				if BattleData.PositiveType.shieldHaloMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldHaloMonster) end
+				if BattleData.PositiveType.shieldOppoMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldOppoMonster) end
+				if BattleData.PositiveType.shieldHaloOppoMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldHaloOppoMonster) end
+			end
+			arg_8_1._shields = arg_8_1._shields or {}
+			arg_8_1._shields[12008] = nil
+			arg_8_1._shields[11008] = nil
+			arg_8_1._markIgnoreOppoShield = true
+
+			oppoOwner:setCardStatus(arg_8_1, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.b2g_kill)
+			creeperOwner:setCardStatus(var_8_1, BattleData.CardStatus.grave, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.b2g_kill)
+
+			if oppoPos and oppoPos >= 1 and oppoPos <= 6 then
+				arg_8_0:incNegativeStatus(oppoOwner._fortress, {
+					BattleData.NegativeType.boardLock
+				}, false, var_8_5, var_8_4, arg_8_3)
+				arg_8_0:incNegativeValue(oppoOwner._fortress, BattleData.NegativeType.boardLock, oppoPos, Data.AggregateType.table, var_8_5, var_8_4, arg_8_3)
+			end
+
+			var_8_13 = true
 		end
 	elseif var_8_4 == 14256 then
 		if var_8_1._owner._castedSkillCounts[var_8_4] == nil and var_8_1._status == BattleData.CardStatus.grave and #var_8_1._owner:getBoardCards() == 0 and B.isOppoSpecialSummon(var_8_1, arg_8_1) then
@@ -70642,6 +70747,10 @@ function var_0_0.canUseMonster(arg_15_0, arg_15_1, arg_15_2)
 end
 
 function var_0_0.canUseMonsterNormal(arg_16_0, arg_16_1, arg_16_2, arg_16_3, arg_16_4)
+	if arg_16_0._isDragonSummonDisabled and (arg_16_1:isCategory(2) or (arg_16_1._info and arg_16_1._info._category == 2)) then
+		return false
+	end
+
 	if arg_16_1._infoId == 12316 or arg_16_1:hasSkillFast(14650) or arg_16_1._infoId == 12317 or arg_16_1._infoId == 12318 then
 		return false
 	end

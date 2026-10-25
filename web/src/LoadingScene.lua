@@ -295,10 +295,23 @@ function var_0_1.onResourceEvent(arg_16_0, arg_16_1)
 			ClientData.loadLCRes("res/props.lcres")
 		elseif arg_16_0._loadingPercentage == 16 then
 			ClientData.loadLCRes("res/general.lcres")
-		elseif arg_16_0._loadingPercentage >= 20 and arg_16_0._loadingPercentage < 35 then
+		elseif arg_16_0._loadingPercentage >= 20 and arg_16_0._loadingPercentage < 65 then
 			local var_17_0 = arg_16_0._loadingPercentage - 19
 
-			ClientData.loadLCRes("res/cards_img_" .. var_17_0 .. ".lcres")
+			if var_17_0 > ClientData.CARDS_IMG_COUNT or arg_16_0._loadingPercentage >= 35 then
+				arg_16_0._loadingPercentage = 65
+				if not arg_16_0._isInBattle then
+					if ClientData.DEBUG_UNION then
+						ClientData.loadLCRes("res/union_war.lcres")
+					else
+						ClientData.loadLCRes("res/city.lcres")
+					end
+				else
+					ClientData.loadLCRes("res/battle.lcres")
+				end
+			else
+				ClientData.loadLCRes("res/cards_img_" .. var_17_0 .. ".lcres")
+			end
 		elseif not arg_16_0._isInBattle then
 			if arg_16_0._loadingPercentage == 65 then
 				if ClientData.DEBUG_UNION then

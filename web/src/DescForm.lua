@@ -145,7 +145,7 @@ function var_0_0.init(arg_4_0, arg_4_1)
 				var_4_16 = var_4_16 .. var_4_17 .. Str(STR.COLON) .. "|"
 
 				for iter_4_4, iter_4_5 in ipairs(var_4_15._keyword) do
-					var_4_16 = var_4_16 .. ((iter_4_5 == 300 and "Tru tiên") or (iter_4_5 == 301 and "Tiên nghịch") or (iter_4_5 == 302 and "Hiệp sĩ mặt nạ") or (iter_4_5 == 303 and "liqi") or Str(STR.CARD_KEYWORD_BEGIN + iter_4_5))
+					var_4_16 = var_4_16 .. ((iter_4_5 == 300 and "Tru tiên") or (iter_4_5 == 301 and "Tiên nghịch") or (iter_4_5 == 302 and "Hiệp sĩ mặt nạ") or (iter_4_5 == 303 and "liqi") or (iter_4_5 == 304 and "minecraft") or Str(STR.CARD_KEYWORD_BEGIN + iter_4_5))
 
 					if iter_4_4 ~= #var_4_15._keyword then
 						var_4_16 = var_4_16 .. Str(STR.DOT)
