@@ -43457,11 +43457,11 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 			pOwner._castedSkillCounts[14795] = (pOwner._castedSkillCounts[14795] or 0) + 1
 			arg_8_0._castedSkillCounts[14795] = (arg_8_0._castedSkillCounts[14795] or 0) + 1
 
-			local oppoHands = oppo:getBattleCards("H")
+			local oppoHands = pOwner:filterCanChangeToHandCards(oppo:getBattleCards("H"))
 			if #oppoHands > 0 and #pOwner:getBattleCards("H") < Data.MAX_CARD_COUNT_IN_HAND then
-				local stolen = arg_8_0:randomOne(oppoHands)
+				local stolen = pOwner:randomOne(oppoHands)
 				if stolen ~= nil then
-					arg_8_0:setCardStatus(stolen, BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.h2h_oppo)
+					pOwner:setCardStatus(stolen, BattleData.CardStatus.hand, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.h2h_oppo)
 					var_8_13 = true
 				end
 			end
@@ -71108,6 +71108,23 @@ function var_0_0.canUseMonsterSpecial(arg_19_0, arg_19_1, arg_19_2)
 	end
 
 
+
+	if (arg_19_1._infoId == 12338 or arg_19_1:hasSkillFast(14794)) then
+		local boardCards = arg_19_0:getBoardCards()
+		local canSS = (#boardCards == 0)
+		if not canSS then
+			for _, c in ipairs(boardCards) do
+				if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isKeyword(304) or (c._info and c._info._keyword == 304) or c._keyword == 304) then
+					canSS = true
+					break
+				end
+			end
+		end
+		if canSS and not arg_19_0._isSummonDisabled and not arg_19_0._isSpecialSummonDisabled and arg_19_0:getEmptyBoardPos(arg_19_1) ~= nil then
+			local var_s12338 = arg_19_1:getSkillById(14794) or arg_19_1._skills[2] or arg_19_1._skills[1]
+			return true, nil, var_19_0, var_s12338
+		end
+	end
 
 	if (arg_19_1._infoId == 12329 or arg_19_1:hasSkillFast(14731)) then
 		local pOwner = arg_19_1._owner or arg_19_0

@@ -944,39 +944,38 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				local allBoardCards = B.mergeTable({ arg_15_0:getBoardCards(), oppo and oppo:getBoardCards() or {} })
 				for _, c in ipairs(allBoardCards) do
 					if c ~= arg_15_1 and (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) then
-						local isUndead = (c._category == 17) or (c._info and c._info._category == 17)
+						local isUndead = c:isCategory(17)
 						if not isUndead and not c._witherDebuffed then
 							c._witherDebuffed = true
 							c._witherDebuffAmt = math.ceil(c._atk / 2)
 							c._atk = math.max(0, c._atk - c._witherDebuffAmt)
+							local cOwner = c._owner
+							local cUi = cOwner and cOwner._ownerUi
+							local spr = cUi and cUi:getCardSprite(c)
+							if spr and spr.updateAtkHp then
+								spr:updateAtkHp()
+							end
 						end
 					end
 				end
 			elseif (arg_15_0._hasWitherOnBoard or (arg_15_0._opponent and arg_15_0._opponent._hasWitherOnBoard)) then
 				if (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster) then
-					local isUndead = (arg_15_1._category == 17) or (arg_15_1._info and arg_15_1._info._category == 17)
+					local isUndead = arg_15_1:isCategory(17)
 					if not isUndead and not arg_15_1._witherDebuffed then
 						arg_15_1._witherDebuffed = true
 						arg_15_1._witherDebuffAmt = math.ceil(arg_15_1._atk / 2)
 						arg_15_1._atk = math.max(0, arg_15_1._atk - arg_15_1._witherDebuffAmt)
+						local cOwner = arg_15_1._owner
+						local cUi = cOwner and cOwner._ownerUi
+						local spr = cUi and cUi:getCardSprite(arg_15_1)
+						if spr and spr.updateAtkHp then
+							spr:updateAtkHp()
+						end
 					end
 				end
 			end
 			if arg_15_1._infoId == 12338 or arg_15_1:isInfoId(12338) then
 				arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
-				local owner = arg_15_1._owner or arg_15_0
-				local oppo = owner and owner._opponent
-				local turnId = (owner and owner._round or 0) * 1000 + (oppo and oppo._round or 0)
-				if oppo and arg_15_1._endermanStealTurn ~= turnId then
-					arg_15_1._endermanStealTurn = turnId
-					local oppoHands = oppo:getBattleCards("H")
-					if #oppoHands > 0 and #owner:getBattleCards("H") < Data.MAX_CARD_COUNT_IN_HAND then
-						local stolen = owner:randomOne(oppoHands)
-						if stolen then
-							owner:setCardStatus(stolen, BattleData.CardStatus.hand, arg_15_1._id, 14795, Data.SkillMode.using, BattleData.CardStatusVal.h2h_oppo)
-						end
-					end
-				end
 			end
 			if arg_15_1._infoId == 40535 or arg_15_1:isInfoId(40535) or arg_15_1:hasSkillFast(14771) then
 				arg_15_0._has40535OnBoard = true

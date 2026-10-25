@@ -5920,7 +5920,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		return {}
 	end
 
-	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738 or arg_260_1._infoId == 40744 or arg_260_1._infoId == 40746
+	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738 or arg_260_1._infoId == 40744 or arg_260_1._infoId == 40746 or arg_260_1._infoId == 40748
 	local var_260_1 = B.filterCanBeLinkedCards(arg_260_0:getBattleCards(arg_260_2), arg_260_1, var_260_0)
 
 	if arg_260_1._infoId == 40748 then
@@ -5984,8 +5984,14 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		var_260_2 = var_260_2 + var_260_1[iter_260_0]:getLink()
 	end
 
-	if var_260_2 < arg_260_1:getLink() then
-		return {}
+	if arg_260_1._infoId == 40748 then
+		if #var_260_1 < 2 then
+			return {}
+		end
+	else
+		if var_260_2 < arg_260_1:getLink() then
+			return {}
+		end
 	end
 
 	local var_260_3 = {}
@@ -6067,7 +6073,11 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 		end
 	end
 
-	if var_261_1 > B.getSumLink(arg_261_2) then
+	if arg_261_1._infoId == 40748 then
+		if #arg_261_2 < 2 then
+			return false
+		end
+	elseif var_261_1 > B.getSumLink(arg_261_2) then
 		return false
 	end
 
@@ -6081,7 +6091,7 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 
 	local var_261_4 = arg_261_0:getEmptyLinkPos() == nil
 
-	if arg_261_1._infoId == 40729 then
+	if arg_261_1._infoId == 40729 or arg_261_1._infoId == 40748 then
 		if not arg_261_0:getEmptyBoardPos() and not arg_261_0:getEmptyLinkPos() and #B.filterBoardCards(arg_261_2) == 0 then
 			return false
 		end
@@ -6121,28 +6131,13 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 		end
 
 		if arg_261_1._infoId == 40748 then
-			if #arg_261_2 < 2 then
+			if #arg_261_2 < 2 or #arg_261_2 > 3 then
 				return false
 			end
 			for _, c in ipairs(arg_261_2) do
-				if not (c:isKeyword(304) or (c._info and c._info._keyword == 304)) then
+				if not (c:isKeyword(304) or (c._info and c._info._keyword == 304) or c._keyword == 304) then
 					return false
 				end
-			end
-			local function checkSum(idx, curSum)
-				if curSum > 3 then return false end
-				if idx > #arg_261_2 then return curSum == 3 end
-				local card = arg_261_2[idx]
-				local linkVal = card:getLink()
-				if checkSum(idx + 1, curSum + 1) then return true end
-				if linkVal > 1 and checkSum(idx + 1, curSum + linkVal) then return true end
-				return false
-			end
-			if not checkSum(1, 0) then
-				return false
-			end
-			if var_261_4 and #B.filterLinkPosCards(arg_261_2, true) == 0 then
-				return false
 			end
 			return true
 		end
@@ -6221,11 +6216,11 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 		if arg_261_1._infoId == 40748 then
 			local validCards = {}
 			for _, c in ipairs(arg_261_2) do
-				if c:isKeyword(304) or (c._info and c._info._keyword == 304) then
+				if c:isKeyword(304) or (c._info and c._info._keyword == 304) or c._keyword == 304 then
 					table.insert(validCards, c)
 				end
 			end
-			if #validCards < 2 or B.getSumLink(validCards) < 3 then
+			if #validCards < 2 then
 				return false
 			end
 			for k = 2, math.min(3, #validCards) do
@@ -6233,7 +6228,8 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 				while true do
 					local comb = B.combinateTable(validCards, k, i_comb)
 					if comb == nil then break end
-					if canCardsAchieveLink(comb, 3) and (not var_261_4 or #B.filterLinkPosCards(comb, true) > 0) then
+					local hasEmptySlot = arg_261_0:getEmptyBoardPos() or arg_261_0:getEmptyLinkPos() or (#B.filterBoardCards(comb) > 0)
+					if hasEmptySlot then
 						if arg_261_4 then
 							local var_261_6 = arg_261_1:getSkillIndexById(9298) or 1
 							local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)

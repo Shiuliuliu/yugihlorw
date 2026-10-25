@@ -8971,6 +8971,8 @@ function var_0_0.canBeLinked(arg_262_0, arg_262_1, arg_262_2)
 		-- Allowed for Lăng Thiên Hậu if it has keyword Thánh Kỵ
 	elseif arg_262_1 and arg_262_1._infoId == 40738 and (arg_262_0:isKeyword(302) or (arg_262_0._info and arg_262_0._info._keyword == 302)) then
 		-- Allowed for KMR-Decade if it has keyword Hiệp sĩ mặt nạ
+	elseif arg_262_1 and arg_262_1._infoId == 40748 and (arg_262_0:isKeyword(304) or (arg_262_0._info and arg_262_0._info._keyword == 304) or arg_262_0._keyword == 304) then
+		-- Allowed for Wither if it has keyword Minecraft
 	elseif not arg_262_2 and (arg_262_0:isMerge() and not arg_262_0:hasSkillFast(14389) or arg_262_0:isSync() or arg_262_0:isXYZ()) then
 		return false
 	end
@@ -9945,7 +9947,7 @@ function var_0_0.getAtk(arg_282_0)
 	local oppo = owner and owner._opponent
 	local hasWither = (owner and owner._hasWitherOnBoard) or (oppo and oppo._hasWitherOnBoard)
 	if hasWither and arg_282_0._status == BattleData.CardStatus.board then
-		local isUndead = (arg_282_0._category == 17) or (arg_282_0._info and arg_282_0._info._category == 17)
+		local isUndead = arg_282_0:isCategory(17)
 		if not isUndead then
 			return math.floor((arg_282_0._atk or arg_282_0._maxAtk or 0) / 2)
 		end

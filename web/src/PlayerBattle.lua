@@ -303,12 +303,19 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		if owner then
 			owner._hasWitherOnBoard = false
 			local oppo = owner._opponent
+			if oppo then oppo._hasWitherOnBoard = false end
 			local allBoardCards = B.mergeTable({ owner:getBoardCards(), oppo and oppo:getBoardCards() or {} })
 			for _, c in ipairs(allBoardCards) do
 				if c._witherDebuffed and c._witherDebuffAmt then
 					c._atk = c._atk + c._witherDebuffAmt
 					c._witherDebuffed = nil
 					c._witherDebuffAmt = nil
+					local cOwner = c._owner
+					local cUi = cOwner and cOwner._ownerUi
+					local spr = cUi and cUi:getCardSprite(c)
+					if spr and spr.updateAtkHp then
+						spr:updateAtkHp()
+					end
 				end
 			end
 		end
