@@ -1901,6 +1901,9 @@ function var_0_0.tryUseCard(arg_63_0, arg_63_1)
 
 		if arg_63_0._playerUi then
 			arg_63_0._playerUi:updateCardsActive()
+			if arg_63_0._playerUi.updateBoardCardsInitialSkills then
+				arg_63_0._playerUi:updateBoardCardsInitialSkills(true)
+			end
 		end
 
 		if arg_63_0._isEnableDrap then
@@ -1947,6 +1950,9 @@ function var_0_0.operateBegin(arg_66_0)
 	arg_66_0._isOperating = true
 
 	var_66_1:updateCardsActive()
+	if var_66_1.updateBoardCardsInitialSkills then
+		var_66_1:updateBoardCardsInitialSkills(true)
+	end
 	arg_66_0:updateRoundButton()
 
 	if arg_66_0._needSoftGuide then
@@ -2069,6 +2075,9 @@ function var_0_0.addBoardCardEnded(arg_72_0, arg_72_1)
 	arg_72_0._isAddingBoardCard = false
 
 	var_72_0:updateCardsActive()
+	if var_72_0.updateBoardCardsInitialSkills then
+		var_72_0:updateBoardCardsInitialSkills(true)
+	end
 	arg_72_0:updateRoundButton()
 
 	if arg_72_0._isOperating and arg_72_0._needSoftGuide then

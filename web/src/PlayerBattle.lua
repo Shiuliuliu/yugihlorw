@@ -1923,7 +1923,7 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 		if cardOwner and arg_38_1._status == BattleData.CardStatus.board and (arg_38_1._infoId == 40752 or (arg_38_1.isInfoId and arg_38_1:isInfoId(40752))) then
 			local mcCount = 0
 			for _, bc in ipairs(cardOwner:getBoardCards()) do
-				if bc:isKeyword(304) or (bc._info and bc._info._keyword == 304) then
+				if bc:isKeyword(304) or (bc._info and bc._info._keyword == 304) or bc._keyword == 304 or bc._infoId == 40748 or bc._infoId == 40750 or bc._infoId == 40751 or bc._infoId == 40752 or bc._infoId == 40753 then
 					mcCount = mcCount + 1
 				end
 			end

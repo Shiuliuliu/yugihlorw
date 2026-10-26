@@ -1240,12 +1240,20 @@ function var_0_0.updateCardsActive(arg_51_0)
 			iter_51_3:updateActive(false)
 		end
 	end
+
+	pcall(function()
+		arg_51_0:updateBoardCardsInitialSkills(true)
+	end)
 end
 
 function var_0_0.updateBoardCardsActive(arg_52_0)
 	for iter_52_0, iter_52_1 in pairs(arg_52_0._pBoardCards) do
 		iter_52_1:updateBoardActive()
 	end
+
+	pcall(function()
+		arg_52_0:updateBoardCardsInitialSkills(true)
+	end)
 end
 
 function var_0_0.updateFortressActive(arg_53_0, arg_53_1)
@@ -1296,50 +1304,50 @@ end
 
 function var_0_0.updateBoardCardsInitialSkills(arg_54_0, force)
 	local now = os.clock and os.clock() or os.time()
-	if not force and arg_54_0._lastInitSkillUpdate and (now - arg_54_0._lastInitSkillUpdate < 0.15) then
+	if not force and arg_54_0._lastInitSkillUpdate and (now - arg_54_0._lastInitSkillUpdate < 0.1) then
 		return
 	end
 	arg_54_0._lastInitSkillUpdate = now
-	if arg_54_0._isController and arg_54_0._player == arg_54_0._player:getActionPlayer() and arg_54_0._battleUi._dropLayer == nil and not arg_54_0._battleUi._isAuto then
-		arg_54_0._battleUi._btnInitiative:setEnabled(#arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("BSDGHL", nil, nil, true) > 0)
-
-		local var_54_0 = false
-		if not force and arg_54_0._lastRareCheckTime and (now - arg_54_0._lastRareCheckTime < 0.3) and arg_54_0._cachedCanCastRare ~= nil then
-			var_54_0 = arg_54_0._cachedCanCastRare
-		else
-			var_54_0 = #arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("R", nil, nil, true) > 0
-			arg_54_0._cachedCanCastRare = var_54_0
-			arg_54_0._lastRareCheckTime = now
+	if arg_54_0._isController and arg_54_0._player == arg_54_0._player:getActionPlayer() and arg_54_0._battleUi and arg_54_0._battleUi._dropLayer == nil and not arg_54_0._battleUi._isAuto then
+		if arg_54_0._battleUi._btnInitiative then
+			arg_54_0._battleUi._btnInitiative:setEnabled(#arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("BSDGHL", nil, nil, true) > 0)
 		end
 
-		arg_54_0._battleUi._btnRare:setEnabled(var_54_0)
+		local var_54_0 = #arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("R", nil, nil, true) > 0
+
+		if arg_54_0._battleUi._btnRare then
+			arg_54_0._battleUi._btnRare:setEnabled(var_54_0)
+		end
 		if arg_54_0._battleUi._btnRare2 and arg_54_0._battleUi._btnRare2 ~= arg_54_0._battleUi._btnRare then
 			arg_54_0._battleUi._btnRare2:setEnabled(var_54_0)
 		end
 	else
-		arg_54_0._cachedCanCastRare = false
-		arg_54_0._battleUi._btnInitiative:setEnabled(false)
-		arg_54_0._battleUi._btnRare:setEnabled(false)
-		if arg_54_0._battleUi._btnRare2 and arg_54_0._battleUi._btnRare2 ~= arg_54_0._battleUi._btnRare then
+		if arg_54_0._battleUi and arg_54_0._battleUi._btnInitiative then
+			arg_54_0._battleUi._btnInitiative:setEnabled(false)
+		end
+		if arg_54_0._battleUi and arg_54_0._battleUi._btnRare then
+			arg_54_0._battleUi._btnRare:setEnabled(false)
+		end
+		if arg_54_0._battleUi and arg_54_0._battleUi._btnRare2 and arg_54_0._battleUi._btnRare2 ~= arg_54_0._battleUi._btnRare then
 			arg_54_0._battleUi._btnRare2:setEnabled(false)
 		end
 	end
 
-	if arg_54_0._battleUi._btnInitiative:isEnabled() then
+	if arg_54_0._battleUi and arg_54_0._battleUi._btnInitiative and arg_54_0._battleUi._btnInitiative:isEnabled() then
 		if arg_54_0._battleUi._btnInitiative._particle == nil then
 			arg_54_0._battleUi._btnInitiative._particle = arg_54_0:efcParticle("zhudong", cc.p(34, 18), true, false, arg_54_0._battleUi._btnInitiative)
 		end
-	elseif arg_54_0._battleUi._btnInitiative._particle ~= nil then
+	elseif arg_54_0._battleUi and arg_54_0._battleUi._btnInitiative and arg_54_0._battleUi._btnInitiative._particle ~= nil then
 		arg_54_0._battleUi._btnInitiative._particle:removeFromParent()
 
 		arg_54_0._battleUi._btnInitiative._particle = nil
 	end
 
-	if arg_54_0._battleUi._btnRare:isEnabled() then
+	if arg_54_0._battleUi and arg_54_0._battleUi._btnRare and arg_54_0._battleUi._btnRare:isEnabled() then
 		if arg_54_0._battleUi._btnRare._particle == nil then
 			arg_54_0._battleUi._btnRare._particle = arg_54_0:efcParticle("zhudong", cc.p(34, 18), true, false, arg_54_0._battleUi._btnRare)
 		end
-	elseif arg_54_0._battleUi._btnRare._particle ~= nil then
+	elseif arg_54_0._battleUi and arg_54_0._battleUi._btnRare and arg_54_0._battleUi._btnRare._particle ~= nil then
 		arg_54_0._battleUi._btnRare._particle:removeFromParent()
 
 		arg_54_0._battleUi._btnRare._particle = nil

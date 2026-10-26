@@ -483,7 +483,8 @@ function var_0_0.removeCardFromBoard(arg_6_0, arg_6_1)
 		end
 	end
 
-	if arg_6_1:isInfoId(40748) or arg_6_1._infoId == 40748 then
+	local isMinecraft = (arg_6_1:isKeyword(304) or (arg_6_1._info and arg_6_1._info._keyword == 304) or arg_6_1._keyword == 304 or arg_6_1:isInfoId(40748) or arg_6_1._infoId == 40748 or arg_6_1:isInfoId(40750) or arg_6_1._infoId == 40750 or arg_6_1:isInfoId(40751) or arg_6_1._infoId == 40751 or arg_6_1:isInfoId(40752) or arg_6_1._infoId == 40752 or arg_6_1:isInfoId(40753) or arg_6_1._infoId == 40753)
+	if isMinecraft then
 		if arg_6_0.updateWitherDebuff then
 			arg_6_0:updateWitherDebuff()
 		end
@@ -962,8 +963,11 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				end
 			end
 
-			if arg_15_1._infoId == 40748 or arg_15_1:isInfoId(40748) then
-				arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
+			local isMinecraft = (arg_15_1:isKeyword(304) or (arg_15_1._info and arg_15_1._info._keyword == 304) or arg_15_1._keyword == 304 or arg_15_1._infoId == 40748 or arg_15_1:isInfoId(40748) or arg_15_1._infoId == 40750 or arg_15_1:isInfoId(40750) or arg_15_1._infoId == 40751 or arg_15_1:isInfoId(40751) or arg_15_1._infoId == 40752 or arg_15_1:isInfoId(40752) or arg_15_1._infoId == 40753 or arg_15_1:isInfoId(40753))
+			if isMinecraft then
+				if arg_15_1._infoId == 40748 or arg_15_1:isInfoId(40748) then
+					arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
+				end
 				if arg_15_0.updateWitherDebuff then
 					arg_15_0:updateWitherDebuff()
 				end

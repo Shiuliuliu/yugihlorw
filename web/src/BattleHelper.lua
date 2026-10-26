@@ -5937,10 +5937,10 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		return {}
 	end
 
-	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738 or arg_260_1._infoId == 40744 or arg_260_1._infoId == 40746 or arg_260_1._infoId == 40748
+	local var_260_0 = arg_260_1._infoId == 40712 or arg_260_1._infoId == 40725 or arg_260_1._infoId == 40726 or arg_260_1._infoId == 40729 or arg_260_1._infoId == 40738 or arg_260_1._infoId == 40744 or arg_260_1._infoId == 40746 or arg_260_1._infoId == 40748 or arg_260_1._infoId == 40751 or arg_260_1._infoId == 40752 or arg_260_1._infoId == 40753
 	local var_260_1 = B.filterCanBeLinkedCards(arg_260_0:getBattleCards(arg_260_2), arg_260_1, var_260_0)
 
-	if arg_260_1._infoId == 40748 then
+	if arg_260_1._infoId == 40748 or arg_260_1._infoId == 40751 or arg_260_1._infoId == 40752 or arg_260_1._infoId == 40753 then
 		var_260_1 = B.filterInKeywordCards(var_260_1, 304)
 	end
 
@@ -6097,41 +6097,7 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 		end
 	end
 
-	if arg_261_1._infoId == 40751 then
-		if #arg_261_2 ~= 1 then return false end
-		local c = arg_261_2[1]
-		return (c:isKeyword(304) or (c._info and c._info._keyword == 304))
-	elseif arg_261_1._infoId == 40752 then
-		if #arg_261_2 < 2 then return false end
-		local hasMiner = false
-		for _, c in ipairs(arg_261_2) do
-			if c._infoId == 40751 or (c.isInfoId and c:isInfoId(40751)) then
-				hasMiner = true
-				break
-			end
-		end
-		if not hasMiner then return false end
-		if var_261_1 > B.getSumLink(arg_261_2) then return false end
-		return true
-	elseif arg_261_1._infoId == 40753 then
-		-- link 5: <Steve - armor> + <ender dragon> + 2 quái có từ khóa "minecraft"
-		if #arg_261_2 < 3 or #arg_261_2 > 4 then return false end
-		local hasArmor = false
-		local hasDragon = false
-		local mcCount = 0
-		for _, c in ipairs(arg_261_2) do
-			if not hasArmor and (c._infoId == 40752 or (c.isInfoId and c:isInfoId(40752))) then
-				hasArmor = true
-			elseif not hasDragon and (c._infoId == 12339 or (c.isInfoId and c:isInfoId(12339))) then
-				hasDragon = true
-			elseif c:isKeyword(304) or (c._info and c._info._keyword == 304) then
-				mcCount = mcCount + 1
-			end
-		end
-		if not (hasArmor and hasDragon and (mcCount + 2 == #arg_261_2)) then return false end
-		if not canCardsAchieveLink(arg_261_2, 5) then return false end
-		return true
-	elseif arg_261_1._infoId == 40748 then
+	if arg_261_1._infoId == 40748 then
 		if #arg_261_2 < 2 or #arg_261_2 > 3 then
 			return false
 		end
@@ -6152,7 +6118,7 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 
 	local var_261_4 = arg_261_0:getEmptyLinkPos() == nil
 
-	if arg_261_1._infoId == 40729 or arg_261_1._infoId == 40748 then
+	if arg_261_1._infoId == 40729 or arg_261_1._infoId == 40748 or arg_261_1._infoId == 40751 or arg_261_1._infoId == 40752 or arg_261_1._infoId == 40753 then
 		if not arg_261_0:getEmptyBoardPos() and not arg_261_0:getEmptyLinkPos() and #B.filterBoardCards(arg_261_2) == 0 then
 			return false
 		end
@@ -6213,6 +6179,46 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 				return false
 			end
 			return true
+		end
+
+		if arg_261_1._infoId == 40751 then
+			if #arg_261_2 ~= 1 then return false end
+			local c = arg_261_2[1]
+			return (c.isKeyword and c:isKeyword(304)) or (c._info and c._info._keyword == 304) or c._keyword == 304
+		end
+
+		if arg_261_1._infoId == 40752 then
+			if #arg_261_2 ~= 2 then return false end
+			local hasMiner = false
+			local hasOtherMc = false
+			for _, c in ipairs(arg_261_2) do
+				if not hasMiner and (c._infoId == 40751 or (c.isInfoId and c:isInfoId(40751))) then
+					hasMiner = true
+				elseif (c.isKeyword and c:isKeyword(304)) or (c._info and c._info._keyword == 304) or c._keyword == 304 then
+					hasOtherMc = true
+				end
+			end
+			if not (hasMiner and hasOtherMc) then return false end
+			return canCardsAchieveLink(arg_261_2, 2)
+		end
+
+		if arg_261_1._infoId == 40753 then
+			-- link 5: <Steve - armor> + <ender dragon> + 2 quái có từ khóa "minecraft"
+			if #arg_261_2 < 3 or #arg_261_2 > 5 then return false end
+			local hasArmor = false
+			local hasDragon = false
+			local mcCount = 0
+			for _, c in ipairs(arg_261_2) do
+				if not hasArmor and (c._infoId == 40752 or (c.isInfoId and c:isInfoId(40752))) then
+					hasArmor = true
+				elseif not hasDragon and (c._infoId == 12339 or (c.isInfoId and c:isInfoId(12339))) then
+					hasDragon = true
+				elseif (c.isKeyword and c:isKeyword(304)) or (c._info and c._info._keyword == 304) or c._keyword == 304 then
+					mcCount = mcCount + 1
+				end
+			end
+			if not (hasArmor and hasDragon and ((#arg_261_2 >= 4 and mcCount >= 2) or (#arg_261_2 == 3 and mcCount >= 1))) then return false end
+			return canCardsAchieveLink(arg_261_2, 5)
 		end
 		if arg_261_1._infoId == 40746 then
 			if #arg_261_2 < 2 or #arg_261_2 > 4 then
@@ -6313,6 +6319,162 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 					end
 					i_comb = i_comb + 1
 					if i_comb > 25 then break end
+				end
+			end
+			return false
+		end
+
+		if arg_261_1._infoId == 40751 then
+			for _, c in ipairs(arg_261_2) do
+				if (c.isKeyword and c:isKeyword(304)) or (c._info and c._info._keyword == 304) or c._keyword == 304 then
+					local comb = { c }
+					local hasEmptySlot = arg_261_0:getEmptyBoardPos() or arg_261_0:getEmptyLinkPos() or (#B.filterBoardCards(comb) > 0)
+					if hasEmptySlot then
+						if arg_261_4 then
+							local var_261_6 = arg_261_1:getSkillIndexById(9298) or 1
+							local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
+							return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
+						else
+							return true
+						end
+					end
+				end
+			end
+			return false
+		end
+
+		if arg_261_1._infoId == 40752 then
+			local miners = {}
+			local mcOthers = {}
+			for _, c in ipairs(arg_261_2) do
+				local isMiner = (c._infoId == 40751 or (c.isInfoId and c:isInfoId(40751)))
+				local isMc = (c.isKeyword and c:isKeyword(304)) or (c._info and c._info._keyword == 304) or c._keyword == 304
+				if isMiner then
+					table.insert(miners, c)
+				elseif isMc then
+					table.insert(mcOthers, c)
+				end
+			end
+			if #miners == 0 then return false end
+			if #miners < 2 and #mcOthers == 0 then return false end
+
+			for _, m in ipairs(miners) do
+				for _, o in ipairs(mcOthers) do
+					local comb = { m, o }
+					if canCardsAchieveLink(comb, 2) then
+						local hasEmptySlot = arg_261_0:getEmptyBoardPos() or arg_261_0:getEmptyLinkPos() or (#B.filterBoardCards(comb) > 0)
+						if hasEmptySlot then
+							if arg_261_4 then
+								local var_261_6 = arg_261_1:getSkillIndexById(9298) or 1
+								local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
+								return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
+							else
+								return true
+							end
+						end
+					end
+				end
+			end
+			if #miners >= 2 then
+				local comb = { miners[1], miners[2] }
+				if canCardsAchieveLink(comb, 2) then
+					local hasEmptySlot = arg_261_0:getEmptyBoardPos() or arg_261_0:getEmptyLinkPos() or (#B.filterBoardCards(comb) > 0)
+					if hasEmptySlot then
+						if arg_261_4 then
+							local var_261_6 = arg_261_1:getSkillIndexById(9298) or 1
+							local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
+							return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
+						else
+							return true
+						end
+					end
+				end
+			end
+			return false
+		end
+
+		if arg_261_1._infoId == 40753 then
+			local armors = {}
+			local dragons = {}
+			local others = {}
+			for _, c in ipairs(arg_261_2) do
+				local isArmor = (c._infoId == 40752 or (c.isInfoId and c:isInfoId(40752)))
+				local isDragon = (c._infoId == 12339 or (c.isInfoId and c:isInfoId(12339)))
+				local isMc = (c.isKeyword and c:isKeyword(304)) or (c._info and c._info._keyword == 304) or c._keyword == 304
+				if isArmor then
+					table.insert(armors, c)
+				elseif isDragon then
+					table.insert(dragons, c)
+				elseif isMc then
+					table.insert(others, c)
+				end
+			end
+			if #armors == 0 or #dragons == 0 then return false end
+
+			for _, a in ipairs(armors) do
+				for _, d in ipairs(dragons) do
+					local pool = {}
+					for _, c in ipairs(armors) do if c ~= a then table.insert(pool, c) end end
+					for _, c in ipairs(dragons) do if c ~= d then table.insert(pool, c) end end
+					for _, c in ipairs(others) do table.insert(pool, c) end
+
+					if #pool >= 2 then
+						for i = 1, #pool - 1 do
+							for j = i + 1, #pool do
+								local comb = { a, d, pool[i], pool[j] }
+								if canCardsAchieveLink(comb, 5) then
+									local hasEmptySlot = arg_261_0:getEmptyBoardPos() or arg_261_0:getEmptyLinkPos() or (#B.filterBoardCards(comb) > 0)
+									if hasEmptySlot then
+										if arg_261_4 then
+											local var_261_6 = arg_261_1:getSkillIndexById(9298) or 1
+											local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
+											return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
+										else
+											return true
+										end
+									end
+								end
+							end
+						end
+					end
+					if #pool >= 1 then
+						for i = 1, #pool do
+							local comb = { a, d, pool[i] }
+							if canCardsAchieveLink(comb, 5) then
+								local hasEmptySlot = arg_261_0:getEmptyBoardPos() or arg_261_0:getEmptyLinkPos() or (#B.filterBoardCards(comb) > 0)
+								if hasEmptySlot then
+									if arg_261_4 then
+										local var_261_6 = arg_261_1:getSkillIndexById(9298) or 1
+										local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
+										return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
+									else
+										return true
+									end
+								end
+							end
+						end
+					end
+					if #pool >= 3 then
+						for i = 1, #pool - 2 do
+							for j = i + 1, #pool - 1 do
+								for k = j + 1, #pool do
+									local comb = { a, d, pool[i], pool[j], pool[k] }
+									if canCardsAchieveLink(comb, 5) then
+										local hasEmptySlot = arg_261_0:getEmptyBoardPos() or arg_261_0:getEmptyLinkPos() or (#B.filterBoardCards(comb) > 0)
+										if hasEmptySlot then
+											if arg_261_4 then
+												local var_261_6 = arg_261_1:getSkillIndexById(9298) or 1
+												local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)
+												return true, nil, var_261_6 * BattleData.ChoiceId.stage_3 + var_261_7 * BattleData.ChoiceId.stage_2, comb
+											else
+												return true
+											end
+										end
+									end
+								end
+							end
+						end
+					end
 				end
 			end
 			return false
