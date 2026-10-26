@@ -77,7 +77,11 @@ function var_0_0.runAction(arg_2_0, arg_2_1)
 end
 
 function var_0_0.efcShieldBegin(arg_4_0, arg_4_1)
-	if arg_4_1 and (string.find(arg_4_1, "Oppo") or string.find(arg_4_1, "Destroy")) then return end
+	if arg_4_1 and (string.find(arg_4_1, "Oppo") or string.find(arg_4_1, "Destroy")) then
+		arg_4_0._statusEfc = arg_4_0._statusEfc or {}
+		arg_4_0._statusEfc[arg_4_1] = false
+		return
+	end
 	if arg_4_0._statusEfc[arg_4_1] ~= nil then
 		return
 	end
@@ -408,6 +412,12 @@ function var_0_0.efcXYZMarkBegin(arg_22_0, arg_22_1)
 		var_0_0.efcXYZMarkEnd(arg_22_0, arg_22_1)
 	end
 
+	if var_22_0 <= 0 then
+		arg_22_0._xyzMaterialCount = 0
+		arg_22_0._statusEfc = arg_22_0._statusEfc or {}
+		arg_22_0._statusEfc[arg_22_1] = false
+		return
+	end
 	if var_22_0 > 0 and (not arg_22_0._statusEfc or arg_22_0._statusEfc[arg_22_1] == nil) then
 		arg_22_0._xyzMaterialCount = var_22_0
 		local var_22_1 = arg_22_0._ownerUi and arg_22_0._ownerUi:efcDragonBones2("chaoliangsucai" .. math.min(3, var_22_0), "effect", 0.5, false)
@@ -3629,15 +3639,15 @@ function var_0_0.updateAtkHp(arg_70_0)
 	local card = arg_70_0._card
 	if card then
 		if (card._infoId == 12326 or card:hasSkillFast(14707)) then
-			if card._atk > 2000 then var_70_12 = cc.c3b(133, 235, 3) end
-			if card._hp > 2800 then var_70_13 = cc.c3b(133, 235, 3) end
+			if card._atk and card._atk > 2000 then var_70_12 = cc.c3b(133, 235, 3) end
+			if card._hp and card._hp > 2800 then var_70_13 = cc.c3b(133, 235, 3) end
 		end
 		if (card._infoId == 12324 or card:hasSkillFast(14700)) then
-			if card._atk > 0 then var_70_12 = cc.c3b(133, 235, 3) end
+			if card._atk and card._atk > 0 then var_70_12 = cc.c3b(133, 235, 3) end
 		end
 		if (card._infoId == 40730 or card:hasSkillFast(14719)) then
-			if card._atk > 8000 then var_70_12 = cc.c3b(133, 235, 3) end
-			if card._hp > 8000 then var_70_13 = cc.c3b(133, 235, 3) end
+			if card._atk and card._atk > 8000 then var_70_12 = cc.c3b(133, 235, 3) end
+			if card._hp and card._hp > 8000 then var_70_13 = cc.c3b(133, 235, 3) end
 		end
 	end
 
@@ -3797,9 +3807,11 @@ function var_0_0.updateActive(arg_77_0, arg_77_1)
 end
 
 function var_0_0.updateBoardActive(arg_78_0)
-	local var_78_0 = arg_78_0._ownerUi._player
+	local var_78_0 = arg_78_0._ownerUi and arg_78_0._ownerUi._player
+	if not var_78_0 then return end
 
 	if var_78_0:getActionPlayer() == var_78_0 and arg_78_0._card:canAction() then
+		local targetAnim = arg_78_0._card:canAttack(true) and "effect1" or "effect2"
 		if arg_78_0._boardGlow == nil then
 			local var_78_1 = lc.createNode()
 
@@ -3809,11 +3821,17 @@ function var_0_0.updateBoardActive(arg_78_0)
 
 			var_78_1:setScale(1)
 
-			var_78_1._bones = arg_78_0._battleUi:createDragonBones("szkp", cc.p(5, 8), var_78_1, arg_78_0._card:canAttack(true) and "effect1" or "effect2", false, 1)
+			var_78_1._bones = arg_78_0._battleUi and arg_78_0._battleUi:createDragonBones("szkp", cc.p(5, 8), var_78_1, targetAnim, false, 1)
+			var_78_1._curAnim = targetAnim
 
-			arg_78_0._ownerUi._scene:seenByCamera3D(var_78_1)
+			if arg_78_0._ownerUi and arg_78_0._ownerUi._scene and arg_78_0._ownerUi._scene.seenByCamera3D then
+				arg_78_0._ownerUi._scene:seenByCamera3D(var_78_1)
+			end
 		else
-			arg_78_0._boardGlow._bones:gotoAndPlay(arg_78_0._card:canAttack(true) and "effect1" or "effect2")
+			if arg_78_0._boardGlow._curAnim ~= targetAnim and arg_78_0._boardGlow._bones and arg_78_0._boardGlow._bones.gotoAndPlay then
+				arg_78_0._boardGlow._curAnim = targetAnim
+				arg_78_0._boardGlow._bones:gotoAndPlay(targetAnim)
+			end
 		end
 	elseif arg_78_0._boardGlow ~= nil then
 		if arg_78_0._boardGlow._bones and arg_78_0._boardGlow._bones.stop then
@@ -4109,20 +4127,47 @@ function var_0_0.getNegativeStatus(arg_89_0)
 	return var_89_1
 end
 
-function var_0_0.updateInitiativeSkills(arg_90_0)
+function var_0_0.updateInitiativeSkills(arg_90_0, force)
 	local var_90_0 = arg_90_0._card
 	if not var_90_0 then return end
 	local var_90_1 = var_90_0:getInitiativeSkill(Data.SkillMode.initiative_bcs) or {}
 
+	if not arg_90_0._isController or var_90_0._status ~= BattleData.CardStatus.board then
+		arg_90_0:removeInitiativeSkills()
+		return
+	end
+
+	if #var_90_1 == 0 then
+		arg_90_0:removeInitiativeSkills()
+		return
+	end
+
+	-- Re-use existing button widgets when count matches
+	if arg_90_0._initiativeSkillIcons and #arg_90_0._initiativeSkillIcons == #var_90_1 then
+		local var_90_5 = {
+			0,
+			6,
+			-6,
+			10,
+			-10,
+			6
+		}
+		local var_90_6 = var_90_5[var_90_0._pos or 1] or 0
+		local isDropLayerNil = (arg_90_0._battleUi == nil or arg_90_0._battleUi._dropLayer == nil)
+		for iter_90_1 = 1, #var_90_1 do
+			local var_90_3 = var_90_1[iter_90_1]
+			local btn = arg_90_0._initiativeSkillIcons[iter_90_1]
+			if btn then
+				local isEnabled = var_90_0._owner and var_90_0._owner:canUseInitiativeSkill(var_90_0, var_90_3) and isDropLayerNil or false
+				btn:setEnabled(isEnabled)
+				btn:setTouchRect(cc.rect(var_90_6, 0, lc.w(btn) + var_90_6, lc.h(btn)))
+				btn:setPosition(cc.p(-60 + iter_90_1 * 30, -100))
+			end
+		end
+		return
+	end
+
 	arg_90_0:removeInitiativeSkills()
-
-	if not arg_90_0._isController then
-		return
-	end
-
-	if var_90_0._status ~= BattleData.CardStatus.board then
-		return
-	end
 
 	for iter_90_1 = 1, #var_90_1 do
 		local var_90_3 = var_90_1[iter_90_1]
@@ -4131,7 +4176,7 @@ function var_0_0.updateInitiativeSkills(arg_90_0)
 				return true
 			end
 
-			if arg_90_0._battleUi._isAddingBoardCard then
+			if arg_90_0._battleUi and arg_90_0._battleUi._isAddingBoardCard then
 				arg_90_0._ownerUi:sendEvent(PlayerUi.EventType.dialog_adding_board_card)
 
 				return true
@@ -4145,7 +4190,7 @@ function var_0_0.updateInitiativeSkills(arg_90_0)
 		end)
 
 		var_90_4:setDisabledShader(ClientView.SHADER_DISABLE)
-		var_90_4:setEnabled(var_90_0._owner and var_90_0._owner:canUseInitiativeSkill(var_90_0, var_90_3) and arg_90_0._battleUi._dropLayer == nil or false)
+		var_90_4:setEnabled(var_90_0._owner and var_90_0._owner:canUseInitiativeSkill(var_90_0, var_90_3) and (arg_90_0._battleUi == nil or arg_90_0._battleUi._dropLayer == nil) or false)
 
 		local var_90_5 = {
 			0,
@@ -4159,7 +4204,9 @@ function var_0_0.updateInitiativeSkills(arg_90_0)
 		local var_90_6 = var_90_5[var_90_0._pos or 1] or 0
 
 		var_90_4:setTouchRect(cc.rect(var_90_6, 0, lc.w(var_90_4) + var_90_6, lc.h(var_90_4)))
-		arg_90_0._scene:seenByCamera3D(var_90_4)
+		if arg_90_0._scene and arg_90_0._scene.seenByCamera3D then
+			arg_90_0._scene:seenByCamera3D(var_90_4)
+		end
 		lc.addChildToPos(arg_90_0._pEffectArea, var_90_4, cc.p(-60 + iter_90_1 * 30, -100))
 		var_90_4:retain()
 

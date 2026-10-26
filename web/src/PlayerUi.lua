@@ -1240,8 +1240,6 @@ function var_0_0.updateCardsActive(arg_51_0)
 			iter_51_3:updateActive(false)
 		end
 	end
-
-	arg_51_0:updateBoardCardsInitialSkills()
 end
 
 function var_0_0.updateBoardCardsActive(arg_52_0)
@@ -1298,20 +1296,28 @@ end
 
 function var_0_0.updateBoardCardsInitialSkills(arg_54_0, force)
 	local now = os.clock and os.clock() or os.time()
-	if not force and arg_54_0._lastInitSkillUpdate and (now - arg_54_0._lastInitSkillUpdate < 0.05) then
+	if not force and arg_54_0._lastInitSkillUpdate and (now - arg_54_0._lastInitSkillUpdate < 0.15) then
 		return
 	end
 	arg_54_0._lastInitSkillUpdate = now
 	if arg_54_0._isController and arg_54_0._player == arg_54_0._player:getActionPlayer() and arg_54_0._battleUi._dropLayer == nil and not arg_54_0._battleUi._isAuto then
 		arg_54_0._battleUi._btnInitiative:setEnabled(#arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("BSDGHL", nil, nil, true) > 0)
 
-		local var_54_0 = #arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("R", nil, nil, true) > 0
+		local var_54_0 = false
+		if not force and arg_54_0._lastRareCheckTime and (now - arg_54_0._lastRareCheckTime < 0.3) and arg_54_0._cachedCanCastRare ~= nil then
+			var_54_0 = arg_54_0._cachedCanCastRare
+		else
+			var_54_0 = #arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("R", nil, nil, true) > 0
+			arg_54_0._cachedCanCastRare = var_54_0
+			arg_54_0._lastRareCheckTime = now
+		end
 
 		arg_54_0._battleUi._btnRare:setEnabled(var_54_0)
 		if arg_54_0._battleUi._btnRare2 and arg_54_0._battleUi._btnRare2 ~= arg_54_0._battleUi._btnRare then
 			arg_54_0._battleUi._btnRare2:setEnabled(var_54_0)
 		end
 	else
+		arg_54_0._cachedCanCastRare = false
 		arg_54_0._battleUi._btnInitiative:setEnabled(false)
 		arg_54_0._battleUi._btnRare:setEnabled(false)
 		if arg_54_0._battleUi._btnRare2 and arg_54_0._battleUi._btnRare2 ~= arg_54_0._battleUi._btnRare then
@@ -1376,6 +1382,14 @@ function var_0_0.castInitiativeSkill(arg_55_0, arg_55_1, arg_55_2)
 		var_55_0 = arg_55_0:createCardSprite(arg_55_1)
 
 		arg_55_0:hideCardSprite(var_55_0)
+	end
+
+	if arg_55_2 and (arg_55_2._id == 14794 or arg_55_2._id == 14804 or arg_55_2._id == 14807 or arg_55_2._id == 14809 or arg_55_2._id == 14811) then
+		local skillIdx = arg_55_1:getSkillIndexById(arg_55_2._id) or 2
+		return arg_55_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_55_1,
+			_choice = skillIdx * BattleData.ChoiceId.stage_3
+		})
 	end
 
 	local pOwner = arg_55_1._owner or arg_55_0._player
@@ -1784,7 +1798,7 @@ function var_0_0.onChoiceSummon(arg_70_0, arg_70_1, arg_70_2)
 					elseif var_72_0._card:hasSkills({
 						3491,
 						3651
-					}) or var_72_0._card._infoId == 11364 or var_72_0._card:hasSkillFast(14621) or var_72_0._card:hasSkillFast(14618) or var_72_0._card:hasSkillFast(14627) or var_72_0._card:hasSkillFast(14717) or var_72_0._card:hasSkillFast(14747) or var_72_0._card._infoId == 12333 or var_72_0._card._infoId == 12338 or var_72_0._card:hasSkillFast(14794) then
+					}) or var_72_0._card._infoId == 11364 or var_72_0._card:hasSkillFast(14621) or var_72_0._card:hasSkillFast(14618) or var_72_0._card:hasSkillFast(14627) or var_72_0._card:hasSkillFast(14717) or var_72_0._card:hasSkillFast(14747) or var_72_0._card._infoId == 12333 then
 						return arg_70_0:sendEvent(var_0_0.EventType.send_use_card, {
 							_card = var_72_0._card,
 							_target = var_72_1 ~= nil and var_72_1._card or nil,
@@ -3978,7 +3992,20 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		})
 	end
 
-	if arg_89_2._card:hasSkillFast(14716) or arg_89_2._card:isInfoId(21140) or arg_89_2._card:hasSkillFast(14723) or arg_89_2._card:hasSkillFast(14724) or arg_89_2._card:isInfoId(12328) or arg_89_2._card:isInfoId(12329) or arg_89_2._card:hasSkillFast(14731) or arg_89_2._card:hasSkillFast(14732) or arg_89_2._card:hasSkillFast(14738) or arg_89_2._card:isInfoId(21141) or arg_89_2._card:hasSkillFast(14742) or arg_89_2._card:hasSkillFast(14748) or arg_89_2._card:isInfoId(12334) or arg_89_2._card:isInfoId(21145) or arg_89_2._card:hasSkillFast(14752) or arg_89_2._card:isInfoId(21146) or arg_89_2._card:hasSkillFast(14757) or arg_89_2._card:hasSkillFast(14761) or arg_89_2._card:isInfoId(30595) or arg_89_2._card:hasSkillFast(14758) or arg_89_2._card:hasSkillFast(14759) or arg_89_2._card:hasSkillFast(14756) or arg_89_2._card:isInfoId(30594) or arg_89_2._card:hasSkillFast(14774) or arg_89_2._card:isInfoId(40742) or arg_89_2._card:hasSkillFast(14776) or arg_89_2._card:isInfoId(40743) or arg_89_2._card:hasSkillFast(14779) or arg_89_2._card:isInfoId(11961) or arg_89_2._card:hasSkillFast(14781) or arg_89_2._card:isInfoId(11959) or arg_89_2._card:hasSkillFast(14783) or arg_89_2._card:isInfoId(11960) or arg_89_2._card:hasSkillFast(14784) or arg_89_2._card:hasSkillFast(14786) or arg_89_2._card:isInfoId(40744) or arg_89_2._card:hasSkillFast(14793) or arg_89_2._card:isInfoId(40747) or (arg_89_1._choiceBase ~= nil and arg_89_2._card:isSkillAtIndex(14793, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+	if arg_89_2._card:isInfoId(40747) or arg_89_2._card:hasSkillFast(14793) then
+		if var_89_0 and #var_89_0 > 0 then
+			var_89_1 = var_89_0[1]._id
+		end
+		local skillIdx = arg_89_2._card:getSkillIndexById(14793) or 1
+		local baseChoice = (arg_89_1._choiceBase and arg_89_1._choiceBase >= BattleData.ChoiceId.stage_3) and arg_89_1._choiceBase or (skillIdx * BattleData.ChoiceId.stage_3)
+		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_89_2._card,
+			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
+			_choice = var_89_1 * BattleData.ChoiceId.stage_2 + baseChoice
+		})
+	end
+
+	if arg_89_2._card:hasSkillFast(14716) or arg_89_2._card:isInfoId(21140) or arg_89_2._card:hasSkillFast(14723) or arg_89_2._card:hasSkillFast(14724) or arg_89_2._card:isInfoId(12328) or arg_89_2._card:isInfoId(12329) or arg_89_2._card:hasSkillFast(14731) or arg_89_2._card:hasSkillFast(14732) or arg_89_2._card:hasSkillFast(14738) or arg_89_2._card:isInfoId(21141) or arg_89_2._card:hasSkillFast(14742) or arg_89_2._card:hasSkillFast(14748) or arg_89_2._card:isInfoId(12334) or arg_89_2._card:isInfoId(21145) or arg_89_2._card:hasSkillFast(14752) or arg_89_2._card:isInfoId(21146) or arg_89_2._card:hasSkillFast(14757) or arg_89_2._card:hasSkillFast(14761) or arg_89_2._card:isInfoId(30595) or arg_89_2._card:hasSkillFast(14758) or arg_89_2._card:hasSkillFast(14759) or arg_89_2._card:hasSkillFast(14756) or arg_89_2._card:isInfoId(30594) or arg_89_2._card:hasSkillFast(14774) or arg_89_2._card:isInfoId(40742) or arg_89_2._card:hasSkillFast(14776) or arg_89_2._card:isInfoId(40743) or arg_89_2._card:hasSkillFast(14779) or arg_89_2._card:isInfoId(11961) or arg_89_2._card:hasSkillFast(14781) or arg_89_2._card:isInfoId(11959) or arg_89_2._card:hasSkillFast(14783) or arg_89_2._card:isInfoId(11960) or arg_89_2._card:hasSkillFast(14784) or arg_89_2._card:hasSkillFast(14786) or arg_89_2._card:isInfoId(40744) then
 		if var_89_0 and #var_89_0 > 0 then
 			var_89_1 = var_89_0[1]._id
 		end
@@ -9505,6 +9532,9 @@ function var_0_0.initBoardRects(arg_108_0)
 end
 
 function var_0_0.switchBoard(arg_109_0, arg_109_1)
+	if arg_109_0._isExBoard == arg_109_1 then
+		return
+	end
 	arg_109_0._isExBoard = arg_109_1
 
 	arg_109_0._exRect:setVisible(arg_109_1)

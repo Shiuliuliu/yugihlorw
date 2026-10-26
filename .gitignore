@@ -68,3 +68,20 @@ test
 .DS_Store
 Thumbs.db
 scratch/
+
+# Root temporary analysis files
+/*.png
+/*.jpg
+/diff_*
+/test_*
+/crop_*
+/slot_*
+/strip*
+/media_*
+/aab_*
+/duelh5_*
+/arcana_*
+/*.txt
+/Database/
+/scratch_nature/
+/scripts/

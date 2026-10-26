@@ -685,7 +685,7 @@
 				var match = /^card_ico_(\d+)(_3)?$/.exec(name);
 				if (match) {
 					var cardId = match[1];
-					var candidatePath = 'res/new/thumb/card_ico_' + cardId + '.png';
+					var candidatePath = 'res/new/thumb/card_ico_' + cardId + (match[2] || '') + '.png';
 					if (res && res.exists && res.exists(candidatePath)) {
 						if (!custom) custom = {};
 						custom[name] = { path: candidatePath, w: 82, h: 82 };

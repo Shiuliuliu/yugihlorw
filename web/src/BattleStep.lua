@@ -819,6 +819,29 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14794] = nil
 	arg_2_0._castedSkillCounts[14795] = nil
 	arg_2_0._opponent._castedSkillCounts[14795] = nil
+	arg_2_0._castedSkillCounts[14798] = nil
+	arg_2_0._opponent._castedSkillCounts[14798] = nil
+	arg_2_0._castedSkillCounts[14804] = nil
+	arg_2_0._opponent._castedSkillCounts[14804] = nil
+	arg_2_0._isSpecialSummonDisabledBy14804 = nil
+	arg_2_0._opponent._isSpecialSummonDisabledBy14804 = nil
+	arg_2_0._castedSkillCounts[14805] = nil
+	arg_2_0._opponent._castedSkillCounts[14805] = nil
+	arg_2_0._castedSkillCounts[14807] = nil
+	arg_2_0._opponent._castedSkillCounts[14807] = nil
+	arg_2_0._castedSkillCounts[14809] = nil
+	arg_2_0._opponent._castedSkillCounts[14809] = nil
+	arg_2_0._castedSkillCounts[14811] = nil
+	arg_2_0._opponent._castedSkillCounts[14811] = nil
+	arg_2_0._castedSkillCounts[14812] = nil
+	arg_2_0._opponent._castedSkillCounts[14812] = nil
+	arg_2_0._wardenHandTriggerTurn = nil
+	arg_2_0._opponent._wardenHandTriggerTurn = nil
+	arg_2_0._totemBoardProtectTurn = nil
+	arg_2_0._opponent._totemBoardProtectTurn = nil
+	arg_2_0._totemHandProtectTurn = nil
+	arg_2_0._opponent._totemHandProtectTurn = nil
+
 
 	arg_2_0._summonedMonsterCounts = {}
 	arg_2_0._isSummonDisabledByInfoId = nil
@@ -3979,6 +4002,10 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 	elseif arg_52_1._status == BattleData.CardStatus.show or arg_52_1._status == BattleData.CardStatus.field or arg_52_1._status == BattleData.CardStatus.grave or arg_52_1._status == BattleData.CardStatus.rare or arg_52_1._status == BattleData.CardStatus.leave then
 		local var_52_34 = arg_52_1._choice and math.floor(arg_52_1._choice / BattleData.ChoiceId.stage_3) % BattleData.ChoiceId.stage_size_3 or 0
 
+		if var_52_34 == 0 and (arg_52_1._infoId == 40747 or arg_52_1:hasSkillFast(14793)) then
+			var_52_34 = 1
+		end
+
 		if var_52_34 > 0 then
 			arg_52_0._actionCard = arg_52_1
 
@@ -4800,6 +4827,24 @@ function var_0_0.underAttack(arg_66_0)
 				var_66_2 = var_66_2 + 1
 			end
 		elseif var_66_1._type == Data.CardType.fortress and arg_66_0:accountDamage(var_66_1) > 0 then
+			local defender = var_66_1._owner
+			local attacker = var_66_0
+			local atkVal = attacker and (attacker._atkWhileAttacking or attacker._atk or 0) or 0
+			local lpVal = var_66_1._hp or 0
+			if defender and atkVal >= lpVal then
+				local turnId = (defender._round or 0) * 1000 + (defender._opponent and defender._opponent._round or 0)
+				if defender._totemHandProtectTurn ~= turnId then
+					local handTotems = defender:getBattleCardsByInfoId("H", 30596)
+					if #handTotems > 0 then
+						defender._totemHandProtectTurn = turnId
+						local totemCard = handTotems[1]
+						defender:setCardStatus(totemCard, BattleData.CardStatus.grave, totemCard._id, 14802, Data.SkillMode.initiative_hand, BattleData.CardStatusVal.h2g_magic)
+						defender:incShield(var_66_1, { 11005 }, false, false, totemCard._id, 11005, Data.SkillMode.using)
+						defender:incHp(var_66_1, 1000, false, totemCard._id, 14802, Data.SkillMode.using)
+					end
+				end
+			end
+
 			if var_66_1:hasBuff(true, BattleData.PositiveType.shieldHp) then
 				var_66_1._owner:castSkill(var_66_1, B.createSkill(11005, 1, var_66_1), Data.SkillMode.under_attack)
 			end

@@ -1349,6 +1349,7 @@ function var_0_0.getCardIconName(arg_35_0)
 	end
 
 	local customCards = {
+		[12341] = true, [12342] = true, [12343] = true, [12344] = true, [12345] = true, [30597] = true, 
 		[10001] = true, [10004] = true, [10006] = true, [10120] = true,
 		[20566] = true, [21134] = true, [30074] = true, [30244] = true,
 		[40718] = true, [40725] = true, [40726] = true,
@@ -1363,7 +1364,7 @@ function var_0_0.getCardIconName(arg_35_0)
 		[30592] = true, [30593] = true,
 		[40727] = true, [40728] = true, [40729] = true, [40730] = true,
 		[40731] = true, [40732] = true, [40733] = true,
-		[40742] = true, [40743] = true, [40744] = true
+		[40742] = true, [40743] = true, [12337] = true, [12338] = true, [12339] = true, [12340] = true, [21148] = true, [21149] = true, [30596] = true, [40745] = true, [40746] = true, [40747] = true, [40748] = true, [40744] = true
 	}
 
 	if lc.FrameCache:getSpriteFrame(var_35_1) == nil and not customCards[var_35_0] and (not var_35_0 or var_35_0 < 10000) then

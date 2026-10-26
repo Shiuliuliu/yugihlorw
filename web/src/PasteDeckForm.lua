@@ -29,7 +29,14 @@ function var_0_0.init(arg_2_0, scene, troopIndex)
 
 	arg_2_0._editor = editBox
 
-	-- Button "Dán nhanh từ Clipboard / Web"
+	-- Pre-fill with clipboard if available
+	local DeckHelper = require("DeckCodeHelper")
+	local initialClipboard = DeckHelper.getClipboardText()
+	if initialClipboard and initialClipboard ~= "" and (initialClipboard:find("^YGODECK:") or initialClipboard:find("M:") or initialClipboard:find("E:")) then
+		editBox:setText(initialClipboard)
+	end
+
+	-- Button "Dán từ Clipboard"
 	local btnPaste = ClientView.createScale9ShaderButton("img_btn_2_s", function()
 		arg_2_0:onFastPaste()
 	end, ClientView.CRECT_BUTTON_S, 200, 52)
@@ -45,20 +52,13 @@ function var_0_0.init(arg_2_0, scene, troopIndex)
 end
 
 function var_0_0.onFastPaste(arg_3_0)
-	-- Try prompt dialog via JS bridge
-	pcall(function()
-		local jsb = jsbridge.object("jdzcDeckBridge")
-		if jsb and jsb.pastePrompt then
-			local pasted = jsb:pastePrompt("Dán mã bộ bài (YGODECK://...) vào đây:", arg_3_0._editor:getText() or "")
-			if pasted and pasted ~= "" then
-				arg_3_0._editor:setText(pasted)
-				-- Auto-apply if it looks like a deck code
-				if pasted:find("^YGODECK:") or pasted:find("M:") or pasted:find("E:") then
-					arg_3_0:onApply()
-				end
-			end
-		end
-	end)
+	local DeckHelper = require("DeckCodeHelper")
+	local curText = arg_3_0._editor:getText() or ""
+	local pasted = DeckHelper.pastePrompt("Dán mã bộ bài (YGODECK://...) hoặc danh sách ID vào đây:", curText)
+	if pasted and pasted ~= "" then
+		arg_3_0._editor:setText(pasted)
+		arg_3_0:onApply()
+	end
 end
 
 function var_0_0.onApply(arg_4_0)

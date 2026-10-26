@@ -291,35 +291,75 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		return
 	end
 
-	-- Overload ("quá tải") check: khi rời sân bị loại bỏ
+	-- Totem (30596 / 14801): 1 luot 1 lan, khi quai Minecraft tren san phe ta bi pha huy, bo qua 1 lan pha huy
+	if (arg_7_1:isKeyword(304) or (arg_7_1._info and arg_7_1._info._keyword == 304)) and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		if not isCostOrSac then
+			local owner = arg_7_1._owner
+			if owner then
+				local turnId = (owner._round or 0) * 1000 + (owner._opponent and owner._opponent._round or 0)
+				local coverTotems = owner:getBattleCardsByInfoId("C", 30596)
+				local showTotems = owner:getBattleCardsByInfoId("S", 30596)
+				local totemCard = (#showTotems > 0 and showTotems[1]) or (#coverTotems > 0 and coverTotems[1])
+				if totemCard and owner._totemBoardProtectTurn ~= turnId then
+					owner._totemBoardProtectTurn = turnId
+					if totemCard._status == BattleData.CardStatus.cover then
+						owner:setCardStatus(totemCard, BattleData.CardStatus.show, totemCard._id, 14801, Data.SkillMode.using, BattleData.CardStatusVal.c2s_attack)
+					end
+					if arg_7_1._hp and arg_7_1._hp <= 0 then
+						arg_7_1._hp = 1
+					end
+					return
+				end
+			end
+		end
+	end
+
+	-- Ender Dragon (12339 / 14799): Khi bi pha huy, phe ta tang LP bang tong ATK quai doi phuong tren san
+	if (arg_7_1:isInfoId(12339) or arg_7_1._infoId == 12339 or arg_7_1:hasSkillFast(14799)) and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		if not isCostOrSac then
+			local owner = arg_7_1._owner
+			local oppo = owner and owner._opponent
+			if oppo and owner and owner._fortress then
+				local totalAtk = 0
+				for _, oppoMon in ipairs(oppo:getBoardCards()) do
+					if oppoMon:isMonster() or oppoMon:isMonsterRare() or oppoMon._type == Data.CardType.monster then
+						totalAtk = totalAtk + math.max(0, oppoMon._atk or 0)
+					end
+				end
+				if totalAtk > 0 then
+					owner:incHp(owner._fortress, totalAtk, false, arg_7_1._id, 14799, Data.SkillMode.using)
+				end
+			end
+		end
+	end
+
+		-- Overload ("quá tải") check: khi rời sân bị loại bỏ
 	if arg_7_1._overload and (arg_7_1._status == BattleData.CardStatus.board or arg_7_1._status == BattleData.CardStatus.show) and arg_7_2 ~= BattleData.CardStatus.board and arg_7_2 ~= BattleData.CardStatus.show then
 		arg_7_2 = BattleData.CardStatus.leave
 		arg_7_1._overload = nil
 	end
 
-	-- Card 40748 (Wither) leaves board: restore ATK
-	if (arg_7_1:isInfoId(40748) or arg_7_1._infoId == 40748) and (arg_7_1._status == BattleData.CardStatus.board or arg_7_1._status == BattleData.CardStatus.show) and arg_7_2 ~= BattleData.CardStatus.board and arg_7_2 ~= BattleData.CardStatus.show then
-		local owner = arg_7_1._owner
-		if owner then
-			owner._hasWitherOnBoard = false
-			local oppo = owner._opponent
-			if oppo then oppo._hasWitherOnBoard = false end
-			local allBoardCards = B.mergeTable({ owner:getBoardCards(), oppo and oppo:getBoardCards() or {} })
-			for _, c in ipairs(allBoardCards) do
-				if c._witherDebuffed and c._witherDebuffAmt then
-					c._atk = c._atk + c._witherDebuffAmt
-					c._witherDebuffed = nil
-					c._witherDebuffAmt = nil
-					local cOwner = c._owner
-					local cUi = cOwner and cOwner._ownerUi
-					local spr = cUi and cUi:getCardSprite(c)
-					if spr and spr.updateAtkHp then
-						spr:updateAtkHp()
-					end
-				end
-			end
-		end
-	end
+-- Card 40748 (Wither) handled in BattleCardStatus
 	-- Card 40535 (Rồng phá giới - Rồng phá hoại) leaves board: decShield from allied Kiếm sĩ diệt rồng
 	if (arg_7_1:isInfoId(40535) or arg_7_1._infoId == 40535) and (arg_7_1._status == BattleData.CardStatus.board or arg_7_1._status == BattleData.CardStatus.show) and arg_7_2 ~= BattleData.CardStatus.board and arg_7_2 ~= BattleData.CardStatus.show then
 		local owner = arg_7_1._owner
@@ -654,6 +694,28 @@ function var_0_0.updateDragonDebuff(arg_0)
 
 	p1._dragonDebuffVal = dCount * 200 * count1
 	p2._dragonDebuffVal = dCount * 200 * count2
+end
+
+function var_0_0.updateWitherDebuff(arg_0)
+	local p1 = arg_0
+	local p2 = arg_0 and arg_0._opponent
+	if not p1 then return end
+	p1:account()
+	if p2 then p2:account() end
+	local scene = ClientData and ClientData._battleScene
+	local bUi = scene and (scene._battleUiNormal or scene._battleUi)
+	if bUi then
+		if bUi._playerUi and bUi._playerUi._pBoardCards then
+			for _, spr in pairs(bUi._playerUi._pBoardCards) do
+				if spr and spr.updateAtkHp then spr:updateAtkHp() end
+			end
+		end
+		if bUi._opponentUi and bUi._opponentUi._pBoardCards then
+			for _, spr in pairs(bUi._opponentUi._pBoardCards) do
+				if spr and spr.updateAtkHp then spr:updateAtkHp() end
+			end
+		end
+	end
 end
 
 function var_0_0.setCardPosChange(arg_8_0, arg_8_1, arg_8_2, arg_8_3, arg_8_4, arg_8_5)
@@ -1829,6 +1891,26 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 			end
 		end
 
+		local cardOwner = arg_38_1._owner or arg_38_0
+		if B.isWitherOnField(cardOwner) and arg_38_1._status == BattleData.CardStatus.board and (arg_38_1:isMonster() or arg_38_1:isMonsterRare() or arg_38_1._type == Data.CardType.monster) then
+			local isUndead = arg_38_1:isCategory(17) or (arg_38_1._info and arg_38_1._info._category == 17)
+			if not isUndead then
+				arg_38_1._atk = math.floor(arg_38_1._atk / 2)
+			end
+		end
+
+		-- Cua dia nguc (30597 / 14813): Khi tren san, quai xac song phe ta nhan 500 atk
+		if cardOwner and arg_38_1._status == BattleData.CardStatus.board and (arg_38_1:isMonster() or arg_38_1:isMonsterRare() or arg_38_1._type == Data.CardType.monster) then
+			local isUndead = arg_38_1:isCategory(17) or (arg_38_1._info and arg_38_1._info._category == 17)
+			if isUndead then
+				local sCards = cardOwner:getBattleCardsByInfoId("S", 30597)
+				local bCards = cardOwner:getBattleCardsByInfoId("B", 30597)
+				if #sCards > 0 or #bCards > 0 then
+					arg_38_1._atk = arg_38_1._atk + 500
+				end
+			end
+		end
+
 		arg_38_1._haloedMaxAtkInc = var_38_4
 	end
 
@@ -2371,7 +2453,7 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 		return false
 	end
 
-	local isThacSamAwakened = (arg_51_1:isInfoId(40730) or arg_51_1:hasSkillFast(14719)) and (arg_51_1._tsAwakened or arg_51_1:hasSkillFast(12002) or (arg_51_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
+	local isThacSamAwakened = (arg_51_1._infoId == 40730) and (arg_51_1._tsAwakened or (arg_51_1:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
 
 	if not isThacSamAwakened and (Data._skillInfo[arg_51_2._sid]._isIgnoreDefend == 1 or Data._skillInfo[arg_51_2._sid]._isIgnoreDefend == 9) then
 		return false

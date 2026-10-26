@@ -1901,7 +1901,6 @@ function var_0_0.tryUseCard(arg_63_0, arg_63_1)
 
 		if arg_63_0._playerUi then
 			arg_63_0._playerUi:updateCardsActive()
-			arg_63_0._playerUi:updateBoardCardsInitialSkills(true)
 		end
 
 		if arg_63_0._isEnableDrap then
@@ -1946,10 +1945,8 @@ function var_0_0.operateBegin(arg_66_0)
 	local var_66_1 = arg_66_0._playerUi
 
 	arg_66_0._isOperating = true
-	arg_66_0._isAddingBoardCard = false
 
 	var_66_1:updateCardsActive()
-	var_66_1:updateBoardCardsInitialSkills()
 	arg_66_0:updateRoundButton()
 
 	if arg_66_0._needSoftGuide then
@@ -2063,20 +2060,15 @@ function var_0_0.addBoardCardBegan(arg_71_0, arg_71_1)
 end
 
 function var_0_0.addBoardCardEnded(arg_72_0, arg_72_1)
+	if not arg_72_0._isAddingBoardCard then
+		return
+	end
+
+	local var_72_0 = arg_72_1._isAttacker == arg_72_0._isAttacker and arg_72_0._playerUi or arg_72_0._opponentUi
+
 	arg_72_0._isAddingBoardCard = false
 
-	local var_72_0 = (arg_72_1 and arg_72_1._isAttacker == arg_72_0._isAttacker) and arg_72_0._playerUi or arg_72_0._opponentUi
-
-	if var_72_0 then
-		var_72_0:updateCardsActive()
-		var_72_0:updateBoardCardsInitialSkills()
-	end
-
-	if arg_72_0._playerUi and arg_72_0._playerUi ~= var_72_0 then
-		arg_72_0._playerUi:updateCardsActive()
-		arg_72_0._playerUi:updateBoardCardsInitialSkills()
-	end
-
+	var_72_0:updateCardsActive()
 	arg_72_0:updateRoundButton()
 
 	if arg_72_0._isOperating and arg_72_0._needSoftGuide then

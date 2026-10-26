@@ -463,6 +463,12 @@ function var_0_0.removeCardFromBoard(arg_6_0, arg_6_1)
 			arg_6_1:saveAndReset()
 		end
 	end
+
+	if arg_6_1:isInfoId(40748) or arg_6_1._infoId == 40748 then
+		if arg_6_0.updateWitherDebuff then
+			arg_6_0:updateWitherDebuff()
+		end
+	end
 end
 
 function var_0_0.removeCardFromGrave(arg_7_0, arg_7_1)
@@ -938,40 +944,9 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 			end
 
 			if arg_15_1._infoId == 40748 or arg_15_1:isInfoId(40748) then
-				arg_15_0._hasWitherOnBoard = true
 				arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
-				local oppo = arg_15_0._opponent
-				local allBoardCards = B.mergeTable({ arg_15_0:getBoardCards(), oppo and oppo:getBoardCards() or {} })
-				for _, c in ipairs(allBoardCards) do
-					if c ~= arg_15_1 and (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) then
-						local isUndead = c:isCategory(17)
-						if not isUndead and not c._witherDebuffed then
-							c._witherDebuffed = true
-							c._witherDebuffAmt = math.ceil(c._atk / 2)
-							c._atk = math.max(0, c._atk - c._witherDebuffAmt)
-							local cOwner = c._owner
-							local cUi = cOwner and cOwner._ownerUi
-							local spr = cUi and cUi:getCardSprite(c)
-							if spr and spr.updateAtkHp then
-								spr:updateAtkHp()
-							end
-						end
-					end
-				end
-			elseif (arg_15_0._hasWitherOnBoard or (arg_15_0._opponent and arg_15_0._opponent._hasWitherOnBoard)) then
-				if (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster) then
-					local isUndead = arg_15_1:isCategory(17)
-					if not isUndead and not arg_15_1._witherDebuffed then
-						arg_15_1._witherDebuffed = true
-						arg_15_1._witherDebuffAmt = math.ceil(arg_15_1._atk / 2)
-						arg_15_1._atk = math.max(0, arg_15_1._atk - arg_15_1._witherDebuffAmt)
-						local cOwner = arg_15_1._owner
-						local cUi = cOwner and cOwner._ownerUi
-						local spr = cUi and cUi:getCardSprite(arg_15_1)
-						if spr and spr.updateAtkHp then
-							spr:updateAtkHp()
-						end
-					end
+				if arg_15_0.updateWitherDebuff then
+					arg_15_0:updateWitherDebuff()
 				end
 			end
 			if arg_15_1._infoId == 12338 or arg_15_1:isInfoId(12338) then
@@ -1015,7 +990,39 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				arg_15_1._negativeStatus[BattleData.NegativeType.disablePostureEx] = true
 			end
 
-			if arg_15_1._statusVal == BattleData.CardStatusVal.g2b_3347 then
+			local turnId = (arg_15_0._round or 0) * 1000 + (arg_15_0._opponent and arg_15_0._opponent._round or 0)
+		if arg_15_0._turnSummonRoundId ~= turnId then
+			arg_15_0._turnSummonRoundId = turnId
+			arg_15_0._turnSummonCount = 0
+		end
+		arg_15_0._turnSummonCount = (arg_15_0._turnSummonCount or 0) + 1
+
+		-- Warden (12345 / 14814): 1 luot 1 lan, khi doi phuong trieu hoi quai lan 3, Warden tren tay kich hoat
+		if arg_15_0._turnSummonCount == 3 then
+			local oppo = arg_15_0._opponent
+			if oppo and oppo._wardenHandTriggerTurn ~= turnId and not oppo._isSummonDisabled and not oppo._isSpecialSummonDisabled then
+				local wardenCard = nil
+				for _, c in ipairs(oppo._handCards) do
+					if (c:isInfoId(12345) or c._infoId == 12345) and oppo:canSpecialSummon(c) then
+						wardenCard = c
+						break
+					end
+				end
+				if wardenCard then
+					local emptyPos = oppo:getEmptyBoardPos(wardenCard)
+					if emptyPos ~= nil then
+						oppo._wardenHandTriggerTurn = turnId
+						wardenCard._saved._pos = emptyPos
+						oppo:setCardStatus(wardenCard, BattleData.CardStatus.board, wardenCard._id, 14814, Data.SkillMode.using, BattleData.CardStatusVal.h2b_special)
+						if arg_15_1._status == BattleData.CardStatus.board then
+							arg_15_0:setCardStatus(arg_15_1, BattleData.CardStatus.hand, wardenCard._id, 14814, Data.SkillMode.using, arg_15_1._owner ~= arg_15_1._originOwner and BattleData.CardStatusVal.b2h_oppo or nil)
+						end
+					end
+				end
+			end
+		end
+
+		if arg_15_1._statusVal == BattleData.CardStatusVal.g2b_3347 then
 				arg_15_0:incAtk(arg_15_1, 500, false, arg_15_1._id, 3347, Data.SkillMode.once)
 			elseif arg_15_1._statusVal == BattleData.CardStatusVal.g2b_5170 then
 				arg_15_0:incAtk(arg_15_1, Data._skillInfo[5170]._val[1], false, arg_15_1._id, 5170, Data.SkillMode.once)

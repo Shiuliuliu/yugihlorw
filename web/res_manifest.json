@@ -18121,52 +18121,436 @@
       "40746_3.jpm"
     ],
     "res/thumb_rare/12337.lcres": [
-      "12337.jpm"
+      "12337.jpm",
+      "12337.jpg"
     ],
     "res/thumb_monster/12337.lcres": [
-      "12337.jpm"
+      "12337.jpm",
+      "12337.jpg"
     ],
     "res/thumb_rare/12337_3.lcres": [
-      "12337_3.jpm"
+      "12337_3.jpm",
+      "12337_3.jpg"
     ],
     "res/thumb_monster/12337_3.lcres": [
-      "12337_3.jpm"
+      "12337_3.jpm",
+      "12337_3.jpg"
     ],
     "res/thumb_rare/40747.lcres": [
-      "40747.jpm"
+      "40747.jpm",
+      "40747.jpg"
     ],
     "res/thumb_monster/40747.lcres": [
-      "40747.jpm"
+      "40747.jpm",
+      "40747.jpg"
     ],
     "res/thumb_rare/40747_3.lcres": [
-      "40747_3.jpm"
+      "40747_3.jpm",
+      "40747_3.jpg"
     ],
     "res/thumb_monster/40747_3.lcres": [
-      "40747_3.jpm"
+      "40747_3.jpm",
+      "40747_3.jpg"
     ],
     "res/thumb_rare/12338.lcres": [
-      "12338.jpm"
+      "12338.jpm",
+      "12338.jpg"
     ],
     "res/thumb_monster/12338.lcres": [
-      "12338.jpm"
+      "12338.jpm",
+      "12338.jpg"
     ],
     "res/thumb_rare/12338_3.lcres": [
-      "12338_3.jpm"
+      "12338_3.jpm",
+      "12338_3.jpg"
     ],
     "res/thumb_monster/12338_3.lcres": [
-      "12338_3.jpm"
+      "12338_3.jpm",
+      "12338_3.jpg"
     ],
     "res/thumb_rare/40748.lcres": [
-      "40748.jpm"
+      "40748.jpm",
+      "40748.jpg"
     ],
     "res/thumb_monster/40748.lcres": [
-      "40748.jpm"
+      "40748.jpm",
+      "40748.jpg"
     ],
     "res/thumb_rare/40748_3.lcres": [
-      "40748_3.jpm"
+      "40748_3.jpm",
+      "40748_3.jpg"
     ],
     "res/thumb_monster/40748_3.lcres": [
+      "40748_3.jpm",
+      "40748_3.jpg"
+    ],
+    "res/thumb_magic/12337.lcres": [
+      "12337.jpg",
+      "12337.jpm"
+    ],
+    "res/thumb_trap/12337.lcres": [
+      "12337.jpg",
+      "12337.jpm"
+    ],
+    "res/thumb_magic/12337_3.lcres": [
+      "12337_3.jpg",
+      "12337_3.jpm"
+    ],
+    "res/thumb_trap/12337_3.lcres": [
+      "12337_3.jpg",
+      "12337_3.jpm"
+    ],
+    "res/thumb_magic/12338.lcres": [
+      "12338.jpg",
+      "12338.jpm"
+    ],
+    "res/thumb_trap/12338.lcres": [
+      "12338.jpg",
+      "12338.jpm"
+    ],
+    "res/thumb_magic/12338_3.lcres": [
+      "12338_3.jpg",
+      "12338_3.jpm"
+    ],
+    "res/thumb_trap/12338_3.lcres": [
+      "12338_3.jpg",
+      "12338_3.jpm"
+    ],
+    "res/thumb_monster/12339.lcres": [
+      "12339.jpm",
+      "12339.jpg"
+    ],
+    "res/thumb_rare/12339.lcres": [
+      "12339.jpm",
+      "12339.jpg"
+    ],
+    "res/thumb_magic/12339.lcres": [
+      "12339.jpg",
+      "12339.jpm"
+    ],
+    "res/thumb_trap/12339.lcres": [
+      "12339.jpg",
+      "12339.jpm"
+    ],
+    "res/thumb_monster/12339_3.lcres": [
+      "12339_3.jpm",
+      "12339_3.jpg"
+    ],
+    "res/thumb_rare/12339_3.lcres": [
+      "12339_3.jpm",
+      "12339_3.jpg"
+    ],
+    "res/thumb_magic/12339_3.lcres": [
+      "12339_3.jpg",
+      "12339_3.jpm"
+    ],
+    "res/thumb_trap/12339_3.lcres": [
+      "12339_3.jpg",
+      "12339_3.jpm"
+    ],
+    "res/thumb_monster/12340.lcres": [
+      "12340.jpm",
+      "12340.jpg"
+    ],
+    "res/thumb_rare/12340.lcres": [
+      "12340.jpm",
+      "12340.jpg"
+    ],
+    "res/thumb_magic/12340.lcres": [
+      "12340.jpg",
+      "12340.jpm"
+    ],
+    "res/thumb_trap/12340.lcres": [
+      "12340.jpg",
+      "12340.jpm"
+    ],
+    "res/thumb_monster/12340_3.lcres": [
+      "12340_3.jpm",
+      "12340_3.jpg"
+    ],
+    "res/thumb_rare/12340_3.lcres": [
+      "12340_3.jpm",
+      "12340_3.jpg"
+    ],
+    "res/thumb_magic/12340_3.lcres": [
+      "12340_3.jpg",
+      "12340_3.jpm"
+    ],
+    "res/thumb_trap/12340_3.lcres": [
+      "12340_3.jpg",
+      "12340_3.jpm"
+    ],
+    "res/thumb_monster/21148.lcres": [
+      "21148.jpm",
+      "21148.jpg"
+    ],
+    "res/thumb_rare/21148.lcres": [
+      "21148.jpm",
+      "21148.jpg"
+    ],
+    "res/thumb_magic/21148.lcres": [
+      "21148.jpg",
+      "21148.jpm"
+    ],
+    "res/thumb_trap/21148.lcres": [
+      "21148.jpg",
+      "21148.jpm"
+    ],
+    "res/thumb_monster/21148_3.lcres": [
+      "21148_3.jpm",
+      "21148_3.jpg"
+    ],
+    "res/thumb_rare/21148_3.lcres": [
+      "21148_3.jpm",
+      "21148_3.jpg"
+    ],
+    "res/thumb_magic/21148_3.lcres": [
+      "21148_3.jpg",
+      "21148_3.jpm"
+    ],
+    "res/thumb_trap/21148_3.lcres": [
+      "21148_3.jpg",
+      "21148_3.jpm"
+    ],
+    "res/thumb_monster/21149.lcres": [
+      "21149.jpm",
+      "21149.jpg"
+    ],
+    "res/thumb_rare/21149.lcres": [
+      "21149.jpm",
+      "21149.jpg"
+    ],
+    "res/thumb_magic/21149.lcres": [
+      "21149.jpg",
+      "21149.jpm"
+    ],
+    "res/thumb_trap/21149.lcres": [
+      "21149.jpg",
+      "21149.jpm"
+    ],
+    "res/thumb_monster/21149_3.lcres": [
+      "21149_3.jpm",
+      "21149_3.jpg"
+    ],
+    "res/thumb_rare/21149_3.lcres": [
+      "21149_3.jpm",
+      "21149_3.jpg"
+    ],
+    "res/thumb_magic/21149_3.lcres": [
+      "21149_3.jpg",
+      "21149_3.jpm"
+    ],
+    "res/thumb_trap/21149_3.lcres": [
+      "21149_3.jpg",
+      "21149_3.jpm"
+    ],
+    "res/thumb_monster/30596.lcres": [
+      "30596.jpm",
+      "30596.jpg"
+    ],
+    "res/thumb_rare/30596.lcres": [
+      "30596.jpm",
+      "30596.jpg"
+    ],
+    "res/thumb_magic/30596.lcres": [
+      "30596.jpg",
+      "30596.jpm"
+    ],
+    "res/thumb_trap/30596.lcres": [
+      "30596.jpg",
+      "30596.jpm"
+    ],
+    "res/thumb_monster/30596_3.lcres": [
+      "30596_3.jpm",
+      "30596_3.jpg"
+    ],
+    "res/thumb_rare/30596_3.lcres": [
+      "30596_3.jpm",
+      "30596_3.jpg"
+    ],
+    "res/thumb_magic/30596_3.lcres": [
+      "30596_3.jpg",
+      "30596_3.jpm"
+    ],
+    "res/thumb_trap/30596_3.lcres": [
+      "30596_3.jpg",
+      "30596_3.jpm"
+    ],
+    "res/thumb_magic/40747.lcres": [
+      "40747.jpg",
+      "40747.jpm"
+    ],
+    "res/thumb_trap/40747.lcres": [
+      "40747.jpg",
+      "40747.jpm"
+    ],
+    "res/thumb_magic/40747_3.lcres": [
+      "40747_3.jpg",
+      "40747_3.jpm"
+    ],
+    "res/thumb_trap/40747_3.lcres": [
+      "40747_3.jpg",
+      "40747_3.jpm"
+    ],
+    "res/thumb_magic/40748.lcres": [
+      "40748.jpg",
+      "40748.jpm"
+    ],
+    "res/thumb_trap/40748.lcres": [
+      "40748.jpg",
+      "40748.jpm"
+    ],
+    "res/thumb_magic/40748_3.lcres": [
+      "40748_3.jpg",
       "40748_3.jpm"
+    ],
+    "res/thumb_trap/40748_3.lcres": [
+      "40748_3.jpg",
+      "40748_3.jpm"
+    ],
+    "res/thumb_monster/12341.lcres": [
+      "12341.jpm"
+    ],
+    "res/thumb_rare/12341.lcres": [
+      "12341.jpm"
+    ],
+    "res/thumb_magic/12341.lcres": [
+      "12341.jpm"
+    ],
+    "res/thumb_trap/12341.lcres": [
+      "12341.jpm"
+    ],
+    "res/thumb_monster/12341_3.lcres": [
+      "12341_3.jpm"
+    ],
+    "res/thumb_rare/12341_3.lcres": [
+      "12341_3.jpm"
+    ],
+    "res/thumb_magic/12341_3.lcres": [
+      "12341_3.jpm"
+    ],
+    "res/thumb_trap/12341_3.lcres": [
+      "12341_3.jpm"
+    ],
+    "res/thumb_monster/12342.lcres": [
+      "12342.jpm"
+    ],
+    "res/thumb_rare/12342.lcres": [
+      "12342.jpm"
+    ],
+    "res/thumb_magic/12342.lcres": [
+      "12342.jpm"
+    ],
+    "res/thumb_trap/12342.lcres": [
+      "12342.jpm"
+    ],
+    "res/thumb_monster/12342_3.lcres": [
+      "12342_3.jpm"
+    ],
+    "res/thumb_rare/12342_3.lcres": [
+      "12342_3.jpm"
+    ],
+    "res/thumb_magic/12342_3.lcres": [
+      "12342_3.jpm"
+    ],
+    "res/thumb_trap/12342_3.lcres": [
+      "12342_3.jpm"
+    ],
+    "res/thumb_monster/12343.lcres": [
+      "12343.jpm"
+    ],
+    "res/thumb_rare/12343.lcres": [
+      "12343.jpm"
+    ],
+    "res/thumb_magic/12343.lcres": [
+      "12343.jpm"
+    ],
+    "res/thumb_trap/12343.lcres": [
+      "12343.jpm"
+    ],
+    "res/thumb_monster/12343_3.lcres": [
+      "12343_3.jpm"
+    ],
+    "res/thumb_rare/12343_3.lcres": [
+      "12343_3.jpm"
+    ],
+    "res/thumb_magic/12343_3.lcres": [
+      "12343_3.jpm"
+    ],
+    "res/thumb_trap/12343_3.lcres": [
+      "12343_3.jpm"
+    ],
+    "res/thumb_monster/12344.lcres": [
+      "12344.jpm"
+    ],
+    "res/thumb_rare/12344.lcres": [
+      "12344.jpm"
+    ],
+    "res/thumb_magic/12344.lcres": [
+      "12344.jpm"
+    ],
+    "res/thumb_trap/12344.lcres": [
+      "12344.jpm"
+    ],
+    "res/thumb_monster/12344_3.lcres": [
+      "12344_3.jpm"
+    ],
+    "res/thumb_rare/12344_3.lcres": [
+      "12344_3.jpm"
+    ],
+    "res/thumb_magic/12344_3.lcres": [
+      "12344_3.jpm"
+    ],
+    "res/thumb_trap/12344_3.lcres": [
+      "12344_3.jpm"
+    ],
+    "res/thumb_monster/12345.lcres": [
+      "12345.jpm"
+    ],
+    "res/thumb_rare/12345.lcres": [
+      "12345.jpm"
+    ],
+    "res/thumb_magic/12345.lcres": [
+      "12345.jpm"
+    ],
+    "res/thumb_trap/12345.lcres": [
+      "12345.jpm"
+    ],
+    "res/thumb_monster/12345_3.lcres": [
+      "12345_3.jpm"
+    ],
+    "res/thumb_rare/12345_3.lcres": [
+      "12345_3.jpm"
+    ],
+    "res/thumb_magic/12345_3.lcres": [
+      "12345_3.jpm"
+    ],
+    "res/thumb_trap/12345_3.lcres": [
+      "12345_3.jpm"
+    ],
+    "res/thumb_trap/30597.lcres": [
+      "30597.jpg"
+    ],
+    "res/thumb_magic/30597.lcres": [
+      "30597.jpg"
+    ],
+    "res/thumb_monster/30597.lcres": [
+      "30597.jpg"
+    ],
+    "res/thumb_rare/30597.lcres": [
+      "30597.jpg"
+    ],
+    "res/thumb_trap/30597_3.lcres": [
+      "30597_3.jpg"
+    ],
+    "res/thumb_magic/30597_3.lcres": [
+      "30597_3.jpg"
+    ],
+    "res/thumb_monster/30597_3.lcres": [
+      "30597_3.jpg"
+    ],
+    "res/thumb_rare/30597_3.lcres": [
+      "30597_3.jpg"
     ]
   },
   "files": [
@@ -20099,7 +20483,77 @@
     "res/new/thumb/card_ico_40748.png",
     "res/40748_3.jpg",
     "res/40748_3_mask.png",
-    "res/new/thumb/card_ico_40748_3.png"
+    "res/new/thumb/card_ico_40748_3.png",
+    "res/12339.jpg",
+    "res/12339_mask.png",
+    "res/new/thumb/card_ico_12339.png",
+    "res/12339_3.jpg",
+    "res/12339_3_mask.png",
+    "res/new/thumb/card_ico_12339_3.png",
+    "res/12340.jpg",
+    "res/12340_mask.png",
+    "res/new/thumb/card_ico_12340.png",
+    "res/12340_3.jpg",
+    "res/12340_3_mask.png",
+    "res/new/thumb/card_ico_12340_3.png",
+    "res/21148.jpg",
+    "res/21148_mask.png",
+    "res/new/thumb/card_ico_21148.png",
+    "res/21148_3.jpg",
+    "res/21148_3_mask.png",
+    "res/new/thumb/card_ico_21148_3.png",
+    "res/21149.jpg",
+    "res/21149_mask.png",
+    "res/new/thumb/card_ico_21149.png",
+    "res/21149_3.jpg",
+    "res/21149_3_mask.png",
+    "res/new/thumb/card_ico_21149_3.png",
+    "res/30596.jpg",
+    "res/30596_mask.png",
+    "res/new/thumb/card_ico_30596.png",
+    "res/30596_3.jpg",
+    "res/30596_3_mask.png",
+    "res/new/thumb/card_ico_30596_3.png",
+    "res/new/thumb/card_ico_12330.png",
+    "res/new/thumb/card_ico_12330_3.png",
+    "res/new/thumb/card_ico_40726.png",
+    "res/new/thumb/card_ico_40726_3.png",
+    "res/new/thumb/card_ico_12341.png",
+    "res/new/thumb/card_ico_12341_3.png",
+    "res/12341.jpg",
+    "res/12341_3.jpg",
+    "res/12341_mask.png",
+    "res/12341_3_mask.png",
+    "res/new/thumb/card_ico_12342.png",
+    "res/new/thumb/card_ico_12342_3.png",
+    "res/12342.jpg",
+    "res/12342_3.jpg",
+    "res/12342_mask.png",
+    "res/12342_3_mask.png",
+    "res/new/thumb/card_ico_12343.png",
+    "res/new/thumb/card_ico_12343_3.png",
+    "res/12343.jpg",
+    "res/12343_3.jpg",
+    "res/12343_mask.png",
+    "res/12343_3_mask.png",
+    "res/new/thumb/card_ico_12344.png",
+    "res/new/thumb/card_ico_12344_3.png",
+    "res/12344.jpg",
+    "res/12344_3.jpg",
+    "res/12344_mask.png",
+    "res/12344_3_mask.png",
+    "res/new/thumb/card_ico_30597.png",
+    "res/new/thumb/card_ico_30597_3.png",
+    "res/30597.jpg",
+    "res/30597_3.jpg",
+    "res/30597_mask.png",
+    "res/30597_3_mask.png",
+    "res/new/thumb/card_ico_12345.png",
+    "res/new/thumb/card_ico_12345_3.png",
+    "res/12345.jpg",
+    "res/12345_3.jpg",
+    "res/12345_mask.png",
+    "res/12345_3_mask.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [
@@ -27652,7 +28106,10 @@
       242,
       242
     ],
-    "res/new/thumb/card_ico_12327.png": 8167,
+    "res/new/thumb/card_ico_12327.png": [
+      82,
+      82
+    ],
     "card_ico_12327.png": 8167,
     "res/12327.jpg": [
       256,
@@ -27662,7 +28119,10 @@
       256,
       256
     ],
-    "res/new/thumb/card_ico_12327_3.png": 8167,
+    "res/new/thumb/card_ico_12327_3.png": [
+      82,
+      82
+    ],
     "card_ico_12327_3.png": 8167,
     "res/12327_3.jpg": [
       256,
@@ -27676,33 +28136,51 @@
     "40730.jpg": 26051,
     "res/40730_mask.png": 8115,
     "40730_mask.png": 8115,
-    "res/new/thumb/card_ico_40730.png": 12287,
+    "res/new/thumb/card_ico_40730.png": [
+      82,
+      82
+    ],
     "card_ico_40730.png": 12287,
     "res/40730_3.jpg": 26051,
     "40730_3.jpg": 26051,
     "res/40730_3_mask.png": 8115,
     "40730_3_mask.png": 8115,
-    "res/new/thumb/card_ico_40730_3.png": 12287,
+    "res/new/thumb/card_ico_40730_3.png": [
+      82,
+      82
+    ],
     "card_ico_40730_3.png": 12287,
     "res/21141.jpg": 36897,
     "21141.jpg": 36897,
-    "res/new/thumb/card_ico_21141.png": 17904,
+    "res/new/thumb/card_ico_21141.png": [
+      82,
+      82
+    ],
     "card_ico_21141.png": 17904,
     "res/21141_3.jpg": 36897,
     "21141_3.jpg": 36897,
-    "res/new/thumb/card_ico_21141_3.png": 17904,
+    "res/new/thumb/card_ico_21141_3.png": [
+      82,
+      82
+    ],
     "card_ico_21141_3.png": 17904,
     "res/12328.jpg": 24199,
     "12328.jpg": 24199,
     "res/12328_mask.png": 9157,
     "12328_mask.png": 9157,
-    "res/new/thumb/card_ico_12328.png": 11791,
+    "res/new/thumb/card_ico_12328.png": [
+      82,
+      82
+    ],
     "card_ico_12328.png": 11791,
     "res/12328_3.jpg": 24199,
     "12328_3.jpg": 24199,
     "res/12328_3_mask.png": 9157,
     "12328_3_mask.png": 9157,
-    "res/new/thumb/card_ico_12328_3.png": 11791,
+    "res/new/thumb/card_ico_12328_3.png": [
+      82,
+      82
+    ],
     "card_ico_12328_3.png": 11791,
     "res/new/thumb/card_ico_40731.png": [
       82,
@@ -28554,22 +29032,40 @@
     ],
     "res/12336.jpg": 17686,
     "res/12336_mask.png": 11484,
-    "res/new/thumb/card_ico_12336.png": 11616,
+    "res/new/thumb/card_ico_12336.png": [
+      82,
+      82
+    ],
     "res/12336_3.jpg": 17686,
     "res/12336_3_mask.png": 11484,
-    "res/new/thumb/card_ico_12336_3.png": 11616,
+    "res/new/thumb/card_ico_12336_3.png": [
+      82,
+      82
+    ],
     "res/40745.jpg": 16004,
     "res/40745_mask.png": 11992,
-    "res/new/thumb/card_ico_40745.png": 12286,
+    "res/new/thumb/card_ico_40745.png": [
+      82,
+      82
+    ],
     "res/40745_3.jpg": 16004,
     "res/40745_3_mask.png": 11992,
-    "res/new/thumb/card_ico_40745_3.png": 12286,
+    "res/new/thumb/card_ico_40745_3.png": [
+      82,
+      82
+    ],
     "res/40746.jpg": 24468,
     "res/40746_mask.png": 13091,
-    "res/new/thumb/card_ico_40746.png": 14686,
+    "res/new/thumb/card_ico_40746.png": [
+      82,
+      82
+    ],
     "res/40746_3.jpg": 24468,
     "res/40746_3_mask.png": 13091,
-    "res/new/thumb/card_ico_40746_3.png": 14686,
+    "res/new/thumb/card_ico_40746_3.png": [
+      82,
+      82
+    ],
     "res/new/thumb/card_ico_12337.png": [
       82,
       82
@@ -28601,6 +29097,1110 @@
     "12337_3.jpg": [
       256,
       256
+    ],
+    "new/thumb/card_ico_10001.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_10001_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_10004.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_10004_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_10006.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_10006_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_10120.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_10120_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12313.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12313_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12314.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12314_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12315.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12315_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12316.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12316_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12317.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12317_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12318.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12318_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12319.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12319_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12320.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12320_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12321.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12321_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12322.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12322_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12323.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12323_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12324.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12324_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12325.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12325_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12326.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12326_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12327.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12327_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12328.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12328_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12329.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12329_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12330.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12330.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12330_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12330_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12331.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12331_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12332.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12332_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12333.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12333_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12334.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12334_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12335.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12335_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12336.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12336_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12337.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12337_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12338.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12338.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12338_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12338_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12339.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12339.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12339_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12339_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12340.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12340.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12340_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12340_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_20566.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_20566_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21134.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21134_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21135.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21135_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21136.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21136_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21137.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21137_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21138.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21138_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21139.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21139_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21140.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21140_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21141.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21141_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21142.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21142_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21143.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21143_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21144.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21144_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21145.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21145_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21146.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21146_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21147.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21147_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_21148.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21148.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_21148_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21148_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_21149.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21149.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_21149_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_21149_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30074.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30074_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30244.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30244_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30592.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30592_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30593.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30593_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30594.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30594_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30595.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30595_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_30596.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30596.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_30596_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30596_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40718.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40718_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40725.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40725_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40726.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40726.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40726_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40726_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40727.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40727_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40728.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40728_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40729.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40729_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40730.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40730_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40731.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40731_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40732.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40732.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40732_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40732_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40733.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40733_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40734.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40734_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40735.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40735_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40736.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40736_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40737.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40737_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40738.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40738_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40739.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40739_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40740.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40740_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40741.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40741_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40742.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40742_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40743.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40743_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40744.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40744_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40745.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40745_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40746.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40746_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40747.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40747.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40747_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40747_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40748.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40748.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_40748_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_40748_3.png": [
+      82,
+      82
+    ],
+    "res/12337_mask.png": [
+      256,
+      256
+    ],
+    "12337_mask.png": [
+      256,
+      256
+    ],
+    "res/12337_3_mask.png": [
+      256,
+      256
+    ],
+    "12337_3_mask.png": [
+      256,
+      256
+    ],
+    "res/12338.jpg": [
+      256,
+      256
+    ],
+    "12338.jpg": [
+      256,
+      256
+    ],
+    "res/12338_mask.png": [
+      256,
+      256
+    ],
+    "12338_mask.png": [
+      256,
+      256
+    ],
+    "res/12338_3.jpg": [
+      256,
+      256
+    ],
+    "12338_3.jpg": [
+      256,
+      256
+    ],
+    "res/12338_3_mask.png": [
+      256,
+      256
+    ],
+    "12338_3_mask.png": [
+      256,
+      256
+    ],
+    "res/12339.jpg": [
+      256,
+      256
+    ],
+    "12339.jpg": [
+      256,
+      256
+    ],
+    "res/12339_mask.png": [
+      256,
+      256
+    ],
+    "12339_mask.png": [
+      256,
+      256
+    ],
+    "res/12339_3.jpg": [
+      256,
+      256
+    ],
+    "12339_3.jpg": [
+      256,
+      256
+    ],
+    "res/12339_3_mask.png": [
+      256,
+      256
+    ],
+    "12339_3_mask.png": [
+      256,
+      256
+    ],
+    "res/12340.jpg": [
+      256,
+      256
+    ],
+    "12340.jpg": [
+      256,
+      256
+    ],
+    "res/12340_mask.png": [
+      256,
+      256
+    ],
+    "12340_mask.png": [
+      256,
+      256
+    ],
+    "res/12340_3.jpg": [
+      256,
+      256
+    ],
+    "12340_3.jpg": [
+      256,
+      256
+    ],
+    "res/12340_3_mask.png": [
+      256,
+      256
+    ],
+    "12340_3_mask.png": [
+      256,
+      256
+    ],
+    "res/21148.jpg": [
+      256,
+      256
+    ],
+    "21148.jpg": [
+      256,
+      256
+    ],
+    "res/21148_mask.png": [
+      256,
+      256
+    ],
+    "21148_mask.png": [
+      256,
+      256
+    ],
+    "res/21148_3.jpg": [
+      256,
+      256
+    ],
+    "21148_3.jpg": [
+      256,
+      256
+    ],
+    "res/21148_3_mask.png": [
+      256,
+      256
+    ],
+    "21148_3_mask.png": [
+      256,
+      256
+    ],
+    "res/21149.jpg": [
+      256,
+      256
+    ],
+    "21149.jpg": [
+      256,
+      256
+    ],
+    "res/21149_mask.png": [
+      256,
+      256
+    ],
+    "21149_mask.png": [
+      256,
+      256
+    ],
+    "res/21149_3.jpg": [
+      256,
+      256
+    ],
+    "21149_3.jpg": [
+      256,
+      256
+    ],
+    "res/21149_3_mask.png": [
+      256,
+      256
+    ],
+    "21149_3_mask.png": [
+      256,
+      256
+    ],
+    "res/30596.jpg": [
+      256,
+      256
+    ],
+    "30596.jpg": [
+      256,
+      256
+    ],
+    "res/30596_mask.png": [
+      256,
+      256
+    ],
+    "30596_mask.png": [
+      256,
+      256
+    ],
+    "res/30596_3.jpg": [
+      256,
+      256
+    ],
+    "30596_3.jpg": [
+      256,
+      256
+    ],
+    "res/30596_3_mask.png": [
+      256,
+      256
+    ],
+    "30596_3_mask.png": [
+      256,
+      256
+    ],
+    "res/40747.jpg": [
+      256,
+      256
+    ],
+    "40747.jpg": [
+      256,
+      256
+    ],
+    "res/40747_mask.png": [
+      256,
+      256
+    ],
+    "40747_mask.png": [
+      256,
+      256
+    ],
+    "res/40747_3.jpg": [
+      256,
+      256
+    ],
+    "40747_3.jpg": [
+      256,
+      256
+    ],
+    "res/40747_3_mask.png": [
+      256,
+      256
+    ],
+    "40747_3_mask.png": [
+      256,
+      256
+    ],
+    "res/40748.jpg": [
+      256,
+      256
+    ],
+    "40748.jpg": [
+      256,
+      256
+    ],
+    "res/40748_mask.png": [
+      256,
+      256
+    ],
+    "40748_mask.png": [
+      256,
+      256
+    ],
+    "res/40748_3.jpg": [
+      256,
+      256
+    ],
+    "40748_3.jpg": [
+      256,
+      256
+    ],
+    "res/40748_3_mask.png": [
+      256,
+      256
+    ],
+    "40748_3_mask.png": [
+      256,
+      256
+    ],
+    "res/new/thumb/card_ico_12341.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12341.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12341_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12341_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12342.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12342.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12342_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12342_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12343.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12343.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12343_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12343_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12344.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12344.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12344_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12344_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12345.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12345.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_12345_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_12345_3.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_30597.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30597.png": [
+      82,
+      82
+    ],
+    "res/new/thumb/card_ico_30597_3.png": [
+      82,
+      82
+    ],
+    "new/thumb/card_ico_30597_3.png": [
+      82,
+      82
     ]
   },
   "thumbs": {
@@ -29790,7 +31390,13 @@
       "21145",
       "21145_3",
       "21146",
-      "21146_3"
+      "21146_3",
+      "21148",
+      "21148_3",
+      "21149",
+      "21149_3",
+      "21147",
+      "21147_3"
     ],
     "thumb_trap": [
       "30001",
@@ -30417,7 +32023,11 @@
       "30594",
       "30594_3",
       "30595",
-      "30595_3"
+      "30595_3",
+      "30596",
+      "30596_3",
+      "30597",
+      "30597_3"
     ],
     "thumb_monster": [
       "12313",
@@ -30501,7 +32111,29 @@
       "40744",
       "40744_3",
       "12337",
-      "12337_3"
+      "12337_3",
+      "12338",
+      "12338_3",
+      "12339",
+      "12339_3",
+      "12340",
+      "12340_3",
+      "40747",
+      "40747_3",
+      "40748",
+      "40748_3",
+      "12336",
+      "12336_3",
+      "12341",
+      "12341_3",
+      "12342",
+      "12342_3",
+      "12343",
+      "12343_3",
+      "12344",
+      "12344_3",
+      "12345",
+      "12345_3"
     ],
     "thumb_rare": [
       "40727",
@@ -30561,7 +32193,33 @@
       "40744",
       "40744_3",
       "12337",
-      "12337_3"
+      "12337_3",
+      "12338",
+      "12338_3",
+      "12339",
+      "12339_3",
+      "12340",
+      "12340_3",
+      "40747",
+      "40747_3",
+      "40748",
+      "40748_3",
+      "40745",
+      "40745_3",
+      "40746",
+      "40746_3",
+      "40732",
+      "40732_3",
+      "12341",
+      "12341_3",
+      "12342",
+      "12342_3",
+      "12343",
+      "12343_3",
+      "12344",
+      "12344_3",
+      "12345",
+      "12345_3"
     ]
   }
 }

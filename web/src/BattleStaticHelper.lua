@@ -3614,45 +3614,20 @@ end
 function var_0_0.combinateTable(arg_258_0, arg_258_1, arg_258_2)
 	local n = #arg_258_0
 	local k = arg_258_1
-	if k > n or k <= 0 then
+	if k > n or k <= 0 or n > 10 then
 		return
 	end
 
-	local var_258_0
-	if B._combination[n] and B._combination[n][k] then
-		var_258_0 = B._combination[n][k][arg_258_2]
-	else
-		if B._combination[n] == nil then
-			B._combination[n] = {}
-		end
-		if B._combination[n][k] == nil then
-			local combs = {}
-			local function gen(start, cur)
-				if #cur == k then
-					local c = {}
-					for i = 1, k do c[i] = cur[i] end
-					table.insert(combs, c)
-					return
-				end
-				for i = start, n do
-					table.insert(cur, i)
-					gen(i + 1, cur)
-					table.remove(cur)
-					if #combs >= 500 then return end
-				end
-			end
-			gen(1, {})
-			B._combination[n][k] = combs
-		end
-		var_258_0 = B._combination[n][k][arg_258_2]
+	if B._combination[n] == nil or B._combination[n][k] == nil then
+		return
 	end
 
+	local var_258_0 = B._combination[n][k][arg_258_2]
 	if var_258_0 == nil then
 		return
 	end
 
 	local var_258_1 = {}
-
 	for iter_258_0 = 1, #var_258_0 do
 		var_258_1[iter_258_0] = arg_258_0[var_258_0[iter_258_0]]
 	end

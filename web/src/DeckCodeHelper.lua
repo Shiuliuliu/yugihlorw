@@ -26,8 +26,7 @@ function var_0_0.base64_encode(data)
 		local r, b = '', x:byte()
 		for i = 8, 1, -1 do r = r .. (b % 2^i - b % 2^(i - 1) > 0 and '1' or '0') end
 		return r
-	end) .. '0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-		if (#x < 6) then return '' end
+	end) .. '0000'):gsub('%d%d%d%d%d%d', function(x)
 		local c = 0
 		for i = 1, 6 do c = c + (x:sub(i, i) == '1' and 2^(6 - i) or 0) end
 		return B64_CHARS:sub(c + 1, c + 1)
@@ -42,8 +41,7 @@ function var_0_0.base64_decode(data)
 		local r, f = '', (B64_CHARS:find(x, 1, true) - 1)
 		for i = 6, 1, -1 do r = r .. (f % 2^i - f % 2^(i - 1) > 0 and '1' or '0') end
 		return r
-	end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-		if (#x ~= 8) then return '' end
+	end):gsub('%d%d%d%d%d%d%d%d', function(x)
 		local c = 0
 		for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2^(8 - i) or 0) end
 		return string.char(c)
@@ -189,14 +187,40 @@ function var_0_0.copyText(text)
 	if not text or text == "" then return false end
 
 	-- Call JS clipboard bridge
-	local ok = pcall(function()
-		local jsb = jsbridge.object("jdzcDeckBridge")
+	local ok = false
+	pcall(function()
+		local jsb = jsbridge and jsbridge.object("jdzcDeckBridge")
 		if jsb and jsb.copyText then
 			jsb:copyText(text)
+			ok = true
 		end
 	end)
 
 	return ok
+end
+
+-- Prompt paste via browser dialog
+function var_0_0.pastePrompt(title, defaultVal)
+	local result = ""
+	pcall(function()
+		local jsb = jsbridge and jsbridge.object("jdzcDeckBridge")
+		if jsb and jsb.pastePrompt then
+			result = jsb:pastePrompt(title or "Dán mã bộ bài (YGODECK://...) vào đây:", defaultVal or "")
+		end
+	end)
+	return result or ""
+end
+
+-- Get stored clipboard
+function var_0_0.getClipboardText()
+	local result = ""
+	pcall(function()
+		local jsb = jsbridge and jsbridge.object("jdzcDeckBridge")
+		if jsb and jsb.getClipboardText then
+			result = jsb:getClipboardText()
+		end
+	end)
+	return result or ""
 end
 
 -- Copy current troop of scene
@@ -217,7 +241,7 @@ function var_0_0.copyCurrentTroop(scene, customTroop)
 	local mainCount = P._playerCard:getTroopCardCountByType(nil, scene and scene._curTroopIndex or 1, true)
 	local extraCount = P._playerCard:getTroopCardCountByType(Data.CardType.rare, scene and scene._curTroopIndex or 1, true)
 
-	ToastManager.push(string.format("Đã sao chép mã bộ bài (%d lá chính, %d lá thêm)!", mainCount, extraCount))
+	ToastManager.push(string.format("Đã sao chép mã bộ bài (%d lá chính, %d lá phụ)!", mainCount, extraCount))
 	return true, code
 end
 

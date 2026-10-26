@@ -943,6 +943,14 @@ function var_0_0.resetAtk(arg_29_0)
 		arg_29_0._updateAtk = nil
 	end
 
+	local owner = arg_29_0._owner
+	if B.isWitherOnField(owner) and arg_29_0._status == BattleData.CardStatus.board and (arg_29_0:isMonster() or arg_29_0:isMonsterRare() or arg_29_0._type == Data.CardType.monster) then
+		local isUndead = arg_29_0:isCategory(17) or (arg_29_0._info and arg_29_0._info._category == 17)
+		if not isUndead then
+			arg_29_0._atk = math.floor(arg_29_0._atk / 2)
+		end
+	end
+
 	arg_29_0._haloedMaxAtkInc = arg_29_0._maxAtkInc
 end
 
@@ -1094,27 +1102,6 @@ function var_0_0.removeTableBuffValue(arg_35_0, arg_35_1, arg_35_2, arg_35_3)
 end
 
 function var_0_0.hasBuff(arg_36_0, arg_36_1, arg_36_2)
-	if not arg_36_1 and (arg_36_0._infoId == 40730 or arg_36_0:hasSkillFast(14719)) and arg_36_0._status == BattleData.CardStatus.board then
-		if not arg_36_0._tsAwakened then
-			if arg_36_2 == BattleData.NegativeType.manacle or arg_36_2 == BattleData.NegativeType.atkFrozen then
-				return true
-			end
-		end
-	end
-
-	if arg_36_1 and arg_36_0._status == BattleData.CardStatus.board then
-		if (arg_36_2 == BattleData.PositiveType.shieldOppoMonster and (arg_36_0:hasSkillFast(12008) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12008)) or arg_36_0:isInfoId(40734) or arg_36_0:isInfoId(40736))) or
-		   (arg_36_2 == BattleData.PositiveType.shieldOppoMagic and (arg_36_0:hasSkillFast(12009) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12009)) or arg_36_0:isInfoId(40734) or arg_36_0:isInfoId(40736))) or
-		   (arg_36_2 == BattleData.PositiveType.shieldOppoTrap and (arg_36_0:hasSkillFast(12010) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12010)) or arg_36_0:isInfoId(40734) or arg_36_0:isInfoId(40736))) then
-			return true
-		end
-		if (arg_36_2 == BattleData.PositiveType.shieldExMonster and (arg_36_0:hasSkillFast(12002) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12002)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739) or arg_36_0:isInfoId(40745))) or
-		   (arg_36_2 == BattleData.PositiveType.shieldExMagic and (arg_36_0:hasSkillFast(12003) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12003)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739) or arg_36_0:isInfoId(40745))) or
-		   (arg_36_2 == BattleData.PositiveType.shieldExTrap and (arg_36_0:hasSkillFast(12004) or (arg_36_0._info and B.tableContain(arg_36_0._info._skillId, 12004)) or arg_36_0:isInfoId(40737) or arg_36_0:isInfoId(40739) or arg_36_0:isInfoId(40745))) then
-			return true
-		end
-	end
-
 	local var_36_0 = arg_36_1 and arg_36_0._positiveStatus or arg_36_0._negativeStatus
 
 	if var_36_0 == nil then
@@ -1229,92 +1216,33 @@ function var_0_0.hasShield(arg_39_0)
 end
 
 function var_0_0.hasShieldInType(arg_40_0, arg_40_1, arg_40_2)
-	if not arg_40_2 and (arg_40_0:isInfoId(40730) or arg_40_0:hasSkillFast(14719)) and arg_40_0._status == BattleData.CardStatus.board and (arg_40_0._tsAwakened or arg_40_0:hasSkillFast(12002) or (arg_40_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0) then
-		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
-			return true
-		end
-	end
-
-	if not arg_40_2 and (arg_40_0:isInfoId(40734) or arg_40_0._infoId == 40734 or arg_40_0:isInfoId(40736) or arg_40_0._infoId == 40736 or arg_40_0:isInfoId(40745) or arg_40_0._infoId == 40745 or arg_40_0:hasSkillFast(12008)) and arg_40_0._status == BattleData.CardStatus.board then
-		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-	end
-
-	if not arg_40_2 and (arg_40_0:isInfoId(12327) or arg_40_0._infoId == 12327) and arg_40_0._status == BattleData.CardStatus.board then
-		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-	end
-
-	if not arg_40_2 and (arg_40_0:isInfoId(40731) or arg_40_0._infoId == 40731) and arg_40_0._status == BattleData.CardStatus.board then
-		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
-			return true
-		end
-	end
-
-	if (arg_40_0:isInfoId(12326) or arg_40_0._infoId == 12326) and arg_40_0._status == BattleData.CardStatus.board then
-		if arg_40_2 then
-			return false
-		end
-		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		local marks = arg_40_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
-		if marks >= 3 then
-			if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
-				return true
-			end
-		end
-	end
-
-	if not arg_40_2 and (arg_40_0:isInfoId(12320) or arg_40_0:hasSkillFast(14674)) and arg_40_0._status == BattleData.CardStatus.board then
-		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
-			return true
-		end
-	end
-
-	if not arg_40_2 and (arg_40_0:isBinded(21139) or arg_40_0:hasSkillFast(14670) or arg_40_0:isBindedSkill(14670)) and arg_40_0._status == BattleData.CardStatus.board then
-		if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
-			return true
-		end
-	end
-
-	if not arg_40_2 and (arg_40_0:isInfoId(12315) or arg_40_0:hasSkillFast(14651)) and arg_40_0._status == BattleData.CardStatus.board and arg_40_0._owner then
-		local hasLequy = hasCard12314OnBoard(arg_40_0._owner) or (arg_40_0._owner._opponent and hasCard12314OnBoard(arg_40_0._owner._opponent))
-		if hasLequy then
-			if arg_40_1 == BattleData.PositiveType.shieldMonster or arg_40_1 == BattleData.PositiveType.shieldMagic or arg_40_1 == BattleData.PositiveType.shieldTrap then
-				return true
-			end
-			if arg_40_1 == BattleData.PositiveType.shieldExMonster or arg_40_1 == BattleData.PositiveType.shieldExMagic or arg_40_1 == BattleData.PositiveType.shieldExTrap then
-				return true
-			end
-		end
-	end
-
-	if arg_40_0:hasBuff(true, arg_40_1) then
+	if arg_40_0:hasBuff(true, arg_40_1) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
 		return true
 	end
 
-	if not arg_40_2 then
-		if arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
-			return true
-		end
+	if not arg_40_2 and arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap and (arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldOppoMonster) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldHaloOppoMonster)) then
+		return true
+	end
 
-		if arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap and (arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldOppoMonster) or arg_40_0:hasBuff(true, arg_40_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldHaloOppoMonster)) then
-			return true
+	if not arg_40_2 and arg_40_0._status == BattleData.CardStatus.board then
+		local cid = arg_40_0._infoId
+		if cid == 40730 then
+			if arg_40_0._tsAwakened or (arg_40_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0 then
+				return (arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap) or (arg_40_1 >= BattleData.PositiveType.shieldExMonster and arg_40_1 <= BattleData.PositiveType.shieldExTrap)
+			end
+		elseif cid == 40734 or cid == 40736 or cid == 40737 or cid == 40739 or cid == 40745 or cid == 12327 or cid == 40731 then
+			return (arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap) or (arg_40_1 >= BattleData.PositiveType.shieldExMonster and arg_40_1 <= BattleData.PositiveType.shieldExTrap)
+		elseif cid == 12326 then
+			if arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap then return true end
+			local marks = arg_40_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+			if marks >= 3 and arg_40_1 >= BattleData.PositiveType.shieldExMonster and arg_40_1 <= BattleData.PositiveType.shieldExTrap then return true end
+		elseif cid == 12320 then
+			return (arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap) or (arg_40_1 >= BattleData.PositiveType.shieldExMonster and arg_40_1 <= BattleData.PositiveType.shieldExTrap)
+		elseif cid == 12315 and arg_40_0._owner then
+			local hasLequy = hasCard12314OnBoard(arg_40_0._owner) or (arg_40_0._owner._opponent and hasCard12314OnBoard(arg_40_0._owner._opponent))
+			if hasLequy then
+				return (arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap) or (arg_40_1 >= BattleData.PositiveType.shieldExMonster and arg_40_1 <= BattleData.PositiveType.shieldExTrap)
+			end
 		end
 	end
 
@@ -1322,61 +1250,33 @@ function var_0_0.hasShieldInType(arg_40_0, arg_40_1, arg_40_2)
 end
 
 function var_0_0.hasShieldExInType(arg_41_0, arg_41_1, arg_41_2)
-	if not arg_41_2 and (arg_41_0:isInfoId(40730) or arg_41_0:hasSkillFast(14719)) and arg_41_0._status == BattleData.CardStatus.board and (arg_41_0._tsAwakened or arg_41_0:hasSkillFast(12002) or (arg_41_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0) then
-		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
-			return true
-		end
+	if arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
+		return true
 	end
 
-	if not arg_41_2 and (arg_41_0:isInfoId(40734) or arg_41_0._infoId == 40734 or arg_41_0:isInfoId(40736) or arg_41_0._infoId == 40736 or arg_41_0:isInfoId(40737) or arg_41_0._infoId == 40737 or arg_41_0:isInfoId(40739) or arg_41_0._infoId == 40739 or arg_41_0:isInfoId(40745) or arg_41_0._infoId == 40745 or arg_41_0:hasSkillFast(12008) or arg_41_0:hasSkillFast(12002)) and arg_41_0._status == BattleData.CardStatus.board then
-		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
-			return true
-		end
+	if not arg_41_2 and arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap and (arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldOppoMonster) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldHaloOppoMonster)) then
+		return true
 	end
 
-	if not arg_41_2 and (arg_41_0:isInfoId(12320) or arg_41_0:hasSkillFast(14674)) and arg_41_0._status == BattleData.CardStatus.board then
-		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
-			return true
-		end
-	end
-
-	if not arg_41_2 and (arg_41_0:isBinded(21139) or arg_41_0:hasSkillFast(14670) or arg_41_0:isBindedSkill(14670)) and arg_41_0._status == BattleData.CardStatus.board then
-		if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
-			return true
-		end
-		if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
-			return true
-		end
-	end
-
-	if not arg_41_2 and (arg_41_0:isInfoId(12315) or arg_41_0:hasSkillFast(14651)) and arg_41_0._status == BattleData.CardStatus.board and arg_41_0._owner then
-		local hasLequy = hasCard12314OnBoard(arg_41_0._owner) or (arg_41_0._owner._opponent and hasCard12314OnBoard(arg_41_0._owner._opponent))
-		if hasLequy then
-			if arg_41_1 == BattleData.PositiveType.shieldMonster or arg_41_1 == BattleData.PositiveType.shieldMagic or arg_41_1 == BattleData.PositiveType.shieldTrap then
-				return true
+	if not arg_41_2 and arg_41_0._status == BattleData.CardStatus.board then
+		local cid = arg_41_0._infoId
+		if cid == 40730 then
+			if arg_41_0._tsAwakened or (arg_41_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0 then
+				return (arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap) or (arg_41_1 >= BattleData.PositiveType.shieldExMonster and arg_41_1 <= BattleData.PositiveType.shieldExTrap)
 			end
-			if arg_41_1 == BattleData.PositiveType.shieldExMonster or arg_41_1 == BattleData.PositiveType.shieldExMagic or arg_41_1 == BattleData.PositiveType.shieldExTrap then
-				return true
+		elseif cid == 40734 or cid == 40736 or cid == 40737 or cid == 40739 or cid == 40745 or cid == 12327 or cid == 40731 then
+			return (arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap) or (arg_41_1 >= BattleData.PositiveType.shieldExMonster and arg_41_1 <= BattleData.PositiveType.shieldExTrap)
+		elseif cid == 12326 then
+			if arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap then return true end
+			local marks = arg_41_0:getBuffValue(true, BattleData.PositiveType.godMark) or 0
+			if marks >= 3 and arg_41_1 >= BattleData.PositiveType.shieldExMonster and arg_41_1 <= BattleData.PositiveType.shieldExTrap then return true end
+		elseif cid == 12320 then
+			return (arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap) or (arg_41_1 >= BattleData.PositiveType.shieldExMonster and arg_41_1 <= BattleData.PositiveType.shieldExTrap)
+		elseif cid == 12315 and arg_41_0._owner then
+			local hasLequy = hasCard12314OnBoard(arg_41_0._owner) or (arg_41_0._owner._opponent and hasCard12314OnBoard(arg_41_0._owner._opponent))
+			if hasLequy then
+				return (arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap) or (arg_41_1 >= BattleData.PositiveType.shieldExMonster and arg_41_1 <= BattleData.PositiveType.shieldExTrap)
 			end
-		end
-	end
-
-	if not arg_41_2 then
-		if arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldHaloBegin) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldBegin + BattleData.PositiveType.shieldExBegin) then
-			return true
-		end
-
-		if arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap and (arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldOppoMonster) or arg_41_0:hasBuff(true, arg_41_1 - BattleData.PositiveType.shieldMonster + BattleData.PositiveType.shieldHaloOppoMonster)) then
-			return true
 		end
 	end
 
@@ -5733,6 +5633,10 @@ function var_0_0.getSkillsByMode(arg_118_0, arg_118_1, arg_118_2)
 		end
 	end
 
+	if arg_118_1 == Data.SkillMode.under_attack_damage and arg_118_0:hasSkillFast(2002) then
+		table.insert(var_118_0, { _id = 2002, _level = 1, _modes = { Data.SkillMode.under_attack_damage }, _owner = arg_118_0 })
+	end
+
 	local var_118_443 = {}
 
 	if arg_118_1 == Data.SkillMode.magic then
@@ -5936,6 +5840,11 @@ function var_0_0.hasSkills(arg_126_0, arg_126_1, arg_126_2)
 		return false, var_126_0
 	end
 
+	if B.tableContain(arg_126_1, 2002) and arg_126_0:hasSkillFast(2002) then
+		var_126_0[#var_126_0 + 1] = { _id = 2002, _level = 1, _modes = { Data.SkillMode.under_attack_damage }, _owner = arg_126_0 }
+		return true, var_126_0
+	end
+
 	for iter_126_0 = 1, #arg_126_0._skills do
 		local var_126_1 = arg_126_0._skills[iter_126_0]._id
 
@@ -5962,6 +5871,31 @@ function var_0_0.hasSkills(arg_126_0, arg_126_1, arg_126_2)
 end
 
 function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
+	if arg_127_0._skills then
+		for iter_127_0 = 1, #arg_127_0._skills do
+			if arg_127_0._skills[iter_127_0]._id == arg_127_1 then
+				return true
+			end
+		end
+	end
+
+	if arg_127_1 ~= 2002 and arg_127_1 ~= 3210 and arg_127_1 ~= 1080 
+	   and not (arg_127_1 >= 14668 and arg_127_1 <= 14671) 
+	   and not (arg_127_1 >= 12001 and arg_127_1 <= 12010) 
+	   and arg_127_1 ~= 1014 and arg_127_1 ~= 1004 and arg_127_1 ~= 1017 then
+		return false
+	end
+	if arg_127_1 == 2002 then
+		if arg_127_0._status == BattleData.CardStatus.board and (arg_127_0:isMonster() or arg_127_0:isMonsterRare() or arg_127_0._type == Data.CardType.monster) then
+			local isUndead = arg_127_0:isCategory(17) or (arg_127_0._info and arg_127_0._info._category == 17)
+			if isUndead then
+				local owner = arg_127_0._owner
+				if owner and (#owner:getBattleCardsByInfoId("S", 30597) > 0 or #owner:getBattleCardsByInfoId("B", 30597) > 0) then
+					return true
+				end
+			end
+		end
+	end
 	if (arg_127_1 == 14668 or arg_127_1 == 14669 or arg_127_1 == 14670 or arg_127_1 == 14671 or arg_127_1 == 3210 or arg_127_1 == 1080) and arg_127_0:isBinded(21139) then
 		return true
 	end
@@ -6874,19 +6808,19 @@ function var_0_0._realCanCastMonsterSkill(arg_156_0, arg_156_1, arg_156_2)
 		return false
 	end
 
-	if (arg_156_0._status == BattleData.CardStatus.board or arg_156_0._status == BattleData.CardStatus.grave or arg_156_1 == Data.SkillMode.bcs2gl or arg_156_1 == Data.SkillMode.bcs2_ or arg_156_1 == Data.SkillMode.sacrifice) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldTrap, true) and arg_156_1 ~= Data.SkillMode.cost and arg_156_0:isNature(Data._skillInfo[8079]._refCards[1]) and arg_156_0._owner:hasBattleCardsBySkillFast("S", 8079) then
+	if (arg_156_0._status == BattleData.CardStatus.board or arg_156_0._status == BattleData.CardStatus.grave or arg_156_1 == Data.SkillMode.bcs2gl or arg_156_1 == Data.SkillMode.bcs2_ or arg_156_1 == Data.SkillMode.sacrifice) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldTrap, true) and arg_156_1 ~= Data.SkillMode.cost and arg_156_0._owner:hasBattleCardsBySkillFast("S", 8079) and arg_156_0:isNature(Data._skillInfo[8079]._refCards[1]) then
 		return false
 	end
 
-	if (arg_156_0._status == BattleData.CardStatus.board or arg_156_0._status == BattleData.CardStatus.grave or arg_156_1 == Data.SkillMode.bcs2gl or arg_156_1 == Data.SkillMode.bcs2_ or arg_156_1 == Data.SkillMode.sacrifice) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldTrap) and arg_156_1 ~= Data.SkillMode.cost and arg_156_0:isNature(Data._skillInfo[8079]._refCards[1]) and arg_156_0._owner._opponent:hasBattleCardsBySkillFast("S", 8079) then
+	if (arg_156_0._status == BattleData.CardStatus.board or arg_156_0._status == BattleData.CardStatus.grave or arg_156_1 == Data.SkillMode.bcs2gl or arg_156_1 == Data.SkillMode.bcs2_ or arg_156_1 == Data.SkillMode.sacrifice) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldTrap) and arg_156_1 ~= Data.SkillMode.cost and arg_156_0._owner._opponent:hasBattleCardsBySkillFast("S", 8079) and arg_156_0:isNature(Data._skillInfo[8079]._refCards[1]) then
 		return false
 	end
 
-	if (arg_156_0._status == BattleData.CardStatus.board or arg_156_0._status == BattleData.CardStatus.grave or arg_156_1 == Data.SkillMode.bcs2gl or arg_156_1 == Data.SkillMode.bcs2_ or arg_156_1 == Data.SkillMode.sacrifice) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldTrap, true) and arg_156_1 ~= Data.SkillMode.cost and arg_156_0:isNature(Data._skillInfo[8120]._refCards[1]) and arg_156_0._owner:hasBattleCardsBySkillFast("S", 8120) then
+	if (arg_156_0._status == BattleData.CardStatus.board or arg_156_0._status == BattleData.CardStatus.grave or arg_156_1 == Data.SkillMode.bcs2gl or arg_156_1 == Data.SkillMode.bcs2_ or arg_156_1 == Data.SkillMode.sacrifice) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldTrap, true) and arg_156_1 ~= Data.SkillMode.cost and arg_156_0._owner:hasBattleCardsBySkillFast("S", 8120) and arg_156_0:isNature(Data._skillInfo[8120]._refCards[1]) then
 		return false
 	end
 
-	if (arg_156_0._status == BattleData.CardStatus.board or arg_156_0._status == BattleData.CardStatus.grave or arg_156_1 == Data.SkillMode.bcs2gl or arg_156_1 == Data.SkillMode.bcs2_ or arg_156_1 == Data.SkillMode.sacrifice) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldTrap) and arg_156_1 ~= Data.SkillMode.cost and arg_156_0:isNature(Data._skillInfo[8120]._refCards[1]) and arg_156_0._owner._opponent:hasBattleCardsBySkillFast("S", 8120) then
+	if (arg_156_0._status == BattleData.CardStatus.board or arg_156_0._status == BattleData.CardStatus.grave or arg_156_1 == Data.SkillMode.bcs2gl or arg_156_1 == Data.SkillMode.bcs2_ or arg_156_1 == Data.SkillMode.sacrifice) and not arg_156_0:hasShieldInType(BattleData.PositiveType.shieldTrap) and arg_156_1 ~= Data.SkillMode.cost and arg_156_0._owner._opponent:hasBattleCardsBySkillFast("S", 8120) and arg_156_0:isNature(Data._skillInfo[8120]._refCards[1]) then
 		return false
 	end
 
@@ -7052,7 +6986,7 @@ function var_0_0.disableUnderSkillByOppoType(arg_161_0, arg_161_1, arg_161_2, ar
 			isOppo = true
 		end
 
-		local isThacSamAwakened = (arg_161_0:isInfoId(40730) or arg_161_0:hasSkillFast(14719)) and (arg_161_0._tsAwakened or arg_161_0:hasSkillFast(12002) or (arg_161_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
+		local isThacSamAwakened = (arg_161_0._infoId == 40730) and (arg_161_0._tsAwakened or (arg_161_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
 		local ignoreDefendOk = (var_161_3 == nil or var_161_3._isIgnoreDefend ~= 7 and var_161_3._isIgnoreDefend ~= 8 and var_161_3._isIgnoreDefend ~= 10 and var_161_3._isIgnoreDefend ~= 11)
 		if isThacSamAwakened then
 			ignoreDefendOk = true
@@ -7087,7 +7021,7 @@ function var_0_0.disableUnderSkillByOppoTypeAndCheckShield(arg_162_0, arg_162_1,
 			isOppo = true
 		end
 
-		local isThacSamAwakened = (arg_162_0:isInfoId(40730) or arg_162_0:hasSkillFast(14719)) and (arg_162_0._tsAwakened or arg_162_0:hasSkillFast(12002) or (arg_162_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
+		local isThacSamAwakened = (arg_162_0._infoId == 40730) and (arg_162_0._tsAwakened or (arg_162_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0)
 		local ignoreDefendOk = (var_162_4 == nil or var_162_4._isIgnoreDefend ~= 7 and var_162_4._isIgnoreDefend ~= 8 and var_162_4._isIgnoreDefend ~= 10 and var_162_4._isIgnoreDefend ~= 11)
 		if isThacSamAwakened then
 			ignoreDefendOk = true
@@ -7877,7 +7811,7 @@ function var_0_0.getLeftNeighbor(arg_212_0)
 end
 
 function var_0_0.canAction(arg_213_0)
-	if (arg_213_0:isInfoId(40730) or arg_213_0:hasSkillFast(14719)) and not arg_213_0._tsAwakened then
+	if arg_213_0._infoId == 40730 and not arg_213_0._tsAwakened then
 		return false
 	end
 
@@ -8022,7 +7956,7 @@ function var_0_0.canAttack(arg_215_0, arg_215_1)
 		end
 	end
 
-	if (arg_215_0:isInfoId(40730) or arg_215_0:hasSkillFast(14719)) and not arg_215_0._tsAwakened then
+	if arg_215_0._infoId == 40730 and not arg_215_0._tsAwakened then
 		return false
 	end
 
@@ -9119,6 +9053,76 @@ function var_0_0.setDieStat(arg_264_0)
 	end
 
 	-- Đỗ kiến - tiên vệ (12327 / 14718): Khi bị phá hủy trong chiến đấu và đưa vào Mộ: đối phương bỏ 1 bài trên tay
+	-- Zombified piglin cam kiem (12342 / 14806): Khi bi pha huy trong chien dau -> trieu hoi toi da 3 <Zombified piglin cam riu> (12343) tu bo bai / bai tren tay
+	if (arg_264_0._infoId == 12342 or arg_264_0:hasSkillFast(14806)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and arg_264_0._dieByAttack then
+		local owner = arg_264_0._owner
+		if owner and not owner._isSummonDisabled and not owner._isSpecialSummonDisabled then
+			local count = 0
+			local candidates = {}
+			for _, c in ipairs(owner._pileCards) do
+				if c._infoId == 12343 or c:isInfoId(12343) then
+					table.insert(candidates, { card = c, sVal = BattleData.CardStatusVal.p2b_special })
+				end
+			end
+			for _, c in ipairs(owner._handCards) do
+				if c._infoId == 12343 or c:isInfoId(12343) then
+					table.insert(candidates, { card = c, sVal = BattleData.CardStatusVal.h2b_special })
+				end
+			end
+			for _, item in ipairs(candidates) do
+				if count >= 3 then break end
+				local emptyPos = owner:getEmptyBoardPos(item.card)
+				if emptyPos ~= nil then
+					item.card._saved._pos = emptyPos
+					owner:setCardStatus(item.card, BattleData.CardStatus.board, 12342, 14806, Data.SkillMode.magic, item.sVal)
+					count = count + 1
+				end
+			end
+		end
+	end
+
+	-- Zombified piglin cam riu (12343 / 14808): Khi bi pha huy trong chien dau -> trieu hoi toi da 3 <Zombified piglin cam kiem> (12342) tu bo bai / bai tren tay
+	if (arg_264_0._infoId == 12343 or arg_264_0:hasSkillFast(14808)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and arg_264_0._dieByAttack then
+		local owner = arg_264_0._owner
+		if owner and not owner._isSummonDisabled and not owner._isSpecialSummonDisabled then
+			local count = 0
+			local candidates = {}
+			for _, c in ipairs(owner._pileCards) do
+				if c._infoId == 12342 or c:isInfoId(12342) then
+					table.insert(candidates, { card = c, sVal = BattleData.CardStatusVal.p2b_special })
+				end
+			end
+			for _, c in ipairs(owner._handCards) do
+				if c._infoId == 12342 or c:isInfoId(12342) then
+					table.insert(candidates, { card = c, sVal = BattleData.CardStatusVal.h2b_special })
+				end
+			end
+			for _, item in ipairs(candidates) do
+				if count >= 3 then break end
+				local emptyPos = owner:getEmptyBoardPos(item.card)
+				if emptyPos ~= nil then
+					item.card._saved._pos = emptyPos
+					owner:setCardStatus(item.card, BattleData.CardStatus.board, 12343, 14808, Data.SkillMode.magic, item.sVal)
+					count = count + 1
+				end
+			end
+		end
+	end
+
+	-- Husk (12344 / 14810): Khi bi pha huy (chien dau hoac hieu ung), doi phuong bo ngau nhien 1 bai tren tay vao mo
+	if (arg_264_0._infoId == 12344 or arg_264_0:hasSkillFast(14810)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and (arg_264_0._dieByAttack or arg_264_0._dieByEffect) then
+		local oppo = arg_264_0._owner and arg_264_0._owner._opponent
+		if oppo then
+			local oppoHand = oppo:getBattleCards("H")
+			if #oppoHand > 0 then
+				local targetCard = oppo:randomOne(oppoHand)
+				if targetCard then
+					oppo:setCardStatus(targetCard, BattleData.CardStatus.grave, 12344, 14810, Data.SkillMode.magic, BattleData.CardStatusVal.h2g_drop)
+				end
+			end
+		end
+	end
+
 	if (arg_264_0._infoId == 12327 or arg_264_0:hasSkillFast(14718)) and arg_264_0._dieFromStatus == BattleData.CardStatus.board and arg_264_0._dieByAttack then
 		local oppo = arg_264_0._owner and arg_264_0._owner._opponent
 		if oppo then
@@ -9940,16 +9944,15 @@ function var_0_0.getSkillLevel(arg_281_0, arg_281_1)
 end
 
 function var_0_0.getAtk(arg_282_0)
-	if arg_282_0._witherDebuffed then
+	if arg_282_0._atk ~= nil then
 		return arg_282_0._atk
 	end
 	local owner = arg_282_0._owner
-	local oppo = owner and owner._opponent
-	local hasWither = (owner and owner._hasWitherOnBoard) or (oppo and oppo._hasWitherOnBoard)
-	if hasWither and arg_282_0._status == BattleData.CardStatus.board then
-		local isUndead = arg_282_0:isCategory(17)
+	local baseAtk = arg_282_0._maxAtk or 0
+	if B.isWitherOnField(owner) and arg_282_0._status == BattleData.CardStatus.board and (arg_282_0:isMonster() or arg_282_0:isMonsterRare() or arg_282_0._type == Data.CardType.monster) then
+		local isUndead = arg_282_0:isCategory(17) or (arg_282_0._info and arg_282_0._info._category == 17)
 		if not isUndead then
-			return math.floor((arg_282_0._atk or arg_282_0._maxAtk or 0) / 2)
+			return math.floor(baseAtk / 2)
 		end
 	end
 	if (arg_282_0._infoId == 40736 or arg_282_0:hasSkillFast(14750)) and arg_282_0._status == BattleData.CardStatus.board then
@@ -9967,7 +9970,7 @@ function var_0_0.getAtk(arg_282_0)
 		local bonus = marks * rate
 		return 2000 + bonus
 	end
-	if (arg_282_0._infoId == 40730 or arg_282_0:hasSkillFast(14719)) and arg_282_0._status == BattleData.CardStatus.board then
+	if arg_282_0._infoId == 40730 and arg_282_0._status == BattleData.CardStatus.board then
 		if arg_282_0._atk ~= nil then
 			return arg_282_0._atk
 		end
@@ -9990,7 +9993,7 @@ function var_0_0.getHp(arg_283_0)
 		local bonus = marks * rate
 		return 2800 + bonus
 	end
-	if (arg_283_0._infoId == 40730 or arg_283_0:hasSkillFast(14719)) and arg_283_0._status == BattleData.CardStatus.board then
+	if arg_283_0._infoId == 40730 and arg_283_0._status == BattleData.CardStatus.board then
 		if arg_283_0._hp ~= nil then
 			return arg_283_0._hp
 		end

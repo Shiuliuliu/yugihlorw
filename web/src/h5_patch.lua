@@ -854,10 +854,460 @@ local function patchData()
 				Data._monsterInfo[12338]._briefNameSid = 57331
 				Data._monsterInfo[12338]._skillId = { 12007, 14794, 14795 }
 			end
+			-- Ender Dragon (12339)
+			if Data._monsterInfo and not Data._monsterInfo[12339] then
+				Data._monsterInfo[12339] = {
+					_atk = { 4500 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57343,
+					_category = 2,
+					_cost = 0,
+					_descSid = 57342,
+					_guideSid = 0,
+					_hp = { 4500 },
+					_id = 12339,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57341,
+					_nature = 2,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "enderdragon",
+					_quality = 5,
+					_recruitable = 1,
+					_skillId = { 3043, 14798, 14799 },
+					_skin = { 0 },
+					_star = 10
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12339] then
+				Data._monsterInfo[12339]._quality = 5
+				Data._monsterInfo[12339]._keyword = 304
+				Data._monsterInfo[12339]._nameSid = 57341
+				Data._monsterInfo[12339]._descSid = 57342
+				Data._monsterInfo[12339]._briefNameSid = 57343
+				Data._monsterInfo[12339]._skillId = { 3043, 14798, 14799 }
+			end
+
+			-- Trung Rong Ender (12340)
+			if Data._monsterInfo and not Data._monsterInfo[12340] then
+				Data._monsterInfo[12340] = {
+					_atk = { 0 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57369,
+					_category = 2,
+					_cost = 0,
+					_descSid = 57368,
+					_guideSid = 0,
+					_hp = { 0 },
+					_id = 12340,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57367,
+					_nature = 2,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "trungrongender",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 12006, 14804 },
+					_skin = { 0 },
+					_star = 1
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12340] then
+				Data._monsterInfo[12340]._quality = 4
+				Data._monsterInfo[12340]._keyword = 304
+				Data._monsterInfo[12340]._nameSid = 57367
+				Data._monsterInfo[12340]._descSid = 57368
+				Data._monsterInfo[12340]._briefNameSid = 57369
+				Data._monsterInfo[12340]._skillId = { 12006, 14804 }
+			end
+
+			-- Command Block (21148)
+			if Data._magicInfo and not Data._magicInfo[21148] then
+				Data._magicInfo[21148] = {
+					_available = 1,
+					_briefNameSid = 57350,
+					_descSid = 57349,
+					_guideSid = 0,
+					_id = 21148,
+					_isHide = 0,
+					_isSummon = 0,
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57348,
+					_option = 1,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "commandblock",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14800 },
+					_targetType = 0,
+					_type = 11
+				}
+			end
+			if Data._magicInfo and Data._magicInfo[21148] then
+				Data._magicInfo[21148]._quality = 4
+				Data._magicInfo[21148]._keyword = 304
+				Data._magicInfo[21148]._nameSid = 57348
+				Data._magicInfo[21148]._descSid = 57349
+				Data._magicInfo[21148]._briefNameSid = 57350
+				Data._magicInfo[21148]._skillId = { 14800 }
+			end
+
+			-- Tao vang duoc phu phep (21149)
+			if Data._magicInfo and not Data._magicInfo[21149] then
+				Data._magicInfo[21149] = {
+					_available = 1,
+					_briefNameSid = 57362,
+					_descSid = 57361,
+					_guideSid = 0,
+					_id = 21149,
+					_isHide = 0,
+					_isSummon = 0,
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57360,
+					_option = 1,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "taovang",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14803, 14797, 9232 },
+					_targetType = 0,
+					_type = 11
+				}
+			end
+			if Data._magicInfo and Data._magicInfo[21149] then
+				Data._magicInfo[21149]._quality = 4
+				Data._magicInfo[21149]._keyword = 304
+				Data._magicInfo[21149]._nameSid = 57360
+				Data._magicInfo[21149]._descSid = 57361
+				Data._magicInfo[21149]._briefNameSid = 57362
+				Data._magicInfo[21149]._skillId = { 14803, 14797, 9232 }
+			end
+
+			-- Totem (30596)
+			if Data._trapInfo and not Data._trapInfo[30596] then
+				Data._trapInfo[30596] = {
+					_available = 1,
+					_briefNameSid = 57355,
+					_descSid = 57354,
+					_guideSid = 0,
+					_id = 30596,
+					_isHide = 0,
+					_isSummon = 0,
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57353,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "totem",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14801, 14802 },
+					_targetType = 0,
+					_type = 13
+				}
+			end
+			if Data._trapInfo and Data._trapInfo[30596] then
+				Data._trapInfo[30596]._quality = 4
+				Data._trapInfo[30596]._keyword = 304
+				Data._trapInfo[30596]._nameSid = 57353
+				Data._trapInfo[30596]._descSid = 57354
+				Data._trapInfo[30596]._briefNameSid = 57355
+				Data._trapInfo[30596]._skillId = { 14801, 14802 }
+			end
+
+			-- Skills 14797..14804
+			if Data._skillInfo then
+				Data._skillInfo[14797] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57366, _effectVal = { 0 }, _id = 14797, _isIgnoreDefend = 0, _modes = { 91, 41 }, _nameSid = 57365, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 400 } }
+				Data._skillInfo[14798] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57345, _effectVal = { 0 }, _id = 14798, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 57344, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14799] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57347, _effectVal = { 0 }, _id = 14799, _isIgnoreDefend = 1, _modes = { 24 }, _nameSid = 57346, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14800] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57352, _effectVal = { 0 }, _id = 14800, _isIgnoreDefend = 0, _modes = { 61 }, _nameSid = 57351, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
+				Data._skillInfo[14801] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57357, _effectVal = { 0 }, _id = 14801, _isIgnoreDefend = 1, _modes = { 24 }, _nameSid = 57356, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14802] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57359, _effectVal = { 0 }, _id = 14802, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 57358, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1000 } }
+				Data._skillInfo[14803] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57364, _effectVal = { 0 }, _id = 14803, _isIgnoreDefend = 0, _modes = { 61 }, _nameSid = 57363, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 3000 } }
+				Data._skillInfo[14804] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57371, _effectVal = { 0 }, _id = 14804, _isIgnoreDefend = 1, _modes = { 31 }, _nameSid = 57370, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 1, _quality = 4, _refCards = { 12339 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+
 
 			-- Skill 14793
+			-- Drowned (12341)
+			if Data._monsterInfo and not Data._monsterInfo[12341] then
+				Data._monsterInfo[12341] = {
+					_atk = { 1800 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57372,
+					_category = 17,
+					_cost = 0,
+					_descSid = 57373,
+					_guideSid = 0,
+					_hp = { 1200 },
+					_id = 12341,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57372,
+					_nature = 5,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "drowned",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14805, 9807 },
+					_skin = { 0 },
+					_star = 4
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12341] then
+				Data._monsterInfo[12341]._quality = 4
+				Data._monsterInfo[12341]._keyword = 304
+				Data._monsterInfo[12341]._nameSid = 57372
+				Data._monsterInfo[12341]._descSid = 57373
+				Data._monsterInfo[12341]._briefNameSid = 57372
+				Data._monsterInfo[12341]._skillId = { 14805, 9807 }
+			end
+
+			-- Zombified piglin cam kiem (12342)
+			if Data._monsterInfo and not Data._monsterInfo[12342] then
+				Data._monsterInfo[12342] = {
+					_atk = { 1500 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57376,
+					_category = 17,
+					_cost = 0,
+					_descSid = 57377,
+					_guideSid = 0,
+					_hp = { 1200 },
+					_id = 12342,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57376,
+					_nature = 2,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "zombifiedpiglinkiem",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14806, 14807 },
+					_skin = { 0 },
+					_star = 3
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12342] then
+				Data._monsterInfo[12342]._quality = 4
+				Data._monsterInfo[12342]._keyword = 304
+				Data._monsterInfo[12342]._nameSid = 57376
+				Data._monsterInfo[12342]._descSid = 57377
+				Data._monsterInfo[12342]._briefNameSid = 57376
+				Data._monsterInfo[12342]._skillId = { 14806, 14807 }
+			end
+
+			-- Zombified piglin cam riu (12343)
+			if Data._monsterInfo and not Data._monsterInfo[12343] then
+				Data._monsterInfo[12343] = {
+					_atk = { 1800 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57382,
+					_category = 17,
+					_cost = 0,
+					_descSid = 57383,
+					_guideSid = 0,
+					_hp = { 1500 },
+					_id = 12343,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57382,
+					_nature = 2,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "zombifiedpiglinriu",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14808, 14809 },
+					_skin = { 0 },
+					_star = 3
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12343] then
+				Data._monsterInfo[12343]._quality = 4
+				Data._monsterInfo[12343]._keyword = 304
+				Data._monsterInfo[12343]._nameSid = 57382
+				Data._monsterInfo[12343]._descSid = 57383
+				Data._monsterInfo[12343]._briefNameSid = 57382
+				Data._monsterInfo[12343]._skillId = { 14808, 14809 }
+			end
+
+			-- Husk (12344)
+			if Data._monsterInfo and not Data._monsterInfo[12344] then
+				Data._monsterInfo[12344] = {
+					_atk = { 1800 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57388,
+					_category = 17,
+					_cost = 0,
+					_descSid = 57389,
+					_guideSid = 0,
+					_hp = { 2000 },
+					_id = 12344,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57388,
+					_nature = 3,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "husk",
+					_quality = 3,
+					_recruitable = 1,
+					_skillId = { 14810, 14811 },
+					_skin = { 0 },
+					_star = 4
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12344] then
+				Data._monsterInfo[12344]._quality = 3
+				Data._monsterInfo[12344]._keyword = 304
+				Data._monsterInfo[12344]._nameSid = 57388
+				Data._monsterInfo[12344]._descSid = 57389
+				Data._monsterInfo[12344]._briefNameSid = 57388
+				Data._monsterInfo[12344]._skillId = { 14810, 14811 }
+			end
+
+			-- Warden (12345)
+			if Data._monsterInfo and not Data._monsterInfo[12345] then
+				Data._monsterInfo[12345] = {
+					_atk = { 3000 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57400,
+					_category = 4,
+					_cost = 0,
+					_descSid = 57401,
+					_guideSid = 0,
+					_hp = { 3000 },
+					_id = 12345,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57400,
+					_nature = 2,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "warden",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14814, 6045, 14815 },
+					_skin = { 0 },
+					_star = 8
+				}
+			end
+			if Data._monsterInfo and Data._monsterInfo[12345] then
+				Data._monsterInfo[12345]._quality = 4
+				Data._monsterInfo[12345]._keyword = 304
+				Data._monsterInfo[12345]._nameSid = 57400
+				Data._monsterInfo[12345]._descSid = 57401
+				Data._monsterInfo[12345]._briefNameSid = 57400
+				Data._monsterInfo[12345]._skillId = { 14814, 6045, 14815 }
+			end
+
+			-- Cua dia nguc (30597)
+			if Data._trapInfo and not Data._trapInfo[30597] then
+				Data._trapInfo[30597] = {
+					_available = 1,
+					_briefNameSid = 57394,
+					_descSid = 57395,
+					_guideSid = 0,
+					_id = 30597,
+					_isHide = 0,
+					_isSummon = 0,
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57394,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "cuadianguc",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14812, 14813 },
+					_targetType = 0,
+					_type = 13
+				}
+			end
+			if Data._trapInfo and Data._trapInfo[30597] then
+				Data._trapInfo[30597]._quality = 4
+				Data._trapInfo[30597]._keyword = 304
+				Data._trapInfo[30597]._nameSid = 57394
+				Data._trapInfo[30597]._descSid = 57395
+				Data._trapInfo[30597]._briefNameSid = 57394
+				Data._trapInfo[30597]._skillId = { 14812, 14813 }
+			end
+
+			-- Skills 14805..14815
+			if Data._skillInfo then
+				Data._skillInfo[14805] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57375, _effectVal = { 0 }, _id = 14805, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 57374, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14806] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57379, _effectVal = { 0 }, _id = 14806, _isIgnoreDefend = 0, _modes = { 23 }, _nameSid = 57378, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12343 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 3 } }
+				Data._skillInfo[14807] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57381, _effectVal = { 0 }, _id = 14807, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57380, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12343 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 3 } }
+				Data._skillInfo[14808] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57385, _effectVal = { 0 }, _id = 14808, _isIgnoreDefend = 0, _modes = { 23 }, _nameSid = 57384, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12342 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 3 } }
+				Data._skillInfo[14809] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57387, _effectVal = { 0 }, _id = 14809, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57386, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12342 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 3 } }
+				Data._skillInfo[14810] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57391, _effectVal = { 0 }, _id = 14810, _isIgnoreDefend = 0, _modes = { 23, 24 }, _nameSid = 57390, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
+				Data._skillInfo[14811] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57393, _effectVal = { 0 }, _id = 14811, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 57392, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14812] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57397, _effectVal = { 0 }, _id = 14812, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57396, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 5, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
+				Data._skillInfo[14813] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57399, _effectVal = { 0 }, _id = 14813, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 57398, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 2002 }, _removeMode = { 0 }, _targetType = 0, _val = { 500 } }
+				Data._skillInfo[14814] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57403, _effectVal = { 0 }, _id = 14814, _isIgnoreDefend = 0, _modes = { 34, 101, 104 }, _nameSid = 57402, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14815] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57405, _effectVal = { 0 }, _id = 14815, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 57404, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 304 } }
+			end
+
 			if Data._skillInfo and not Data._skillInfo[14793] then
-				Data._skillInfo[14793] = { _against = { 0 }, _avoidP2B = 0, _count = 3, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57328, _effectVal = { 0 }, _id = 14793, _isIgnoreDefend = 1, _modes = { 33 }, _nameSid = 57327, _needExtraGem = 0, _needNoGem = 0, _option = { 3 }, _priority = 1, _quality = 3, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14793] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57328, _effectVal = { 0 }, _id = 14793, _isIgnoreDefend = 1, _modes = { 33 }, _nameSid = 57327, _needExtraGem = 0, _needNoGem = 0, _option = { 3 }, _priority = 1, _quality = 3, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 			end
 			-- Skill 14794
 			if Data._skillInfo and not Data._skillInfo[14794] then
@@ -8790,6 +9240,12 @@ local function patchCardSprite(CardSprite)
 		end
 		if self._statusEfc and self._statusEfc[markName] ~= nil then
 			CardSprite.efcXYZMarkEnd(self, markName)
+		end
+		if count <= 0 then
+			self._xyzMaterialCount = 0
+			self._statusEfc = self._statusEfc or {}
+			self._statusEfc[markName] = false
+			return
 		end
 		if count > 0 and (not self._statusEfc or self._statusEfc[markName] == nil) then
 			self._xyzMaterialCount = count

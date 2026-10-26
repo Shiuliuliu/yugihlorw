@@ -57338,3 +57338,68 @@ Wither
 Wither
 Wither - Héo Rũ Tử Khí
 Khi lá bài này trên sân, ngoại trừ quái tộc "Xác Sống", tất cả quái trên sân 2 bên bị giảm 1 nửa ATK (xuyên qua tường chắn quái).
+Ender Dragon
+[Rồng / Hiệu Ứng]\n+ Nguyên tố tương tác (3043): Miễn nhiễm quái thú, phép và bẫy.\n+ Trong Mộ phe ta có từ 5 quái có từ khóa "minecraft" trở lên có thể triệu hồi đặc biệt lá bài này từ tay.\n+ Khi lá bài này bị phá hủy, phe ta tăng LP bằng tổng tấn công quái thú trên sân đối phương.
+Ender Dragon
+Ender Dragon - Giáng Lâm Hư Không
+Trong Mộ phe ta có từ 5 quái có từ khóa "minecraft" trở lên có thể triệu hồi đặc biệt lá bài này từ tay.
+Ender Dragon - Hồn Rồng Bất Diệt
+Khi lá bài này bị phá hủy, phe ta tăng LP bằng tổng tấn công quái thú trên sân đối phương.
+Command Block
+[Phép Thường]\nLấy 1 lá bài có từ khóa "minecraft" từ Mộ hoặc Bộ bài lên tay.
+Command Block
+Command Block - Lệnh Triệu Hồi
+Lấy 1 lá bài có từ khóa "minecraft" từ Mộ hoặc Bộ bài lên tay.
+Totem
+[Bẫy Thường]\n+ 1 lượt 1 lần, khi quái có từ khóa "minecraft" trên sân phe ta bị phá hủy sẽ kích hoạt, bỏ qua 1 lần bị phá hủy.\n+ 1 lượt 1 lần, khi lá bài này trên tay, quái thú đối phương tấn công trực tiếp và điểm tấn công của quái đối phương lớn hơn hoặc bằng điểm LP phe ta sẽ kích hoạt: Đưa lá bài này vào Mộ, phe ta nhận 1 tầng "Khiên Sinh Mệnh" trong lượt này và 1000 LP.
+Totem
+Totem - Bất Tử Hộ Mệnh
+1 lượt 1 lần, khi quái có từ khóa "minecraft" trên sân phe ta bị phá hủy sẽ kích hoạt, bỏ qua 1 lần bị phá hủy.
+Totem - Thần Tượng Trường Sinh
+1 lượt 1 lần, khi lá bài này trên tay, quái thú đối phương tấn công trực tiếp và điểm tấn công của quái đối phương lớn hơn hoặc bằng điểm LP phe ta sẽ kích hoạt: Đưa lá bài này vào Mộ, phe ta nhận 1 tầng "Khiên Sinh Mệnh" trong lượt này và 1000 LP.
+Táo vàng được phù phép
+[Phép Thường]\n+ Phe ta nhận 3000 LP, nếu LP phe ta thấp hơn 8000 sẽ cộng thêm LP để LP bằng 8000.\n+ Khi bài này trong Mộ, mỗi lượt tăng 400 LP cho phe ta (14797).\n+ Nguồn thanh tẩy (9232): Khi chịu sát thương hiệu ứng hoặc sát thương trực tiếp, đưa lá bài này từ tay vào Mộ để vô hiệu hóa và hồi LP tương ứng.
+Táo vàng được phù phép
+Táo vàng - Hồi Phục Thần Thánh
+Phe ta nhận 3000 LP, nếu LP phe ta thấp hơn 8000 sẽ cộng thêm LP để LP bằng 8000.
+Táo vàng - Tinh Chất Hoàng Kim
+Khi lá bài này trong Mộ, ở giai đoạn chuẩn bị mỗi hiệp, phe ta hồi phục 400 LP.
+Trứng rồng ender
+[Rồng / Hiệu Ứng]\n+ Khiên chắn phá hủy (12006): Không thể bị tiêu diệt trong chiến đấu hoặc bởi hiệu ứng.\n+ Kĩ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ, chọn triệu hồi đặc biệt 1 <Ender Dragon> từ trong Bộ bài, Bài trên tay hoặc Mộ bài lên sân. Sau đó trong lượt này phe ta chỉ có thể triệu hồi đặc biệt quái có từ khóa "minecraft".
+Trứng rồng ender
+Trứng rồng - Khơi Dậy Hắc Long
+1 lượt 1 lần, đưa lá bài này vào Mộ: Chọn triệu hồi đặc biệt 1 <Ender Dragon> từ trong Bộ bài, Bài trên tay hoặc Mộ bài lên sân. Sau đó lượt này phe ta chỉ có thể triệu hồi đặc biệt quái có từ khóa "minecraft".
+Drowned
+[Xác sống / Hiệu ứng]\n+ Kĩ năng chủ động mộ (14805): 1 lượt 1 lần, chọn 1 quái tộc xác sống trên sân phe ta đưa vào mộ, triệu hồi đặc biệt bản thân lên sân.\n+ (9807): Quái thú này không thể bị phá hủy trong chiến đấu bởi quái thú không phải Thủy.
+Drowned - Thủy Triều Trỗi Dậy
+1 lượt 1 lần, chọn 1 quái tộc xác sống trên sân phe ta đưa vào mộ: Triệu hồi đặc biệt lá bài này từ Mộ lên sân.
+Zombified piglin cầm kiếm
+[Xác sống - Thú / Hiệu ứng]\n+ Khi bị phá hủy trong chiến đấu (14806): Triệu hồi tối đa 3 quái <Zombified piglin cầm rìu> trong bộ bài/bài trên tay lên sân.\n+ Kĩ năng chủ động (14807): Đưa lá bài này vào mộ, triệu hồi tối đa 3 quái <Zombified piglin cầm rìu> trong bộ bài/bài trên tay lên sân.
+Zombified piglin kiếm - Báo Thù Bầy Đàn
+Khi bị phá hủy trong chiến đấu, triệu hồi tối đa 3 quái <Zombified piglin cầm rìu> trong bộ bài hoặc bài trên tay lên sân.
+Zombified piglin kiếm - Lời Gọi Viện Binh
+Đưa lá bài này vào mộ: Triệu hồi tối đa 3 quái <Zombified piglin cầm rìu> trong bộ bài hoặc bài trên tay lên sân.
+Zombified piglin cầm rìu
+[Xác sống - Thú / Hiệu ứng]\n+ Khi bị phá hủy trong chiến đấu (14808): Triệu hồi tối đa 3 quái <Zombified piglin cầm kiếm> trong bộ bài/bài trên tay lên sân.\n+ Kĩ năng chủ động (14809): Đưa lá bài này vào mộ, triệu hồi tối đa 3 quái <Zombified piglin cầm kiếm> trong bộ bài/bài trên tay lên sân.
+Zombified piglin rìu - Báo Thù Bầy Đàn
+Khi bị phá hủy trong chiến đấu, triệu hồi tối đa 3 quái <Zombified piglin cầm kiếm> trong bộ bài hoặc bài trên tay lên sân.
+Zombified piglin rìu - Lời Gọi Viện Binh
+Đưa lá bài này vào mộ: Triệu hồi tối đa 3 quái <Zombified piglin cầm kiếm> trong bộ bài hoặc bài trên tay lên sân.
+Husk
+[Xác sống / Hiệu ứng]\n+ Khi bị phá hủy (14810): Đối phương bỏ ngẫu nhiên 1 bài trên tay vào mộ.\n+ Kĩ năng chủ động mộ (14811): 1 lượt 1 lần, triệu hồi đặc biệt bản thân lên sân trong thế thủ (không thể thay đổi tư thế trong lượt này).
+Husk - Lời Nguyền Sa Mạc
+Khi bị phá hủy, đối phương bỏ ngẫu nhiên 1 lá bài trên tay vào mộ.
+Husk - Hoang Mạc Tái Sinh
+1 lượt 1 lần, triệu hồi đặc biệt bản thân từ Mộ lên sân trong thế thủ (không thể thay đổi tư thế trong lượt này).
+Cửa địa ngục
+[Bẫy Vĩnh Cửu]\n+ Kĩ năng chủ động (14812): 1 lượt 1 lần, chọn 1 quái tộc xác sống có từ khóa "minecraft" trong bộ bài phe ta, thêm vào tay.\n+ Hào quang (14813): Khi lá bài này trên sân, quái tộc xác sống trên sân phe ta nhận 500 ATK và nhận hiệu ứng [2002 Tín Ngưỡng].
+Cửa địa ngục - Triệu Hồi Minh Giới
+1 lượt 1 lần, chọn 1 quái tộc xác sống có từ khóa "minecraft" trong bộ bài phe ta, thêm vào tay.
+Cửa địa ngục - Hào Quang Địa Ngục
+Khi lá bài này trên sân, quái tộc xác sống trên sân phe ta nhận 500 ATK và nhận hiệu ứng [2002 Tín Ngưỡng].
+Warden
+[Quỷ / Hiệu ứng]\n+ 1 lượt 1 lần, khi trên tay, đối phương triệu hồi quái lần thứ 3 trong lượt sẽ kích hoạt: Triệu hồi đặc biệt bài này lên sân, đưa quái đối phương vừa triệu hồi về lại tay đối phương.\n+ Khắc Chế (6045): Khi có mặt; không thể tấn công trực tiếp điểm gốc.\n+ Hào quang (14815): Khi lá bài này trên sân, phe ta chỉ có thể triệu hồi đặc biệt quái có từ khóa "minecraft".
+Warden - Tiếng Gầm Vực Sâu
+1 lượt 1 lần, khi lá bài này nằm trên tay, đối phương triệu hồi quái 3 lần sẽ kích hoạt: Triệu hồi đặc biệt bài này lên sân, đưa quái đối phương vừa triệu hồi về lại tay đối phương.
+Warden - Lãnh Địa Tăm Tối
+Khi lá bài này trên sân, phe ta chỉ có thể triệu hồi đặc biệt quái có từ khóa "minecraft".
