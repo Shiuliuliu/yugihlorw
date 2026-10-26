@@ -5085,6 +5085,7 @@ function patchClientData()
 		[221001] = "Gói bài Tru Tiên", [221010] = "Gói bài Tru Tiên", [221050] = "Gói bài Tru Tiên",
 		[222001] = "Gói bài Tiên Nghịch", [222010] = "Gói bài Tiên Nghịch", [222050] = "Gói bài Tiên Nghịch",
 		[223001] = "Gói bài Hiệp sĩ mặt nạ", [223010] = "Gói bài Hiệp sĩ mặt nạ", [223050] = "Gói bài Hiệp sĩ mặt nạ",
+		[224001] = "Gói bài Minecraft", [224010] = "Gói bài Minecraft", [224050] = "Gói bài Minecraft", [4] = "Gói bài Minecraft",
 	}
 	ClientData._packTitles = PACK_TITLES
 	ClientData.getPackTitle = function(boxId)
@@ -5220,6 +5221,7 @@ function patchClientData()
 		[221001] = "lottery_221001", [221010] = "lottery_221001", [221050] = "lottery_221001",
 		[222001] = "lottery_222001", [222010] = "lottery_222001", [222050] = "lottery_222001",
 		[223001] = "lottery_223001", [223010] = "lottery_223001", [223050] = "lottery_223001",
+		[224001] = "lottery_224001", [224010] = "lottery_224001", [224050] = "lottery_224001", [4] = "lottery_224001",
 	}
 	ClientData._packImages = PACK_IMAGES
 	ClientData.getPackImageName = function(boxId)
@@ -5575,6 +5577,42 @@ function patchClientData()
 			40734, 40735, 40737, 40738, 40740, 40741,
 			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
 			10001, 10004, 10006, 10018, 10020
+		},
+		[4] = {
+			12339, 40753,
+			12337, 12338, 12340, 12341, 12342, 12343, 12344, 12345, 12346, 12347,
+			21148, 21149, 21150,
+			30596, 30597,
+			40747, 40748, 40749, 40750, 40751, 40752, 40754,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[224001] = {
+			12339, 40753,
+			12337, 12338, 12340, 12341, 12342, 12343, 12344, 12345, 12346, 12347,
+			21148, 21149, 21150,
+			30596, 30597,
+			40747, 40748, 40749, 40750, 40751, 40752, 40754,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[224010] = {
+			12339, 40753,
+			12337, 12338, 12340, 12341, 12342, 12343, 12344, 12345, 12346, 12347,
+			21148, 21149, 21150,
+			30596, 30597,
+			40747, 40748, 40749, 40750, 40751, 40752, 40754,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[224050] = {
+			12339, 40753,
+			12337, 12338, 12340, 12341, 12342, 12343, 12344, 12345, 12346, 12347,
+			21148, 21149, 21150,
+			30596, 30597,
+			40747, 40748, 40749, 40750, 40751, 40752, 40754,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
 		}
 	}
 	ClientData._fairyHeroCardsMap = FAIRY_HERO_CARDS_MAP
@@ -5675,6 +5713,12 @@ function patchClientData()
 		registerPack(223050, kmrList, 1001, 28500)
 		registerPack(3, kmrList, 1001, 600)
 
+		local mcList = (FAIRY_HERO_CARDS_MAP and FAIRY_HERO_CARDS_MAP[4]) or {}
+		registerPack(224001, mcList, 1001, 600)
+		registerPack(224010, mcList, 1001, 6000)
+		registerPack(224050, mcList, 1001, 28500)
+		registerPack(4, mcList, 1001, 600)
+
 		if rawget(_G, "Data") and Data._magicInfo and Data._magicInfo[21134] then
 			Data._magicInfo[21134]._keyword = 301
 		end
@@ -5754,6 +5798,19 @@ function patchClientData()
 			end
 			for _, cid in ipairs({ 40734, 40735, 40737, 40738, 40739, 40740, 40741 }) do
 				setPack(Data._rareInfo, cid, { 223001 })
+			end
+
+			for _, cid in ipairs({ 12337, 12338, 12339, 12340, 12341, 12342, 12343, 12344, 12345, 12346, 12347 }) do
+				setPack(Data._monsterInfo, cid, { 224001 })
+			end
+			for _, cid in ipairs({ 21148, 21149, 21150 }) do
+				setPack(Data._magicInfo, cid, { 224001 })
+			end
+			for _, cid in ipairs({ 30596, 30597 }) do
+				setPack(Data._trapInfo, cid, { 224001 })
+			end
+			for _, cid in ipairs({ 40747, 40748, 40749, 40750, 40751, 40752, 40753, 40754 }) do
+				setPack(Data._rareInfo, cid, { 224001 })
 			end
 		end
 

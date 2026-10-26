@@ -339,6 +339,13 @@ function var_0_1.generateCardPackageData(arg_5_0)
 		if kmr1 then
 			table.insert(var_5_fairy_hero, var_5_9(kmr1, kmr10, kmr50))
 		end
+
+		local mc1 = getValidPackInfo(224001)
+		local mc10 = getValidPackInfo(224010) or mc1
+		local mc50 = getValidPackInfo(224050) or mc1
+		if mc1 then
+			table.insert(var_5_fairy_hero, var_5_9(mc1, mc10, mc50))
+		end
 	end
 
 	if arg_5_0:isGuideRarePackage() then

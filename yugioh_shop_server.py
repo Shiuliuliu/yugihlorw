@@ -372,9 +372,14 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
     is_tru_tien = (221001 <= pkg_num <= 221050) or (pkg_num == 1)
     is_tien_nghich = (222001 <= pkg_num <= 222050) or (pkg_num == 2)
     is_kmr = (223001 <= pkg_num <= 223050) or (pkg_num == 3)
-    is_fairy_hero = is_tru_tien or is_tien_nghich or is_kmr or (pkg_num in SERVER_FAIRY_HERO_CARDS_MAP)
+    is_minecraft = (224001 <= pkg_num <= 224050) or (pkg_num == 4)
+    is_fairy_hero = is_tru_tien or is_tien_nghich or is_kmr or is_minecraft or (pkg_num in SERVER_FAIRY_HERO_CARDS_MAP)
     if is_fairy_hero:
-        if is_kmr or (pkg_num in (3, 223001, 223010, 223050)):
+        if is_minecraft or (pkg_num in (4, 224001, 224010, 224050)):
+            series_name = "Minecraft"
+            gr_pool = [12339, 40753]
+            ur_pool = [12337, 12338, 12340, 12341, 12342, 12343, 12344, 12345, 12346, 12347, 21148, 21149, 21150, 30596, 30597, 40747, 40748, 40749, 40750, 40751, 40752, 40754]
+        elif is_kmr or (pkg_num in (3, 223001, 223010, 223050)):
             series_name = "Hiệp sĩ mặt nạ"
             gr_pool = [40739]
             ur_pool = [12331, 12332, 12333, 12334, 12335, 21143, 21144, 40734, 40735, 40737, 40738, 40740, 40741]
@@ -436,7 +441,7 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     if cquality == 'GR':
                         curr_gr_pity = 0
                         char_name = user_acc.get('character_name', '') if user_acc else ''
-                        if series_name == "Hiệp sĩ mặt nạ":
+                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft"):
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được {series_name} cấp GR [{cname}]!"
                         else:
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
@@ -508,7 +513,7 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     if cquality == 'GR':
                         curr_gr_pity = 0
                         char_name = user_acc.get('character_name', '') if user_acc else ''
-                        if series_name == "Hiệp sĩ mặt nạ":
+                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft"):
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được {series_name} cấp GR [{cname}]!"
                         else:
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
