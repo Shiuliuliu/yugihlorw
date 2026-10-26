@@ -4918,7 +4918,8 @@ end
 
 function var_0_0.getSkillDisplayInfo(arg_204_0, arg_204_1)
 	local var_204_0 = type(arg_204_0) == "table" and arg_204_0 or Data._skillInfo[arg_204_0]
-	local var_204_1 = string.format("img_icon_skill_%d", Data.getSkillType(var_204_0._id))
+	local skillType = (var_204_0 and var_204_0._id and Data.getSkillType(var_204_0._id)) or 3
+	local var_204_1 = string.format("img_icon_skill_%d", skillType)
 	local var_204_2 = var_0_0.getSkillName(var_204_0, arg_204_1 or 1)
 	local var_204_3 = ClientData.getSkillDesc(var_204_0._id, arg_204_1 or 1)
 

@@ -31,7 +31,7 @@ function var_0_0.init(arg_2_0, arg_2_1, arg_2_2, arg_2_3, arg_2_4, arg_2_5, arg_
 	end
 
 	local var_2_5 = ClientData.getSkillDesc(arg_2_1, arg_2_0._displayLevel)
-	local var_2_6 = cc.Sprite:createWithSpriteFrameName(string.format("img_icon_skill_%d", Data.getSkillType(var_2_3._id)))
+	local var_2_6 = cc.Sprite:createWithSpriteFrameName(string.format("img_icon_skill_%d", (Data.getSkillType(var_2_3._id) or 3)))
 
 	var_2_6:setScale(0.8)
 
