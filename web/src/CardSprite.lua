@@ -4595,6 +4595,7 @@ function var_0_0.playToBoard(arg_111_0, arg_111_1)
 
 		lc.addChildToCenter(arg_111_0, var_114_0, CardSprite.ZOrder.efc)
 		arg_111_0:initFight()
+		arg_111_0:updateAtkHp()
 		arg_111_0:updateZOrder()
 		arg_111_0._pFrame._image:setScale(0.6)
 		arg_111_0._pFrame._image:runAction(lc.sequence(lc.scaleTo(0.2, ClientView.getCardBattleScale(arg_111_0._card._infoId) * 1.1), lc.scaleTo(0.1, ClientView.getCardBattleScale(arg_111_0._card._infoId))))

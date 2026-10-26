@@ -1013,38 +1013,6 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				arg_15_1._negativeStatus[BattleData.NegativeType.disablePostureEx] = true
 			end
 
-			local turnId = (arg_15_0._round or 0) * 1000 + (arg_15_0._opponent and arg_15_0._opponent._round or 0)
-		if arg_15_0._turnSummonRoundId ~= turnId then
-			arg_15_0._turnSummonRoundId = turnId
-			arg_15_0._turnSummonCount = 0
-		end
-		arg_15_0._turnSummonCount = (arg_15_0._turnSummonCount or 0) + 1
-
-		-- Warden (12345 / 14814): 1 luot 1 lan, khi doi phuong trieu hoi quai lan 3, Warden tren tay kich hoat
-		if arg_15_0._turnSummonCount == 3 then
-			local oppo = arg_15_0._opponent
-			if oppo and oppo._wardenHandTriggerTurn ~= turnId and not oppo._isSummonDisabled and not oppo._isSpecialSummonDisabled then
-				local wardenCard = nil
-				for _, c in ipairs(oppo._handCards) do
-					if (c:isInfoId(12345) or c._infoId == 12345) and oppo:canSpecialSummon(c) then
-						wardenCard = c
-						break
-					end
-				end
-				if wardenCard then
-					local emptyPos = oppo:getEmptyBoardPos(wardenCard)
-					if emptyPos ~= nil then
-						oppo._wardenHandTriggerTurn = turnId
-						wardenCard._saved._pos = emptyPos
-						oppo:setCardStatus(wardenCard, BattleData.CardStatus.board, wardenCard._id, 14814, Data.SkillMode.using, BattleData.CardStatusVal.h2b_special)
-						if arg_15_1._status == BattleData.CardStatus.board then
-							arg_15_0:setCardStatus(arg_15_1, BattleData.CardStatus.hand, wardenCard._id, 14814, Data.SkillMode.using, arg_15_1._owner ~= arg_15_1._originOwner and BattleData.CardStatusVal.b2h_oppo or nil)
-						end
-					end
-				end
-			end
-		end
-
 		if arg_15_1._statusVal == BattleData.CardStatusVal.g2b_3347 then
 				arg_15_0:incAtk(arg_15_1, 500, false, arg_15_1._id, 3347, Data.SkillMode.once)
 			elseif arg_15_1._statusVal == BattleData.CardStatusVal.g2b_5170 then
@@ -1358,6 +1326,17 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 		lc.clearTable(arg_15_1._saved)
 	end
 
+	local isMinecraft = (arg_15_1:isKeyword(304) or (arg_15_1._info and arg_15_1._info._keyword == 304) or arg_15_1._keyword == 304 or (arg_15_1._infoId and arg_15_1._infoId >= 40748 and arg_15_1._infoId <= 40753) or (arg_15_1._infoId and arg_15_1._infoId >= 12337 and arg_15_1._infoId <= 12348))
+	if isMinecraft then
+		if arg_15_0.updateWitherDebuff then
+			arg_15_0:updateWitherDebuff()
+		end
+		arg_15_0:account()
+		if arg_15_0._opponent then
+			arg_15_0._opponent:account()
+		end
+	end
+
 	if arg_15_1._infoId == 40733 or arg_15_1:hasSkillFast(14737) then
 		arg_15_1._mark14737Triggered = nil
 	end
@@ -1407,6 +1386,45 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 			if vl_marks >= 9 and targetAtk <= 2000 then
 				arg_15_0:changeCardStatus(arg_15_1, BattleData.CardStatus.board, BattleData.CardStatus.grave, BattleData.CardStatusVal.b2g_skill, vl)
 				arg_15_0:account()
+			end
+		end
+	end
+
+	-- Warden (12345 / 14814): 1 luot 1 lan, khi doi phuong trieu hoi quai lan 3 trong luot, Warden tren tay kich hoat: dac biet len san, day quai vua trieu hoi ve tay
+	if not arg_15_1:isStatusValNotSummon() and (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster or arg_15_1._type == Data.CardType.rare) then
+		local turnId = (arg_15_0._round or 0) * 1000 + (arg_15_0._opponent and arg_15_0._opponent._round or 0)
+		if arg_15_0._turnSummonRoundId ~= turnId then
+			arg_15_0._turnSummonRoundId = turnId
+			arg_15_0._turnSummonCount = 0
+		end
+		arg_15_0._turnSummonCount = (arg_15_0._turnSummonCount or 0) + 1
+
+		if arg_15_0._turnSummonCount == 3 and arg_15_1._status == BattleData.CardStatus.board then
+			local oppo = arg_15_0._opponent
+			if oppo and oppo._wardenHandTriggerTurn ~= turnId and not oppo._isSummonDisabled and not oppo._isSpecialSummonDisabled then
+				local wardenCard = nil
+				for _, c in ipairs(oppo._handCards) do
+					if (c:isInfoId(12345) or c._infoId == 12345) and oppo:canSpecialSummon(c) then
+						wardenCard = c
+						break
+					end
+				end
+				if wardenCard then
+					local emptyPos = oppo:getEmptyBoardPos(wardenCard)
+					if emptyPos ~= nil then
+						oppo._wardenHandTriggerTurn = turnId
+						wardenCard._saved._pos = emptyPos
+						oppo:changeCardStatus(wardenCard, BattleData.CardStatus.hand, BattleData.CardStatus.board, BattleData.CardStatusVal.h2b_special, wardenCard)
+						oppo:account()
+
+						if arg_15_1._status == BattleData.CardStatus.board then
+							local destStatus = (arg_15_1._type == Data.CardType.rare or (arg_15_1:isMonsterRare() and arg_15_1._sourceStatus == BattleData.CardStatus.rare)) and BattleData.CardStatus.rare or BattleData.CardStatus.hand
+							local sVal = (arg_15_1._owner ~= arg_15_1._originOwner) and BattleData.CardStatusVal.b2h_oppo or nil
+							arg_15_0:changeCardStatus(arg_15_1, BattleData.CardStatus.board, destStatus, sVal, wardenCard)
+							arg_15_0:account()
+						end
+					end
+				end
 			end
 		end
 	end

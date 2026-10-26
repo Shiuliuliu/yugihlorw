@@ -3200,6 +3200,16 @@ function var_0_0.getSkillsByMode(arg_118_0, arg_118_1, arg_118_2)
 	if arg_118_1 == Data.SkillMode.initiative_bcs or arg_118_1 == Data.SkillMode.initiative_grave or arg_118_1 == Data.SkillMode.initiative_rare or arg_118_1 == Data.SkillMode.initiative_hand or arg_118_1 == Data.SkillMode.initiative_leave then
 		local var_118_2 = arg_118_0._choice and math.floor(arg_118_0._choice / BattleData.ChoiceId.stage_3) % BattleData.ChoiceId.stage_size_3 or 0
 
+		if var_118_2 == 0 or arg_118_0._skills[var_118_2] == nil or not B.skillHasMode(arg_118_0._skills[var_118_2], arg_118_1) then
+			for iter_118_1 = 1, #arg_118_0._skills do
+				local var_118_sk = arg_118_0._skills[iter_118_1]
+				if B.skillHasMode(var_118_sk, arg_118_1) then
+					var_118_2 = iter_118_1
+					break
+				end
+			end
+		end
+
 		var_118_0 = {
 			arg_118_0._skills[var_118_2]
 		}

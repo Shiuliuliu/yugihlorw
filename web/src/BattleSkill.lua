@@ -11453,10 +11453,19 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		local ownerCard = var_4_1 or arg_4_1
 		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
 		local graveUndead = nil
-		for _, c in ipairs(pOwner:getBattleCards("G")) do
-			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare) and (c:isCategory(17) or (c._info and c._info._category == 17) or c._category == 17) then
+		if var_4_15 and var_4_15 > 0 and pOwner then
+			local cid = var_4_15 % BattleData.UseCardId.id_group
+			local c = pOwner:getCardById(cid) or pOwner:getCardById(var_4_15)
+			if c and c._status == BattleData.CardStatus.grave and (c:isCategory(17) or (c._info and c._info._category == 17) or c._category == 17) then
 				graveUndead = c
-				break
+			end
+		end
+		if not graveUndead then
+			for _, c in ipairs(pOwner:getBattleCards("G")) do
+				if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare) and (c:isCategory(17) or (c._info and c._info._category == 17) or c._category == 17) then
+					graveUndead = c
+					break
+				end
 			end
 		end
 		if graveUndead then
@@ -11464,7 +11473,7 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 			local rareWolf = nil
 			if pOwner._rareCards then
 				for _, rc in ipairs(pOwner._rareCards) do
-					if rc._infoId == 40750 or rc:isInfoId(40750) then
+					if (rc._infoId == 40750 or rc:isInfoId(40750)) and rc._status == BattleData.CardStatus.rare then
 						rareWolf = rc
 						break
 					end
