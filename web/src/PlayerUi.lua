@@ -1388,7 +1388,21 @@ function var_0_0.castInitiativeSkill(arg_55_0, arg_55_1, arg_55_2)
 	end
 
 	if arg_55_2 and (arg_55_2._id == 14794 or arg_55_2._id == 14804 or arg_55_2._id == 14807 or arg_55_2._id == 14809 or arg_55_2._id == 14811 or arg_55_2._id == 14812 or arg_55_2._id == 14819 or arg_55_2._id == 14824) then
-		local skillIdx = arg_55_1:getSkillIndexById(arg_55_2._id) or 2
+		local skillIdx = arg_55_1:getSkillIndex(arg_55_2)
+		if not skillIdx or skillIdx == 0 then
+			skillIdx = arg_55_1:getSkillIndexById(arg_55_2._id)
+		end
+		if not skillIdx or skillIdx == 0 then
+			if arg_55_2._id == 14819 then
+				skillIdx = 2
+			elseif arg_55_2._id == 14824 then
+				skillIdx = 1
+			elseif arg_55_2._id == 14811 then
+				skillIdx = 2
+			else
+				skillIdx = 1
+			end
+		end
 		return arg_55_0:sendEvent(var_0_0.EventType.send_use_card, {
 			_card = arg_55_1,
 			_choice = skillIdx * BattleData.ChoiceId.stage_3

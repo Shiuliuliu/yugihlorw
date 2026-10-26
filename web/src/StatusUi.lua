@@ -406,7 +406,7 @@ function var_0_0.accountStatus(arg_20_0, arg_20_1, arg_20_2)
 	elseif var_20_2 == BattleData.CardStatus.grave then
 		var_20_1._ownerUi:removeCardFromGrave(arg_20_1)
 	elseif var_20_2 == BattleData.CardStatus.rare then
-		var_20_1._ownerUi:removeCardFromRare(arg_20_1)
+		(var_20_1 and var_20_1._ownerUi or arg_20_0):removeCardFromRare(arg_20_1)
 	elseif var_20_2 == BattleData.CardStatus.cover then
 		var_20_1._ownerUi:removeCardFromCover(arg_20_1)
 	elseif var_20_2 == BattleData.CardStatus.show then

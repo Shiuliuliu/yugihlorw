@@ -11454,25 +11454,34 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
 		local graveUndead = nil
 		for _, c in ipairs(pOwner:getBattleCards("G")) do
-			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isCategory(17) or (c._info and c._info._category == 17)) then
+			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare) and (c:isCategory(17) or (c._info and c._info._category == 17) or c._category == 17) then
 				graveUndead = c
 				break
 			end
 		end
 		if graveUndead then
-			pOwner:setCardStatus(graveUndead, BattleData.CardStatus.leave, arg_4_1._id, 14819, arg_4_3, BattleData.CardStatusVal.g2l_cost)
+			pOwner:setCardStatus(graveUndead, BattleData.CardStatus.leave, (var_4_1 or arg_4_1)._id, 14819, arg_4_3, BattleData.CardStatusVal.g2l_cost)
 			local rareWolf = nil
-			for _, rc in ipairs(pOwner._rareCards) do
-				if rc._infoId == 40750 or rc:isInfoId(40750) then
-					rareWolf = rc
-					break
+			if pOwner._rareCards then
+				for _, rc in ipairs(pOwner._rareCards) do
+					if rc._infoId == 40750 or rc:isInfoId(40750) then
+						rareWolf = rc
+						break
+					end
 				end
 			end
+			if not rareWolf then
+				rareWolf = B.createCard(40750, 1, pOwner)
+				rareWolf._originOwner = pOwner
+				pOwner:addCardToCards(rareWolf)
+				pOwner:addCardToRare(rareWolf)
+			end
 			if rareWolf then
-				local ePos = pOwner:getEmptyBoardPos(rareWolf)
-				if ePos and pOwner:canSpecialSummon(rareWolf) then
+				local ePos = pOwner:getEmptyBoardPos(rareWolf) or pOwner:getEmptyBoardPos()
+				if ePos and not pOwner._isSpecialSummonDisabled and not pOwner._isSummonDisabled and (not pOwner.canSpecialSummon or pOwner:canSpecialSummon(rareWolf)) then
+					if not rareWolf._saved then rareWolf._saved = {} end
 					rareWolf._saved._pos = ePos
-					pOwner:setCardStatus(rareWolf, BattleData.CardStatus.board, arg_4_1._id, 14819, arg_4_3, BattleData.CardStatusVal.r2b_special)
+					pOwner:setCardStatus(rareWolf, BattleData.CardStatus.board, (var_4_1 or arg_4_1)._id, 14819, arg_4_3, BattleData.CardStatusVal.r2b_compose)
 					var_4_13 = true
 				end
 			end
@@ -108147,22 +108156,16 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		if arg_40_1._status ~= BattleData.CardStatus.board then return false end
 		local pOwner = arg_40_1._owner or arg_40_0
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then return false end
+		if pOwner.canSpecialSummonAnyCard and not pOwner:canSpecialSummonAnyCard() then return false end
 		local hasUndeadGrave = false
 		for _, c in ipairs(pOwner:getBattleCards("G")) do
-			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isCategory(17) or (c._info and c._info._category == 17)) then
+			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare) and (c:isCategory(17) or (c._info and c._info._category == 17) or c._category == 17) then
 				hasUndeadGrave = true
 				break
 			end
 		end
 		if not hasUndeadGrave then return false end
-		local hasWolfRare = false
-		for _, rc in ipairs(pOwner._rareCards) do
-			if (rc._infoId == 40750 or rc:isInfoId(40750)) and pOwner:getEmptyBoardPos(rc) ~= nil then
-				hasWolfRare = true
-				break
-			end
-		end
-		return hasWolfRare
+		return pOwner:getEmptyBoardPos() ~= nil
 	elseif var_40_0 == 14824 then
 		if arg_40_1._status ~= BattleData.CardStatus.board then return false end
 		local pOwner = arg_40_1._owner or arg_40_0
