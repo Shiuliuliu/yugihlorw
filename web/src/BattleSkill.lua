@@ -11521,12 +11521,6 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 	elseif var_4_4 == 14793 then
 		local ownerCard = var_4_1 or arg_4_1
 		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
-		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
-		if pOwner._skeletonTurn ~= turnId then
-			pOwner._skeletonTurn = turnId
-			pOwner._skeletonCount = 0
-		end
-		pOwner._skeletonCount = (pOwner._skeletonCount or 0) + 1
 		pOwner._castedSkillCounts[14793] = (pOwner._castedSkillCounts[14793] or 0) + 1
 		arg_4_0._castedSkillCounts[14793] = (arg_4_0._castedSkillCounts[14793] or 0) + 1
 
@@ -66733,8 +66727,12 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 			end
 			var_13_13 = true
 		end
-	elseif var_13_4 == 4426 then
+	elseif var_13_4 == 4426 or var_13_4 == 14823 then
 		local var_13_513 = arg_13_0:getCardById(var_13_15)
+		if var_13_513 == nil and var_13_4 == 14823 then
+			local cands = B.filterInKeywordCards(arg_13_0:getBattleCardsByType("H", Data.CardType.monster), 304)
+			var_13_513 = cands[1]
+		end
 
 		if var_13_513 ~= nil then
 			arg_13_0:setCardStatus(var_13_513, BattleData.CardStatus.grave, var_13_5, var_13_4, arg_13_3, BattleData.CardStatusVal.x2gl_cost)
@@ -75136,7 +75134,7 @@ function var_0_0.canUseMagic(arg_22_0, arg_22_1, arg_22_2)
 			return false
 		end
 		return true, nil, B.getMinAtkCard(var_22_267)._id * BattleData.ChoiceId.stage_2 + 1
-	elseif var_22_1 == 4426 then
+	elseif var_22_1 == 4426 or var_22_1 == 14823 then
 		if arg_22_0._castedSkillCounts[var_22_1] ~= nil then
 			return false
 		end
@@ -108203,14 +108201,6 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 			return false
 		end
 		local pOwner = arg_40_1._owner or arg_40_0
-		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
-		if pOwner._skeletonTurn ~= turnId then
-			pOwner._skeletonTurn = turnId
-			pOwner._skeletonCount = 0
-		end
-		if (pOwner._skeletonCount or 0) >= 3 then
-			return false
-		end
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then
 			return false
 		end

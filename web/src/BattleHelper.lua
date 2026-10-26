@@ -8371,9 +8371,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		if ownerCard and ownerCard._status ~= BattleData.CardStatus.rare then
 			return false
 		end
-		if (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14793] and pOwner._castedSkillCounts[14793] >= 3) then
-			return false
-		end
+		-- unlimited times per turn for 14793
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then
 			return false
 		end
