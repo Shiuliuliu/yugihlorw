@@ -57063,7 +57063,7 @@ Kỹ năng tay chủ động: Khi trên sân phe ta không có quái sẽ có th
 Tiên Vệ-Trụy Lạc
 Khi bị phá hủy trong chiến đấu và đưa vào Mộ; đối phương bỏ ngẫu nhiên 1 lá bài trên tay.
 Thác sâm
-[Thần - Hiệu Ứng - XYZ]\n3 quái 8 sao có từ khóa "Tiên nghịch"\n+ Lá bài này có "chỉ thị xyz": Bị vô hiệu (không thể tấn công và hành động), bị hiệu ứng trói.\n+ Lá bài này không thể bị hiến tế.\n+ Khi vào Mộ sẽ bị loại bỏ.\n+ 1 lượt tối đa 3 lần: Khi trở thành mục tiêu hiệu quả đối phương, xóa 1 "chỉ thị xyz" vô hiệu và phá hủy bài phát động của đối phương.\n+ Kỹ năng chủ động (1 lượt 1 lần): Bỏ 1 chỉ thị xyz, đưa toàn bộ bài trên tay vào Mộ.\n+ Khi lá bài này không còn "chỉ thị xyz": Nhân đôi ATK/DEF (16000/16000), xóa hiệu ứng trói và nhận Khiên Chắn Quái, Phép, Bẫy.
+3 quái 8 sao có từ khóa "Tiên nghịch"
 Thác sâm
 Thác Sâm-Phong Ấn Cổ Thần
 Có chỉ thị XYZ: Bị vô hiệu (không thể tấn công), nhận hiệu ứng trói. Không thể bị hiến tế. Vào Mộ bị loại bỏ. Khi hết chỉ thị XYZ: x2 ATK/DEF, nhận Khiên Chắn Quái, Phép, Bẫy.
@@ -57088,14 +57088,14 @@ Khi lên sân: Lấy 1 lá <Đạo hóa hoàng tuyền> từ Bộ bài lên tay.
 Tiên Nghịch Thần Thông-Hộ Mệnh
 Tường chắn Quái, Phép, Bẫy đặc biệt của hệ Tiên Nghịch.
 Phô Lô Ti Nô
-[Chiến Binh - Hiệu Ứng - Link 2]\n2 quái thú bất kì\n+ Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.\n+ Kỹ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Mặt ngửa: Nhận Cánh Bổ Nhào, Liên Trảm và tăng 500 ATK cho mỗi quái thú trên sân đối phương.\n- Mặt sấp: Nhận Khiên Chắn.
+2 quái thú bất kì
 Phô Lô Ti Nô
 Vũ Điệu Lãng Hoa
 Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.
 Thưởng Hoa Tung Xu
 Kỹ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Mặt ngửa: Nhận Cánh Bổ Nhào, Liên Trảm và tăng 500 ATK cho mỗi quái thú trên sân đối phương.\n- Mặt sấp: Nhận Khiên Chắn.
 Vương Lâm - Cổ yêu
-[Xác Sống - Hiệu Quả - Đồng Bộ]\n<Vương Lâm - Phân Thân> (12328) + 1 quái điều chỉnh có từ khóa "Tiên nghịch" trở lên.\n+ Kỹ năng chủ động bộ bài thêm: 1 lượt 1 lần, chọn 1 quái có từ khóa "Tiên nghịch" trên sân phe ta, quái đó nhận "Nhịp Điệu Synchron".\n+ Cánh Bổ Nhào: Khi tấn công, quái vật trên sân, tay hoặc mộ của đối thủ không thể kích hoạt hiệu ứng quái vật và đối thủ không thể kích hoạt hiệu ứng phép thuật hoặc bẫy trên sân.\n+ Không bị ảnh hưởng bởi hiệu ứng lá bài khác trong lượt được triệu hồi đồng bộ.\n+ Triệu hồi đồng bộ lá bài này không thể bị vô hiệu hóa.\n+ Khi bị phá hủy: Triệu hồi đặc biệt <Vương Lâm - Phân Thân> từ mộ bài lên sân.
+<Vương Lâm - Phân Thân> + 1 quái Điều chỉnh có từ khóa "Tiên nghịch" trở lên
 Vương Lâm - Cổ yêu
 Cổ Yêu-Đồng Bộ Kêu Gọi
 Kỹ năng chủ động bộ bài thêm (1 lượt 1 lần): Chọn 1 quái có từ khóa "Tiên nghịch" trên sân phe ta, quái đó nhận "Nhịp Điệu Synchron".
@@ -57109,7 +57109,7 @@ Kỹ năng chủ động trên tay (1 lượt 1 lần): Chọn lấy 1 lá <Vư�
 Uyển Nhi-Hồn Quy
 Kỹ năng chủ động trong Mộ (1 lượt 1 lần): Loại bỏ bản thân, chọn 1 lá <Vương Lâm> (12326) hoặc <Vương Lâm - Phân Thân> (12328) từ trên tay, triệu hồi đặc biệt lên sân.
 Vương Lâm - Hợp Đạo
-[Huyễn Thần - Dung Hợp - Hiệu Ứng]\n<12326> + <12328>\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n+ Khi lá bài này bị phá hủy: Phe ta nhận Tường Chắn Sinh Mệnh.\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi ở trên sân: Hai bên không thể Triệu Hồi Đặc Biệt quái từ Mộ.\n+ Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị.\n+ Nhận 1 tầng Tường Chắn Chiến Đấu.
+<Vương Lâm - Thần Đạo> + <Vương Lâm - Ma Đạo>
 Vương Lâm - Hợp Đạo
 Hợp Đạo - Thiên Đạo Trấn Áp
 Khi ở trên sân: Hai bên không thể triệu hồi đặc biệt quái từ Mộ. Khi tấn công quái có ATK cao hơn: Nhận Thương Tích, Đòn Ảo Ảnh, Miệt Thị. Nhận 1 tầng Tường Chắn Chiến Đấu.
@@ -57153,10 +57153,10 @@ Khi trên sân phe ta không có quái hoặc có quái có từ khóa "Hiệp s
 KMR-W - Fang Biến Thân
 Kỹ năng chủ động: Hy sinh bản thân, chọn Triệu Hồi Đặc Biệt [KMR-W-Fang] từ Bộ bài thêm lên sân.
 KMR-W-Fang
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n+ Phải dùng hiệu quả của KMR-W để triệu hồi.\n+ Thiên Sứ-Xung Kích: 1 lượt 1 lần, chọn 1 lá bài trên sân đối thủ đưa vào Mộ Loại Bỏ (bỏ qua Tường Chắn Quái).\n+ Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.
+Chỉ có thể Triệu hồi Đặc biệt bởi hiệu ứng của <KMR-W>
 KMR-W-Fang
 KMR-Zio-W
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n<KMR-Zio> + <KMR-W>\n+ Tấn công nhân đôi khi chiến đấu với quái thuộc tính Quang hoặc Ám (bỏ qua Tường Chắn Quái).\n+ Khiên Chắn Hiệu Quả (không bị hiệu ứng phá hủy).\n+ Khi lá bài này trên sân, quái thuộc tính Quang/Ám trên sân đối phương không thể tấn công.
+<KMR-Zio> + <KMR-W>
 KMR-Zio-W
 KMR-Zio-W - Vương Quyền Phong Ấn
 Khi lá bài này trên sân: Quái thuộc tính Quang và Ám trên sân đối phương không thể tấn công.
@@ -57176,7 +57176,7 @@ Rider kick
 Rider kick - Toàn Lực Tất Sát
 Khi trên sân phe ta có quái thú có từ khóa "Hiệp sĩ mặt nạ": Phá hủy số quái thú trên sân đối phương tương ứng với số lượng quái thú trên sân phe ta (xuyên qua Tường Chắn Quái). Sau đó trong lượt này, quái thú có từ khóa "Hiệp sĩ mặt nạ" phe ta không thể tấn công.
 Chị Em Harpie Lady - Tam Giác Mê Hoặc
-[Thú Có Cánh - Dung Hợp - Hiệu Ứng]\n3 quái thú "Harpie Lady"\nPhải được Triệu hồi Dung hợp trước tiên.\n(1) Tên lá bài này được coi là "Harpie Lady" khi ở trên sân hoặc trong Mộ.\n(2) Tăng 500 Công cho mỗi "Harpie Lady" trong Mộ của bạn. Nhận Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Mỗi lượt 1 lần (Hiệu ứng Nhanh): Bạn có thể phá hủy toàn bộ Ma pháp và Cạm bẫy đối thủ điều khiển.
+3 quái thú "Harpie Lady"
 Chị Em Harpie Lady - Tam Giác Mê Hoặc
 Tam Giác Mê Hoặc - Phong Bão Quét Sạch
 Mỗi lượt một lần: Phá hủy toàn bộ Ma pháp và Cạm bẫy mà đối thủ điều khiển.
@@ -57188,7 +57188,7 @@ Thêm 1 quái thú "Harpie" từ Bộ bài lên tay, sau đó nếu chỉ có đ
 Tam Kính Kiều Diễm - Dung Hợp Kính Soi
 Kỹ năng chủ động Mộ: Trục xuất lá này khỏi Mộ; Triệu hồi Dung hợp 1 quái thú Dung hợp thuộc tính ĐẤT hoặc GIÓ từ Bộ bài Phụ, sử dụng quái thú trên tay hoặc trên sân làm nguyên liệu.
 KMR-Zio-Wizard
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + "KMR-Wizard"\n(1) Đối phương không thể sử dụng bài Phép.\n(2) Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Tất cả bài Phép/Bẫy trên sân phe ta không thể bị phá hủy.
+"KMR-Zio" + "KMR-Wizard"
 KMR-Zio-Wizard
 KMR-Zio-Wizard - Phong Tỏa Ma Thuật
 Khi có mặt: Đối phương không thể sử dụng bài Phép.
@@ -57220,17 +57220,17 @@ Kỹ năng chủ động Mộ: Nếu bạn điều khiển từ 3 quái thú "Ha
 Tam Giác Mê Hoặc
 Tăng 500 Công cho mỗi "Harpie Lady" trong Mộ của bạn.
 KMR-Decade
-[Chiến Binh - Link - Hiệu Ứng]\n1 quái thú có từ khóa "Hiệp sĩ mặt nạ"\n(1) Kỹ năng chủ động (1 lượt 1 lần): Đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa "Hiệp sĩ mặt nạ" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.
+1 quái thú có từ khóa "Hiệp sĩ mặt nạ"
 KMR-Decade
 KMR-Decade - Thông Đạo Kỵ Sĩ
 1 lượt 1 lần, đưa lá bài này vào Mộ; chọn 1 quái thú có từ khóa "Hiệp sĩ mặt nạ" từ trên tay hoặc Bộ bài để Triệu hồi Đặc biệt lên sân.
 KMR-Omazio
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + 1 quái thú Dung hợp có từ khóa "Hiệp sĩ mặt nạ" + 1 quái thú có từ khóa "Hiệp sĩ mặt nạ"\n(1) Mỗi lượt nhận 1 lần Khiên Chiến Đấu.\n(2) Tường Chắn Quái, Tường Chắn Phép, Tường Chắn Bẫy.\n(3) Kỹ năng chủ động (1 lượt 1 lần): Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa "Hiệp sĩ mặt nạ" trong Mộ, trên tay hoặc trong Bộ bài của bạn; Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ, và quái thú đó không thể đổi tư thế trong lượt này.
+"KMR-Zio" + 1 quái thú Dung hợp có từ khóa "Hiệp sĩ mặt nạ" + 1 quái thú có từ khóa "Hiệp sĩ mặt nạ"
 KMR-Omazio
 KMR-Omazio - Ma Vương Khởi Động
 1 lượt 1 lần: Chọn tối đa 3 quái thú không phải Dung hợp có từ khóa "Hiệp sĩ mặt nạ" trong Mộ, trên tay hoặc trong Bộ bài để Triệu hồi Đặc biệt lên sân ở Thế Phòng thủ (không thể đổi tư thế trong lượt này).
 KMR-Zio-Ozu
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + "KMR-Ozu"\n(1) Kỹ năng chủ động 1 (kỹ năng này và kỹ năng chủ động 2 chỉ có thể dùng 1 loại 1 lượt): 1 lượt 1 lần, tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.\n(2) Kỹ năng chủ động 2 (kỹ năng này và kỹ năng chủ động 1 chỉ có thể dùng 1 loại 1 lượt): 1 lượt 1 lần, tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên sân vào Mộ ứng với mỗi đồng xu mặt ngửa.
+"KMR-Zio" + "KMR-Ozu"
 KMR-Zio-Ozu
 KMR-Zio-Ozu - Đoạt Thủ Bài
 1 lượt 1 lần (chỉ dùng 1 trong 2 kỹ năng mỗi lượt): Tung 3 đồng xu, đối phương đưa ngẫu nhiên 1 lá bài trên tay vào Mộ ứng với mỗi đồng xu mặt ngửa.
@@ -57244,7 +57244,7 @@ KMR-Ghost - Đoạt Hồn Rút Bài
 KMR-Ghost - Quá Tải Hồi Sinh
 Kỹ năng chủ động Mộ (1 lượt 1 lần): Triệu hồi Đặc biệt bản thân lên sân và nhận được "quá tải" (khi rời sân sẽ bị "loại bỏ").
 KMR-Zio-Ghost
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n"KMR-Zio" + "KMR-Ghost"\n(1) Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).\n(2) Kỹ năng chủ động (1 lượt 1 lần): Chọn 1 quái trên sân đối phương, loại bỏ bản thân và quái mục tiêu (xuyên qua tường chắn quái).
+"KMR-Zio" + "KMR-Ghost"
 KMR-Zio-Ghost
 KMR-Zio-Ghost - Linh Hồn Chặn Đứng
 Khi lá bài này trên sân, đối phương triệu hồi quái từ Bộ bài thêm sẽ kích hoạt: loại bỏ bản thân và quái đối phương vừa triệu hồi (xuyên qua tường chắn quái).
@@ -57258,14 +57258,14 @@ Bó hoa tươi
 Bó hoa tươi
 Kĩ năng chủ động (1 lượt 1 lần): Tung 1 đồng xu.\n- Nếu ngửa: phe ta và địch rút 1 lá bài.\n- Nếu úp: phe địch rút 1 lá bài, phe ta nhận 2000 thiệt hại.\n|\yellow\Hỏi: "ủa tại sao phe địch được rút bài mà phe ta bị lại bị trừ LP?"|\n|\yellow\Đáp: "Bởi vì : 1 là chân thành đổi lấy chân thành.|\n|\yellow\2 là chân thành đổi lấy chân tướng sự thật".|\n|\yellow\"Tỉnh táo lên những người anh em,|\n|\yellow\mình đáng được trân trọng hơn thế - đừng làm lốp giống ad".|
 Chiến binh amazon cưỡi rồng bay harpie
-[Chiến Binh - Dung Hợp - Hiệu Ứng]\n10084 + quái tộc chiến binh có từ khóa "amazon".\n(Lá bài này luôn được coi là có từ khóa "amazon" và "harpie".)\n(1) Dung Hợp Kỳ Linh.\n(2) Tăng 300 Công và Thủ với mỗi quái thú "amazon" trên sân phe ta. Tăng 300 Công với mỗi quái thú "harpie" trên sân phe ta.\n(3) Khi trên sân phe ta có quái "harpie" hoặc "amazon", nhận "Tấn công trực tiếp".\n(4) Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn 1 quái dung hợp có từ khóa "harpie" hoặc "amazon" trong extradeck, triệu hồi vô điều kiện lên sân.
+<Harpie Lady> + 1 quái tộc Chiến Binh có từ khóa "amazon"
 Chiến binh amazon cưỡi rồng bay harpie
 Chiến Binh Cưỡi Rồng - Tấn Công Trực Tiếp
 Khi trên sân phe ta có quái "harpie" hoặc "amazon", nhận "Tấn công trực tiếp".
 Chiến Binh Cưỡi Rồng - Triệu Hồi Dung Hợp
 Kĩ năng chủ động: 1 lượt 1 lần, hy sinh bản thân, chọn 1 quái dung hợp có từ khóa "harpie" hoặc "amazon" trong extradeck, triệu hồi vô điều kiện lên sân.
 Kiếm sĩ diệt rồng huyền thoại
-[Chiến Binh - Đồng Bộ - Hiệu Ứng]\n10058 + 1 quái điều chỉnh.\n(1) Quái đối phương bị giảm 200 ATK cho mỗi quái tộc Rồng trên sân và trong Mộ 2 bên.\n(2) Kĩ năng chủ động (1 lượt 1 lần): Bỏ 1 lá bài trên tay, Triệu Hồi Đặc Biệt 1 quái có từ khóa "Kiếm Phá Hủy" từ bộ bài lên sân.\n(3) Khi lá bài này bị phá hủy bởi chiến đấu hoặc hiệu quả: Phá hủy tất cả quái tộc Rồng trên sân đối phương (xuyên qua khiên bảo vệ).
+<Kiếm Sĩ Diệt Rồng> + 1 quái Điều chỉnh
 Kiếm sĩ diệt rồng huyền thoại
 Huyền Thoại Diệt Rồng - Uy Áp
 Quái đối phương bị giảm 200 ATK cho mỗi quái tộc Rồng trên sân và trong Mộ 2 bên.
@@ -57295,13 +57295,13 @@ Kĩ năng chủ động (1 lượt 1 lần): Chọn lấy tối đa 2 quái thú
 Diệt Rồng Tập Sự - Truyền Thừa
 Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa "Kiếm sĩ diệt rồng" trong bộ bài phe ta.
 Kiếm sĩ diệt rồng tập sự
-[Chiến Binh - Hiệu Quả - Link]\n1 quái có từ khóa "Kiếm hủy diệt" hoặc "Kiếm sĩ diệt rồng".\n(Lá bài này luôn có từ khóa "Kiếm hủy diệt" và "Kiếm sĩ diệt rồng".)\n(1) Kĩ năng chủ động bộ bài thêm: Chọn 1 quái tộc "rồng" trên sân đối phương đưa vào mộ, sau đó triệu hồi đặc biệt bài này lên sân phe ta (xuyên qua tường chắn quái).\n(2) Kĩ năng chủ động (1 lượt 1 lần): Chọn lấy tối đa 2 quái thú có từ khóa "Kiếm hủy diệt" từ bộ bài lên tay.\n(3) Kĩ năng chủ động (1 lượt 1 lần): Hy sinh bản thân, chọn triệu hồi đặc biệt 1 quái có từ khóa "Kiếm sĩ diệt rồng" trong bộ bài phe ta.
+1 quái có từ khóa "Kiếm hủy diệt" hoặc "Kiếm sĩ diệt rồng"
 Kiếm sĩ diệt rồng tập sự
 Sucs vat Alice
 [Phù Thủy / Thường / Điều Chỉnh]
 Sucs vat Alice
 Nak - Thứ nguyên vệ thần
-[Chiến Binh - Hiệu Quả - Link]\n1 quái GR có từ khóa "liqi".\n(1) Khi vào sân: Nhận được rào chắn Quái vật, Phép thuật, Bẫy.\n(2) Khi có mặt: Tăng công bằng số lượng bài trên tay x1000.\n(3) Khi tấn công: Rút 1 lá bài.\n(4) Khi có mặt: Khóa tất cả quái thú trên sân phe ta ngoại trừ bản thân.\n(5) Lá bài này có thể tấn công hai lần trong mỗi lượt chiến đấu.
+1 quái GR có từ khóa "liqi"
 Nak - Thứ nguyên vệ thần
 Thứ Nguyên Chuyển Hóa
 Khi có mặt; tăng công bằng số lượng bài trên tay x[1]
@@ -57322,7 +57322,7 @@ Creeper
 Creeper - Tự Bộc
 Khi lá bài này trên sân, đối phương triệu hồi quái sẽ kích hoạt: phá hủy bản thân và lá bài đối phương vừa triệu hồi. Trong lượt này, ô quái thú đối phương vừa bị phá hủy sẽ không thể đặt quái.
 Skeleton
-[Xác Sống / Đồng Bộ / Hiệu ứng]\nKĩ năng chủ động bộ bài thêm: Chọn loại bỏ 1 quái có từ khóa "minecraft" trong Mộ phe ta, triệu hồi đặc biệt lá bài này lên sân.
+1 quái có từ khóa "minecraft" trong Mộ
 Skeleton
 Skeleton - Tái Sinh Xương Trắng
 Kĩ năng chủ động bộ bài thêm: Chọn loại bỏ 1 quái có từ khóa "minecraft" trong Mộ phe ta, triệu hồi đặc biệt lá bài này lên sân.
@@ -57334,7 +57334,7 @@ Kĩ năng chủ động: Khi trên sân phe ta không có quái hoặc có quái
 Enderman - Đoạt Bài Hư Không
 1 lượt 1 lần, khi lên sân: Ngẫu nhiên lấy 1 lá bài trên tay đối phương cho vào tay phe ta.
 Wither
-[Xác Sống / Link 3 / Hiệu Ứng]\n2 quái thú có từ khóa "minecraft" trở lên\n+ Không thể bị hiệu quả phá hủy (12007).\n+ Khi lá bài này trên sân, ngoại trừ quái tộc "Xác Sống", tất cả quái trên sân 2 bên bị giảm 1 nửa ATK (xuyên qua tường chắn quái).
+2 quái thú có từ khóa "minecraft" trở lên
 Wither
 Wither - Héo Rũ Tử Khí
 Khi lá bài này trên sân, ngoại trừ quái tộc "Xác Sống", tất cả quái trên sân 2 bên bị giảm 1 nửa ATK (xuyên qua tường chắn quái).
@@ -57404,7 +57404,7 @@ Warden - Tiếng Gầm Vực Sâu
 Warden - Lãnh Địa Tăm Tối
 Khi lá bài này trên sân, phe ta chỉ có thể triệu hồi đặc biệt quái có từ khóa "minecraft".
 Creeper sấm sét
-[Xác Sống / Hiệu Ứng / Dung Hợp]\n<Creeper> + <Commandblock>\n+ [14677 Dung Hợp Kỳ Linh].\n+ Khi đối phương triệu hồi quái, kích hoạt: Loại bỏ bản thân và quái đối phương vừa triệu hồi, vô hiệu hóa 2 ô quái đối phương trong lượt này.\n+ Khi bài này trở thành mục tiêu hiệu ứng: Đưa bản thân vào Mộ, phá hủy và loại bỏ 2 lá trên tay đối phương, đồng thời vô hiệu hóa 2 ô quái của đối thủ.
+<Creeper> + <Command Block>
 Creeper sấm sét
 Creeper sấm sét - Sấm Sét Tự Bộc
 Khi đối phương triệu hồi quái, kích hoạt: Loại bỏ bản thân và quái đối phương vừa triệu hồi, vô hiệu hóa 2 ô quái đối phương trong lượt này.
@@ -57419,7 +57419,7 @@ Tatu
 Tatu - Giáp Cuộn Phòng Hộ
 Khi quái "minecraft" phe ta chiến đấu và lá này trên tay: Quái phe ta không bị tiêu diệt, bỏ qua sát thương, Triệu Hồi Đặc Biệt lá này lên sân ở thế thủ và nhận "Quá Tải".
 Sói mặc giáp
-[Thú / Hiệu Ứng / Dung Hợp]\n<Sói> + <Tatu>\n(Trong bộ bài có thể có tối đa 20 lá)\n+ [14677 Dung Hợp Kỳ Linh].\n+ Kỹ năng chủ động (không giới hạn lượt): Loại bỏ 1 quái tộc Xác Sống trong Mộ, Triệu hồi Đặc biệt 1 <Sói mặc giáp> từ bộ bài thêm lên sân.\n+ Khi lá bài này trên sân, tất cả <Sói mặc giáp> nhận thêm 500 ATK.
+<Sói> + <Tatu>
 Sói mặc giáp
 Sói mặc giáp - Triệu Hồi Đàn Sói
 Kỹ năng chủ động (không giới hạn lượt): Loại bỏ 1 quái tộc Xác Sống trong Mộ phe ta, Triệu hồi Đặc biệt 1 <Sói mặc giáp> từ bộ bài thêm lên sân.
@@ -57438,26 +57438,26 @@ Wandering Trader
 Wandering Trader - Giao Dịch Bí Ẩn
 Mỗi lượt chỉ dùng 1 lá. Bỏ 1 quái có từ khóa "minecraft" trên tay vào Mộ: Rút 2 lá bài từ bộ bài.
 Steve - miner
-[Chiến Binh / Hiệu Ứng / Link 1]\n1 quái có từ khóa "minecraft"\n+ Kỹ năng chủ động (1 lượt 1 lần): Lấy 1 bài Phép hoặc Bẫy có từ khóa "minecraft" từ bộ bài lên tay.
+1 quái có từ khóa "minecraft"
 Steve - miner
 Steve miner - Khai Thác Kho Báu
 1 lượt 1 lần: Lấy 1 bài Phép hoặc Bẫy có từ khóa "minecraft" từ bộ bài lên tay.
 Steve - armor
-[Chiến Binh / Hiệu Ứng / Link 2]\n<Steve - miner> + 1 quái có từ khóa "minecraft" trở lên\n+ Tường chắn quái, phép, bẫy (12008, 12009, 12010).\n+ Kỹ năng chủ động (1 lượt 1 lần): Chọn triệu hồi đặc biệt 1 quái "minecraft" từ Mộ lên sân.\n+ Khi trên sân: Tăng Công bằng số quái "minecraft" trên sân phe ta x 300.
+<Steve - miner> + 1 quái có từ khóa "minecraft" trở lên
 Steve - armor
 Steve armor - Tái Tạo Sinh Tồn
 1 lượt 1 lần: Chọn và Triệu hồi Đặc biệt 1 quái có từ khóa "minecraft" từ Mộ lên sân.
 Steve armor - Sức Mạnh Đồng Minh
 Khi trên sân: Tăng ATK bằng số quái "minecraft" trên sân phe ta x 300.
 Steve cưỡi rồng ender
-[Chiến Binh / Link 5 / Hiệu Ứng]\n<Steve - armor> + <ender dragon> + 2 quái có từ khóa "minecraft"\n+ Khi lá bài này còn trên sân: Đối phương không thể kích hoạt kĩ năng từ bộ bài thêm.\n+ Kháng hiệu ứng (12002, 12003, 12004): Không thể bị chọn làm mục tiêu hoặc bị tiêu diệt bởi hiệu ứng, không thể bị giải phóng hoặc loại bỏ.\n+ Khi lá bài này còn trên sân: Quái đối phương không thể tăng ATK bằng bất kì cách nào.
+<Steve - armor> + <Ender Dragon> + 2 quái có từ khóa "minecraft"
 Steve cưỡi rồng ender
 Phong Tỏa Thêm
 Khi lá bài này còn trên sân: Đối phương không thể kích hoạt kĩ năng từ bộ bài thêm.
 Uy Áp Thần Long
 Khi lá bài này còn trên sân: Quái đối phương không thể tăng ATK bằng bất kì cách nào.
 piglin-rider
-[Xác Sống / XYZ / Hiệu Ứng]\n3 quái 3 sao tộc xác sống\n+ 2797 Lá Chắn Năng Lượng.\n+ 13779 (Khiêu khích).\n+ 1 lượt 1 lần, đối phương triệu hồi đặc biệt quái sẽ kích hoạt, bỏ 1 chỉ thị xyz, đẩy quái đối phương về lại bộ bài.\n+ Kĩ năng chủ động: 1 lượt 1 lần, bỏ 1 chỉ thị xyz, chọn 1 bài trên sân đối phương đẩy về tay.\n+ Khi lá bài này bị phá hủy, quái tộc "xác sống" trên sân ta nhận 12007 trong 1 lượt.
+3 quái 3 sao tộc Xác Sống
 piglin-rider
 Phản Chấn Hư Không
 1 lượt 1 lần, đối phương triệu hồi đặc biệt quái sẽ kích hoạt, bỏ 1 chỉ thị xyz, đẩy quái đối phương về lại bộ bài.

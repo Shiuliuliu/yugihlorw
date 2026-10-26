@@ -20871,7 +20871,13 @@
     "res/new/thumb/card_ico_40753.png",
     "res/40753_3.jpg",
     "res/40753_3_mask.png",
-    "res/new/thumb/card_ico_40753_3.png"
+    "res/new/thumb/card_ico_40753_3.png",
+    "res/new/thumb/card_ico_40754.png",
+    "res/new/thumb/card_ico_40754_3.png",
+    "res/40754.jpg",
+    "res/40754_3.jpg",
+    "res/40754_mask.png",
+    "res/40754_3_mask.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [

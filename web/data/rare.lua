@@ -6991,8 +6991,8 @@ return {
   ["_id"]=40754,["_isHide"]=0,["_joinComponent"]={[1]=3,[2]=3,[3]=3,},
   ["_joinResult"]={[1]=0,},
   ["_keyword"]=304,["_link"]={[1]=0,},
-  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="0.0",["_linkCount"]="0.0",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=57459,["_nature"]=5,["_option"]=1026,["_originId"]=0,["_packageId"]={[1]=0,},
-  ["_picId"]=0,["_py"]="piglin-rider",["_quality"]=5,["_recruitable"]=1,["_skillId"]={[1]=6753,[2]=2797,[3]=13779,[4]=14830,[5]=14831,[6]=14832,},
+  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="0.0",["_linkCount"]="0.0",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=57459,["_nature"]=3,["_option"]=1026,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="piglin-rider",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=6753,[2]=2797,[3]=13779,[4]=14830,[5]=14831,[6]=14832,},
   ["_skin"]={[1]=0,},
   ["_star"]=3,["_syncComponent"]={[1]={[1]=0,},},},
 }

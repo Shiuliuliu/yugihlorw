@@ -971,9 +971,9 @@ local function patchData()
 					_link = { 0 },
 					_linkAllCandidates = "0.0", _linkCandidate = "0.0",
 					_linkCount = "0.0", _linkSelectedCandidates = "0.0",
-					_maxCount = 3, _nameSid = 57459, _nature = 5,
+					_maxCount = 3, _nameSid = 57459, _nature = 3,
 					_option = 1026, _originId = 0, _packageId = { 0 },
-					_picId = 0, _py = "piglin-rider", _quality = 5,
+					_picId = 0, _py = "piglin-rider", _quality = 4,
 					_recruitable = 1, _skillId = { 6753, 2797, 13779, 14830, 14831, 14832 },
 					_skin = { 0 }, _star = 3, _syncComponent = { { 0 } }
 				}
@@ -995,6 +995,10 @@ local function patchData()
 					_recruitable = 1, _skillId = { 12002, 12003, 12004, 14827, 14828 },
 					_skin = { 0 }, _star = 0, _syncComponent = { { 0 } }
 				}
+			end
+			if Data._rareInfo and Data._rareInfo[40754] then
+				Data._rareInfo[40754]._quality = 4
+				Data._rareInfo[40754]._nature = 3
 			end
 			if Data._rareInfo and Data._rareInfo[40753] then
 				Data._rareInfo[40753]._atk = { 4500 }
