@@ -18743,6 +18743,30 @@
     ],
     "res/thumb_trap/40752_3.lcres": [
       "40752_3.jpm"
+    ],
+    "res/thumb_monster/40753.lcres": [
+      "40753.jpm"
+    ],
+    "res/thumb_monster/40753_3.lcres": [
+      "40753_3.jpm"
+    ],
+    "res/thumb_rare/40753.lcres": [
+      "40753.jpm"
+    ],
+    "res/thumb_rare/40753_3.lcres": [
+      "40753_3.jpm"
+    ],
+    "res/thumb_magic/40753.lcres": [
+      "40753.jpm"
+    ],
+    "res/thumb_magic/40753_3.lcres": [
+      "40753_3.jpm"
+    ],
+    "res/thumb_trap/40753.lcres": [
+      "40753.jpm"
+    ],
+    "res/thumb_trap/40753_3.lcres": [
+      "40753_3.jpm"
     ]
   },
   "files": [
@@ -20793,7 +20817,13 @@
     "res/new/thumb/card_ico_40752.png",
     "res/40752_3.jpg",
     "res/40752_3_mask.png",
-    "res/new/thumb/card_ico_40752_3.png"
+    "res/new/thumb/card_ico_40752_3.png",
+    "res/40753.jpg",
+    "res/40753_mask.png",
+    "res/new/thumb/card_ico_40753.png",
+    "res/40753_3.jpg",
+    "res/40753_3_mask.png",
+    "res/new/thumb/card_ico_40753_3.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [

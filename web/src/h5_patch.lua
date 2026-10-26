@@ -958,6 +958,25 @@ local function patchData()
 					_syncComponent = { { 0 } }
 				}
 			end
+			-- Steve cuoi rong ender (40753)
+			if Data._rareInfo and not Data._rareInfo[40753] then
+				Data._rareInfo[40753] = {
+					_atk = { 4000 },
+					_attackEffect = 1, _available = 1, _bgId = 0,
+					_briefNameSid = 57454, _category = 6, _cost = 0,
+					_descSid = 57453, _guideSid = 0, _hp = { 4000 },
+					_id = 40753, _isHide = 0, _joinComponent = { 0 },
+					_joinResult = { 0 }, _keyword = 304,
+					_link = { 1, 2, 3, 7, 8 },
+					_linkAllCandidates = "0.0", _linkCandidate = "0.0",
+					_linkCount = "#>=3", _linkSelectedCandidates = "0.0",
+					_maxCount = 3, _nameSid = 57452, _nature = 5,
+					_option = 8194, _originId = 0, _packageId = { 0 },
+					_picId = 0, _py = "stevecuoirongender", _quality = 5,
+					_recruitable = 1, _skillId = { 12002, 12003, 12004, 14827, 14828 },
+					_skin = { 0 }, _star = 0, _syncComponent = { { 0 } }
+				}
+			end
 			if Data._rareInfo and Data._rareInfo[40748] then
 				Data._rareInfo[40748]._quality = 4
 				Data._rareInfo[40748]._keyword = 304

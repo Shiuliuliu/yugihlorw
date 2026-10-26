@@ -57449,3 +57449,10 @@ Steve armor - Tái Tạo Sinh Tồn
 1 lượt 1 lần: Chọn và Triệu hồi Đặc biệt 1 quái có từ khóa "minecraft" từ Mộ lên sân.
 Steve armor - Sức Mạnh Đồng Minh
 Khi trên sân: Tăng ATK bằng số quái "minecraft" trên sân phe ta x 300.
+Steve cưỡi rồng ender
+[Chiến Binh / Link 5 / Hiệu Ứng]\n<Steve - armor> + <ender dragon> + 2 quái có từ khóa "minecraft"\n+ Khi lá bài này còn trên sân: Đối phương không thể kích hoạt kĩ năng từ bộ bài thêm.\n+ Kháng hiệu ứng (12002, 12003, 12004): Không thể bị chọn làm mục tiêu hoặc bị tiêu diệt bởi hiệu ứng, không thể bị giải phóng hoặc loại bỏ.\n+ Khi lá bài này còn trên sân: Quái đối phương không thể tăng ATK bằng bất kì cách nào.
+Steve cưỡi rồng ender
+Phong Tỏa Thêm
+Khi lá bài này còn trên sân: Đối phương không thể kích hoạt kĩ năng từ bộ bài thêm.
+Uy Áp Thần Long
+Khi lá bài này còn trên sân: Quái đối phương không thể tăng ATK bằng bất kì cách nào.

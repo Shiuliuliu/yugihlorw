@@ -6024,7 +6024,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		local var_260_5 = var_260_1[iter_260_1]
 		local id5 = (var_260_5 and var_260_5._id) or var_260_5
 
-		if not var_260_4[id5] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId == 40745 and (var_260_5._info and var_260_5._info._quality == 5 and (var_260_5:isKeyword(303) or (var_260_5._info and var_260_5._info._keyword == 303)))) or (arg_260_1._infoId == 40751 and (var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId == 40752 and (var_260_5._infoId == 40751 or var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and arg_260_1._infoId ~= 40745 and arg_260_1._infoId ~= 40751 and arg_260_1._infoId ~= 40752 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
+		if not var_260_4[id5] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId == 40745 and (var_260_5._info and var_260_5._info._quality == 5 and (var_260_5:isKeyword(303) or (var_260_5._info and var_260_5._info._keyword == 303)))) or (arg_260_1._infoId == 40751 and (var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId == 40752 and (var_260_5._infoId == 40751 or var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId == 40753 and (var_260_5._infoId == 40752 or var_260_5._infoId == 12339 or var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and arg_260_1._infoId ~= 40745 and arg_260_1._infoId ~= 40751 and arg_260_1._infoId ~= 40752 and arg_260_1._infoId ~= 40753 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
 			var_260_4[id5] = true
 			var_260_3[#var_260_3 + 1] = var_260_5
 		end
@@ -6112,6 +6112,24 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 		end
 		if not hasMiner then return false end
 		if var_261_1 > B.getSumLink(arg_261_2) then return false end
+		return true
+	elseif arg_261_1._infoId == 40753 then
+		-- link 5: <Steve - armor> + <ender dragon> + 2 quái có từ khóa "minecraft"
+		if #arg_261_2 < 3 or #arg_261_2 > 4 then return false end
+		local hasArmor = false
+		local hasDragon = false
+		local mcCount = 0
+		for _, c in ipairs(arg_261_2) do
+			if not hasArmor and (c._infoId == 40752 or (c.isInfoId and c:isInfoId(40752))) then
+				hasArmor = true
+			elseif not hasDragon and (c._infoId == 12339 or (c.isInfoId and c:isInfoId(12339))) then
+				hasDragon = true
+			elseif c:isKeyword(304) or (c._info and c._info._keyword == 304) then
+				mcCount = mcCount + 1
+			end
+		end
+		if not (hasArmor and hasDragon and (mcCount + 2 == #arg_261_2)) then return false end
+		if not canCardsAchieveLink(arg_261_2, 5) then return false end
 		return true
 	elseif arg_261_1._infoId == 40748 then
 		if #arg_261_2 < 2 or #arg_261_2 > 3 then

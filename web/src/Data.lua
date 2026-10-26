@@ -1868,7 +1868,7 @@ function var_0_0.getSkillType(arg_13_0)
 		return var_0_0.SkillType.trapSpell
 	end
 
-	if arg_13_0 == 14744 or arg_13_0 == 14746 or arg_13_0 == 14754 or arg_13_0 == 14778 or arg_13_0 == 14780 or arg_13_0 == 14782 or arg_13_0 == 14788 or arg_13_0 == 14790 or arg_13_0 == 14792 or arg_13_0 == 14795 or arg_13_0 == 14796 or arg_13_0 == 14815 or arg_13_0 == 14816 or arg_13_0 == 14820 or arg_13_0 == 14826 then
+	if arg_13_0 == 14744 or arg_13_0 == 14746 or arg_13_0 == 14754 or arg_13_0 == 14778 or arg_13_0 == 14780 or arg_13_0 == 14782 or arg_13_0 == 14788 or arg_13_0 == 14790 or arg_13_0 == 14792 or arg_13_0 == 14795 or arg_13_0 == 14796 or arg_13_0 == 14815 or arg_13_0 == 14816 or arg_13_0 == 14820 or arg_13_0 == 14826 or arg_13_0 == 14827 or arg_13_0 == 14828 then
 		return var_0_0.SkillType.monster4Halo
 	end
 

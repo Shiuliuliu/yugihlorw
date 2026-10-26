@@ -82854,6 +82854,11 @@ function var_0_0.canUseInitiativeSkill(arg_36_0, arg_36_1, arg_36_2)
 		local oppoCards = arg_36_0._opponent._boardCards
 		for iter_al = 1, #oppoCards do
 			local al_card = oppoCards[iter_al]
+			if al_card and al_card:hasSkillFast(14827) and al_card:canCastMonsterSkill() then
+				if arg_36_1._type == Data.CardType.rare or arg_36_1._status == BattleData.CardStatus.rare or (arg_36_1._info and arg_36_1._info._id and arg_36_1._info._id >= 40000) or arg_36_1._originType == Data.CardType.rare then
+					return false
+				end
+			end
 			if al_card and al_card:hasSkillFast(14632) and al_card:canCastMonsterSkill() then
 				local al_star = al_card:getStar()
 				if al_star >= 14 then

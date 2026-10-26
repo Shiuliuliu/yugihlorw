@@ -6684,6 +6684,17 @@ function var_0_0._realCanCastMonsterSkill(arg_156_0, arg_156_1, arg_156_2)
 
 	if owner and owner._opponent then
 		local oppo = owner._opponent
+		if oppo._boardCards then
+			for iter_sd = 1, #oppo._boardCards do
+				local sdCard = oppo._boardCards[iter_sd]
+				if sdCard and sdCard:hasSkillFast(14827) and sdCard:canCastMonsterSkill() then
+					if arg_156_0._type == Data.CardType.rare or arg_156_0._status == BattleData.CardStatus.rare or (arg_156_0._info and arg_156_0._info._id and arg_156_0._info._id >= 40000) or arg_156_0._originType == Data.CardType.rare then
+						return false
+					end
+					break
+				end
+			end
+		end
 		local actCard = oppo._actionCard
 		if actCard and actCard._owner == oppo and (actCard:hasSkillFast(1056) or actCard._infoId == 40732 or (actCard.hasDisableMonsterBeforeAttackSkills and actCard:hasDisableMonsterBeforeAttackSkills())) then
 			local st = oppo._stepStatus
@@ -8915,7 +8926,7 @@ function var_0_0.canBeLinked(arg_262_0, arg_262_1, arg_262_2)
 		-- Allowed for Lăng Thiên Hậu if it has keyword Thánh Kỵ
 	elseif arg_262_1 and arg_262_1._infoId == 40738 and (arg_262_0:isKeyword(302) or (arg_262_0._info and arg_262_0._info._keyword == 302)) then
 		-- Allowed for KMR-Decade if it has keyword Hiệp sĩ mặt nạ
-	elseif arg_262_1 and (arg_262_1._infoId == 40748 or arg_262_1._infoId == 40751 or arg_262_1._infoId == 40752) and (arg_262_0:isKeyword(304) or (arg_262_0._info and arg_262_0._info._keyword == 304) or arg_262_0._keyword == 304) then
+	elseif arg_262_1 and (arg_262_1._infoId == 40748 or arg_262_1._infoId == 40751 or arg_262_1._infoId == 40752 or arg_262_1._infoId == 40753) and (arg_262_0:isKeyword(304) or (arg_262_0._info and arg_262_0._info._keyword == 304) or arg_262_0._keyword == 304) then
 		-- Allowed for Wither if it has keyword Minecraft
 	elseif not arg_262_2 and (arg_262_0:isMerge() and not arg_262_0:hasSkillFast(14389) or arg_262_0:isSync() or arg_262_0:isXYZ()) then
 		return false
@@ -9955,6 +9966,20 @@ end
 
 function var_0_0.getAtk(arg_282_0)
 	if arg_282_0._atk ~= nil then
+		local owner = arg_282_0._owner
+		if owner and owner._opponent and owner._opponent._boardCards then
+			local oppoBoard = owner._opponent._boardCards
+			for iter_sd = 1, #oppoBoard do
+				local sdCard = oppoBoard[iter_sd]
+				if sdCard and sdCard:hasSkillFast(14828) and sdCard:canCastMonsterSkill() then
+					local baseAtk = arg_282_0._info and (type(arg_282_0._info._atk) == "table" and (arg_282_0._info._atk[arg_282_0._level] or arg_282_0._info._atk[1]) or arg_282_0._info._atk) or 0
+					if arg_282_0._atk > baseAtk then
+						return baseAtk
+					end
+					break
+				end
+			end
+		end
 		return arg_282_0._atk
 	end
 	local owner = arg_282_0._owner

@@ -6977,4 +6977,13 @@ return {
   ["_picId"]=0,["_py"]="stevearmor",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=12008,[2]=12009,[3]=12010,[4]=14825,[5]=14826,},
   ["_skin"]={[1]=0,},
   ["_star"]=0,["_syncComponent"]={[1]={[1]=0,},},},
+  [40753]={["_atk"]={[1]=4000,},
+  ["_attackEffect"]=1,["_available"]=1,["_bgId"]=0,["_briefNameSid"]=57454,["_category"]=6,["_cost"]=0,["_descSid"]=57453,["_guideSid"]=0,["_hp"]={[1]=4000,},
+  ["_id"]=40753,["_isHide"]=0,["_joinComponent"]={[1]=0,},
+  ["_joinResult"]={[1]=0,},
+  ["_keyword"]=304,["_link"]={[1]=1,[2]=2,[3]=3,[4]=7,[5]=8,},
+  ["_linkAllCandidates"]="0.0",["_linkCandidate"]="0.0",["_linkCount"]="#>=3",["_linkSelectedCandidates"]="0.0",["_maxCount"]=3,["_nameSid"]=57452,["_nature"]=5,["_option"]=8194,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="stevecuoirongender",["_quality"]=5,["_recruitable"]=1,["_skillId"]={[1]=12002,[2]=12003,[3]=12004,[4]=14827,[5]=14828,},
+  ["_skin"]={[1]=0,},
+  ["_star"]=0,["_syncComponent"]={[1]={[1]=0,},},},
 }

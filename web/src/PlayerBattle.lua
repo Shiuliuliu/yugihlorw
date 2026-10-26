@@ -1930,7 +1930,26 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 			arg_38_1._atk = arg_38_1._atk + mcCount * 300
 		end
 
-		arg_38_1._haloedMaxAtkInc = var_38_4
+				-- Steve cuoi rong ender (40753 / 14828): quai doi phuong khong the tang ATK bang bat ki cach nao
+		if cardOwner and cardOwner._opponent and cardOwner._opponent._boardCards then
+			local oppoBoard = cardOwner._opponent._boardCards
+			local hasSteveDragon = false
+			for iter_sd = 1, #oppoBoard do
+				local sdCard = oppoBoard[iter_sd]
+				if sdCard and sdCard:hasSkillFast(14828) and sdCard:canCastMonsterSkill() then
+					hasSteveDragon = true
+					break
+				end
+			end
+			if hasSteveDragon and (arg_38_1:isMonster() or arg_38_1:isMonsterRare() or arg_38_1._type == Data.CardType.monster or arg_38_1._type == Data.CardType.rare) then
+				local baseAtk = arg_38_1._info and (type(arg_38_1._info._atk) == "table" and (arg_38_1._info._atk[arg_38_1._level] or arg_38_1._info._atk[1]) or arg_38_1._info._atk) or 0
+				if arg_38_1._atk > baseAtk then
+					arg_38_1._atk = baseAtk
+				end
+			end
+		end
+
+arg_38_1._haloedMaxAtkInc = var_38_4
 	end
 
 	if arg_38_1:isMonsterRare() or arg_38_1._type == Data.CardType.boss and arg_38_1._info._isDeamon == 1 then
