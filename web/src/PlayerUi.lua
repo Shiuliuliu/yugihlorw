@@ -1303,11 +1303,6 @@ function var_0_0.onChoiceDialogOpened(arg_x_0)
 end
 
 function var_0_0.updateBoardCardsInitialSkills(arg_54_0, force)
-	local now = os.clock and os.clock() or os.time()
-	if not force and arg_54_0._lastInitSkillUpdate and (now - arg_54_0._lastInitSkillUpdate < 0.1) then
-		return
-	end
-	arg_54_0._lastInitSkillUpdate = now
 	if arg_54_0._isController and arg_54_0._player == arg_54_0._player:getActionPlayer() and arg_54_0._battleUi and arg_54_0._battleUi._dropLayer == nil and not arg_54_0._battleUi._isAuto then
 		if arg_54_0._battleUi._btnInitiative then
 			arg_54_0._battleUi._btnInitiative:setEnabled(#arg_54_0._player:getBattleCardsByCanCastInitiativeSkill("BSDGHL", nil, nil, true) > 0)
@@ -3989,7 +3984,7 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		})
 	end
 
-		if arg_89_2._card:hasSkillFast(14805) or arg_89_2._card:isInfoId(12341) or arg_89_2._card:hasSkillFast(14825) or arg_89_2._card:isInfoId(40752) then
+	if (arg_89_2._card._status ~= BattleData.CardStatus.rare) and (arg_89_2._card:hasSkillFast(14805) or arg_89_2._card:isInfoId(12341) or (arg_89_1._choiceBase and arg_89_2._card:isSkillAtIndex(14825, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)))) then
 		var_89_1 = 0
 		if var_89_0 and #var_89_0 > 0 then
 			var_89_1 = var_89_0[1]._id
@@ -7506,7 +7501,7 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 		return true
 	end
 
-		if arg_91_2._card:hasSkillFast(14805) or arg_91_2._card:isInfoId(12341) or arg_91_2._card:hasSkillFast(14825) or arg_91_2._card:isInfoId(40752) then
+	if (arg_91_2._card._status ~= BattleData.CardStatus.rare) and (arg_91_2._card:hasSkillFast(14805) or arg_91_2._card:isInfoId(12341) or (arg_91_1._choiceBase and arg_91_2._card:isSkillAtIndex(14825, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)))) then
 		return var_91_0 == 1
 	end
 

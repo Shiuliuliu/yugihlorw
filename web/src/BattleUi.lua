@@ -1719,9 +1719,10 @@ function var_0_0.onBattleEvent(arg_60_0, arg_60_1)
 	elseif var_60_1 == BattleData.Status.deal then
 		-- block empty
 	elseif var_60_1 == BattleData.Status.use then
+		arg_60_0._playerUi:updateCardsActive()
 		arg_60_0._playerUi:updateBoardCardsActive()
 		arg_60_0._opponentUi:updateBoardCardsActive()
-		arg_60_0._playerUi:updateBoardCardsInitialSkills()
+		arg_60_0._playerUi:updateBoardCardsInitialSkills(true)
 	elseif var_60_1 == BattleData.Status.action then
 		arg_60_0:action(var_60_0)
 	elseif var_60_1 == BattleData.Status.initial_deal then

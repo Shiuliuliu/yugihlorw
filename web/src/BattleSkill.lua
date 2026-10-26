@@ -82852,7 +82852,7 @@ function var_0_0.canUseInitiativeSkill(arg_36_0, arg_36_1, arg_36_2)
 		local oppoCards = arg_36_0._opponent._boardCards
 		for iter_al = 1, #oppoCards do
 			local al_card = oppoCards[iter_al]
-			if al_card and al_card:hasSkillFast(14827) and al_card:canCastMonsterSkill() then
+			if al_card and (al_card._infoId == 40753 or al_card:hasSkillFast(14827)) and not al_card._owner._isMonsterSkillDisabled then
 				if arg_36_1._type == Data.CardType.rare or arg_36_1._status == BattleData.CardStatus.rare or (arg_36_1._info and arg_36_1._info._id and arg_36_1._info._id >= 40000) or arg_36_1._originType == Data.CardType.rare then
 					return false
 				end
@@ -82904,7 +82904,7 @@ function var_0_0.canUseInitiativeSkill(arg_36_0, arg_36_1, arg_36_2)
 		return false
 	end
 
-	if arg_36_1:isMonsterRare() and not arg_36_1:canCastMonsterSkill() and arg_36_2._id ~= 3851 and arg_36_2._id ~= 6753 then
+	if arg_36_1:isMonsterRare() and not arg_36_1:canCastMonsterSkill() and arg_36_2._id ~= 3851 and arg_36_2._id ~= 6753 and arg_36_2._id ~= 9298 and not arg_36_1:isLink() then
 		return false
 	end
 

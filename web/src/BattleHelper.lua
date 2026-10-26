@@ -6024,7 +6024,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		local var_260_5 = var_260_1[iter_260_1]
 		local id5 = (var_260_5 and var_260_5._id) or var_260_5
 
-		if not var_260_4[id5] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId == 40745 and (var_260_5._info and var_260_5._info._quality == 5 and (var_260_5:isKeyword(303) or (var_260_5._info and var_260_5._info._keyword == 303)))) or (arg_260_1._infoId == 40751 and (var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId == 40752 and (var_260_5._infoId == 40751 or var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId == 40753 and (var_260_5._infoId == 40752 or var_260_5._infoId == 12339 or var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and arg_260_1._infoId ~= 40745 and arg_260_1._infoId ~= 40751 and arg_260_1._infoId ~= 40752 and arg_260_1._infoId ~= 40753 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
+		if not var_260_4[id5] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId == 40745 and (var_260_5._info and var_260_5._info._quality == 5 and (var_260_5:isKeyword(303) or (var_260_5._info and var_260_5._info._keyword == 303)))) or (arg_260_1._infoId == 40748 and (var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304) or var_260_5._keyword == 304)) or (arg_260_1._infoId == 40751 and (var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId == 40752 and (var_260_5._infoId == 40751 or var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId == 40753 and (var_260_5._infoId == 40752 or var_260_5._infoId == 12339 or var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and arg_260_1._infoId ~= 40745 and arg_260_1._infoId ~= 40748 and arg_260_1._infoId ~= 40751 and arg_260_1._infoId ~= 40752 and arg_260_1._infoId ~= 40753 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
 			var_260_4[id5] = true
 			var_260_3[#var_260_3 + 1] = var_260_5
 		end
@@ -6308,7 +6308,7 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 					local comb = B.combinateTable(validCards, k, i_comb)
 					if comb == nil then break end
 					local hasEmptySlot = arg_261_0:getEmptyBoardPos() or arg_261_0:getEmptyLinkPos() or (#B.filterBoardCards(comb) > 0)
-					if hasEmptySlot then
+					if canCardsAchieveLink(comb, 3) and hasEmptySlot then
 						if arg_261_4 then
 							local var_261_6 = arg_261_1:getSkillIndexById(9298) or 1
 							local var_261_7 = B.getChoiceByCandidatePos(arg_261_2, comb)

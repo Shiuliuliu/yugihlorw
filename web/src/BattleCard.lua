@@ -289,7 +289,7 @@ function var_0_0.resetMonster(arg_17_0)
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldOppoTrap] = true
 	end
 
-	if (arg_17_0:hasSkillFast(12002) or (arg_17_0._info and B.tableContain(arg_17_0._info._skillId, 12002)) or arg_17_0:isInfoId(40737) or arg_17_0:isInfoId(40739) or arg_17_0:isInfoId(40745) or arg_17_0._infoId == 40745) and arg_17_0._status == BattleData.CardStatus.board then
+	if (arg_17_0:hasSkillFast(12002) or (arg_17_0._info and B.tableContain(arg_17_0._info._skillId, 12002)) or arg_17_0:isInfoId(40737) or arg_17_0:isInfoId(40739) or arg_17_0:isInfoId(40745) or arg_17_0._infoId == 40745 or arg_17_0:isInfoId(40753) or arg_17_0._infoId == 40753) and arg_17_0._status == BattleData.CardStatus.board then
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMonster] = true
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExMagic] = true
 		arg_17_0._positiveStatus[BattleData.PositiveType.shieldExTrap] = true
@@ -1230,7 +1230,7 @@ function var_0_0.hasShieldInType(arg_40_0, arg_40_1, arg_40_2)
 			if arg_40_0._tsAwakened or (arg_40_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0 then
 				return (arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap) or (arg_40_1 >= BattleData.PositiveType.shieldExMonster and arg_40_1 <= BattleData.PositiveType.shieldExTrap)
 			end
-		elseif cid == 40734 or cid == 40736 or cid == 40737 or cid == 40739 or cid == 40745 or cid == 12327 or cid == 40731 then
+		elseif cid == 40734 or cid == 40736 or cid == 40737 or cid == 40739 or cid == 40745 or cid == 40753 or cid == 12327 or cid == 40731 then
 			return (arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap) or (arg_40_1 >= BattleData.PositiveType.shieldExMonster and arg_40_1 <= BattleData.PositiveType.shieldExTrap)
 		elseif cid == 12326 then
 			if arg_40_1 >= BattleData.PositiveType.shieldMonster and arg_40_1 <= BattleData.PositiveType.shieldTrap then return true end
@@ -1264,7 +1264,7 @@ function var_0_0.hasShieldExInType(arg_41_0, arg_41_1, arg_41_2)
 			if arg_41_0._tsAwakened or (arg_41_0:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) == 0 then
 				return (arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap) or (arg_41_1 >= BattleData.PositiveType.shieldExMonster and arg_41_1 <= BattleData.PositiveType.shieldExTrap)
 			end
-		elseif cid == 40734 or cid == 40736 or cid == 40737 or cid == 40739 or cid == 40745 or cid == 12327 or cid == 40731 then
+		elseif cid == 40734 or cid == 40736 or cid == 40737 or cid == 40739 or cid == 40745 or cid == 40753 or cid == 12327 or cid == 40731 then
 			return (arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap) or (arg_41_1 >= BattleData.PositiveType.shieldExMonster and arg_41_1 <= BattleData.PositiveType.shieldExTrap)
 		elseif cid == 12326 then
 			if arg_41_1 >= BattleData.PositiveType.shieldMonster and arg_41_1 <= BattleData.PositiveType.shieldTrap then return true end
@@ -5938,7 +5938,7 @@ function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
 		end
 	end
 
-	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739 or arg_127_0:isInfoId(40745) or arg_127_0._infoId == 40745) then
+	if (arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and (arg_127_0:isInfoId(40737) or arg_127_0._infoId == 40737 or arg_127_0:isInfoId(40739) or arg_127_0._infoId == 40739 or arg_127_0:isInfoId(40745) or arg_127_0._infoId == 40745 or arg_127_0:isInfoId(40753) or arg_127_0._infoId == 40753) then
 		return true
 	end
 
@@ -6687,7 +6687,7 @@ function var_0_0._realCanCastMonsterSkill(arg_156_0, arg_156_1, arg_156_2)
 		if oppo._boardCards then
 			for iter_sd = 1, #oppo._boardCards do
 				local sdCard = oppo._boardCards[iter_sd]
-				if sdCard and sdCard:hasSkillFast(14827) and sdCard:canCastMonsterSkill() then
+				if sdCard and (sdCard._infoId == 40753 or sdCard:hasSkillFast(14827)) and not sdCard._owner._isMonsterSkillDisabled then
 					if arg_156_0._type == Data.CardType.rare or arg_156_0._status == BattleData.CardStatus.rare or (arg_156_0._info and arg_156_0._info._id and arg_156_0._info._id >= 40000) or arg_156_0._originType == Data.CardType.rare then
 						return false
 					end
@@ -6881,14 +6881,14 @@ function var_0_0.isProtectedBy6189(arg_157_0)
 end
 
 function var_0_0.disableUnderSkill(arg_158_0, arg_158_1, arg_158_2, arg_158_3, arg_158_4)
-	if arg_158_1._ignoreDisable == true or arg_158_1._sid == 14673 or arg_158_1._sid == 14719 or arg_158_1._sid == 14720 or arg_158_1._sid == 14721 or arg_158_1._sid == 14787 or (arg_158_1._sid >= 14706 and arg_158_1._sid <= 14710) then
+	if arg_158_1._ignoreDisable == true or arg_158_1._sid == 14673 or arg_158_1._sid == 14719 or arg_158_1._sid == 14720 or arg_158_1._sid == 14721 or arg_158_1._sid == 14787 or (arg_158_1._sid >= 14706 and arg_158_1._sid <= 14710) or arg_158_1._sid == 14827 or arg_158_1._sid == 14828 then
 		return false
 	end
 
 	local var_158_0 = arg_158_0._owner:getCardById(arg_158_1._cid)
 	local var_158_1 = Data._skillInfo[arg_158_1._sid]
 
-	if (var_158_0 ~= nil and var_158_0 == arg_158_0) or arg_158_1._cid == arg_158_0._id or arg_158_1._sid == 14719 or arg_158_1._sid == 14720 or arg_158_1._sid == 14721 or (arg_158_1._sid >= 14706 and arg_158_1._sid <= 14710) then
+	if (var_158_0 ~= nil and var_158_0 == arg_158_0) or arg_158_1._cid == arg_158_0._id or arg_158_1._sid == 14719 or arg_158_1._sid == 14720 or arg_158_1._sid == 14721 or (arg_158_1._sid >= 14706 and arg_158_1._sid <= 14710) or arg_158_1._sid == 14827 or arg_158_1._sid == 14828 then
 		return false
 	end
 
@@ -6896,7 +6896,7 @@ function var_0_0.disableUnderSkill(arg_158_0, arg_158_1, arg_158_2, arg_158_3, a
 		return false
 	end
 
-	if (arg_158_0:isInfoId(12326) or arg_158_0._infoId == 12326 or arg_158_0:isInfoId(40745) or arg_158_0._infoId == 40745) and ((var_158_0 ~= nil and var_158_0._owner == arg_158_0._owner) or arg_158_1._cid == 0 or arg_158_1._cid == nil) then
+	if (arg_158_0:isInfoId(12326) or arg_158_0._infoId == 12326 or arg_158_0:isInfoId(40745) or arg_158_0._infoId == 40745 or arg_158_0:isInfoId(40753) or arg_158_0._infoId == 40753) and ((var_158_0 ~= nil and var_158_0._owner == arg_158_0._owner) or arg_158_1._cid == 0 or arg_158_1._cid == nil) then
 		return false
 	end
 
@@ -9971,7 +9971,7 @@ function var_0_0.getAtk(arg_282_0)
 			local oppoBoard = owner._opponent._boardCards
 			for iter_sd = 1, #oppoBoard do
 				local sdCard = oppoBoard[iter_sd]
-				if sdCard and sdCard:hasSkillFast(14828) and sdCard:canCastMonsterSkill() then
+				if sdCard and (sdCard._infoId == 40753 or sdCard:hasSkillFast(14828)) and not sdCard._owner._isMonsterSkillDisabled then
 					local baseAtk = arg_282_0._info and (type(arg_282_0._info._atk) == "table" and (arg_282_0._info._atk[arg_282_0._level] or arg_282_0._info._atk[1]) or arg_282_0._info._atk) or 0
 					if arg_282_0._atk > baseAtk then
 						return baseAtk

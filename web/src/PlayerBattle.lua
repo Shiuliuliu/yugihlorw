@@ -1936,7 +1936,7 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 			local hasSteveDragon = false
 			for iter_sd = 1, #oppoBoard do
 				local sdCard = oppoBoard[iter_sd]
-				if sdCard and sdCard:hasSkillFast(14828) and sdCard:canCastMonsterSkill() then
+				if sdCard and (sdCard._infoId == 40753 or sdCard:hasSkillFast(14828)) and not sdCard._owner._isMonsterSkillDisabled then
 					hasSteveDragon = true
 					break
 				end
@@ -2514,7 +2514,7 @@ function var_0_0.isHaloUnderSkillDisabledByShield(arg_51_0, arg_51_1, arg_51_2)
 		return false
 	end
 
-	if var_51_0 == arg_51_1 or arg_51_2._cid == arg_51_1._id or arg_51_2._sid == 14632 or arg_51_2._sid == 14719 or arg_51_2._sid == 14777 or arg_51_2._sid == 14787 or (arg_51_2._sid >= 14706 and arg_51_2._sid <= 14710) then
+	if var_51_0 == arg_51_1 or arg_51_2._cid == arg_51_1._id or arg_51_2._sid == 14632 or arg_51_2._sid == 14719 or arg_51_2._sid == 14777 or arg_51_2._sid == 14787 or (arg_51_2._sid >= 14706 and arg_51_2._sid <= 14710) or arg_51_2._sid == 14827 or arg_51_2._sid == 14828 then
 		return false
 	end
 

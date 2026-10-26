@@ -961,10 +961,10 @@ local function patchData()
 			-- Steve cuoi rong ender (40753)
 			if Data._rareInfo and not Data._rareInfo[40753] then
 				Data._rareInfo[40753] = {
-					_atk = { 4000 },
+					_atk = { 4500 },
 					_attackEffect = 1, _available = 1, _bgId = 0,
 					_briefNameSid = 57454, _category = 6, _cost = 0,
-					_descSid = 57453, _guideSid = 0, _hp = { 4000 },
+					_descSid = 57453, _guideSid = 0, _hp = { 4500 },
 					_id = 40753, _isHide = 0, _joinComponent = { 0 },
 					_joinResult = { 0 }, _keyword = 304,
 					_link = { 1, 2, 3, 7, 8 },
@@ -976,6 +976,16 @@ local function patchData()
 					_recruitable = 1, _skillId = { 12002, 12003, 12004, 14827, 14828 },
 					_skin = { 0 }, _star = 0, _syncComponent = { { 0 } }
 				}
+			end
+			if Data._rareInfo and Data._rareInfo[40753] then
+				Data._rareInfo[40753]._atk = { 4500 }
+				Data._rareInfo[40753]._hp = { 4500 }
+			end
+			if Data._skillInfo and Data._skillInfo[14827] then
+				Data._skillInfo[14827]._isIgnoreDefend = 1
+			end
+			if Data._skillInfo and Data._skillInfo[14828] then
+				Data._skillInfo[14828]._isIgnoreDefend = 1
 			end
 			if Data._rareInfo and Data._rareInfo[40748] then
 				Data._rareInfo[40748]._quality = 4
