@@ -5705,6 +5705,8 @@ function var_0_0.getXYZCandidates(arg_254_0, arg_254_1, arg_254_2, arg_254_3, ar
 		var_254_4 = B.filterInKeywordCards(var_254_4, 301)
 	elseif arg_254_1._infoId == 40508 then
 		var_254_4 = B.filterInKeywordCards(var_254_4, 192)
+	elseif arg_254_1._infoId == 40754 then
+		var_254_4 = B.filterInCategoryCards(var_254_4, 17)
 	end
 
 	for iter_254_3 = 1, #var_254_4 do
@@ -5740,6 +5742,10 @@ function var_0_0.isValidXYZComponents(arg_255_0, arg_255_1, arg_255_2, arg_255_3
 		end
 	elseif arg_255_1._infoId == 40508 then
 		if #B.filterInKeywordCards(arg_255_2, 192) < var_255_0 then
+			return false
+		end
+	elseif arg_255_1._infoId == 40754 then
+		if #B.filterInCategoryCards(arg_255_2, 17) < var_255_0 then
 			return false
 		end
 	elseif arg_255_1._infoId == 40353 then
@@ -6098,7 +6104,10 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 	end
 
 	if arg_261_1._infoId == 40748 then
-		if #arg_261_2 < 2 or #arg_261_2 > 3 then
+		if #arg_261_2 < 2 then
+			return false
+		end
+		if arg_261_3 and (#arg_261_2 > 3 or not arg_261_1._linkCountNode:value(arg_261_2)) then
 			return false
 		end
 		if var_261_1 > B.getSumLink(arg_261_2) then
@@ -8184,7 +8193,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_1._id ~= 14779 and arg_304_1._id ~= 14781 and arg_304_1._id ~= 14783 and arg_304_1._id ~= 14784 and arg_304_1._id ~= 14785 and arg_304_1._id ~= 14786 and arg_304_1._id ~= 14793 and arg_304_1._id ~= 14800 and arg_304_1._id ~= 14804 and arg_304_1._id ~= 14805 and arg_304_1._id ~= 14807 and arg_304_1._id ~= 14809 and arg_304_1._id ~= 14811 and arg_304_1._id ~= 14812 and arg_304_1._id ~= 14825 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_1._id ~= 14779 and arg_304_1._id ~= 14781 and arg_304_1._id ~= 14783 and arg_304_1._id ~= 14784 and arg_304_1._id ~= 14785 and arg_304_1._id ~= 14786 and arg_304_1._id ~= 14793 and arg_304_1._id ~= 14800 and arg_304_1._id ~= 14804 and arg_304_1._id ~= 14805 and arg_304_1._id ~= 14807 and arg_304_1._id ~= 14809 and arg_304_1._id ~= 14811 and arg_304_1._id ~= 14812 and arg_304_1._id ~= 14825 and arg_304_1._id ~= 14831 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -8467,6 +8476,25 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		if (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14811] and pOwner._castedSkillCounts[14811] >= 1) then return false end
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled or not pOwner:canSpecialSummon(ownerCard) then return false end
 		return pOwner:getEmptyBoardPos(ownerCard) ~= nil
+	elseif arg_304_1._id == 14831 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards = arg_304_0:getBattleCardsByInfoId("B", 40754)
+			if #cards > 0 then ownerCard = cards[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		if ownerCard and ownerCard._status ~= BattleData.CardStatus.board then return false end
+		if not ownerCard or not ownerCard:canCastMonsterSkill() then return false end
+		if (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14831] and pOwner._castedSkillCounts[14831] >= 1) then return false end
+		local marks = (ownerCard:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) + (ownerCard:getBuffValue(true, BattleData.PositiveType.godMark) or 0)
+		if marks < 1 then return false end
+		local oppo = pOwner._opponent
+		if not oppo then return false end
+		local candidates = oppo:getBattleCards("BCSF")
+		if #candidates > 0 then
+			return true, candidates, 1
+		end
+		return false
 	elseif arg_304_1._id == 14812 then
 		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
 		if ownerCard == nil then

@@ -845,6 +845,10 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14811] = nil
 	arg_2_0._castedSkillCounts[14812] = nil
 	arg_2_0._opponent._castedSkillCounts[14812] = nil
+	arg_2_0._castedSkillCounts[14830] = nil
+	arg_2_0._opponent._castedSkillCounts[14830] = nil
+	arg_2_0._castedSkillCounts[14831] = nil
+	arg_2_0._opponent._castedSkillCounts[14831] = nil
 	arg_2_0._wardenHandTriggerTurn = nil
 	arg_2_0._opponent._wardenHandTriggerTurn = nil
 	arg_2_0._totemBoardProtectTurn = nil
@@ -3979,6 +3983,10 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				var_52_32 = arg_52_1:getSkillIndexById(14825)
 				if not var_52_32 or var_52_32 == 0 then var_52_32 = 4 end
 				arg_52_1._choice = var_52_32 * BattleData.ChoiceId.stage_3
+			elseif arg_52_1:hasSkillFast(14831) or arg_52_1._infoId == 40754 then
+				var_52_32 = arg_52_1:getSkillIndexById(14831)
+				if not var_52_32 or var_52_32 == 0 then var_52_32 = 5 end
+				arg_52_1._choice = var_52_32 * BattleData.ChoiceId.stage_3
 			end
 		end
 
@@ -4051,6 +4059,8 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				var_52_34 = arg_52_1:getSkillIndexById(14824) or 1
 			elseif arg_52_1:hasSkillFast(14825) or arg_52_1._infoId == 40752 then
 				var_52_34 = arg_52_1:getSkillIndexById(14825) or 4
+			elseif arg_52_1:hasSkillFast(14831) or arg_52_1._infoId == 40754 then
+				var_52_34 = arg_52_1:getSkillIndexById(14831) or 5
 			end
 		end
 

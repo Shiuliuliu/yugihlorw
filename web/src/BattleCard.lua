@@ -5983,6 +5983,13 @@ function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
 		return true
 	end
 
+	if arg_127_1 == 12007 and arg_127_0._shield12007Turn then
+		local turnId = (arg_127_0._owner and arg_127_0._owner._round or 0) * 1000 + (arg_127_0._owner and arg_127_0._owner._opponent and arg_127_0._owner._opponent._round or 0)
+		if arg_127_0._shield12007Turn == turnId then
+			return true
+		end
+	end
+
 	if (arg_127_1 == 12008 or arg_127_1 == 12009 or arg_127_1 == 12010 or arg_127_1 == 12007 or arg_127_1 == 12001) and (arg_127_0:isInfoId(40733) or arg_127_0._infoId == 40733) then
 		return true
 	end
@@ -6694,9 +6701,8 @@ function var_0_0._realCanCastMonsterSkill(arg_156_0, arg_156_1, arg_156_2)
 
 	if owner and owner._opponent then
 		local oppo = owner._opponent
-		if oppo._boardCards then
-			for iter_sd = 1, #oppo._boardCards do
-				local sdCard = oppo._boardCards[iter_sd]
+		if oppo then
+			for _, sdCard in ipairs(oppo:getBoardCards()) do
 				if sdCard and (sdCard._infoId == 40753 or sdCard:hasSkillFast(14827)) and not sdCard._owner._isMonsterSkillDisabled then
 					if arg_156_0._type == Data.CardType.rare or arg_156_0._status == BattleData.CardStatus.rare or (arg_156_0._info and arg_156_0._info._id and arg_156_0._info._id >= 40000) or arg_156_0._originType == Data.CardType.rare then
 						return false
@@ -9977,10 +9983,8 @@ end
 function var_0_0.getAtk(arg_282_0)
 	if arg_282_0._atk ~= nil then
 		local owner = arg_282_0._owner
-		if owner and owner._opponent and owner._opponent._boardCards then
-			local oppoBoard = owner._opponent._boardCards
-			for iter_sd = 1, #oppoBoard do
-				local sdCard = oppoBoard[iter_sd]
+		if owner and owner._opponent then
+			for _, sdCard in ipairs(owner._opponent:getBoardCards()) do
 				if sdCard and (sdCard._infoId == 40753 or sdCard:hasSkillFast(14828)) and not sdCard._owner._isMonsterSkillDisabled then
 					local baseAtk = arg_282_0._info and (type(arg_282_0._info._atk) == "table" and (arg_282_0._info._atk[arg_282_0._level] or arg_282_0._info._atk[1]) or arg_282_0._info._atk) or 0
 					if arg_282_0._atk > baseAtk then

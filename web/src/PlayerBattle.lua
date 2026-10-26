@@ -413,6 +413,32 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		end
 	end
 
+	-- Piglin Rider (40754 / 14832): khi la bai nay bi pha huy, quai toc xac song tren san ta nhan 12007 trong 1 luot
+	if (arg_7_1:isInfoId(40754) or arg_7_1:hasSkillFast(14832)) and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost 
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost 
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp 
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		if not isCostOrSac then
+			local owner = arg_7_1._owner
+			if owner then
+				local turnId = (owner._round or 0) * 1000 + (owner._opponent and owner._opponent._round or 0)
+				for _, ally in ipairs(owner:getBoardCards()) do
+					if ally ~= arg_7_1 and (ally:isMonster() or ally:isMonsterRare() or ally._type == Data.CardType.monster) and (ally:isCategory(17) or (ally._info and ally._info._category == 17) or ally._category == 17) then
+						ally._shield12007Turn = turnId
+						owner:incShield(ally, { 12007 }, false, false, arg_7_1._id, 12007, Data.SkillMode.using)
+					end
+				end
+			end
+		end
+	end
+
 	if (arg_7_1:hasSkillFast(14690) or arg_7_1:isInfoId(12321)) and arg_7_1:canCastMonsterSkill() and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
 		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
 			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
@@ -700,6 +726,11 @@ function var_0_0.updateWitherDebuff(arg_0)
 	local p1 = arg_0
 	local p2 = arg_0 and arg_0._opponent
 	if not p1 then return end
+	local witherNow = B.isWitherOnField(p1)
+	if not witherNow and not p1._hadWitherOnField then
+		return
+	end
+	p1._hadWitherOnField = witherNow
 	p1:account()
 	if p2 then p2:account() end
 	local scene = ClientData and ClientData._battleScene
@@ -795,6 +826,16 @@ function var_0_0.addDamage(arg_9_0, arg_9_1, arg_9_2, arg_9_3, arg_9_4, arg_9_5)
 end
 
 function var_0_0.incAtk(arg_10_0, arg_10_1, arg_10_2, arg_10_3, arg_10_4, arg_10_5, arg_10_6)
+	if arg_10_2 > 0 then
+		local cardOwner = arg_10_1._owner
+		if cardOwner and cardOwner._opponent then
+			for _, sdCard in ipairs(cardOwner._opponent:getBoardCards()) do
+				if sdCard and (sdCard._infoId == 40753 or sdCard:hasSkillFast(14828)) and not sdCard._owner._isMonsterSkillDisabled then
+					return
+				end
+			end
+		end
+	end
 	if arg_10_2 < 0 and (arg_10_1:isInfoId(40728) or arg_10_1:hasSkillFast(14691)) and arg_10_1:canCastMonsterSkill() then
 		local caster = arg_10_0:getCardById(arg_10_4)
 		if caster and caster._owner ~= arg_10_1._owner then
@@ -1931,11 +1972,9 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 		end
 
 				-- Steve cuoi rong ender (40753 / 14828): quai doi phuong khong the tang ATK bang bat ki cach nao
-		if cardOwner and cardOwner._opponent and cardOwner._opponent._boardCards then
-			local oppoBoard = cardOwner._opponent._boardCards
+		if cardOwner and cardOwner._opponent then
 			local hasSteveDragon = false
-			for iter_sd = 1, #oppoBoard do
-				local sdCard = oppoBoard[iter_sd]
+			for _, sdCard in ipairs(cardOwner._opponent:getBoardCards()) do
 				if sdCard and (sdCard._infoId == 40753 or sdCard:hasSkillFast(14828)) and not sdCard._owner._isMonsterSkillDisabled then
 					hasSteveDragon = true
 					break
@@ -1945,6 +1984,9 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 				local baseAtk = arg_38_1._info and (type(arg_38_1._info._atk) == "table" and (arg_38_1._info._atk[arg_38_1._level] or arg_38_1._info._atk[1]) or arg_38_1._info._atk) or 0
 				if arg_38_1._atk > baseAtk then
 					arg_38_1._atk = baseAtk
+				end
+				if arg_38_1._maxAtk and arg_38_1._maxAtk > baseAtk then
+					arg_38_1._maxAtk = baseAtk
 				end
 			end
 		end

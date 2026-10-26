@@ -483,8 +483,7 @@ function var_0_0.removeCardFromBoard(arg_6_0, arg_6_1)
 		end
 	end
 
-	local isMinecraft = (arg_6_1:isKeyword(304) or (arg_6_1._info and arg_6_1._info._keyword == 304) or arg_6_1._keyword == 304 or arg_6_1:isInfoId(40748) or arg_6_1._infoId == 40748 or arg_6_1:isInfoId(40750) or arg_6_1._infoId == 40750 or arg_6_1:isInfoId(40751) or arg_6_1._infoId == 40751 or arg_6_1:isInfoId(40752) or arg_6_1._infoId == 40752 or arg_6_1:isInfoId(40753) or arg_6_1._infoId == 40753)
-	if isMinecraft then
+	if arg_6_1:isInfoId(40748) or arg_6_1._infoId == 40748 or B.isWitherOnField(arg_6_0) then
 		if arg_6_0.updateWitherDebuff then
 			arg_6_0:updateWitherDebuff()
 		end
@@ -575,6 +574,11 @@ function var_0_0.removeCardFromShow(arg_10_0, arg_10_1)
 
 	if arg_10_1:hasSkillFast(4139) then
 		arg_10_1._4139Count = arg_10_1:getBuffValue(true, BattleData.PositiveType.sugarMark2)
+	end
+
+	if arg_10_1._infoId == 30597 or arg_10_1:hasSkillFast(14813) then
+		arg_10_0:account()
+		if arg_10_0._opponent then arg_10_0._opponent:account() end
 	end
 
 	arg_10_1._mark5574 = nil
@@ -963,14 +967,8 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				end
 			end
 
-			local isMinecraft = (arg_15_1:isKeyword(304) or (arg_15_1._info and arg_15_1._info._keyword == 304) or arg_15_1._keyword == 304 or arg_15_1._infoId == 40748 or arg_15_1:isInfoId(40748) or arg_15_1._infoId == 40750 or arg_15_1:isInfoId(40750) or arg_15_1._infoId == 40751 or arg_15_1:isInfoId(40751) or arg_15_1._infoId == 40752 or arg_15_1:isInfoId(40752) or arg_15_1._infoId == 40753 or arg_15_1:isInfoId(40753))
-			if isMinecraft then
-				if arg_15_1._infoId == 40748 or arg_15_1:isInfoId(40748) then
-					arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
-				end
-				if arg_15_0.updateWitherDebuff then
-					arg_15_0:updateWitherDebuff()
-				end
+			if arg_15_1._infoId == 40748 or arg_15_1:isInfoId(40748) then
+				arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
 			end
 			if arg_15_1._infoId == 12338 or arg_15_1:isInfoId(12338) then
 				arg_15_0:incShield(arg_15_1, { 12007 }, false, false, arg_15_1._id, 12007, Data.SkillMode.using)
@@ -1326,14 +1324,9 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 		lc.clearTable(arg_15_1._saved)
 	end
 
-	local isMinecraft = (arg_15_1:isKeyword(304) or (arg_15_1._info and arg_15_1._info._keyword == 304) or arg_15_1._keyword == 304 or (arg_15_1._infoId and arg_15_1._infoId >= 40748 and arg_15_1._infoId <= 40753) or (arg_15_1._infoId and arg_15_1._infoId >= 12337 and arg_15_1._infoId <= 12348))
-	if isMinecraft then
+	if arg_15_1:isInfoId(40748) or arg_15_1._infoId == 40748 or B.isWitherOnField(arg_15_0) then
 		if arg_15_0.updateWitherDebuff then
 			arg_15_0:updateWitherDebuff()
-		end
-		arg_15_0:account()
-		if arg_15_0._opponent then
-			arg_15_0._opponent:account()
 		end
 	end
 
@@ -1423,6 +1416,37 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 							arg_15_0:changeCardStatus(arg_15_1, BattleData.CardStatus.board, destStatus, sVal, wardenCard)
 							arg_15_0:account()
 						end
+					end
+				end
+			end
+		end
+	end
+
+	-- Piglin Rider (40754 / 14830): 1 luot 1 lan, doi phuong trieu hoi dac biet quai se kich hoat, bo 1 chi thi xyz, day quai doi phuong ve lai bo bai.
+	if not arg_15_1:isStatusValNotSummon() and not arg_15_1:isStatusValNormalSummon() and (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster or arg_15_1._type == Data.CardType.rare) then
+		local turnId = (arg_15_0._round or 0) * 1000 + (arg_15_0._opponent and arg_15_0._opponent._round or 0)
+		local oppo = arg_15_0._opponent
+		if oppo then
+			for _, piglin in ipairs(oppo:getBoardCards()) do
+				if (piglin:isInfoId(40754) or piglin:hasSkillFast(14830)) and piglin:canCastMonsterSkill() and piglin._piglinRiderTriggerTurn ~= turnId then
+					local marks = (piglin:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) + (piglin:getBuffValue(true, BattleData.PositiveType.godMark) or 0)
+					if marks >= 1 and arg_15_1._status == BattleData.CardStatus.board then
+						piglin._piglinRiderTriggerTurn = turnId
+						oppo._castedSkillCounts[14830] = 1
+						if (piglin:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) >= 1 then
+							piglin:removeMark(BattleData.PositiveType.xyzMark, 1)
+							piglin:accountBuffValue(true, BattleData.PositiveType.xyzMark)
+						else
+							piglin:removeMark(BattleData.PositiveType.godMark, 1)
+							piglin:accountBuffValue(true, BattleData.PositiveType.godMark)
+						end
+						
+						local targetDest = (arg_15_1._type == Data.CardType.rare or arg_15_1:isMonsterRare() or arg_15_1._sourceStatus == BattleData.CardStatus.rare) and BattleData.CardStatus.rare or BattleData.CardStatus.pile
+						local sVal = (arg_15_1._owner ~= arg_15_1._originOwner) and BattleData.CardStatusVal.b2p_oppo or nil
+						arg_15_0:changeCardStatus(arg_15_1, BattleData.CardStatus.board, targetDest, sVal, piglin)
+						arg_15_0:account()
+						oppo:account()
+						break
 					end
 				end
 			end
@@ -1660,6 +1684,11 @@ function var_0_0.addCardToShow(arg_19_0, arg_19_1)
 
 		if arg_19_1._type == Data.CardType.magic then
 			arg_19_1._magicTarget = arg_19_1._saved._magicTarget
+		end
+
+		if arg_19_1._infoId == 30597 or arg_19_1:hasSkillFast(14813) then
+			arg_19_0:account()
+			if arg_19_0._opponent then arg_19_0._opponent:account() end
 		end
 	else
 		arg_19_1._destStatus = BattleData.CardStatus.grave

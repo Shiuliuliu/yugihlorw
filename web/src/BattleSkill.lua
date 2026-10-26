@@ -369,7 +369,7 @@ function var_0_0.castSkill(arg_1_0, arg_1_1, arg_1_2, arg_1_3)
 		var_1_2 = arg_1_0:castAttackSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif (var_1_0 == Data.SkillType.defend or arg_1_2._id == 9008 or arg_1_2._id == 9771 or arg_1_2._id == 9417 or arg_1_2._id == 13761 or arg_1_2._id == 14682 or arg_1_2._id == 14683 or arg_1_2._id == 14717 or arg_1_2._id == 14730 or arg_1_2._id == 14737) and arg_1_2._id ~= 2081 and arg_1_2._id ~= 2243 and arg_1_2._id ~= 2318 and arg_1_2._id ~= 2324 and arg_1_2._id ~= 2369 and arg_1_2._id ~= 2375 and arg_1_2._id ~= 2383 and arg_1_2._id ~= 2384 and arg_1_2._id ~= 2390 and arg_1_2._id ~= 2437 and arg_1_2._id ~= 2488 and arg_1_2._id ~= 2560 and arg_1_2._id ~= 2611 and arg_1_2._id ~= 2664 and arg_1_2._id ~= 2781 and arg_1_2._id ~= 2913 and arg_1_2._id ~= 2982 and arg_1_2._id ~= 2985 then
 		var_1_2 = arg_1_0:castDefendSkill(arg_1_1, arg_1_2, arg_1_3)
-	elseif (var_1_0 == Data.SkillType.monsterSpell or arg_1_2._id == 6349 or arg_1_2._id == 6593 or arg_1_2._id == 6868 or arg_1_2._id == 2369 or arg_1_2._id == 2375 or arg_1_2._id == 14677 or arg_1_2._id == 14714 or arg_1_2._id == 14718 or arg_1_2._id == 14721 or arg_1_2._id == 14723 or arg_1_2._id == 14724 or arg_1_2._id == 14725 or arg_1_2._id == 14728 or arg_1_2._id == 14729 or arg_1_2._id == 14731 or arg_1_2._id == 14732 or arg_1_2._id == 14736 or arg_1_2._id == 14738 or arg_1_2._id == 14741 or arg_1_2._id == 14742 or arg_1_2._id == 14745 or arg_1_2._id == 14747 or arg_1_2._id == 14748 or arg_1_2._id == 14751 or arg_1_2._id == 14763 or arg_1_2._id == 14764 or arg_1_2._id == 14765 or arg_1_2._id == 14766 or arg_1_2._id == 14770 or arg_1_2._id == 14774 or arg_1_2._id == 14776 or arg_1_2._id == 14779 or arg_1_2._id == 14781 or arg_1_2._id == 14783 or arg_1_2._id == 14784 or arg_1_2._id == 14785 or arg_1_2._id == 14786 or arg_1_2._id == 14789 or arg_1_2._id == 14793 or arg_1_2._id == 14794 or arg_1_2._id == 14798 or arg_1_2._id == 14804 or arg_1_2._id == 2383 or arg_1_2._id == 2384 or arg_1_2._id == 2390 or arg_1_2._id == 2437 or arg_1_2._id == 2488 or arg_1_2._id == 2560 or arg_1_2._id == 2611 or arg_1_2._id == 2664 or arg_1_2._id == 2781 or arg_1_2._id == 9251 or arg_1_2._id == 9253 or arg_1_2._id == 9254 or arg_1_2._id == 9257 or arg_1_2._id == 9259 or arg_1_2._id == 9261 or arg_1_2._id == 9265 or arg_1_2._id == 9403 or arg_1_2._id == 9414 or arg_1_2._id == 9453 or arg_1_2._id == 9462 or arg_1_2._id == 9507 or arg_1_2._id == 9685 or arg_1_2._id == 13007 or arg_1_2._id == 13975 or arg_1_2._id == 7824) and arg_1_2._id ~= 3705 and arg_1_2._id ~= 3850 then
+	elseif (var_1_0 == Data.SkillType.monsterSpell or arg_1_2._id == 6349 or arg_1_2._id == 6593 or arg_1_2._id == 6868 or arg_1_2._id == 2369 or arg_1_2._id == 2375 or arg_1_2._id == 14677 or arg_1_2._id == 14714 or arg_1_2._id == 14718 or arg_1_2._id == 14721 or arg_1_2._id == 14723 or arg_1_2._id == 14724 or arg_1_2._id == 14725 or arg_1_2._id == 14728 or arg_1_2._id == 14729 or arg_1_2._id == 14731 or arg_1_2._id == 14732 or arg_1_2._id == 14736 or arg_1_2._id == 14738 or arg_1_2._id == 14741 or arg_1_2._id == 14742 or arg_1_2._id == 14745 or arg_1_2._id == 14747 or arg_1_2._id == 14748 or arg_1_2._id == 14751 or arg_1_2._id == 14763 or arg_1_2._id == 14764 or arg_1_2._id == 14765 or arg_1_2._id == 14766 or arg_1_2._id == 14770 or arg_1_2._id == 14774 or arg_1_2._id == 14776 or arg_1_2._id == 14779 or arg_1_2._id == 14781 or arg_1_2._id == 14783 or arg_1_2._id == 14784 or arg_1_2._id == 14785 or arg_1_2._id == 14786 or arg_1_2._id == 14789 or arg_1_2._id == 14793 or arg_1_2._id == 14794 or arg_1_2._id == 14798 or arg_1_2._id == 14804 or arg_1_2._id == 2383 or arg_1_2._id == 2384 or arg_1_2._id == 2390 or arg_1_2._id == 2437 or arg_1_2._id == 2488 or arg_1_2._id == 2560 or arg_1_2._id == 2611 or arg_1_2._id == 2664 or arg_1_2._id == 2781 or arg_1_2._id == 9251 or arg_1_2._id == 9253 or arg_1_2._id == 9254 or arg_1_2._id == 9257 or arg_1_2._id == 9259 or arg_1_2._id == 9261 or arg_1_2._id == 9265 or arg_1_2._id == 9403 or arg_1_2._id == 9414 or arg_1_2._id == 9453 or arg_1_2._id == 9462 or arg_1_2._id == 9507 or arg_1_2._id == 9685 or arg_1_2._id == 13007 or arg_1_2._id == 13975 or arg_1_2._id == 7824 or arg_1_2._id == 14831) and arg_1_2._id ~= 3705 and arg_1_2._id ~= 3850 then
 		var_1_2 = arg_1_0:castMonsterSpellSkill(arg_1_1, arg_1_2, arg_1_3)
 	elseif var_1_0 == Data.SkillType.monsterHalo or arg_1_2._id == 14787 or arg_1_2._id == 2081 or arg_1_2._id == 2913 or arg_1_2._id == 9512 or arg_1_2._id == 13471 or arg_1_2._id == 13779 then
 		var_1_2 = arg_1_0:castMonsterHaloSkill(arg_1_1, arg_1_2, arg_1_3)
@@ -11434,6 +11434,41 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 			arg_4_1._positiveStatus[BattleData.PositiveType.defendPosture] = true
 			arg_4_1._actionIndex = 1
 			pOwner:setCardStatus(arg_4_1, BattleData.CardStatus.board, arg_4_1._id, 14811, arg_4_3, BattleData.CardStatusVal.g2b_special)
+			var_4_13 = true
+		end
+	elseif var_4_4 == 14831 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		pOwner._castedSkillCounts[14831] = (pOwner._castedSkillCounts[14831] or 0) + 1
+		arg_4_0._castedSkillCounts[14831] = (arg_4_0._castedSkillCounts[14831] or 0) + 1
+
+		local oppo = pOwner._opponent
+		local chosenCard = nil
+		if var_4_15 and var_4_15 > 0 and oppo then
+			local cid = var_4_15 % BattleData.UseCardId.id_group
+			chosenCard = oppo:getCardById(cid) or oppo:getCardById(var_4_15) or arg_4_0:getCardById(cid) or arg_4_0:getCardById(var_4_15)
+		end
+		if not chosenCard and oppo then
+			local candidates = oppo:getBattleCards("BCSF")
+			if #candidates > 0 then
+				chosenCard = candidates[1]
+			end
+		end
+
+		if chosenCard and (chosenCard._status == BattleData.CardStatus.board or chosenCard._status == BattleData.CardStatus.show or chosenCard._status == BattleData.CardStatus.cover or chosenCard._status == BattleData.CardStatus.field) then
+			if (ownerCard:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) >= 1 then
+				ownerCard:removeMark(BattleData.PositiveType.xyzMark, 1)
+				ownerCard:accountBuffValue(true, BattleData.PositiveType.xyzMark)
+			else
+				ownerCard:removeMark(BattleData.PositiveType.godMark, 1)
+				ownerCard:accountBuffValue(true, BattleData.PositiveType.godMark)
+			end
+
+			local targetDest = (chosenCard._type == Data.CardType.rare or chosenCard:isMonsterRare() or chosenCard._sourceStatus == BattleData.CardStatus.rare) and BattleData.CardStatus.rare or BattleData.CardStatus.hand
+			local sVal = (chosenCard._owner ~= chosenCard._originOwner) and BattleData.CardStatusVal.b2h_oppo or nil
+			chosenCard._owner:changeCardStatus(chosenCard, chosenCard._status, targetDest, sVal, ownerCard)
+			chosenCard._owner:account()
+			pOwner:account()
 			var_4_13 = true
 		end
 	elseif var_4_4 == 14812 then
@@ -55715,6 +55750,29 @@ function var_0_0.castTrapSkill2(arg_11_0, arg_11_1, arg_11_2, arg_11_3)
 		end
 	elseif var_11_4 == 14684 or var_11_4 == 14685 or var_11_4 == 14686 then
 		return arg_11_0:castMonster4HaloSkill(arg_11_1, arg_11_2, arg_11_3)
+	elseif var_11_4 == 14812 then
+		local ownerCard = var_11_1 or arg_11_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_11_0
+		pOwner._castedSkillCounts[14812] = (pOwner._castedSkillCounts[14812] or 0) + 1
+		arg_11_0._castedSkillCounts[14812] = (arg_11_0._castedSkillCounts[14812] or 0) + 1
+
+		local chosenCard = nil
+		if var_11_15 and var_11_15 > 0 then
+			local cid = var_11_15 % BattleData.UseCardId.id_group
+			chosenCard = pOwner:getCardById(cid) or pOwner:getCardById(var_11_15)
+		end
+		if not chosenCard then
+			for _, c in ipairs(pOwner._pileCards) do
+				if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isCategory(17) or (c._info and c._info._category == 17)) and (c:isKeyword(304) or (c._info and c._info._keyword == 304)) then
+					chosenCard = c
+					break
+				end
+			end
+		end
+		if chosenCard and chosenCard._status == BattleData.CardStatus.pile then
+			pOwner:setCardStatus(chosenCard, BattleData.CardStatus.hand, arg_11_1._id, 14812, arg_11_3, BattleData.CardStatusVal.p2h_deal)
+			var_11_13 = true
+		end
 	end
 
 	return var_11_13

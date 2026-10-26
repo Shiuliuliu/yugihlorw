@@ -447,7 +447,7 @@ function var_0_0.accountStatus(arg_20_0, arg_20_1, arg_20_2)
 		arg_20_2 = var_20_0
 	end
 
-	if var_20_3 == BattleData.CardStatus.board or var_20_2 == BattleData.CardStatus.board then
+	if var_20_3 == BattleData.CardStatus.board or var_20_2 == BattleData.CardStatus.board or var_20_3 == BattleData.CardStatus.show or var_20_2 == BattleData.CardStatus.show then
 		if arg_20_0._pBoardCards then
 			for _, spr in pairs(arg_20_0._pBoardCards) do
 				if spr and spr.updateAtkHp then spr:updateAtkHp() end

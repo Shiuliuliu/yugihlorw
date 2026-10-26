@@ -57456,3 +57456,12 @@ Phong Tỏa Thêm
 Khi lá bài này còn trên sân: Đối phương không thể kích hoạt kĩ năng từ bộ bài thêm.
 Uy Áp Thần Long
 Khi lá bài này còn trên sân: Quái đối phương không thể tăng ATK bằng bất kì cách nào.
+piglin-rider
+[Xác Sống / XYZ / Hiệu Ứng]\n3 quái 3 sao tộc xác sống\n+ 2797 Lá Chắn Năng Lượng.\n+ 13779 (Khiêu khích).\n+ 1 lượt 1 lần, đối phương triệu hồi đặc biệt quái sẽ kích hoạt, bỏ 1 chỉ thị xyz, đẩy quái đối phương về lại bộ bài.\n+ Kĩ năng chủ động: 1 lượt 1 lần, bỏ 1 chỉ thị xyz, chọn 1 bài trên sân đối phương đẩy về tay.\n+ Khi lá bài này bị phá hủy, quái tộc "xác sống" trên sân ta nhận 12007 trong 1 lượt.
+piglin-rider
+Phản Chấn Hư Không
+1 lượt 1 lần, đối phương triệu hồi đặc biệt quái sẽ kích hoạt, bỏ 1 chỉ thị xyz, đẩy quái đối phương về lại bộ bài.
+Trục Xuất Chiến Trường
+Kĩ năng chủ động: 1 lượt 1 lần, bỏ 1 chỉ thị xyz, chọn 1 bài trên sân đối phương đẩy về tay.
+Tro Tàn Xác Sống
+Khi lá bài này bị phá hủy, quái tộc "xác sống" trên sân ta nhận 12007 trong 1 lượt.

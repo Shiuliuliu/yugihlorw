@@ -257,6 +257,8 @@
 		'card_ico_40752_3': { path: 'res/new/thumb/card_ico_40752_3.png', w: 82, h: 82 },
 		'card_ico_40753': { path: 'res/new/thumb/card_ico_40753.png', w: 82, h: 82 },
 		'card_ico_40753_3': { path: 'res/new/thumb/card_ico_40753_3.png', w: 82, h: 82 },
+		'card_ico_40754': { path: 'res/new/thumb/card_ico_40754.png', w: 82, h: 82 },
+		'card_ico_40754_3': { path: 'res/new/thumb/card_ico_40754_3.png', w: 82, h: 82 },
 		'card_ico_12341': { path: 'res/new/thumb/card_ico_12341.png', w: 82, h: 82 },
 		'card_ico_12341_3': { path: 'res/new/thumb/card_ico_12341_3.png', w: 82, h: 82 },
 		'card_ico_12342': { path: 'res/new/thumb/card_ico_12342.png', w: 82, h: 82 },

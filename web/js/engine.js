@@ -665,6 +665,8 @@
 		'card_ico_40752_3': 'res/new/thumb/card_ico_40752_3.png',
 		'card_ico_40753': 'res/new/thumb/card_ico_40753.png',
 		'card_ico_40753_3': 'res/new/thumb/card_ico_40753_3.png',
+		'card_ico_40754': 'res/new/thumb/card_ico_40754.png',
+		'card_ico_40754_3': 'res/new/thumb/card_ico_40754_3.png',
 		'card_ico_12341': 'res/new/thumb/card_ico_12341.png',
 		'card_ico_12341_3': 'res/new/thumb/card_ico_12341_3.png',
 		'card_ico_12342': 'res/new/thumb/card_ico_12342.png',

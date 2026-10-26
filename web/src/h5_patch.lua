@@ -959,6 +959,25 @@ local function patchData()
 				}
 			end
 			-- Steve cuoi rong ender (40753)
+			-- Piglin Rider (40754)
+			if Data._rareInfo and not Data._rareInfo[40754] then
+				Data._rareInfo[40754] = {
+					_atk = { 2000 },
+					_attackEffect = 1, _available = 1, _bgId = 0,
+					_briefNameSid = 57461, _category = 17, _cost = 0,
+					_descSid = 57460, _guideSid = 0, _hp = { 2400 },
+					_id = 40754, _isHide = 0, _joinComponent = { 3, 3, 3 },
+					_joinResult = { 0 }, _keyword = 304,
+					_link = { 0 },
+					_linkAllCandidates = "0.0", _linkCandidate = "0.0",
+					_linkCount = "0.0", _linkSelectedCandidates = "0.0",
+					_maxCount = 3, _nameSid = 57459, _nature = 5,
+					_option = 1026, _originId = 0, _packageId = { 0 },
+					_picId = 0, _py = "piglin-rider", _quality = 5,
+					_recruitable = 1, _skillId = { 6753, 2797, 13779, 14830, 14831, 14832 },
+					_skin = { 0 }, _star = 3, _syncComponent = { { 0 } }
+				}
+			end
 			if Data._rareInfo and not Data._rareInfo[40753] then
 				Data._rareInfo[40753] = {
 					_atk = { 4500 },
@@ -1629,6 +1648,9 @@ local function patchData()
 				Data._skillInfo[14824] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57444, _effectVal = { 0 }, _id = 14824, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57443, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
 				Data._skillInfo[14825] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57449, _effectVal = { 0 }, _id = 14825, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57448, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14826] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57451, _effectVal = { 0 }, _id = 14826, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 57450, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 300 } }
+				Data._skillInfo[14830] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57463, _effectVal = { 0 }, _id = 14830, _isIgnoreDefend = 1, _modes = { 91 }, _nameSid = 57462, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 40754 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14831] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57465, _effectVal = { 0 }, _id = 14831, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57464, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 5, _refCards = { 40754 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 1, _val = { 0 } }
+				Data._skillInfo[14832] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57467, _effectVal = { 0 }, _id = 14832, _isIgnoreDefend = 0, _modes = { 22 }, _nameSid = 57466, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 40754 }, _refSkills = { 12007 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 			end
 
 			if Data._skillInfo and not Data._skillInfo[14793] then
