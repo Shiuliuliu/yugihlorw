@@ -3432,4 +3432,7 @@ return {
   [21149]={["_available"]=1,["_briefNameSid"]=57362,["_descSid"]=57361,["_guideSid"]=0,["_id"]=21149,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=304,["_maxCount"]=3,["_nameSid"]=57360,["_option"]=1,["_originId"]=0,["_packageId"]={[1]=0,},
   ["_picId"]=0,["_py"]="taovang",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14803,[2]=14797,[3]=9232,},
   ["_targetType"]=0,["_type"]=11,},
+  [21150]={["_available"]=1,["_briefNameSid"]=57437,["_descSid"]=57436,["_guideSid"]=0,["_id"]=21150,["_isHide"]=0,["_isSummon"]=0,["_keyword"]=304,["_maxCount"]=3,["_nameSid"]=57435,["_option"]=1,["_originId"]=0,["_packageId"]={[1]=0,},
+  ["_picId"]=0,["_py"]="wanderingtrader",["_quality"]=4,["_recruitable"]=1,["_skillId"]={[1]=14823,},
+  ["_targetType"]=0,["_type"]=11,},
 }

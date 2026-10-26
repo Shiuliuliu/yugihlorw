@@ -3656,6 +3656,16 @@ function var_0_0.getSkillsByMode(arg_118_0, arg_118_1, arg_118_2)
 			end
 		end
 
+				if arg_118_1 == Data.SkillMode.under_attack_damage and (arg_118_0:isKeyword(304) or (arg_118_0._info and arg_118_0._info._keyword == 304)) then
+			local var_118_tatu_c, var_118_tatu_s = arg_118_0._owner:getBattleCardsBySkills("H", {
+				14818
+			}, Data.CARD_MAX_LEVEL, arg_118_0)
+
+			for iter_tatu = 1, #var_118_tatu_s do
+				table.insert(var_118_0, var_118_tatu_s[iter_tatu])
+			end
+		end
+
 		if arg_118_1 == Data.SkillMode.under_attack_damage and arg_118_0:isKeyword(Data._skillInfo[6687]._refCards[1]) then
 			local var_118_73, var_118_74 = arg_118_0._owner:getBattleCardsBySkills("G", {
 				6687
@@ -8905,7 +8915,7 @@ function var_0_0.canBeLinked(arg_262_0, arg_262_1, arg_262_2)
 		-- Allowed for Lăng Thiên Hậu if it has keyword Thánh Kỵ
 	elseif arg_262_1 and arg_262_1._infoId == 40738 and (arg_262_0:isKeyword(302) or (arg_262_0._info and arg_262_0._info._keyword == 302)) then
 		-- Allowed for KMR-Decade if it has keyword Hiệp sĩ mặt nạ
-	elseif arg_262_1 and arg_262_1._infoId == 40748 and (arg_262_0:isKeyword(304) or (arg_262_0._info and arg_262_0._info._keyword == 304) or arg_262_0._keyword == 304) then
+	elseif arg_262_1 and (arg_262_1._infoId == 40748 or arg_262_1._infoId == 40751 or arg_262_1._infoId == 40752) and (arg_262_0:isKeyword(304) or (arg_262_0._info and arg_262_0._info._keyword == 304) or arg_262_0._keyword == 304) then
 		-- Allowed for Wither if it has keyword Minecraft
 	elseif not arg_262_2 and (arg_262_0:isMerge() and not arg_262_0:hasSkillFast(14389) or arg_262_0:isSync() or arg_262_0:isXYZ()) then
 		return false

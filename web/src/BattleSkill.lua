@@ -2141,6 +2141,35 @@ function var_0_0.castDefendSkill(arg_3_0, arg_3_1, arg_3_2, arg_3_3)
 				var_3_13 = true
 			end
 		end
+	elseif var_3_4 == 14817 then
+		if arg_3_1._owner._castedSkillCounts[var_3_4] == nil and arg_3_1._status == BattleData.CardStatus.board then
+			arg_3_1._owner._castedSkillCounts[var_3_4] = 1
+			arg_3_1:disableUnderSkillByLeftBoard(var_3_5, var_3_4, arg_3_3)
+			arg_3_0:setCardStatus(arg_3_1, BattleData.CardStatus.grave, var_3_5, var_3_4, arg_3_3, BattleData.CardStatusVal.x2gl_cost)
+
+			local oppo = arg_3_0._opponent
+			local oppoHand = oppo and oppo._handCards
+			if oppoHand and #oppoHand > 0 then
+				local toBanish = {}
+				local count = math.min(2, #oppoHand)
+				for iter_bh = 1, count do
+					table.insert(toBanish, oppoHand[iter_bh])
+				end
+				for _, hc in ipairs(toBanish) do
+					oppo:setCardStatus(hc, BattleData.CardStatus.leave, var_3_5, var_3_4, arg_3_3, BattleData.CardStatusVal.h2l_drop)
+				end
+			end
+
+			if oppo and oppo._fortress then
+				arg_3_0:incNegativeStatus(oppo._fortress, {
+					BattleData.NegativeType.boardLock
+				}, false, var_3_5, var_3_4, arg_3_3)
+				arg_3_0:incNegativeValue(oppo._fortress, BattleData.NegativeType.boardLock, 1, Data.AggregateType.table, var_3_5, var_3_4, arg_3_3)
+				arg_3_0:incNegativeValue(oppo._fortress, BattleData.NegativeType.boardLock, 2, Data.AggregateType.table, var_3_5, var_3_4, arg_3_3)
+			end
+
+			var_3_13 = true
+		end
 	elseif var_3_4 == 2037 then
 		if arg_3_1._owner._castedSkillCounts[var_3_4] == nil then
 			local var_3_39 = B.filterUniqueInfoIdCards(arg_3_0:filterCanChangeToHandCards(B.filterNotHasChangeStatusUnderSkillCards(B.filterInKeywordCards(arg_3_0:getBattleCardsByType("P", Data.CardType.monster), var_3_6._refCards[1]), {
@@ -11289,6 +11318,206 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 
 		pOwner._isSpecialSummonDisabledBy14804 = true
 		var_4_13 = true
+	elseif var_4_4 == 14805 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		pOwner._castedSkillCounts[14805] = (pOwner._castedSkillCounts[14805] or 0) + 1
+		arg_4_0._castedSkillCounts[14805] = (arg_4_0._castedSkillCounts[14805] or 0) + 1
+
+		local targetCard = nil
+		if var_4_15 > 0 and pOwner then
+			local cid = var_4_15 % BattleData.UseCardId.id_group
+			targetCard = pOwner:getCardById(cid) or pOwner:getCardById(var_4_15)
+		end
+		if targetCard == nil or targetCard._status ~= BattleData.CardStatus.board then
+			for _, c in ipairs(pOwner:getBoardCards()) do
+				if c:isCategory(17) or (c._info and c._info._category == 17) then
+					targetCard = c
+					break
+				end
+			end
+		end
+
+		if targetCard and targetCard._status == BattleData.CardStatus.board then
+			pOwner:setCardStatus(targetCard, BattleData.CardStatus.grave, arg_4_1._id, 14805, arg_4_3, BattleData.CardStatusVal.b2g_sacrifice)
+		end
+
+		local emptyPos = pOwner:getEmptyBoardPos(arg_4_1)
+		if emptyPos and arg_4_1._status == BattleData.CardStatus.grave then
+			arg_4_1._saved._pos = emptyPos
+			pOwner:setCardStatus(arg_4_1, BattleData.CardStatus.board, arg_4_1._id, 14805, arg_4_3, BattleData.CardStatusVal.g2b_special)
+			var_4_13 = true
+		end
+	elseif var_4_4 == 14807 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		pOwner._castedSkillCounts[14807] = (pOwner._castedSkillCounts[14807] or 0) + 1
+		arg_4_0._castedSkillCounts[14807] = (arg_4_0._castedSkillCounts[14807] or 0) + 1
+
+		if arg_4_1._status == BattleData.CardStatus.board then
+			pOwner:setCardStatus(arg_4_1, BattleData.CardStatus.grave, arg_4_1._id, 14807, arg_4_3, BattleData.CardStatusVal.b2g_sacrifice)
+		end
+
+		local summonedCount = 0
+		local targets = {}
+		for _, c in ipairs(pOwner._pileCards) do
+			if (c._infoId == 12343 or c:isInfoId(12343)) and summonedCount < 3 then
+				table.insert(targets, { card = c, from = "pile" })
+				summonedCount = summonedCount + 1
+			end
+		end
+		if summonedCount < 3 then
+			for _, c in ipairs(pOwner._handCards) do
+				if (c._infoId == 12343 or c:isInfoId(12343)) and summonedCount < 3 then
+					table.insert(targets, { card = c, from = "hand" })
+					summonedCount = summonedCount + 1
+				end
+			end
+		end
+
+		for _, item in ipairs(targets) do
+			local c = item.card
+			local ePos = pOwner:getEmptyBoardPos(c)
+			if ePos and pOwner:canSpecialSummon(c) then
+				c._saved._pos = ePos
+				local sVal = (item.from == "pile") and BattleData.CardStatusVal.p2b_special or BattleData.CardStatusVal.h2b_special
+				pOwner:setCardStatus(c, BattleData.CardStatus.board, arg_4_1._id, 14807, arg_4_3, sVal)
+			end
+		end
+		var_4_13 = true
+	elseif var_4_4 == 14809 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		pOwner._castedSkillCounts[14809] = (pOwner._castedSkillCounts[14809] or 0) + 1
+		arg_4_0._castedSkillCounts[14809] = (arg_4_0._castedSkillCounts[14809] or 0) + 1
+
+		if arg_4_1._status == BattleData.CardStatus.board then
+			pOwner:setCardStatus(arg_4_1, BattleData.CardStatus.grave, arg_4_1._id, 14809, arg_4_3, BattleData.CardStatusVal.b2g_sacrifice)
+		end
+
+		local summonedCount = 0
+		local targets = {}
+		for _, c in ipairs(pOwner._pileCards) do
+			if (c._infoId == 12342 or c:isInfoId(12342)) and summonedCount < 3 then
+				table.insert(targets, { card = c, from = "pile" })
+				summonedCount = summonedCount + 1
+			end
+		end
+		if summonedCount < 3 then
+			for _, c in ipairs(pOwner._handCards) do
+				if (c._infoId == 12342 or c:isInfoId(12342)) and summonedCount < 3 then
+					table.insert(targets, { card = c, from = "hand" })
+					summonedCount = summonedCount + 1
+				end
+			end
+		end
+
+		for _, item in ipairs(targets) do
+			local c = item.card
+			local ePos = pOwner:getEmptyBoardPos(c)
+			if ePos and pOwner:canSpecialSummon(c) then
+				c._saved._pos = ePos
+				local sVal = (item.from == "pile") and BattleData.CardStatusVal.p2b_special or BattleData.CardStatusVal.h2b_special
+				pOwner:setCardStatus(c, BattleData.CardStatus.board, arg_4_1._id, 14809, arg_4_3, sVal)
+			end
+		end
+		var_4_13 = true
+	elseif var_4_4 == 14811 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		pOwner._castedSkillCounts[14811] = (pOwner._castedSkillCounts[14811] or 0) + 1
+		arg_4_0._castedSkillCounts[14811] = (arg_4_0._castedSkillCounts[14811] or 0) + 1
+
+		local emptyPos = pOwner:getEmptyBoardPos(arg_4_1)
+		if emptyPos and arg_4_1._status == BattleData.CardStatus.grave then
+			arg_4_1._saved._pos = emptyPos
+			arg_4_1._positiveStatus[BattleData.PositiveType.defendPosture] = true
+			arg_4_1._actionIndex = 1
+			pOwner:setCardStatus(arg_4_1, BattleData.CardStatus.board, arg_4_1._id, 14811, arg_4_3, BattleData.CardStatusVal.g2b_special)
+			var_4_13 = true
+		end
+	elseif var_4_4 == 14812 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		pOwner._castedSkillCounts[14812] = (pOwner._castedSkillCounts[14812] or 0) + 1
+		arg_4_0._castedSkillCounts[14812] = (arg_4_0._castedSkillCounts[14812] or 0) + 1
+
+		for _, c in ipairs(pOwner._pileCards) do
+			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isCategory(17) or (c._info and c._info._category == 17)) and (c:isKeyword(304) or (c._info and c._info._keyword == 304)) then
+				pOwner:setCardStatus(c, BattleData.CardStatus.hand, arg_4_1._id, 14812, arg_4_3, BattleData.CardStatusVal.p2h_deal)
+				var_4_13 = true
+				break
+			end
+		end
+	elseif var_4_4 == 14819 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		local graveUndead = nil
+		for _, c in ipairs(pOwner:getBattleCards("G")) do
+			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isCategory(17) or (c._info and c._info._category == 17)) then
+				graveUndead = c
+				break
+			end
+		end
+		if graveUndead then
+			pOwner:setCardStatus(graveUndead, BattleData.CardStatus.leave, arg_4_1._id, 14819, arg_4_3, BattleData.CardStatusVal.g2l_cost)
+			local rareWolf = nil
+			for _, rc in ipairs(pOwner._rareCards) do
+				if rc._infoId == 40750 or rc:isInfoId(40750) then
+					rareWolf = rc
+					break
+				end
+			end
+			if rareWolf then
+				local ePos = pOwner:getEmptyBoardPos(rareWolf)
+				if ePos and pOwner:canSpecialSummon(rareWolf) then
+					rareWolf._saved._pos = ePos
+					pOwner:setCardStatus(rareWolf, BattleData.CardStatus.board, arg_4_1._id, 14819, arg_4_3, BattleData.CardStatusVal.r2b_special)
+					var_4_13 = true
+				end
+			end
+		end
+	elseif var_4_4 == 14824 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		pOwner._castedSkillCounts[14824] = (pOwner._castedSkillCounts[14824] or 0) + 1
+		arg_4_0._castedSkillCounts[14824] = (arg_4_0._castedSkillCounts[14824] or 0) + 1
+
+		for _, c in ipairs(pOwner._pileCards) do
+			if (c:isMagic() or c:isTrap() or c._type == Data.CardType.magic or c._type == Data.CardType.trap) and (c:isKeyword(304) or (c._info and c._info._keyword == 304)) then
+				pOwner:setCardStatus(c, BattleData.CardStatus.hand, arg_4_1._id, 14824, arg_4_3, BattleData.CardStatusVal.p2h_deal)
+				var_4_13 = true
+				break
+			end
+		end
+	elseif var_4_4 == 14825 then
+		local ownerCard = var_4_1 or arg_4_1
+		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
+		pOwner._castedSkillCounts[14825] = (pOwner._castedSkillCounts[14825] or 0) + 1
+		arg_4_0._castedSkillCounts[14825] = (arg_4_0._castedSkillCounts[14825] or 0) + 1
+
+		local targetCard = nil
+		if var_4_15 > 0 and pOwner then
+			local cid = var_4_15 % BattleData.UseCardId.id_group
+			targetCard = pOwner:getCardById(cid) or pOwner:getCardById(var_4_15)
+		end
+		if targetCard == nil or targetCard._status ~= BattleData.CardStatus.grave then
+			for _, c in ipairs(pOwner:getBattleCards("G")) do
+				if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isKeyword(304) or (c._info and c._info._keyword == 304)) then
+					targetCard = c
+					break
+				end
+			end
+		end
+
+		if targetCard and targetCard._status == BattleData.CardStatus.grave then
+			local emptyPos = pOwner:getEmptyBoardPos(targetCard)
+			if emptyPos and pOwner:canSpecialSummon(targetCard) then
+				targetCard._saved._pos = emptyPos
+				pOwner:setCardStatus(targetCard, BattleData.CardStatus.board, arg_4_1._id, 14825, arg_4_3, BattleData.CardStatusVal.g2b_special)
+				var_4_13 = true
+			end
+		end
 	elseif var_4_4 == 14793 then
 		local ownerCard = var_4_1 or arg_4_1
 		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
@@ -24530,6 +24759,24 @@ function var_0_0.castMonsterHaloSkill(arg_5_0, arg_5_1, arg_5_2, arg_5_3)
 		if var_5_603 ~= nil then
 			arg_5_0:setCardStatus(var_5_603, BattleData.CardStatus.board, var_5_5, var_5_4, arg_5_3)
 
+			var_5_13 = true
+		end
+	elseif var_5_4 == 14818 then
+		if arg_5_1 ~= var_5_1 and var_5_1._status == BattleData.CardStatus.hand and #var_5_1._owner:filterCanChangeToBoardCards({
+			var_5_1
+		}) > 0 and (arg_5_1 == var_5_3 or not var_5_3:hasDisableMonsterBeforeAttackSkills()) then
+			arg_5_1:disableUnderSkillByDestroy(var_5_5, var_5_4, arg_5_3)
+
+			local var_5_604 = arg_5_1._owner._fortress._underSkills
+			for iter_5_81 = 1, #var_5_604 do
+				local var_5_605 = var_5_604[iter_5_81]
+				if var_5_605._damage ~= nil and var_5_605._damage > 0 and not var_5_605._disabled and var_5_605._sid ~= var_5_4 then
+					var_5_605._disabled = true
+				end
+			end
+
+			var_5_1._saved._addSkills = { 4339 }
+			arg_5_0:setCardStatus(var_5_1, BattleData.CardStatus.board, var_5_5, var_5_4, arg_5_3, BattleData.CardStatusVal.h2b_def)
 			var_5_13 = true
 		end
 	elseif var_5_4 == 6687 then
@@ -43536,6 +43783,38 @@ function var_0_0.castMonster4HaloSkill(arg_8_0, arg_8_1, arg_8_2, arg_8_3)
 					var_8_13 = true
 				end
 			end
+		end
+	elseif var_8_4 == 14816 then
+		if var_8_1._status == BattleData.CardStatus.board and arg_8_1._owner == var_8_1._owner._opponent and arg_8_1:isMonster() then
+			local oppoOwner = arg_8_1._owner or var_8_8
+			local oppoPos = arg_8_1._pos
+			local creeperOwner = var_8_1._owner
+
+			if arg_8_1.resetBuffByType then
+				if BattleData.PositiveType.shieldMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldMonster) end
+				if BattleData.PositiveType.shieldExMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldExMonster) end
+				if BattleData.PositiveType.shieldHaloMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldHaloMonster) end
+				if BattleData.PositiveType.shieldOppoMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldOppoMonster) end
+				if BattleData.PositiveType.shieldHaloOppoMonster then arg_8_1:resetBuffByType(true, BattleData.PositiveType.shieldHaloOppoMonster) end
+			end
+			arg_8_1._shields = arg_8_1._shields or {}
+			arg_8_1._shields[12008] = nil
+			arg_8_1._shields[11008] = nil
+			arg_8_1._markIgnoreOppoShield = true
+
+			oppoOwner:setCardStatus(arg_8_1, BattleData.CardStatus.leave, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.b2l_kill)
+			creeperOwner:setCardStatus(var_8_1, BattleData.CardStatus.leave, var_8_5, var_8_4, arg_8_3, BattleData.CardStatusVal.b2l_kill)
+
+			if oppoPos and oppoPos >= 1 and oppoPos <= 6 then
+				local secondPos = (oppoPos % 5) + 1
+				arg_8_0:incNegativeStatus(oppoOwner._fortress, {
+					BattleData.NegativeType.boardLock
+				}, false, var_8_5, var_8_4, arg_8_3)
+				arg_8_0:incNegativeValue(oppoOwner._fortress, BattleData.NegativeType.boardLock, oppoPos, Data.AggregateType.table, var_8_5, var_8_4, arg_8_3)
+				arg_8_0:incNegativeValue(oppoOwner._fortress, BattleData.NegativeType.boardLock, secondPos, Data.AggregateType.table, var_8_5, var_8_4, arg_8_3)
+			end
+
+			var_8_13 = true
 		end
 	elseif var_8_4 == 14792 then
 		if var_8_1._status == BattleData.CardStatus.board and arg_8_1._owner == var_8_1._owner._opponent and arg_8_1:isMonster() then
@@ -66444,6 +66723,16 @@ function var_0_0.castOtherSkill(arg_13_0, arg_13_1, arg_13_2, arg_13_3)
 		var_13_8:incShield(var_13_8._fortress, var_13_6._refSkills, true, false, var_13_5, var_13_4, arg_13_3)
 
 		var_13_13 = true
+	elseif var_13_4 == 14823 then
+		local var_13_513 = arg_13_0:getCardById(var_13_15)
+		if var_13_513 ~= nil then
+			arg_13_0:setCardStatus(var_13_513, BattleData.CardStatus.grave, var_13_5, var_13_4, arg_13_3, BattleData.CardStatusVal.x2gl_cost)
+			local var_13_514 = B.filterFirstCards(arg_13_0:filterCanChangeToHandCards(arg_13_0:getBattleCards("P")), 2)
+			for iter_13_125 = 1, #var_13_514 do
+				arg_13_0:setCardStatus(var_13_514[iter_13_125], BattleData.CardStatus.hand, var_13_5, var_13_4, arg_13_3)
+			end
+			var_13_13 = true
+		end
 	elseif var_13_4 == 4426 then
 		local var_13_513 = arg_13_0:getCardById(var_13_15)
 
@@ -74830,6 +75119,23 @@ function var_0_0.canUseMagic(arg_22_0, arg_22_1, arg_22_2)
 		local var_22_266 = arg_22_0:filterCanChangeToBoardCards(arg_22_0:getBattleCardsByCategory("G", var_22_2._refCards[2], Data.CARD_MAX_LEVEL, var_22_265[1]))
 
 		return true, nil, ((var_22_266[1] ~= nil and var_22_266[1]._id or 0) * BattleData.UseCardId.id_group + var_22_265[1]._id) * BattleData.ChoiceId.stage_2 + 1
+	elseif var_22_1 == 14823 then
+		if arg_22_0._castedSkillCounts[var_22_1] ~= nil then
+			return false
+		end
+		local var_22_267 = {}
+		for _, c in ipairs(arg_22_0:getBattleCardsByType("H", Data.CardType.monster)) do
+			if c:isKeyword(304) or (c._info and c._info._keyword == 304) then
+				table.insert(var_22_267, c)
+			end
+		end
+		if #var_22_267 == 0 then
+			return false
+		end
+		if #arg_22_0:filterCanChangeToHandCards(arg_22_0:getBattleCards("P")) == 0 then
+			return false
+		end
+		return true, nil, B.getMinAtkCard(var_22_267)._id * BattleData.ChoiceId.stage_2 + 1
 	elseif var_22_1 == 4426 then
 		if arg_22_0._castedSkillCounts[var_22_1] ~= nil then
 			return false
@@ -107834,6 +108140,48 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		if (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14811] and pOwner._castedSkillCounts[14811] >= 1) then return false end
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled or not pOwner:canSpecialSummon(arg_40_1) then return false end
 		return pOwner:getEmptyBoardPos(arg_40_1) ~= nil
+	elseif var_40_0 == 14819 then
+		if arg_40_1._status ~= BattleData.CardStatus.board then return false end
+		local pOwner = arg_40_1._owner or arg_40_0
+		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then return false end
+		local hasUndeadGrave = false
+		for _, c in ipairs(pOwner:getBattleCards("G")) do
+			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isCategory(17) or (c._info and c._info._category == 17)) then
+				hasUndeadGrave = true
+				break
+			end
+		end
+		if not hasUndeadGrave then return false end
+		local hasWolfRare = false
+		for _, rc in ipairs(pOwner._rareCards) do
+			if (rc._infoId == 40750 or rc:isInfoId(40750)) and pOwner:getEmptyBoardPos(rc) ~= nil then
+				hasWolfRare = true
+				break
+			end
+		end
+		return hasWolfRare
+	elseif var_40_0 == 14824 then
+		if arg_40_1._status ~= BattleData.CardStatus.board then return false end
+		local pOwner = arg_40_1._owner or arg_40_0
+		if (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14824] and pOwner._castedSkillCounts[14824] >= 1) then return false end
+		if #pOwner._handCards >= Data.MAX_CARD_COUNT_IN_HAND then return false end
+		for _, c in ipairs(pOwner._pileCards) do
+			if (c:isMagic() or c:isTrap() or c._type == Data.CardType.magic or c._type == Data.CardType.trap) and (c:isKeyword(304) or (c._info and c._info._keyword == 304)) then
+				return true
+			end
+		end
+		return false
+	elseif var_40_0 == 14825 then
+		if arg_40_1._status ~= BattleData.CardStatus.board then return false end
+		local pOwner = arg_40_1._owner or arg_40_0
+		if (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14825] and pOwner._castedSkillCounts[14825] >= 1) then return false end
+		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then return false end
+		for _, c in ipairs(pOwner:getBattleCards("G")) do
+			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isKeyword(304) or (c._info and c._info._keyword == 304)) and pOwner:canSpecialSummon(c) and pOwner:getEmptyBoardPos(c) ~= nil then
+				return true
+			end
+		end
+		return false
 	elseif var_40_0 == 14812 then
 		if arg_40_1._status ~= BattleData.CardStatus.board and arg_40_1._status ~= BattleData.CardStatus.show and arg_40_1._status ~= BattleData.CardStatus.field then return false end
 		local pOwner = arg_40_1._owner or arg_40_0

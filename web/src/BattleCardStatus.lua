@@ -113,6 +113,25 @@ function var_0_0.changeCardStatus(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4, a
 				end
 			end
 		end
+
+		-- Fox (12348 / skill 14821): Khi lá bài này trên tay phe ta, đối phương rút được quái "thường" lên tay sẽ kích hoạt: triệu hồi đặc biệt lá bài này lên sân trong thế phòng thủ, đưa lá bài đối phương vừa rút được lên tay phe ta.
+		if arg_1_2 == BattleData.CardStatus.pile and arg_1_3 == BattleData.CardStatus.hand and (arg_1_1:isNormalMonster() or (arg_1_1:isMonster() and not arg_1_1:isMonsterRare() and (arg_1_1:isNormal() or (arg_1_1._info and arg_1_1._info._type == Data.MonsterType.normal)))) then
+			local isDuelRound = (arg_1_0._round and arg_1_0._round > 0) and (arg_1_0._macroStatus ~= BattleData.Status.initial_deal)
+			if isDuelRound and not oppo._isSummonDisabled and not oppo._isSpecialSummonDisabled then
+				local fox = getActiveHandTrap(oppo, 12348)
+				if fox and oppo:canSpecialSummon(fox) and oppo:getEmptyBoardPos(fox) ~= nil then
+					local ePos = oppo:getEmptyBoardPos(fox)
+					if ePos then
+						fox._saved._pos = ePos
+						fox._positiveStatus[BattleData.PositiveType.defendPosture] = true
+						fox._actionIndex = 1
+						oppo:changeCardStatus(fox, BattleData.CardStatus.hand, BattleData.CardStatus.board, BattleData.CardStatusVal.h2b_def)
+						arg_1_1._owner = oppo
+						arg_1_0:battleLog("[BATTLE] Fox (12348) intercepted normal monster %d to allied hand!", arg_1_1._infoId)
+					end
+				end
+			end
+		end
 	end
 
 	local var_1_0 = {
@@ -1404,6 +1423,16 @@ function var_0_0.addCardToGrave(arg_16_0, arg_16_1)
 		arg_16_0:addCardToLeave(arg_16_1)
 
 		return
+	end
+
+		if (arg_16_1._infoId == 12348 or arg_16_1:hasSkillFast(14822)) and arg_16_1._sourceStatus == BattleData.CardStatus.board then
+		local oppo = arg_16_0._opponent
+		if oppo and #oppo._pileCards > 0 and #oppo._handCards < Data.MAX_CARD_COUNT_IN_HAND then
+			local drawCard = oppo._pileCards[1]
+			if drawCard then
+				oppo:changeCardStatus(drawCard, BattleData.CardStatus.pile, BattleData.CardStatus.hand, BattleData.CardStatusVal.p2h_deal)
+			end
+		end
 	end
 
 	table.insert(arg_16_0._graveCards, arg_16_1)

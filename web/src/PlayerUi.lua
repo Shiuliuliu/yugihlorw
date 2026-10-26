@@ -1384,7 +1384,7 @@ function var_0_0.castInitiativeSkill(arg_55_0, arg_55_1, arg_55_2)
 		arg_55_0:hideCardSprite(var_55_0)
 	end
 
-	if arg_55_2 and (arg_55_2._id == 14794 or arg_55_2._id == 14804 or arg_55_2._id == 14807 or arg_55_2._id == 14809 or arg_55_2._id == 14811) then
+	if arg_55_2 and (arg_55_2._id == 14794 or arg_55_2._id == 14804 or arg_55_2._id == 14807 or arg_55_2._id == 14809 or arg_55_2._id == 14811 or arg_55_2._id == 14812 or arg_55_2._id == 14819 or arg_55_2._id == 14824) then
 		local skillIdx = arg_55_1:getSkillIndexById(arg_55_2._id) or 2
 		return arg_55_0:sendEvent(var_0_0.EventType.send_use_card, {
 			_card = arg_55_1,
@@ -3975,6 +3975,18 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 			_card = arg_89_2._card,
 			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
 			_choice = (arg_89_1._choiceBase or 0)
+		})
+	end
+
+		if arg_89_2._card:hasSkillFast(14805) or arg_89_2._card:isInfoId(12341) or arg_89_2._card:hasSkillFast(14825) or arg_89_2._card:isInfoId(40752) then
+		var_89_1 = 0
+		if var_89_0 and #var_89_0 > 0 then
+			var_89_1 = var_89_0[1]._id
+		end
+		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_89_2._card,
+			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
+			_choice = var_89_1 * BattleData.ChoiceId.stage_2 + (arg_89_1._choiceBase or 0)
 		})
 	end
 
@@ -7468,6 +7480,10 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 
 	if arg_91_2._card:isSkillAtIndex(9944, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)) and arg_91_1._alreadySatisfied then
 		return true
+	end
+
+		if arg_91_2._card:hasSkillFast(14805) or arg_91_2._card:isInfoId(12341) or arg_91_2._card:hasSkillFast(14825) or arg_91_2._card:isInfoId(40752) then
+		return var_91_0 == 1
 	end
 
 	if arg_91_2._card:hasSkillFast(14716) or arg_91_2._card:isInfoId(21140) then

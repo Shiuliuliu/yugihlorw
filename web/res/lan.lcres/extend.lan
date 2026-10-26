@@ -41450,7 +41450,7 @@ Kỹ năng chủ động: Chỉ một lần mỗi vòng; thêm phép thuật ho�
 Mầm Lửa Vĩnh Hằng
 Kỹ năng hoạt động trong Nghĩa Địa: Trả một lá bài trên tay; thêm bản thân vào tay và nhận được “Quá tải”
 Quá Tải
-Ngoại trừ khi rời khỏi địa điểm
+Khi bài này rời khỏi sân; sẽ bị loại bỏ.
 Sóng Synchron Tinh Thần
 Trên sân phe ta có Quái Synchron sẽ có thể dùng. Chọn và phá hủy 1 quái trên sân đối thủ.
 Synchron Giải Trừ
@@ -56919,8 +56919,8 @@ Bích Dao-Hồn Về Thương Tâm
 1 lần/lượt trong Mộ khi có [Quỷ Lệ] trên sân: Trục xuất bản thân để tăng 1000 Công cho tất cả [Quỷ Lệ].
 Huyền Hỏa Giám-Hộ Mệnh
 Khi lá bài này nằm trên tay và trên sân phe ta không có bài: Khi đối phương gây thiệt hại cho phe ta, đưa lá bài này vào Mộ; ngăn chặn thiệt hại đó và trong lượt này phe ta không chịu thêm bất kì thiệt hại nào.
-Tru Tiên Kiếm-Quá Tải
-Quái trang bị nhận được kỹ năng [Quá Tải]: Khi tấn công quái thú có DEF thấp hơn ATK của nó, gây sát thương chênh lệch cho đối thủ.
+Tru Tiên Kiếm-Xuyên Giáp
+Quái trang bị nhận được kỹ năng [Xuyên Giáp]: Khi tấn công quái thú có DEF thấp hơn ATK của nó, gây sát thương chênh lệch cho đối thủ.
 Tru Tiên Kiếm-Liên Trảm
 Quái thú được trang bị nhận hiệu ứng [Liên Trảm]: Có thể tấn công 2 lần trong mỗi lượt.
 Tru Tiên Kiếm-Kiếm Khí Hộ Thể
@@ -57403,3 +57403,49 @@ Warden - Tiếng Gầm Vực Sâu
 1 lượt 1 lần, khi lá bài này nằm trên tay, đối phương triệu hồi quái 3 lần sẽ kích hoạt: Triệu hồi đặc biệt bài này lên sân, đưa quái đối phương vừa triệu hồi về lại tay đối phương.
 Warden - Lãnh Địa Tăm Tối
 Khi lá bài này trên sân, phe ta chỉ có thể triệu hồi đặc biệt quái có từ khóa "minecraft".
+Creeper sấm sét
+[Xác Sống / Hiệu Ứng / Dung Hợp]\n<Creeper> + <Commandblock>\n+ [14677 Dung Hợp Kỳ Linh].\n+ Khi đối phương triệu hồi quái, kích hoạt: Loại bỏ bản thân và quái đối phương vừa triệu hồi, vô hiệu hóa 2 ô quái đối phương trong lượt này.\n+ Khi bài này trở thành mục tiêu hiệu ứng: Đưa bản thân vào Mộ, phá hủy và loại bỏ 2 lá trên tay đối phương, đồng thời vô hiệu hóa 2 ô quái của đối thủ.
+Creeper sấm sét
+Creeper sấm sét - Sấm Sét Tự Bộc
+Khi đối phương triệu hồi quái, kích hoạt: Loại bỏ bản thân và quái đối phương vừa triệu hồi, vô hiệu hóa 2 ô quái đối phương trong lượt này.
+Creeper sấm sét - Điện Quang Phản Kích
+Khi bài này trở thành mục tiêu của một hiệu ứng: Trả bản thân vào Mộ, phá hủy và loại bỏ 2 lá bài trên tay đối phương, đồng thời vô hiệu hóa 2 ô quái của đối thủ.
+Sói
+[Thú / Thường]\nMột sinh vật trung thành và dũng mãnh của thế giới khối vuông, luôn bảo vệ chủ nhân trước mọi nguy hiểm.
+Sói
+Tatu
+[Thú / Hiệu Ứng]\n+ Khiên bảo vệ (12006).\n+ Khi một quái có từ khóa "minecraft" phe ta chiến đấu, nếu lá bài này đang nằm trên tay: Quái chiến đấu phe ta không bị tiêu diệt và sát thương chiến đấu bằng 0, triệu hồi đặc biệt bài này lên sân trong thế phòng thủ và nhận "Quá Tải".
+Tatu
+Tatu - Giáp Cuộn Phòng Hộ
+Khi quái "minecraft" phe ta chiến đấu và lá này trên tay: Quái phe ta không bị tiêu diệt, bỏ qua sát thương, Triệu Hồi Đặc Biệt lá này lên sân ở thế thủ và nhận "Quá Tải".
+Sói mặc giáp
+[Thú / Hiệu Ứng / Dung Hợp]\n<Sói> + <Tatu>\n(Trong bộ bài có thể có tối đa 20 lá)\n+ [14677 Dung Hợp Kỳ Linh].\n+ Kỹ năng chủ động (không giới hạn lượt): Loại bỏ 1 quái tộc Xác Sống trong Mộ, Triệu hồi Đặc biệt 1 <Sói mặc giáp> từ bộ bài thêm lên sân.\n+ Khi lá bài này trên sân, tất cả <Sói mặc giáp> nhận thêm 500 ATK.
+Sói mặc giáp
+Sói mặc giáp - Triệu Hồi Đàn Sói
+Kỹ năng chủ động (không giới hạn lượt): Loại bỏ 1 quái tộc Xác Sống trong Mộ phe ta, Triệu hồi Đặc biệt 1 <Sói mặc giáp> từ bộ bài thêm lên sân.
+Sói mặc giáp - Hào Quang Bầy Đàn
+Khi lá bài này trên sân, tất cả <Sói mặc giáp> nhận thêm 500 ATK.
+Fox
+[Thú / Hiệu Ứng]\n+ Khi lá bài này trên tay phe ta, đối phương rút được quái "thường" lên tay sẽ kích hoạt: Triệu hồi đặc biệt lá bài này lên sân trong thế phòng thủ, cướp lá bài đối phương vừa rút đưa vào tay phe ta.\n+ Khi lá bài này bị phá hủy: Đối phương rút 1 lá.
+Fox
+Fox - Rình Mồi Khéo Léo
+Khi lá này trên tay, đối phương rút quái "thường" lên tay sẽ kích hoạt: Triệu hồi đặc biệt lá này lên sân ở thế thủ, đưa lá bài đối phương vừa rút về tay phe ta.
+Fox - Đền Bù Hối Tiếc
+Khi lá bài này bị phá hủy: Đối phương rút 1 lá bài.
+Wandering Trader nhưng có gì đó sai sai
+[Ma Pháp Thường]\n(Mỗi lượt chỉ dùng 1 lá): Đưa 1 quái có từ khóa "minecraft" trên tay vào Mộ: Rút 2 lá bài từ bộ bài.
+Wandering Trader
+Wandering Trader - Giao Dịch Bí Ẩn
+Mỗi lượt chỉ dùng 1 lá. Bỏ 1 quái có từ khóa "minecraft" trên tay vào Mộ: Rút 2 lá bài từ bộ bài.
+Steve - miner
+[Chiến Binh / Hiệu Ứng / Link 1]\n1 quái có từ khóa "minecraft"\n+ Kỹ năng chủ động (1 lượt 1 lần): Lấy 1 bài Phép hoặc Bẫy có từ khóa "minecraft" từ bộ bài lên tay.
+Steve - miner
+Steve miner - Khai Thác Kho Báu
+1 lượt 1 lần: Lấy 1 bài Phép hoặc Bẫy có từ khóa "minecraft" từ bộ bài lên tay.
+Steve - armor
+[Chiến Binh / Hiệu Ứng / Link 2]\n<Steve - miner> + 1 quái có từ khóa "minecraft" trở lên\n+ Tường chắn quái, phép, bẫy (12008, 12009, 12010).\n+ Kỹ năng chủ động (1 lượt 1 lần): Chọn triệu hồi đặc biệt 1 quái "minecraft" từ Mộ lên sân.\n+ Khi trên sân: Tăng Công bằng số quái "minecraft" trên sân phe ta x 300.
+Steve - armor
+Steve armor - Tái Tạo Sinh Tồn
+1 lượt 1 lần: Chọn và Triệu hồi Đặc biệt 1 quái có từ khóa "minecraft" từ Mộ lên sân.
+Steve armor - Sức Mạnh Đồng Minh
+Khi trên sân: Tăng ATK bằng số quái "minecraft" trên sân phe ta x 300.

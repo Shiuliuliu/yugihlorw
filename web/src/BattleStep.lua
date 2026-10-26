@@ -813,8 +813,18 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14766] = nil
 	arg_2_0._castedSkillCounts[14766] = nil
 	arg_2_0._opponent._castedSkillCounts[3] = nil
+	arg_2_0._skeletonCount = 0
+	arg_2_0._opponent._skeletonCount = 0
 	arg_2_0._castedSkillCounts[14793] = nil
 	arg_2_0._opponent._castedSkillCounts[14793] = nil
+	arg_2_0._castedSkillCounts[14819] = nil
+	arg_2_0._opponent._castedSkillCounts[14819] = nil
+	arg_2_0._castedSkillCounts[14823] = nil
+	arg_2_0._opponent._castedSkillCounts[14823] = nil
+	arg_2_0._castedSkillCounts[14824] = nil
+	arg_2_0._opponent._castedSkillCounts[14824] = nil
+	arg_2_0._castedSkillCounts[14825] = nil
+	arg_2_0._opponent._castedSkillCounts[14825] = nil
 	arg_2_0._castedSkillCounts[14794] = nil
 	arg_2_0._opponent._castedSkillCounts[14794] = nil
 	arg_2_0._castedSkillCounts[14795] = nil
@@ -3680,6 +3690,8 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 		elseif arg_52_1._type == Data.CardType.trap then
 			if arg_52_1._info._type == Data.MagicTrapType.once then
 				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.grave, BattleData.CardStatusVal.h2g_trap)
+			elseif arg_52_1._info._type == Data.MagicTrapType.show or arg_52_1._infoId == 30596 or arg_52_1._infoId == 30597 then
+				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.show)
 			else
 				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.cover)
 			end
@@ -3999,11 +4011,31 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 			arg_52_1._actionIndex = arg_52_1._actionIndex + 1
 			var_52_4 = BattleData.Status.use
 		end
+	elseif arg_52_1._status == BattleData.CardStatus.cover then
+		if arg_52_1._info and (arg_52_1._info._type == Data.MagicTrapType.show or arg_52_1._infoId == 30596 or arg_52_1._infoId == 30597) then
+			arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.cover, BattleData.CardStatus.show)
+			arg_52_0._actionCard = arg_52_1
+			var_52_4 = BattleData.Status.use
+		end
 	elseif arg_52_1._status == BattleData.CardStatus.show or arg_52_1._status == BattleData.CardStatus.field or arg_52_1._status == BattleData.CardStatus.grave or arg_52_1._status == BattleData.CardStatus.rare or arg_52_1._status == BattleData.CardStatus.leave then
 		local var_52_34 = arg_52_1._choice and math.floor(arg_52_1._choice / BattleData.ChoiceId.stage_3) % BattleData.ChoiceId.stage_size_3 or 0
 
-		if var_52_34 == 0 and (arg_52_1._infoId == 40747 or arg_52_1:hasSkillFast(14793)) then
-			var_52_34 = 1
+		if var_52_34 == 0 then
+			if arg_52_1._infoId == 40747 or arg_52_1:hasSkillFast(14793) then
+				var_52_34 = 1
+			elseif arg_52_1:hasSkillFast(14805) or arg_52_1._infoId == 12341 then
+				var_52_34 = arg_52_1:getSkillIndexById(14805) or 1
+			elseif arg_52_1:hasSkillFast(14811) or arg_52_1._infoId == 12344 then
+				var_52_34 = arg_52_1:getSkillIndexById(14811) or 2
+			elseif arg_52_1:hasSkillFast(14812) or arg_52_1._infoId == 30597 then
+				var_52_34 = arg_52_1:getSkillIndexById(14812) or 1
+			elseif arg_52_1:hasSkillFast(14819) or arg_52_1._infoId == 40750 then
+				var_52_34 = arg_52_1:getSkillIndexById(14819) or 2
+			elseif arg_52_1:hasSkillFast(14824) or arg_52_1._infoId == 40751 then
+				var_52_34 = arg_52_1:getSkillIndexById(14824) or 1
+			elseif arg_52_1:hasSkillFast(14825) or arg_52_1._infoId == 40752 then
+				var_52_34 = arg_52_1:getSkillIndexById(14825) or 4
+			end
 		end
 
 		if var_52_34 > 0 then

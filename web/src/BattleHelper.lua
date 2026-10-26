@@ -6024,7 +6024,7 @@ function var_0_0.getLinkCandidates(arg_260_0, arg_260_1, arg_260_2, arg_260_3, a
 		local var_260_5 = var_260_1[iter_260_1]
 		local id5 = (var_260_5 and var_260_5._id) or var_260_5
 
-		if not var_260_4[id5] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId == 40745 and (var_260_5._info and var_260_5._info._quality == 5 and (var_260_5:isKeyword(303) or (var_260_5._info and var_260_5._info._keyword == 303)))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and arg_260_1._infoId ~= 40745 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
+		if not var_260_4[id5] and (arg_260_1._infoId == 40729 and B.isThanhKyMonster(var_260_5) or (arg_260_1._infoId == 40744 and (var_260_5:isKeyword(204) or var_260_5:isKeyword(21) or (var_260_5._info and (var_260_5._info._keyword == 204 or var_260_5._info._keyword == 21)))) or (arg_260_1._infoId == 40745 and (var_260_5._info and var_260_5._info._quality == 5 and (var_260_5:isKeyword(303) or (var_260_5._info and var_260_5._info._keyword == 303)))) or (arg_260_1._infoId == 40751 and (var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId == 40752 and (var_260_5._infoId == 40751 or var_260_5:isKeyword(304) or (var_260_5._info and var_260_5._info._keyword == 304))) or (arg_260_1._infoId ~= 40729 and arg_260_1._infoId ~= 40744 and arg_260_1._infoId ~= 40745 and arg_260_1._infoId ~= 40751 and arg_260_1._infoId ~= 40752 and (arg_260_1._linkCandidateNode and arg_260_1._linkCandidateNode:value(var_260_5) or not arg_260_1._linkCandidateNode))) then
 			var_260_4[id5] = true
 			var_260_3[#var_260_3 + 1] = var_260_5
 		end
@@ -6097,7 +6097,23 @@ function var_0_0.isValidLinkComponents(arg_261_0, arg_261_1, arg_261_2, arg_261_
 		end
 	end
 
-	if arg_261_1._infoId == 40748 then
+	if arg_261_1._infoId == 40751 then
+		if #arg_261_2 ~= 1 then return false end
+		local c = arg_261_2[1]
+		return (c:isKeyword(304) or (c._info and c._info._keyword == 304))
+	elseif arg_261_1._infoId == 40752 then
+		if #arg_261_2 < 2 then return false end
+		local hasMiner = false
+		for _, c in ipairs(arg_261_2) do
+			if c._infoId == 40751 or (c.isInfoId and c:isInfoId(40751)) then
+				hasMiner = true
+				break
+			end
+		end
+		if not hasMiner then return false end
+		if var_261_1 > B.getSumLink(arg_261_2) then return false end
+		return true
+	elseif arg_261_1._infoId == 40748 then
 		if #arg_261_2 < 2 or #arg_261_2 > 3 then
 			return false
 		end
@@ -7988,7 +8004,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_1._id ~= 14779 and arg_304_1._id ~= 14781 and arg_304_1._id ~= 14783 and arg_304_1._id ~= 14784 and arg_304_1._id ~= 14785 and arg_304_1._id ~= 14786 and arg_304_1._id ~= 14793 and arg_304_1._id ~= 14800 and arg_304_1._id ~= 14804 and arg_304_1._id ~= 14805 and arg_304_1._id ~= 14807 and arg_304_1._id ~= 14809 and arg_304_1._id ~= 14811 and arg_304_1._id ~= 14812 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_1._id ~= 14779 and arg_304_1._id ~= 14781 and arg_304_1._id ~= 14783 and arg_304_1._id ~= 14784 and arg_304_1._id ~= 14785 and arg_304_1._id ~= 14786 and arg_304_1._id ~= 14793 and arg_304_1._id ~= 14800 and arg_304_1._id ~= 14804 and arg_304_1._id ~= 14805 and arg_304_1._id ~= 14807 and arg_304_1._id ~= 14809 and arg_304_1._id ~= 14811 and arg_304_1._id ~= 14812 and arg_304_1._id ~= 14825 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -8240,40 +8256,26 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 			return true, candidates, 1
 		end
 		return false
-	elseif arg_304_1._id == 14807 then
+	elseif arg_304_1._id == 14825 then
 		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
 		if ownerCard == nil then
-			local cards = arg_304_0:getBattleCardsByInfoId("B", 12342)
+			local cards = arg_304_0:getBattleCardsByInfoId("B", 40752)
 			if #cards > 0 then ownerCard = cards[1] end
 		end
 		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
 		if ownerCard and ownerCard._status ~= BattleData.CardStatus.board then return false end
+		if (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14825] and pOwner._castedSkillCounts[14825] >= 1) then return false end
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then return false end
-		local count = 0
-		for _, c in ipairs(pOwner._pileCards) do
-			if c._infoId == 12343 or c:isInfoId(12343) then count = count + 1 end
+		local candidates = {}
+		for _, c in ipairs(pOwner:getBattleCards("G")) do
+			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster) and (c:isKeyword(304) or (c._info and c._info._keyword == 304)) and pOwner:canSpecialSummon(c) and pOwner:getEmptyBoardPos(c) ~= nil then
+				table.insert(candidates, c)
+			end
 		end
-		for _, c in ipairs(pOwner._handCards) do
-			if c._infoId == 12343 or c:isInfoId(12343) then count = count + 1 end
+		if #candidates > 0 then
+			return true, candidates, 1
 		end
-		return count > 0
-	elseif arg_304_1._id == 14809 then
-		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
-		if ownerCard == nil then
-			local cards = arg_304_0:getBattleCardsByInfoId("B", 12343)
-			if #cards > 0 then ownerCard = cards[1] end
-		end
-		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
-		if ownerCard and ownerCard._status ~= BattleData.CardStatus.board then return false end
-		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then return false end
-		local count = 0
-		for _, c in ipairs(pOwner._pileCards) do
-			if c._infoId == 12342 or c:isInfoId(12342) then count = count + 1 end
-		end
-		for _, c in ipairs(pOwner._handCards) do
-			if c._infoId == 12342 or c:isInfoId(12342) then count = count + 1 end
-		end
-		return count > 0
+		return false
 	elseif arg_304_1._id == 14811 then
 		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
 		if ownerCard == nil then
@@ -9527,6 +9529,14 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return true, B.sortCardsByBoardPos(arg_304_0:getBoardCards()), 1
 	elseif arg_304_1._id == 3621 then
 		return true, B.filterNotSameNameCards(B.filterDualCards(arg_304_0:getBattleCards("G")), arg_304_1._owner), 1
+		elseif arg_304_1._id == 14823 then
+		local candidates = {}
+		for _, c in ipairs(arg_304_0:getBattleCardsByType("H", Data.CardType.monster)) do
+			if c:isKeyword(304) or (c._info and c._info._keyword == 304) then
+				table.insert(candidates, c)
+			end
+		end
+		return true, candidates, 1
 	elseif arg_304_1._id == 3631 or arg_304_1._id == 3714 or arg_304_1._id == 4288 or arg_304_1._id == 4397 or arg_304_1._id == 4416 or arg_304_1._id == 4417 or arg_304_1._id == 4426 or arg_304_1._id == 4485 or arg_304_1._id == 4941 or arg_304_1._id == 4991 or arg_304_1._id == 5599 or arg_304_1._id == 6921 or arg_304_1._id == 6964 or arg_304_1._id == 6974 or arg_304_1._id == 6982 or arg_304_1._id == 6996 or arg_304_1._id == 2341 or arg_304_1._id == 2359 or arg_304_1._id == 2630 or arg_304_1._id == 2778 or arg_304_1._id == 9786 or arg_304_1._id == 7210 or arg_304_1._id == 7551 then
 		return true, B.filterInKeywordCards(arg_304_0:getBattleCardsByType("H", Data.CardType.monster), var_304_1._refCards[1]), 1
 	elseif arg_304_1._id == 3632 or arg_304_1._id == 3917 or arg_304_1._id == 6569 or arg_304_1._id == 2256 or arg_304_1._id == 2379 or arg_304_1._id == 9491 or arg_304_1._id == 9492 or arg_304_1._id == 4948 then

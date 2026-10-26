@@ -1911,6 +1911,25 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 			end
 		end
 
+		-- Soi mac giap (40750 / 14820): Khi tren san, tat ca Soi mac giap nhan 500 atk
+		if cardOwner and arg_38_1._status == BattleData.CardStatus.board and (arg_38_1._infoId == 40750 or (arg_38_1.isInfoId and arg_38_1:isInfoId(40750))) then
+			local wolves = cardOwner:getBattleCardsByInfoId("B", 40750)
+			if #wolves > 0 then
+				arg_38_1._atk = arg_38_1._atk + 500
+			end
+		end
+
+		-- Steve - armor (40752 / 14826): Khi tren san, tang ATK bang so quai "minecraft" tren san phe ta x 300
+		if cardOwner and arg_38_1._status == BattleData.CardStatus.board and (arg_38_1._infoId == 40752 or (arg_38_1.isInfoId and arg_38_1:isInfoId(40752))) then
+			local mcCount = 0
+			for _, bc in ipairs(cardOwner:getBoardCards()) do
+				if bc:isKeyword(304) or (bc._info and bc._info._keyword == 304) then
+					mcCount = mcCount + 1
+				end
+			end
+			arg_38_1._atk = arg_38_1._atk + mcCount * 300
+		end
+
 		arg_38_1._haloedMaxAtkInc = var_38_4
 	end
 
@@ -2435,6 +2454,14 @@ function var_0_0.getHaloModeSkills(arg_50_0, arg_50_1)
 			local var_creeper_sk = var_50_creepers[iter_creeper]:getSkillById(14792)
 			if var_creeper_sk then
 				var_50_8[#var_50_8 + 1] = var_creeper_sk
+			end
+		end
+
+		local var_50_creeper_samsets = arg_50_0:getBattleCardsByInfoId("B", 40749)
+		for iter_samset = 1, #var_50_creeper_samsets do
+			local var_samset_sk = var_50_creeper_samsets[iter_samset]:getSkillById(14816)
+			if var_samset_sk then
+				var_50_8[#var_50_8 + 1] = var_samset_sk
 			end
 		end
 	end

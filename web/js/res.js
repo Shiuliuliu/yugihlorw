@@ -239,6 +239,22 @@
 	}
 
 	var CUSTOM_ICON_REPLACEMENTS = {
+		'card_ico_40749': { path: 'res/new/thumb/card_ico_40749.png', w: 82, h: 82 },
+		'card_ico_40749_3': { path: 'res/new/thumb/card_ico_40749_3.png', w: 82, h: 82 },
+		'card_ico_12346': { path: 'res/new/thumb/card_ico_12346.png', w: 82, h: 82 },
+		'card_ico_12346_3': { path: 'res/new/thumb/card_ico_12346_3.png', w: 82, h: 82 },
+		'card_ico_12347': { path: 'res/new/thumb/card_ico_12347.png', w: 82, h: 82 },
+		'card_ico_12347_3': { path: 'res/new/thumb/card_ico_12347_3.png', w: 82, h: 82 },
+		'card_ico_40750': { path: 'res/new/thumb/card_ico_40750.png', w: 82, h: 82 },
+		'card_ico_40750_3': { path: 'res/new/thumb/card_ico_40750_3.png', w: 82, h: 82 },
+		'card_ico_12348': { path: 'res/new/thumb/card_ico_12348.png', w: 82, h: 82 },
+		'card_ico_12348_3': { path: 'res/new/thumb/card_ico_12348_3.png', w: 82, h: 82 },
+		'card_ico_21150': { path: 'res/new/thumb/card_ico_21150.png', w: 82, h: 82 },
+		'card_ico_21150_3': { path: 'res/new/thumb/card_ico_21150_3.png', w: 82, h: 82 },
+		'card_ico_40751': { path: 'res/new/thumb/card_ico_40751.png', w: 82, h: 82 },
+		'card_ico_40751_3': { path: 'res/new/thumb/card_ico_40751_3.png', w: 82, h: 82 },
+		'card_ico_40752': { path: 'res/new/thumb/card_ico_40752.png', w: 82, h: 82 },
+		'card_ico_40752_3': { path: 'res/new/thumb/card_ico_40752_3.png', w: 82, h: 82 },
 		'card_ico_12341': { path: 'res/new/thumb/card_ico_12341.png', w: 82, h: 82 },
 		'card_ico_12341_3': { path: 'res/new/thumb/card_ico_12341_3.png', w: 82, h: 82 },
 		'card_ico_12342': { path: 'res/new/thumb/card_ico_12342.png', w: 82, h: 82 },

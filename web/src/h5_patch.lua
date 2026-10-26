@@ -798,6 +798,166 @@ local function patchData()
 					_syncComponent = { { 0 } }
 				}
 			end
+
+			-- Creeper sam set (40749)
+			if Data._rareInfo and not Data._rareInfo[40749] then
+				Data._rareInfo[40749] = {
+					_atk = { 2000 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57408,
+					_category = 17,
+					_cost = 0,
+					_descSid = 57407,
+					_guideSid = 0,
+					_hp = { 1800 },
+					_id = 40749,
+					_isHide = 0,
+					_joinComponent = { 12337, 12340 },
+					_joinResult = { 0 },
+					_keyword = 304,
+					_link = { 0 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "0.0",
+					_linkCount = "0.0",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57406,
+					_nature = 2,
+					_option = 6,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "creepersamset",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14677, 14816, 14817 },
+					_skin = { 0 },
+					_star = 6,
+					_syncComponent = { { 0 } }
+				}
+			end
+
+			-- Soi mac giap (40750)
+			if Data._rareInfo and not Data._rareInfo[40750] then
+				Data._rareInfo[40750] = {
+					_atk = { 1500 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57423,
+					_category = 5,
+					_cost = 0,
+					_descSid = 57422,
+					_guideSid = 0,
+					_hp = { 2000 },
+					_id = 40750,
+					_isHide = 0,
+					_joinComponent = { 12346, 12347 },
+					_joinResult = { 0 },
+					_keyword = 304,
+					_link = { 0 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "0.0",
+					_linkCount = "0.0",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 20,
+					_nameSid = 57421,
+					_nature = 5,
+					_option = 6,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "soigiap",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14677, 14819, 14820 },
+					_skin = { 0 },
+					_star = 5,
+					_syncComponent = { { 0 } }
+				}
+			end
+
+			-- Steve - miner (40751)
+			if Data._rareInfo and not Data._rareInfo[40751] then
+				Data._rareInfo[40751] = {
+					_atk = { 1200 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57442,
+					_category = 6,
+					_cost = 0,
+					_descSid = 57441,
+					_guideSid = 0,
+					_hp = { 1000 },
+					_id = 40751,
+					_isHide = 0,
+					_joinComponent = { 0 },
+					_joinResult = { 0 },
+					_keyword = 304,
+					_link = { 2 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "0.0",
+					_linkCount = "#==1",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57440,
+					_nature = 5,
+					_option = 8194,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "steveminer",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14824 },
+					_skin = { 0 },
+					_star = 0,
+					_syncComponent = { { 0 } }
+				}
+			end
+
+			-- Steve - armor (40752)
+			if Data._rareInfo and not Data._rareInfo[40752] then
+				Data._rareInfo[40752] = {
+					_atk = { 2600 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57447,
+					_category = 6,
+					_cost = 0,
+					_descSid = 57446,
+					_guideSid = 0,
+					_hp = { 2000 },
+					_id = 40752,
+					_isHide = 0,
+					_joinComponent = { 0 },
+					_joinResult = { 0 },
+					_keyword = 304,
+					_link = { 2, 8 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "0.0",
+					_linkCount = "#==2",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57445,
+					_nature = 5,
+					_option = 8194,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "stevearmor",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 12008, 12009, 12010, 14825, 14826 },
+					_skin = { 0 },
+					_star = 0,
+					_syncComponent = { { 0 } }
+				}
+			end
 			if Data._rareInfo and Data._rareInfo[40748] then
 				Data._rareInfo[40748]._quality = 4
 				Data._rareInfo[40748]._keyword = 304
@@ -991,6 +1151,32 @@ local function patchData()
 					_quality = 4,
 					_recruitable = 1,
 					_skillId = { 14803, 14797, 9232 },
+					_targetType = 0,
+					_type = 11
+				}
+			end
+
+			-- Wandering Trader (21150)
+			if Data._magicInfo and not Data._magicInfo[21150] then
+				Data._magicInfo[21150] = {
+					_available = 1,
+					_briefNameSid = 57437,
+					_descSid = 57436,
+					_guideSid = 0,
+					_id = 21150,
+					_isHide = 0,
+					_isSummon = 0,
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57435,
+					_option = 1,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "wanderingtrader",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14823 },
 					_targetType = 0,
 					_type = 11
 				}
@@ -1248,6 +1434,105 @@ local function patchData()
 					_star = 8
 				}
 			end
+
+			-- Soi (12346)
+			if Data._monsterInfo and not Data._monsterInfo[12346] then
+				Data._monsterInfo[12346] = {
+					_atk = { 1100 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57415,
+					_category = 5,
+					_cost = 0,
+					_descSid = 57414,
+					_guideSid = 0,
+					_hp = { 500 },
+					_id = 12346,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57413,
+					_nature = 5,
+					_option = 1,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "soi",
+					_quality = 3,
+					_recruitable = 1,
+					_skillId = { 0 },
+					_skin = { 0 },
+					_star = 2
+				}
+			end
+
+			-- Tatu (12347)
+			if Data._monsterInfo and not Data._monsterInfo[12347] then
+				Data._monsterInfo[12347] = {
+					_atk = { 0 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57418,
+					_category = 5,
+					_cost = 0,
+					_descSid = 57417,
+					_guideSid = 0,
+					_hp = { 1800 },
+					_id = 12347,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57416,
+					_nature = 5,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "tatu",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 12006, 14818 },
+					_skin = { 0 },
+					_star = 3
+				}
+			end
+
+			-- Fox (12348)
+			if Data._monsterInfo and not Data._monsterInfo[12348] then
+				Data._monsterInfo[12348] = {
+					_atk = { 300 },
+					_attackEffect = 1,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57430,
+					_category = 5,
+					_cost = 0,
+					_descSid = 57429,
+					_guideSid = 0,
+					_hp = { 700 },
+					_id = 12348,
+					_isHide = 0,
+					_joinResult = { 0 },
+					_keyword = 304,
+					_maxCount = 3,
+					_nameSid = 57428,
+					_nature = 5,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 0 },
+					_picId = 0,
+					_py = "fox",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 14821, 14822 },
+					_skin = { 0 },
+					_star = 2
+				}
+			end
 			if Data._monsterInfo and Data._monsterInfo[12345] then
 				Data._monsterInfo[12345]._quality = 4
 				Data._monsterInfo[12345]._keyword = 304
@@ -1304,10 +1589,21 @@ local function patchData()
 				Data._skillInfo[14813] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57399, _effectVal = { 0 }, _id = 14813, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 57398, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 2002 }, _removeMode = { 0 }, _targetType = 0, _val = { 500 } }
 				Data._skillInfo[14814] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57403, _effectVal = { 0 }, _id = 14814, _isIgnoreDefend = 0, _modes = { 34, 101, 104 }, _nameSid = 57402, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14815] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57405, _effectVal = { 0 }, _id = 14815, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 57404, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 304 } }
+				Data._skillInfo[14816] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57410, _effectVal = { 0 }, _id = 14816, _isIgnoreDefend = 1, _modes = { 132, 134 }, _nameSid = 57409, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14817] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57412, _effectVal = { 0 }, _id = 14817, _isIgnoreDefend = 0, _modes = { 111 }, _nameSid = 57411, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14818] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57420, _effectVal = { 0 }, _id = 14818, _isIgnoreDefend = 0, _modes = { 101, 102 }, _nameSid = 57419, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 304 }, _refSkills = { 4339 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14819] = { _against = { 0 }, _avoidP2B = 0, _count = 99, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57425, _effectVal = { 0 }, _id = 14819, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57424, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14820] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57427, _effectVal = { 0 }, _id = 14820, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 57426, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 40750 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 500 } }
+				Data._skillInfo[14821] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57432, _effectVal = { 0 }, _id = 14821, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 57431, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14822] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57434, _effectVal = { 0 }, _id = 14822, _isIgnoreDefend = 0, _modes = { 23 }, _nameSid = 57433, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
+				Data._skillInfo[14823] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57439, _effectVal = { 0 }, _id = 14823, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57438, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 2 } }
+				Data._skillInfo[14824] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57444, _effectVal = { 0 }, _id = 14824, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57443, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
+				Data._skillInfo[14825] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57449, _effectVal = { 0 }, _id = 14825, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57448, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14826] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57451, _effectVal = { 0 }, _id = 14826, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 57450, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 300 } }
 			end
 
 			if Data._skillInfo and not Data._skillInfo[14793] then
-				Data._skillInfo[14793] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57328, _effectVal = { 0 }, _id = 14793, _isIgnoreDefend = 1, _modes = { 33 }, _nameSid = 57327, _needExtraGem = 0, _needNoGem = 0, _option = { 3 }, _priority = 1, _quality = 3, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14793] = { _against = { 0 }, _avoidP2B = 0, _count = 3, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57328, _effectVal = { 0 }, _id = 14793, _isIgnoreDefend = 1, _modes = { 33 }, _nameSid = 57327, _needExtraGem = 0, _needNoGem = 0, _option = { 3 }, _priority = 1, _quality = 3, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 			end
 			-- Skill 14794
 			if Data._skillInfo and not Data._skillInfo[14794] then
@@ -6062,8 +6358,9 @@ function patchClientData()
 		[56884] = "Tru Tiên Kiếm",
 		[56885] = "Tru Tiên Kiếm-Trảm Tiên Diệt Ma",
 		[56886] = "Phép trang bị: Trang bị dành cho quái Chiến Binh hoặc Phù Thủy trên sân phe ta. Quái trang bị tăng 5000 Điểm Tấn Công.",
-		[56922] = "Tru Tiên Kiếm-Quá Tải",
-		[56923] = "Quái trang bị nhận được kỹ năng [Quá Tải]: Khi tấn công quái thủ có DEF thấp hơn ATK của nó, gây sát thương chênh lệch cho đối thủ. Hết lượt: tự loại bỏ.",
+		[41453] = "Khi bài này rời khỏi sân; sẽ bị loại bỏ.",
+				[56922] = "Tru Tiên Kiếm-Xuyên Giáp",
+		[56923] = "Quái trang bị nhận được kỹ năng [Xuyên Giáp]: Khi tấn công quái thủ có DEF thấp hơn ATK của nó, gây sát thương chênh lệch cho đối thủ. Hết lượt: tự loại bỏ.",
 		[56924] = "Tru Tiên Kiếm-Liên Trảm",
 		[56925] = "Quái trang bị nhận được kỹ năng [Liên Trảm]: Có thể tấn công mỗi quái trên sân đối thủ 1 lần; không thể tấn công trực tiếp đối thủ.",
 		[56926] = "Tru Tiên Kiếm-Kiếm Khí Hộ Thể",
