@@ -1387,17 +1387,13 @@ function var_0_0.castInitiativeSkill(arg_55_0, arg_55_1, arg_55_2)
 		arg_55_0:hideCardSprite(var_55_0)
 	end
 
-	if arg_55_2 and (arg_55_2._id == 14794 or arg_55_2._id == 14804 or arg_55_2._id == 14807 or arg_55_2._id == 14809 or arg_55_2._id == 14811 or arg_55_2._id == 14812 or arg_55_2._id == 14819 or arg_55_2._id == 14824) then
+	if arg_55_2 and (arg_55_2._id == 14794 or arg_55_2._id == 14804 or arg_55_2._id == 14807 or arg_55_2._id == 14809 or arg_55_2._id == 14811 or arg_55_2._id == 14812) then
 		local skillIdx = arg_55_1:getSkillIndex(arg_55_2)
 		if not skillIdx or skillIdx == 0 then
 			skillIdx = arg_55_1:getSkillIndexById(arg_55_2._id)
 		end
 		if not skillIdx or skillIdx == 0 then
-			if arg_55_2._id == 14819 then
-				skillIdx = 2
-			elseif arg_55_2._id == 14824 then
-				skillIdx = 1
-			elseif arg_55_2._id == 14811 then
+			if arg_55_2._id == 14811 then
 				skillIdx = 2
 			else
 				skillIdx = 1
@@ -2335,6 +2331,12 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14793, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14793) or (arg_85_1._card:isInfoId(40747) and arg_85_1._card._status == BattleData.CardStatus.rare) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú [Minecraft] trong Mộ để loại bỏ"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14819, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14819) or arg_85_1._card:isInfoId(40750) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 quái thú Xác Sống trong Mộ để loại bỏ"
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14824, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14824) or arg_85_1._card:isInfoId(40751) then
+		var_85_0 = BattleListDialog.Mode.choice
+		var_85_1 = "Chọn 1 lá bài Phép hoặc Bẫy [Minecraft] từ Bộ bài lên tay"
 	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14823, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14823) or arg_85_1._card:isInfoId(21150) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú [Minecraft] trên tay để đưa vào Mộ" 
@@ -4042,6 +4044,32 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 			var_89_1 = var_89_0[1]._id
 		end
 		local skillIdx = arg_89_2._card:getSkillIndexById(14793) or 1
+		local baseChoice = (arg_89_1._choiceBase and arg_89_1._choiceBase >= BattleData.ChoiceId.stage_3) and arg_89_1._choiceBase or (skillIdx * BattleData.ChoiceId.stage_3)
+		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_89_2._card,
+			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
+			_choice = var_89_1 * BattleData.ChoiceId.stage_2 + baseChoice
+		})
+	end
+
+	if arg_89_2._card:isInfoId(40750) or arg_89_2._card:hasSkillFast(14819) or (arg_89_1._choiceBase and arg_89_2._card:isSkillAtIndex(14819, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+		if var_89_0 and #var_89_0 > 0 then
+			var_89_1 = var_89_0[1]._id
+		end
+		local skillIdx = arg_89_2._card:getSkillIndexById(14819) or 2
+		local baseChoice = (arg_89_1._choiceBase and arg_89_1._choiceBase >= BattleData.ChoiceId.stage_3) and arg_89_1._choiceBase or (skillIdx * BattleData.ChoiceId.stage_3)
+		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
+			_card = arg_89_2._card,
+			_target = arg_89_3 ~= nil and arg_89_3._card or nil,
+			_choice = var_89_1 * BattleData.ChoiceId.stage_2 + baseChoice
+		})
+	end
+
+	if arg_89_2._card:isInfoId(40751) or arg_89_2._card:hasSkillFast(14824) or (arg_89_1._choiceBase and arg_89_2._card:isSkillAtIndex(14824, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+		if var_89_0 and #var_89_0 > 0 then
+			var_89_1 = var_89_0[1]._id
+		end
+		local skillIdx = arg_89_2._card:getSkillIndexById(14824) or 1
 		local baseChoice = (arg_89_1._choiceBase and arg_89_1._choiceBase >= BattleData.ChoiceId.stage_3) and arg_89_1._choiceBase or (skillIdx * BattleData.ChoiceId.stage_3)
 		return arg_89_0:sendEvent(var_0_0.EventType.send_use_card, {
 			_card = arg_89_2._card,
@@ -7528,6 +7556,14 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 	end
 
 	if arg_91_2._card:hasSkillFast(14793) or arg_91_2._card:isInfoId(40747) or (arg_91_1._choiceBase and arg_91_2._card:isSkillAtIndex(14793, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+		return var_91_0 == 1
+	end
+
+	if arg_91_2._card:hasSkillFast(14819) or arg_91_2._card:isInfoId(40750) or (arg_91_1._choiceBase and arg_91_2._card:isSkillAtIndex(14819, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+		return var_91_0 == 1
+	end
+
+	if arg_91_2._card:hasSkillFast(14824) or arg_91_2._card:isInfoId(40751) or (arg_91_1._choiceBase and arg_91_2._card:isSkillAtIndex(14824, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3))) then
 		return var_91_0 == 1
 	end
 

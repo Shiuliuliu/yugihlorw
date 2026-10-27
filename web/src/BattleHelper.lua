@@ -8193,7 +8193,7 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		return false
 	end
 
-	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_1._id ~= 14779 and arg_304_1._id ~= 14781 and arg_304_1._id ~= 14783 and arg_304_1._id ~= 14784 and arg_304_1._id ~= 14785 and arg_304_1._id ~= 14786 and arg_304_1._id ~= 14793 and arg_304_1._id ~= 14800 and arg_304_1._id ~= 14804 and arg_304_1._id ~= 14805 and arg_304_1._id ~= 14807 and arg_304_1._id ~= 14809 and arg_304_1._id ~= 14811 and arg_304_1._id ~= 14812 and arg_304_1._id ~= 14825 and arg_304_1._id ~= 14831 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
+	if arg_304_1._id ~= 14622 and arg_304_1._id ~= 14731 and arg_304_1._id ~= 14732 and arg_304_1._id ~= 14742 and arg_304_1._id ~= 14748 and arg_304_1._id ~= 14752 and arg_304_1._id ~= 14757 and arg_304_1._id ~= 14758 and arg_304_1._id ~= 14759 and arg_304_1._id ~= 14756 and arg_304_1._id ~= 14761 and arg_304_1._id ~= 14763 and arg_304_1._id ~= 14764 and arg_304_1._id ~= 14770 and arg_304_1._id ~= 14774 and arg_304_1._id ~= 14776 and arg_304_1._id ~= 14779 and arg_304_1._id ~= 14781 and arg_304_1._id ~= 14783 and arg_304_1._id ~= 14784 and arg_304_1._id ~= 14785 and arg_304_1._id ~= 14786 and arg_304_1._id ~= 14793 and arg_304_1._id ~= 14800 and arg_304_1._id ~= 14804 and arg_304_1._id ~= 14805 and arg_304_1._id ~= 14807 and arg_304_1._id ~= 14809 and arg_304_1._id ~= 14811 and arg_304_1._id ~= 14812 and arg_304_1._id ~= 14819 and arg_304_1._id ~= 14824 and arg_304_1._id ~= 14825 and arg_304_1._id ~= 14831 and arg_304_3 ~= (B.skillHasMode(arg_304_1, Data.SkillMode.initiative_bcs) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_grave) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_hand) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_rare) or B.skillHasMode(arg_304_1, Data.SkillMode.initiative_leave)) then
 		return false
 	end
 
@@ -8438,6 +8438,69 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 		local candidates = {}
 		for _, c in ipairs(pOwner:getBoardCards()) do
 			if c:isCategory(17) or (c._info and c._info._category == 17) then
+				table.insert(candidates, c)
+			end
+		end
+		if #candidates > 0 then
+			return true, candidates, 1
+		end
+		return false
+	elseif arg_304_1._id == 14819 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards = arg_304_0:getBattleCardsByInfoId("R", 40750)
+			if #cards > 0 then ownerCard = cards[1] end
+		end
+		if ownerCard == nil then
+			local cards = arg_304_0:getBattleCardsByInfoId("B", 40750)
+			if #cards > 0 then ownerCard = cards[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		if ownerCard and (ownerCard._status ~= BattleData.CardStatus.rare and ownerCard._status ~= BattleData.CardStatus.board) then
+			return false
+		end
+		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then
+			return false
+		end
+		if pOwner.canSpecialSummonAnyCard and not pOwner:canSpecialSummonAnyCard() then
+			return false
+		end
+		if pOwner:getEmptyBoardPos() == nil then
+			return false
+		end
+		local candidates = {}
+		for _, c in ipairs(pOwner:getBattleCards("G")) do
+			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare) and (c:isCategory(17) or (c._info and c._info._category == 17) or c._category == 17) then
+				table.insert(candidates, c)
+			end
+		end
+		if #candidates > 0 then
+			return true, candidates, 1
+		end
+		return false
+	elseif arg_304_1._id == 14824 then
+		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
+		if ownerCard == nil then
+			local cards = arg_304_0:getBattleCardsByInfoId("B", 40751)
+			if #cards > 0 then ownerCard = cards[1] end
+		end
+		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
+		local turnId = (arg_304_0._round or 0) * 1000 + (pOwner._round or arg_304_0._round or 0)
+		if ownerCard and ownerCard._steveMinerTurn == turnId then
+			return false
+		end
+		if (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14824] and pOwner._castedSkillCounts[14824] >= 1) then
+			return false
+		end
+		if ownerCard and (ownerCard._status ~= BattleData.CardStatus.board and ownerCard._status ~= BattleData.CardStatus.field and ownerCard._status ~= BattleData.CardStatus.show) then
+			return false
+		end
+		if #pOwner._handCards >= Data.MAX_CARD_COUNT_IN_HAND then
+			return false
+		end
+		local candidates = {}
+		for _, c in ipairs(pOwner._pileCards) do
+			if (c:isMagic() or c:isTrap() or c._type == Data.CardType.magic or c._type == Data.CardType.trap) and (c:isKeyword(304) or (c._info and c._info._keyword == 304) or c._keyword == 304) then
 				table.insert(candidates, c)
 			end
 		end
