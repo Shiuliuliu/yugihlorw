@@ -11538,6 +11538,9 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		local ownerCard = var_4_1 or arg_4_1
 		local pOwner = (ownerCard and ownerCard._owner) or arg_4_0
 		local turnId = ((arg_4_0 and arg_4_0._round) or (pOwner and pOwner._round) or 0) * 1000 + (pOwner and pOwner._round or 0)
+		if (ownerCard and ownerCard._steveMinerTurn == turnId) or (pOwner._castedSkillCounts and pOwner._castedSkillCounts[14824] and pOwner._castedSkillCounts[14824] >= 1) then
+			return false
+		end
 		if ownerCard then ownerCard._steveMinerTurn = turnId end
 		pOwner._castedSkillCounts[14824] = (pOwner._castedSkillCounts[14824] or 0) + 1
 		arg_4_0._castedSkillCounts[14824] = (arg_4_0._castedSkillCounts[14824] or 0) + 1

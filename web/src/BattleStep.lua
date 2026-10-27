@@ -3970,26 +3970,6 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 	elseif arg_52_1._type == Data.CardType.boss or arg_52_1._status == BattleData.CardStatus.board then
 		local var_52_32 = arg_52_1._choice and math.floor(arg_52_1._choice / BattleData.ChoiceId.stage_3) % BattleData.ChoiceId.stage_size_3 or 0
 
-		if var_52_32 == 0 then
-			if arg_52_1:hasSkillFast(14819) or arg_52_1._infoId == 40750 then
-				var_52_32 = arg_52_1:getSkillIndexById(14819)
-				if not var_52_32 or var_52_32 == 0 then var_52_32 = 2 end
-				arg_52_1._choice = var_52_32 * BattleData.ChoiceId.stage_3
-			elseif arg_52_1:hasSkillFast(14824) or arg_52_1._infoId == 40751 then
-				var_52_32 = arg_52_1:getSkillIndexById(14824)
-				if not var_52_32 or var_52_32 == 0 then var_52_32 = 1 end
-				arg_52_1._choice = var_52_32 * BattleData.ChoiceId.stage_3
-			elseif arg_52_1:hasSkillFast(14825) or arg_52_1._infoId == 40752 then
-				var_52_32 = arg_52_1:getSkillIndexById(14825)
-				if not var_52_32 or var_52_32 == 0 then var_52_32 = 4 end
-				arg_52_1._choice = var_52_32 * BattleData.ChoiceId.stage_3
-			elseif arg_52_1:hasSkillFast(14831) or arg_52_1._infoId == 40754 then
-				var_52_32 = arg_52_1:getSkillIndexById(14831)
-				if not var_52_32 or var_52_32 == 0 then var_52_32 = 5 end
-				arg_52_1._choice = var_52_32 * BattleData.ChoiceId.stage_3
-			end
-		end
-
 		if var_52_32 > 0 then
 			arg_52_0._actionCard = arg_52_1
 
@@ -4055,12 +4035,6 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				var_52_34 = arg_52_1:getSkillIndexById(14812) or 1
 			elseif arg_52_1:hasSkillFast(14819) or arg_52_1._infoId == 40750 then
 				var_52_34 = arg_52_1:getSkillIndexById(14819) or 2
-			elseif arg_52_1:hasSkillFast(14824) or arg_52_1._infoId == 40751 then
-				var_52_34 = arg_52_1:getSkillIndexById(14824) or 1
-			elseif arg_52_1:hasSkillFast(14825) or arg_52_1._infoId == 40752 then
-				var_52_34 = arg_52_1:getSkillIndexById(14825) or 4
-			elseif arg_52_1:hasSkillFast(14831) or arg_52_1._infoId == 40754 then
-				var_52_34 = arg_52_1:getSkillIndexById(14831) or 5
 			end
 		end
 
