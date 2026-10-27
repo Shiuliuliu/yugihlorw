@@ -1615,6 +1615,7 @@ end
 
 function var_0_0.appendBoldRichText(arg_51_0, arg_51_1, arg_51_2)
 	arg_51_2 = arg_51_2 or {}
+	arg_51_1 = tostring(arg_51_1 or "")
 
 	local var_51_0 = arg_51_2._normalClr or var_0_0.COLOR_TEXT_LIGHT
 	local var_51_1 = arg_51_2._fontSize or var_0_0.FontSize.S2

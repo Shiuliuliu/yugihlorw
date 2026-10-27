@@ -237,9 +237,9 @@ function var_0_0.setAvatar(arg_5_0, arg_5_1)
 	end
 
 	local var_5_10 = arg_5_1._avatar
-	local var_5_11
+	local var_5_11 = "avatar_00"
 
-	if arg_5_1._id == 0 then
+	if arg_5_1._id == 0 and lc.FrameCache:getSpriteFrame("card_ico_0") ~= nil then
 		var_5_11 = "card_ico_0"
 	elseif var_5_10 then
 		var_5_11 = ClientData.getAvatarName(var_5_10)
@@ -255,11 +255,17 @@ function var_0_0.setAvatar(arg_5_0, arg_5_1)
 		var_5_11 = "avatar_00"
 	end
 
-	if ClientData.isAppStoreReviewing() then
+	if lc.FrameCache:getSpriteFrame(var_5_11) == nil then
+		var_5_11 = "avatar_00"
+	end
+
+	if ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("avatar_9999") ~= nil then
 		var_5_11 = "avatar_9999"
 	end
 
-	arg_5_0._avatar:setSpriteFrame(var_5_11)
+	pcall(function()
+		arg_5_0._avatar:setSpriteFrame(var_5_11)
+	end)
 	arg_5_0._avatarBg:setPosition(lc.w(var_5_0) / 2, lc.h(var_5_0) / 2)
 	arg_5_0._avatar:setPosition(lc.w(var_5_0) / 2, lc.h(var_5_0) / 2)
 
@@ -338,8 +344,10 @@ function var_0_0.setVip(arg_6_0, arg_6_1)
 end
 
 function var_0_0.setLevel(arg_7_0, arg_7_1)
-	if arg_7_0._nameArea then
-		arg_7_0._nameArea._level:setString(string.format("%d", arg_7_1))
+	if arg_7_0._nameArea and arg_7_0._nameArea._level then
+		pcall(function()
+			arg_7_0._nameArea._level:setString(string.format("%d", tonumber(arg_7_1) or 1))
+		end)
 	end
 end
 

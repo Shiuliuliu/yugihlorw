@@ -72,7 +72,8 @@ function var_0_0.onMsg(arg_7_0, arg_7_1)
 		))
 		if rewards and type(rewards) == "table" and #rewards > 0 then
 			pcall(function()
-				require("RewardPanel").create(rewards):show()
+				local rp = require("RewardPanel")
+				rp.create(rewards, rp.MODE_EXCHANGE):show()
 			end)
 		end
 
@@ -92,6 +93,15 @@ function var_0_0.onExchange(arg_8_0)
 		ToastManager.push(string.format(Str(STR.CANNOT_MORE_THAN), var_0_2))
 	else
 		ClientView.getActiveIndicator():show(Str(STR.WAITING))
+		pcall(function()
+			if lc and lc.Director and lc.Director.getScheduler then
+				local entry
+				entry = lc.Director:getScheduler():scheduleScriptFunc(function()
+					if entry then lc.Director:getScheduler():unscheduleScriptEntry(entry) end
+					pcall(function() ClientView.getActiveIndicator():hide() end)
+				end, 6.0, false)
+			end
+		end)
 		ClientData.sendUserGiftExchange(var_8_0, arg_8_0)
 	end
 end

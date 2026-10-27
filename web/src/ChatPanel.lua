@@ -70,7 +70,8 @@ function var_0_0.init(arg_3_0)
 
 	var_3_4._originH = lc.h(var_3_4)
 
-	lc.addChildToPos(var_3_3, var_3_4, cc.p(lc.w(var_3_3) / 2, ClientView.FRAME_INNER_BOTTOM))
+	lc.addChildToPos(var_3_3, var_3_4, cc.p(lc.w(var_3_3) / 2, ClientView.FRAME_INNER_BOTTOM), 10)
+	var_3_4:setLocalZOrder(10)
 
 	arg_3_0._list = var_3_4
 
@@ -286,17 +287,25 @@ function var_0_0.resetList(arg_15_0)
 	end
 
 	var_15_0:removeAllItems()
+	local cacheLimit = (var_0_6 and var_0_6[var_15_1]) or 10
+	local cacheCount = math.min(cacheLimit, #var_15_3)
 	var_15_0:bindData(var_15_3, function(arg_16_0, arg_16_1)
-		arg_15_0:setOrCreateItem(arg_16_0, arg_16_1)
-	end, math.min(var_0_6[var_15_1], #var_15_3), var_15_1 < var_0_1.bulletin and 2 or 0)
+		return arg_15_0:setOrCreateItem(arg_16_0, arg_16_1)
+	end, cacheCount, (var_15_1 and var_15_1 < var_0_1.bulletin) and 2 or 0)
 
-	for iter_15_0 = 1, var_15_0._cacheCount do
+	for iter_15_0 = 1, (var_15_0._cacheCount or cacheCount) do
 		if var_15_3[iter_15_0] then
-			local var_15_4 = arg_15_0:setOrCreateItem(nil, var_15_3[iter_15_0])
-			var_15_0:pushBackCustomItem(var_15_4)
+			local ok, var_15_4 = pcall(function()
+				return arg_15_0:setOrCreateItem(nil, var_15_3[iter_15_0])
+			end)
+			if ok and var_15_4 then
+				var_15_0:pushBackCustomItem(var_15_4)
+			end
 		end
 	end
 
+	pcall(function() var_15_0:forceDoLayout() end)
+	pcall(function() var_15_0:refreshView() end)
 	var_15_0:jumpToTop()
 end
 
@@ -425,12 +434,20 @@ function var_0_0.updateItemTime(arg_23_0, arg_23_1)
 end
 
 function var_0_0.setOrCreateItem(arg_24_0, arg_24_1, arg_24_2)
+	local ok, res
 	if arg_24_2._type == Data.MsgType.bulletin then
-		return arg_24_0:setOrCreateBulletinItem(arg_24_1, arg_24_2)
+		ok, res = pcall(function() return arg_24_0:setOrCreateBulletinItem(arg_24_1, arg_24_2) end)
 	elseif arg_24_2._type == Data.MsgType.battle or arg_24_2._log ~= nil or arg_24_2._replayId ~= nil then
-		return arg_24_0:setOrCreateBattleItem(arg_24_1, arg_24_2)
+		ok, res = pcall(function() return arg_24_0:setOrCreateBattleItem(arg_24_1, arg_24_2) end)
 	else
-		return arg_24_0:setOrCreateChatItem(arg_24_1, arg_24_2)
+		ok, res = pcall(function() return arg_24_0:setOrCreateChatItem(arg_24_1, arg_24_2) end)
+	end
+	if ok and res then
+		return res
+	else
+		local fbOk, fbRes = pcall(function() return arg_24_0:setOrCreateChatItem(arg_24_1, arg_24_2) end)
+		if fbOk and fbRes then return fbRes end
+		return arg_24_1 or ccui.Widget:create()
 	end
 end
 
@@ -629,16 +646,19 @@ function var_0_0.setOrCreateBattleItem(arg_27_0, arg_27_1, arg_27_2)
 
 		local var_27_10 = cc.p(lc.cw(arg_27_1), lc.y(arg_27_1._userArea) - 70)
 
-		if arg_27_2._watchIds and arg_27_2._watchIds[P._sid] then
+		local mySid = (P and P._sid) or (P and P._id and tostring(P._id)) or nil
+		if mySid and arg_27_2._watchIds and arg_27_2._watchIds[mySid] then
 			local var_27_11 = lc.createSprite(arg_27_2._resultType == Data.BattleResult.win and "img_win" or arg_27_2._resultType == Data.BattleResult.lose and "img_lose" or "img_draw")
-
-			var_27_11:setScale(0.5)
-			lc.addChildToPos(arg_27_1, var_27_11, cc.p(var_27_10.x - 220, var_27_10.y), 0, var_0_7)
+			if var_27_11 then
+				var_27_11:setScale(0.5)
+				lc.addChildToPos(arg_27_1, var_27_11, cc.p(var_27_10.x - 220, var_27_10.y), 0, var_0_7)
+			end
 
 			local var_27_12 = lc.createSprite(arg_27_2._resultType == Data.BattleResult.win and "img_lose" or arg_27_2._resultType == Data.BattleResult.lose and "img_win" or "img_draw")
-
-			var_27_12:setScale(0.5)
-			lc.addChildToPos(arg_27_1, var_27_12, cc.p(var_27_10.x + 244, var_27_10.y), 0, var_0_7)
+			if var_27_12 then
+				var_27_12:setScale(0.5)
+				lc.addChildToPos(arg_27_1, var_27_12, cc.p(var_27_10.x + 244, var_27_10.y), 0, var_0_7)
+			end
 		end
 
 		arg_27_1._infoArea:setVisible(true)
@@ -652,7 +672,8 @@ function var_0_0.setOrCreateBattleItem(arg_27_0, arg_27_1, arg_27_2)
 			arg_27_0:replayBattle(arg_27_2)
 		end
 
-		if arg_27_2._likeIds and arg_27_2._likeIds[P._sid] then
+		local mySid = (P and P._sid) or (P and P._id and tostring(P._id)) or nil
+		if mySid and arg_27_2._likeIds and arg_27_2._likeIds[mySid] then
 			var_27_7._label:setString(Str(STR.CANCEL))
 
 			function var_27_7._callback()

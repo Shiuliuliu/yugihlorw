@@ -6605,8 +6605,30 @@ function var_0_0.pollChatHistory()
 	pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
 	pcall(function()
 		local api = jsbridge and jsbridge.object("jdzcApi")
-		if api and api.loadChatHistory then
-			api:loadChatHistory()
+		if api and api.post then
+			api:post("chat_history", {}, function(rawRes)
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
+				if res and res.messages and #res.messages > 0 then
+					for _, m in ipairs(res.messages) do
+						local cardId = m.card_id or (m.items and m.items[1] and (m.items[1].info_id or m.items[1]._infoId)) or 0
+						local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
+						local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
+						local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
+						if _G.addRawChatMessage then
+							_G.addRawChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or m.msg_type or 1, cardId, m.client_msg_id or "", crownId, crownNum, true, m.union_id or 0)
+						end
+					end
+					pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
+					local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or var_0_0._chatPanel
+					if cp and cp._isPop then
+						cp:resetList()
+					end
+				end
+			end)
 		end
 	end)
 end
@@ -6937,13 +6959,90 @@ function var_0_0.sendSetCardBack(arg_407_0)
 	var_0_0.sendProtoMsg(var_407_0)
 end
 
-function var_0_0.sendUserGiftExchange(arg_408_0)
-	local var_408_0 = SglMsg_pb.SglReqMsg()
+function var_0_0.sendUserGiftExchange(arg_408_0, arg_408_1)
+	local accId = (var_0_0._account and var_0_0._account.id) or (P and P._id) or 1
+	local cleanCode = string.trim(tostring(arg_408_0 or ""))
+	if cleanCode == "" or cleanCode == "Nhập mã quà tặng..." then
+		pcall(function() ClientView.getActiveIndicator():hide() end)
+		ToastManager.push(Str(STR.INPUT_EXCHANGE_CODE))
+		return
+	end
 
-	var_408_0.type = SglMsgType_pb.PB_TYPE_USER_CLAIM_GIFT
-	var_408_0.Extensions[User_pb.SglUserMsg.user_claim_gift_req] = arg_408_0
+	local api = jsbridge and jsbridge.object("jdzcApi")
+	if api and api.post then
+		api:post("redeem_gift_code", { account_id = accId, code = cleanCode }, function(rawRes)
+			pcall(function() ClientView.getActiveIndicator():hide() end)
+			local res = rawRes
+			if type(res) == "string" then
+				local ok, parsed = pcall(function() return require("json").decode(res) end)
+				if ok and parsed then res = parsed end
+			end
+			if res and res.code == 200 then
+				local rewardsList = {}
+				if res.rewards and #res.rewards > 0 then
+					for _, rw in ipairs(res.rewards) do
+						local infoId = rw.info_id or Data.ResType.ingot
+						local num = rw.num or 0
+						table.insert(rewardsList, {
+							info_id = infoId,
+							num = num,
+							is_fragment = rw.is_fragment or false,
+							level = rw.level or 1
+						})
+						if infoId and infoId >= 10000 and P and P._playerCard then
+							pcall(function() P._playerCard:addCard(infoId, num) end)
+						end
+					end
+				else
+					table.insert(rewardsList, {
+						info_id = Data.ResType.gold,
+						num = 1000000,
+						is_fragment = false,
+						level = 1
+					})
+				end
 
-	var_0_0.sendProtoMsg(var_408_0)
+				if arg_408_1 and arg_408_1.hide then
+					pcall(function() arg_408_1:hide() end)
+				end
+				local curScene = lc._runningScene
+				if curScene and curScene._scene then
+					for _, child in ipairs(curScene._scene:getChildren()) do
+						if child.__cname == "ExchangeCodeForm" then
+							pcall(function() child:hide() end)
+						end
+					end
+				end
+
+				if res.new_gem and P then
+					P._ingot = res.new_gem
+				end
+				if res.new_gold and P then
+					P._gold = res.new_gold
+				end
+				lc.sendEvent(Data.Event.resource_dirty)
+				lc.sendEvent(Data.Event.card_dirty)
+				if ClientView.getMenuUI() then
+					ClientView.getMenuUI():updateResource()
+				end
+
+				pcall(function()
+					require("RewardPanel").create(rewardsList):show()
+				end)
+
+				ToastManager.push(res.msg or "Nhập mã quà tặng thành công!")
+			else
+				local errMsg = (res and res.msg) or "Mã quà tặng không hợp lệ!"
+				ToastManager.push(errMsg)
+			end
+		end)
+	else
+		pcall(function() ClientView.getActiveIndicator():hide() end)
+		local var_408_0 = SglMsg_pb.SglReqMsg()
+		var_408_0.type = SglMsgType_pb.PB_TYPE_USER_CLAIM_GIFT
+		var_408_0.Extensions[User_pb.SglUserMsg.user_claim_gift_req] = arg_408_0
+		var_0_0.sendProtoMsg(var_408_0)
+	end
 end
 
 function var_0_0.sendChatBan(arg_409_0)

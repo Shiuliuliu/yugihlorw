@@ -2594,28 +2594,33 @@ function var_0_25.getCharacterUnlockCount(arg_153_0)
 end
 
 function var_0_25.getLevel(arg_154_0, arg_154_1)
-	return arg_154_0._characters[arg_154_1 or arg_154_0:getCharacterId()]._level
+	local charId = arg_154_1 or arg_154_0:getCharacterId()
+	local ch = arg_154_0._characters and arg_154_0._characters[charId]
+	return ch and ch._level or 1
 end
 
 function var_0_25.getMaxCharacterLevel(arg_155_0)
 	local var_155_0 = 0
 
-	for iter_155_0, iter_155_1 in pairs(Data._characterInfo) do
-		local var_155_1 = arg_155_0._characters[iter_155_0]._level
+	for iter_155_0, iter_155_1 in pairs(Data._characterInfo or {}) do
+		local ch = arg_155_0._characters and arg_155_0._characters[iter_155_0]
+		local var_155_1 = ch and ch._level or 0
 
 		if var_155_0 < var_155_1 then
 			var_155_0 = var_155_1
 		end
 	end
 
-	return var_155_0
+	return math.max(1, var_155_0)
 end
 
 function var_0_25.getTotalCharacterLevel(arg_156_0)
 	local var_156_0 = 0
 
-	for iter_156_0, iter_156_1 in pairs(Data._characterInfo) do
-		var_156_0 = var_156_0 + arg_156_0._characters[iter_156_0]._level
+	for iter_156_0, iter_156_1 in pairs(Data._characterInfo or {}) do
+		local ch = arg_156_0._characters and arg_156_0._characters[iter_156_0]
+		local lvl = ch and ch._level or 0
+		var_156_0 = var_156_0 + lvl
 	end
 
 	return var_156_0

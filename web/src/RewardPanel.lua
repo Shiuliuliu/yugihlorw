@@ -73,20 +73,25 @@ function var_0_0.create(arg_1_0, arg_1_1)
 		end
 
 		if arg_1_1 ~= var_0_0.MODE_EXCHANGE then
-			local var_1_9 = P._characters[P:getCharacterId()]
-			local var_1_10 = var_1_9._level
+			local charId = P and P.getCharacterId and P:getCharacterId()
+			local var_1_9 = P and P._characters and charId and P._characters[charId]
+			local var_1_10 = var_1_9 and var_1_9._level or 1
 
-			P:addResourcesData(var_1_1)
+			if P and P.addResourcesData then
+				P:addResourcesData(var_1_1)
+			end
 
-			local var_1_11 = var_1_9._level
+			local var_1_11 = var_1_9 and var_1_9._level or 1
 
 			if var_1_10 < var_1_11 then
-				require("LevelUpPanel").createLord(var_1_10, var_1_11):show()
+				pcall(function()
+					require("LevelUpPanel").createLord(var_1_10, var_1_11):show()
+				end)
 			end
 		end
 	end
 
-	P:sortResultItems(var_1_1)
+	if P and P.sortResultItems then P:sortResultItems(var_1_1) end
 
 	var_1_0._bonuses = var_1_1
 

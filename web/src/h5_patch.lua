@@ -1826,8 +1826,30 @@ function patchClientData()
 		pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
 		pcall(function()
 			local api = jsbridge and jsbridge.object("jdzcApi")
-			if api and api.loadChatHistory then
-				api:loadChatHistory()
+			if api and api.post then
+				api:post("chat_history", {}, function(rawRes)
+					local res = rawRes
+					if type(res) == "string" then
+						local ok, parsed = pcall(function() return require("json").decode(res) end)
+						if ok and parsed then res = parsed end
+					end
+					if res and res.messages and #res.messages > 0 then
+						for _, m in ipairs(res.messages) do
+							local cardId = m.card_id or (m.items and m.items[1] and (m.items[1].info_id or m.items[1]._infoId)) or 0
+							local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
+							local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
+							local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
+						if _G.addRawChatMessage then
+							_G.addRawChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or m.msg_type or 1, cardId, m.client_msg_id or "", crownId, crownNum, true, m.union_id or 0)
+						end
+						end
+						pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
+						local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
+						if cp and cp._isPop then
+							cp:resetList()
+						end
+					end
+				end)
 			end
 		end)
 	end
@@ -7253,7 +7275,7 @@ ClientData.unloadLCRes = function(names)
 		local api = jsbridge and jsbridge.object("jdzcApi")
 		if api and api.post then
 			api:post("redeem_gift_code", { account_id = accId, code = cleanCode }, function(rawRes)
-				ClientView.getActiveIndicator():hide()
+				pcall(function() ClientView.getActiveIndicator():hide() end)
 				local res = rawRes
 				if type(res) == "string" then
 					local ok, parsed = pcall(function() return require("json").decode(res) end)
@@ -7310,10 +7332,30 @@ ClientData.unloadLCRes = function(names)
 						ClientView.getMenuUI():updateResource()
 					end
 
-					-- Directly show RewardPanel
-					pcall(function()
-						require("RewardPanel").create(rewardsList):show()
-					end)
+					-- Dispatch message to listener (ExchangeCodeForm:onMsg)
+					local giftExt = User_pb and User_pb.SglUserMsg and User_pb.SglUserMsg.user_claim_gift_resp
+					local msg = {
+						type = SglMsgType_pb and SglMsgType_pb.PB_TYPE_USER_CLAIM_GIFT or 313,
+						status = 0,
+						rewards = rewardsList,
+						Extensions = {}
+					}
+					if giftExt then
+						msg.Extensions[giftExt] = rewardsList
+					end
+					msg.Extensions["user_claim_gift_resp"] = rewardsList
+					msg.Extensions[305] = rewardsList
+
+					local handled = false
+					if ClientData.onMsg then
+						handled = ClientData.onMsg(msg)
+					end
+					if not handled then
+						pcall(function()
+							local rp = require("RewardPanel")
+							rp.create(rewardsList, rp.MODE_EXCHANGE):show()
+						end)
+					end
 
 					ToastManager.push(res.msg or "Nhập mã quà tặng thành công!")
 				else
@@ -7869,7 +7911,7 @@ ClientData.unloadLCRes = function(names)
 							local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
 							local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
 							local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
-							processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum, true, m.union_id or 0)
+							processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or m.msg_type or 1, cardId, m.client_msg_id or "", crownId, crownNum, true, m.union_id or 0)
 						end
 						pcall(flushPendingChatQueue)
 
@@ -7934,6 +7976,23 @@ ClientData.unloadLCRes = function(names)
 								end
 								for i = #bulletinList, 1, -1 do bulletinList[i] = nil end
 								for i, m in ipairs(cleanBulletin) do bulletinList[i] = m end
+							end
+
+							local battleList = P._playerMessage._msgAll[Data.MsgType.battle]
+							if battleList and type(battleList) == "table" then
+								local cleanBattle = {}
+								local seenBattle = {}
+								for _, m in ipairs(battleList) do
+									if m._type == Data.MsgType.battle or m._log ~= nil or m._replayId ~= nil then
+										local uid = (m._id and tostring(m._id)) or (m._clientMsgId and tostring(m._clientMsgId)) or (m._log and m._log._id and tostring(m._log._id)) or (m._replayId and tostring(m._replayId))
+										if not uid or not seenBattle[uid] then
+											if uid then seenBattle[uid] = true end
+											table.insert(cleanBattle, m)
+										end
+									end
+								end
+								for i = #battleList, 1, -1 do battleList[i] = nil end
+								for i, m in ipairs(cleanBattle) do battleList[i] = m end
 							end
 
 							for _, list in pairs(P._playerMessage._msgAll) do
