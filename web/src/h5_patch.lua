@@ -2051,7 +2051,8 @@ function patchClientData()
 								union_title = 0,
 								union_avatar = 0,
 								union_tag = "",
-								last_login = 0,
+								last_login = r.last_login or (os.time() * 1000),
+								is_online = (r.is_online == true) or (r.id == myId),
 								rid = 1,
 								privilege = 0,
 								month_card = 0
@@ -2103,7 +2104,8 @@ function patchClientData()
 						union_title = 0,
 						union_avatar = 0,
 						union_tag = "",
-						last_login = 0,
+						last_login = (sr and sr.last_login) or (P and P._loginTime and (P._loginTime * 1000)) or (os.time() * 1000),
+						is_online = true,
 						rid = 1,
 						privilege = 0,
 						month_card = 0

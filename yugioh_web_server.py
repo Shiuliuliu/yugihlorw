@@ -1086,7 +1086,7 @@ def get_player_full_data(account_id):
             checkins = [{"checkin_type": r['checkin_type'], "day_index": r['day_index'], "claim_date": str(r['claim_date'])} for r in cur.fetchall()]
             cur.execute("SELECT achieve_id, progress, is_claimed FROM user_achievements WHERE account_id = %s", (account_id,))
             achievements = [{"id": r['achieve_id'], "progress": r['progress'], "is_claimed": r['is_claimed']} for r in cur.fetchall()]
-            cur.execute("SELECT id, character_name, level, trophy, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup FROM accounts WHERE status = 1 ORDER BY trophy DESC, level DESC, id ASC LIMIT 10")
+            cur.execute("SELECT id, character_name, level, trophy, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, last_login FROM accounts WHERE status = 1 ORDER BY trophy DESC, level DESC, id ASC LIMIT 10")
             top_rows = cur.fetchall()
             leaderboard = [
                 {
@@ -1100,7 +1100,9 @@ def get_player_full_data(account_id):
                     "vip": r.get('vip_level', 0) or 0,
                     "gold_cup": r.get('gold_cup', 0) or 0,
                     "silver_cup": r.get('silver_cup', 0) or 0,
-                    "bronze_cup": r.get('bronze_cup', 0) or 0
+                    "bronze_cup": r.get('bronze_cup', 0) or 0,
+                    "last_login": int(r['last_login'].timestamp() * 1000) if (r.get('last_login') and hasattr(r['last_login'], 'timestamp')) else int(time.time() * 1000),
+                    "is_online": (r.get('last_login') and hasattr(r['last_login'], 'timestamp') and (time.time() - r['last_login'].timestamp() < 180)) or (int(r['id']) == int(account_id))
                 }
                 for idx, r in enumerate(top_rows)
             ]
@@ -1675,6 +1677,7 @@ def send_chat_broadcast_to_server(msg_obj):
 
 _LAST_ONLINE_CHECK = 0
 _CACHED_ONLINE_COUNT = 1
+LAST_ACTIVE_USERS = {}
 
 def get_real_online_count():
     global _LAST_ONLINE_CHECK, _CACHED_ONLINE_COUNT
@@ -1698,6 +1701,9 @@ def get_real_online_count():
             ws_users.add(str(uid))
     for uid, wdata in list(PVP_HTTP_WAITING.items()):
         if now - wdata.get('time', 0) < 60:
+            ws_users.add(str(uid))
+    for uid, act_ts in list(LAST_ACTIVE_USERS.items()):
+        if now - act_ts < 180:
             ws_users.add(str(uid))
     _CACHED_ONLINE_COUNT = max(chat_clients, len(WS_CONNECTED_CLIENTS), len(ws_users), len(PVP_HTTP_WAITING), 1)
     _LAST_ONLINE_CHECK = now
@@ -2092,6 +2098,13 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                 req = json.loads(body) if body else {}
             except:
                 req = {}
+            
+            acc_id_track = req.get('account_id') or req.get('user_id') or req.get('id')
+            if acc_id_track is not None:
+                try:
+                    LAST_ACTIVE_USERS[int(acc_id_track)] = time.time()
+                except Exception:
+                    pass
             
             if self.path.startswith('/api/survival/'):
                 proxy_to_survival_server(self, self.path, body)
@@ -3283,11 +3296,29 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                             }
                             resp = {"code": 200, "ranks": ranks, "self_rank": self_rank, "type": rank_type}
                         else:
+                            online_uids = set()
+                            for meta in list(WS_CLIENT_META.values()):
+                                m_uid = meta.get("user_id")
+                                if m_uid:
+                                    try: online_uids.add(int(m_uid))
+                                    except: pass
+                            now_ts = time.time()
+                            for w_uid, wdata in list(PVP_HTTP_WAITING.items()):
+                                if now_ts - wdata.get('time', 0) < 60:
+                                    try: online_uids.add(int(w_uid))
+                                    except: pass
+                            for a_uid, act_time in list(LAST_ACTIVE_USERS.items()):
+                                if now_ts - act_time < 180:
+                                    online_uids.add(int(a_uid))
+                            if req_acc_id:
+                                try: online_uids.add(int(req_acc_id))
+                                except: pass
+
                             if rank_type == 1714:  # PB_TYPE_RANK_CHAR_LEVEL
                                 rows = []
                                 if sub_type > 0:
                                     cur.execute("""
-                                        SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
+                                        SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp, last_login
                                         FROM accounts
                                         WHERE status = 1 AND character_id = %s
                                         ORDER BY level DESC, exp DESC, id ASC
@@ -3296,7 +3327,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     rows = cur.fetchall()
                                 if not rows:
                                     cur.execute("""
-                                        SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
+                                        SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp, last_login
                                         FROM accounts
                                         WHERE status = 1
                                         ORDER BY level DESC, exp DESC, id ASC
@@ -3305,7 +3336,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     rows = cur.fetchall()
                             elif rank_type == 1723:  # PB_TYPE_RANK_DARK
                                 cur.execute("""
-                                    SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
+                                    SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp, last_login
                                     FROM accounts
                                     WHERE status = 1
                                     ORDER BY level DESC, id ASC
@@ -3314,7 +3345,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 rows = cur.fetchall()
                             else:  # PB_TYPE_RANK_LADDER (1708), PB_TYPE_RANK_TROPHY (1700), PB_TYPE_RANK_LADDER_EX (1712), PB_TYPE_RANK_LEGEND (1730), etc.
                                 cur.execute("""
-                                    SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
+                                    SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp, last_login
                                     FROM accounts
                                     WHERE status = 1
                                     ORDER BY trophy DESC, level DESC, id ASC
@@ -3329,6 +3360,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     cid = r.get('character_id') or 3
                                     char_av = cid * 100 + 1
                                 val = (r.get('level') or 1) if rank_type in (1714, 1723) else (r['trophy'] if r.get('trophy') is not None else 800)
+                                r_ll = r.get('last_login')
+                                r_last_ms = int(r_ll.timestamp() * 1000) if (r_ll and hasattr(r_ll, 'timestamp')) else int(now_ts * 1000)
+                                r_is_online = (int(r['id']) in online_uids) or (r_ll and hasattr(r_ll, 'timestamp') and (now_ts - r_ll.timestamp() < 180))
                                 ranks.append({
                                     "rank": idx + 1,
                                     "id": r['id'],
@@ -3341,7 +3375,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                     "vip": r.get('vip_level', 0) or 0,
                                     "gold_cup": r.get('gold_cup', 0) or 0,
                                     "silver_cup": r.get('silver_cup', 0) or 0,
-                                    "bronze_cup": r.get('bronze_cup', 0) or 0
+                                    "bronze_cup": r.get('bronze_cup', 0) or 0,
+                                    "last_login": r_last_ms,
+                                    "is_online": bool(r_is_online)
                                 })
 
                             self_rank = None
@@ -3352,7 +3388,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                         break
                                 if not self_rank:
                                     cur.execute("""
-                                        SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp
+                                        SELECT id, character_name, level, trophy, server, vip_level, character_id, avatar, gold_cup, silver_cup, bronze_cup, exp, last_login
                                         FROM accounts WHERE id = %s
                                      """, (req_acc_id,))
                                     self_acc = cur.fetchone()
@@ -3381,6 +3417,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                             cid = self_acc.get('character_id') or 3
                                             char_av = cid * 100 + 1
 
+                                        s_ll = self_acc.get('last_login')
+                                        s_last_ms = int(s_ll.timestamp() * 1000) if (s_ll and hasattr(s_ll, 'timestamp')) else int(now_ts * 1000)
                                         self_rank = {
                                             "rank": my_rank,
                                             "id": self_acc['id'],
@@ -3393,7 +3431,9 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                             "vip": self_acc.get('vip_level', 0) or 0,
                                             "gold_cup": self_acc.get('gold_cup', 0) or 0,
                                             "silver_cup": self_acc.get('silver_cup', 0) or 0,
-                                            "bronze_cup": self_acc.get('bronze_cup', 0) or 0
+                                            "bronze_cup": self_acc.get('bronze_cup', 0) or 0,
+                                            "last_login": s_last_ms,
+                                            "is_online": True
                                         }
 
                             resp = {"code": 200, "ranks": ranks, "self_rank": self_rank}

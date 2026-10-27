@@ -541,6 +541,9 @@ function var_0_0.refreshSelfArea(arg_17_0)
 
 	if arg_17_0._leftArea._focusedTab._index ~= arg_17_0._unionIndex then
 		var_17_1 = UserWidget.create(P, UserWidget.Flag.NAME_UNION)
+		if var_17_1._unionArea then
+			var_17_1._unionArea:setVisible(false)
+		end
 	elseif P:hasUnion() then
 		var_17_1 = require("UnionWidget").create(P._playerUnion:getMyUnion(), false)
 	else
@@ -550,6 +553,27 @@ function var_0_0.refreshSelfArea(arg_17_0)
 	lc.addChildToPos(var_17_0, var_17_1, cc.p(172 + lc.w(var_17_1) / 2 - 6, lc.h(var_17_0) / 2 + (arg_17_0._leftArea._focusedTab._index ~= arg_17_0._unionIndex and 4 or -4)))
 
 	var_17_0._avatar = var_17_1
+
+	if arg_17_0._leftArea._focusedTab._index ~= arg_17_0._unionIndex and var_17_1._nameArea then
+		local var_s_pos = lc.convertPos(cc.p(0, 0), var_17_1._nameArea, var_17_0)
+		if var_17_0._lastLogin == nil then
+			local var_s_login = ClientView.createKeyValueLabel(Str(STR.LAST_LOGIN_TIME), "", ClientView.FontSize.S2, false)
+			var_s_login:setColor(ClientView.COLOR_TEXT_DARK)
+			var_s_login._value:setColor(ClientView.COLOR_TEXT_GREEN_2)
+			var_s_login:addToParent(var_17_0, cc.p(var_s_pos.x, var_s_pos.y - 30))
+			var_17_0._lastLogin = var_s_login
+		else
+			var_17_0._lastLogin:setPosition(cc.p(var_s_pos.x, var_s_pos.y - 30))
+			var_17_0._lastLogin:setVisible(true)
+			if var_17_0._lastLogin._value then var_17_0._lastLogin._value:setVisible(true) end
+		end
+		var_17_0._lastLogin._value:setString(Str(STR.ONLINE))
+		var_17_0._lastLogin._value:setColor(ClientView.COLOR_TEXT_GREEN_2)
+		var_17_0._lastLogin:setPosition(var_17_0._lastLogin:getPosition())
+	elseif var_17_0._lastLogin then
+		var_17_0._lastLogin:setVisible(false)
+		if var_17_0._lastLogin._value then var_17_0._lastLogin._value:setVisible(false) end
+	end
 end
 
 function var_0_0.refreshItemList(arg_18_0)
@@ -641,6 +665,13 @@ function var_0_0.setOrCreateItem(arg_20_0, arg_20_1, arg_20_2, arg_20_3)
 			lc.addChildToPos(arg_20_1, var_20_3, cc.p(200 + lc.w(var_20_3) / 2 + 10, lc.h(arg_20_1) / 2 + 4))
 
 			arg_20_1._avatarArea = var_20_3
+
+			local var_last_login = ClientView.createKeyValueLabel(Str(STR.LAST_LOGIN_TIME), "", ClientView.FontSize.S2, false)
+			var_last_login:setColor(ClientView.COLOR_TEXT_DARK)
+			var_last_login._value:setColor(ClientView.COLOR_TEXT_DARK)
+			local var_pos = lc.convertPos(cc.p(0, 0), var_20_3._nameArea, arg_20_1)
+			var_last_login:addToParent(arg_20_1, cc.p(var_pos.x, var_pos.y - 30))
+			arg_20_1._lastLogin = var_last_login
 
 			if arg_20_3 == SglMsgType_pb.PB_TYPE_RANK_POWER then
 				var_20_2 = arg_20_0:addValueArea(arg_20_1, "img_icon_power", arg_20_2._value)
@@ -744,8 +775,55 @@ function var_0_0.setOrCreateItem(arg_20_0, arg_20_1, arg_20_2, arg_20_3)
 		end
 
 		arg_20_1._avatarArea:setUser(arg_20_2._user, true)
+		if arg_20_1._avatarArea._unionArea then
+			arg_20_1._avatarArea._unionArea:setVisible(false)
+		end
 		arg_20_1._avatarArea._nameArea._level:setString(arg_20_2._value)
+
+		if arg_20_1._lastLogin == nil then
+			local var_last_login = ClientView.createKeyValueLabel(Str(STR.LAST_LOGIN_TIME), "", ClientView.FontSize.S2, false)
+			var_last_login:setColor(ClientView.COLOR_TEXT_DARK)
+			var_last_login._value:setColor(ClientView.COLOR_TEXT_DARK)
+			local var_pos = lc.convertPos(cc.p(0, 0), arg_20_1._avatarArea._nameArea, arg_20_1)
+			var_last_login:addToParent(arg_20_1, cc.p(var_pos.x, var_pos.y - 30))
+			arg_20_1._lastLogin = var_last_login
+		else
+			local var_pos = lc.convertPos(cc.p(0, 0), arg_20_1._avatarArea._nameArea, arg_20_1)
+			arg_20_1._lastLogin:setPosition(cc.p(var_pos.x, var_pos.y - 30))
+		end
+
+		arg_20_1._lastLogin:setVisible(true)
+		if arg_20_1._lastLogin._value then
+			arg_20_1._lastLogin._value:setVisible(true)
+		end
+
+		local u = arg_20_2._user
+		local isOnline = (u and u._id == P._id) or (u and u._isOnline == true)
+		if not isOnline and u and u._lastLogin and u._lastLogin > 0 then
+			if ClientData.getCurrentTime() - u._lastLogin <= 180 then
+				isOnline = true
+			end
+		end
+
+		if isOnline then
+			arg_20_1._lastLogin._value:setString(Str(STR.ONLINE))
+			arg_20_1._lastLogin._value:setColor(ClientView.COLOR_TEXT_GREEN_2)
+		elseif u and u._lastLogin and u._lastLogin > 0 then
+			arg_20_1._lastLogin._value:setString(ClientData.getTimeAgo(u._lastLogin, 7))
+			arg_20_1._lastLogin._value:setColor(ClientView.COLOR_TEXT_DARK)
+		else
+			arg_20_1._lastLogin._value:setString(Str(STR.OFFLINE))
+			arg_20_1._lastLogin._value:setColor(ClientView.COLOR_TEXT_DARK)
+		end
+		arg_20_1._lastLogin:setPosition(arg_20_1._lastLogin:getPosition())
 	else
+		if arg_20_1._lastLogin then
+			arg_20_1._lastLogin:setVisible(false)
+			if arg_20_1._lastLogin._value then
+				arg_20_1._lastLogin._value:setVisible(false)
+			end
+		end
+
 		if arg_20_2._id == P._unionId then
 			arg_20_1:setColor(ClientView.COLOR_TEXT_GREEN)
 		else

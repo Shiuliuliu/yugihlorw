@@ -35,7 +35,13 @@ function var_0_0.create(arg_1_0, arg_1_1)
 	var_1_1._unionJob = var_1_0.union_title
 	var_1_1._unionBadge = var_1_0.union_avatar
 	var_1_1._unionWord = var_1_0.union_tag
-	var_1_1._lastLogin = var_1_0.last_login / 1000
+	var_1_1._lastLogin = var_1_0.last_login and (var_1_0.last_login / 1000) or 0
+	var_1_1._isOnline = (var_1_0.is_online == true) or (P and var_1_0.id == P._id)
+	if var_1_1._isOnline ~= true and var_1_1._lastLogin and var_1_1._lastLogin > 0 then
+		if ClientData and ClientData.getCurrentTime and (ClientData.getCurrentTime() - var_1_1._lastLogin <= 180) then
+			var_1_1._isOnline = true
+		end
+	end
 	var_1_1._regionId = var_1_0.rid
 	var_1_1._regionId2 = var_1_0.rid % 10000
 	var_1_1._privilege = var_1_0.privilege

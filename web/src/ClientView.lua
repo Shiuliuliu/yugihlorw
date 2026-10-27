@@ -3693,7 +3693,25 @@ function var_0_0.createUnionMemberItem(arg_136_0, arg_136_1, arg_136_2)
 			var_136_0._badgeTxt:setPosition(var_136_5)
 		end
 
-		var_136_0._lastLogin._value:setString(ClientData.getTimeAgo(arg_138_1._lastLogin, 7))
+		local isOnline = (arg_138_1._id == P._id) or (arg_138_1._isOnline == true)
+		if not isOnline and arg_138_1._lastLogin and arg_138_1._lastLogin > 0 then
+			local diff = ClientData.getCurrentTime() - arg_138_1._lastLogin
+			if diff <= 180 then
+				isOnline = true
+			end
+		end
+
+		if isOnline then
+			var_136_0._lastLogin._value:setString(Str(STR.ONLINE))
+			var_136_0._lastLogin._value:setColor(ClientView.COLOR_TEXT_GREEN_2)
+		elseif arg_138_1._lastLogin and arg_138_1._lastLogin > 0 then
+			var_136_0._lastLogin._value:setString(ClientData.getTimeAgo(arg_138_1._lastLogin, 7))
+			var_136_0._lastLogin._value:setColor(ClientView.COLOR_TEXT_DARK)
+		else
+			var_136_0._lastLogin._value:setString(Str(STR.OFFLINE))
+			var_136_0._lastLogin._value:setColor(ClientView.COLOR_TEXT_DARK)
+		end
+		var_136_0._lastLogin:setPosition(var_136_0._lastLogin:getPosition())
 		var_136_0._starArea._label:setString(arg_138_1._trophy)
 	end
 

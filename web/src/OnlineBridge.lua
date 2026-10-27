@@ -732,7 +732,9 @@ function OnlineBridge.syncCheckinBonuses(player, checkins)
 							vip = r.vip or 0,
 							gold = 0, grain = 0, ingot = 0, exp = 0, shield = 0,
 							union_id = 0, union_name = "", union_title = 0, union_avatar = 0, union_tag = "",
-							last_login = os.time() * 1000, rid = 10001, privilege = 0, month_card = 0
+							last_login = r.last_login or (os.time() * 1000),
+							is_online = (r.is_online == true) or (r.id == ((player and player._id) or (P and P._id))),
+							rid = 10001, privilege = 0, month_card = 0
 						}
 						if crownObj then uinfo.crown = pbMock(crownObj) end
 						local uObj = require("User").create(uinfo)
