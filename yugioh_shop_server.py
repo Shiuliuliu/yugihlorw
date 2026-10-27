@@ -1575,10 +1575,8 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
                             print(f"[SHOP DECOMPOSE ALL] Acc {acc_id} decomposed {total_cards} excess cards ({breakdown}) -> +{total_gold} gold (New: {new_gold})")
 
         resp_data = json.dumps(resp, ensure_ascii=False).encode('utf-8')
-        status_code = resp.get('code', 200)
-        if not (100 <= status_code <= 599):
-            status_code = 200
-        self.send_response(status_code)
+        # All API JSON endpoints return HTTP 200 so browser fetch and proxies never reject
+        self.send_response(200)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(resp_data)))
         self.send_cors_headers()

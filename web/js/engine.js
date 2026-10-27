@@ -3146,8 +3146,19 @@
 	if (cc.EditBox) {
 		var editBox = cc.EditBox.prototype;
 		/* the Lua bindings say getText/setText, html5 says getString/setString */
-		editBox.getText = editBox.getText || function () { return this.getString(); };
-		editBox.setText = editBox.setText || function (s) { this.setString(s); };
+		editBox.getText = function () {
+			if (typeof this.getString === "function") {
+				return this.getString();
+			}
+			return this._edTxt ? this._edTxt.value : "";
+		};
+		editBox.setText = function (s) {
+			if (typeof this.setString === "function") {
+				this.setString(s);
+			} else if (this._edTxt) {
+				this._edTxt.value = s || "";
+			}
+		};
 		editBox.setPlaceholderFont = editBox.setPlaceholderFont ||
 			function (font, size) { this.setPlaceholderFontName(font); this.setPlaceholderFontSize(size); };
 		editBox.setFont = editBox.setFont ||

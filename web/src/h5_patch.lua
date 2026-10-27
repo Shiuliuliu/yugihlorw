@@ -7241,10 +7241,10 @@ ClientData.unloadLCRes = function(names)
 
 	-- Web Chat, Room, Bonus and Nickname handlers
 		-- Gift Code Exchange Hook
-	ClientData.sendUserGiftExchange = function(code)
+	ClientData.sendUserGiftExchange = function(code, formInstance)
 		local accId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
-		local cleanCode = string.gsub(code or "", "^%s*(.-)%s*$", "%1")
-		if cleanCode == "" then
+		local cleanCode = string.trim(code or "")
+		if cleanCode == "" or cleanCode == "Nhập mã quà tặng..." then
 			ClientView.getActiveIndicator():hide()
 			ToastManager.push(Str(STR.INPUT_EXCHANGE_CODE))
 			return
@@ -7254,7 +7254,11 @@ ClientData.unloadLCRes = function(names)
 		if api and api.post then
 			api:post("redeem_gift_code", { account_id = accId, code = cleanCode }, function(rawRes)
 				ClientView.getActiveIndicator():hide()
-				local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
+				local res = rawRes
+				if type(res) == "string" then
+					local ok, parsed = pcall(function() return require("json").decode(res) end)
+					if ok and parsed then res = parsed end
+				end
 				if res and res.code == 200 then
 					local rewardsList = {}
 					if res.rewards and #res.rewards > 0 then
@@ -7281,36 +7285,16 @@ ClientData.unloadLCRes = function(names)
 					end
 
 					-- Close ExchangeCodeForm if open
+					if formInstance and formInstance.hide then
+						pcall(function() formInstance:hide() end)
+					end
 					local curScene = lc._runningScene
 					if curScene and curScene._scene then
 						for _, child in ipairs(curScene._scene:getChildren()) do
-							if child.__cname == "ExchangeCodeForm" or child.__cname == "RenameForm" then
-								if child._editor and child._onExchange then
-									pcall(function() child:removeFromParent() end)
-								end
+							if child.__cname == "ExchangeCodeForm" then
+								pcall(function() child:hide() end)
 							end
 						end
-					end
-
-					-- Dispatch message to listener (ExchangeCodeForm:onMsg)
-					local giftExt = User_pb and User_pb.SglUserMsg and User_pb.SglUserMsg.user_claim_gift_resp
-					local msg = {
-						type = SglMsgType_pb and SglMsgType_pb.PB_TYPE_USER_CLAIM_GIFT or 313,
-						status = 0,
-						Extensions = {}
-					}
-					if giftExt then
-						msg.Extensions[giftExt] = rewardsList
-					end
-					msg.Extensions["user_claim_gift_resp"] = rewardsList
-					msg.Extensions[305] = rewardsList
-
-					local handled = false
-					if ClientData.onMsg then
-						handled = ClientData.onMsg(msg)
-					end
-					if not handled then
-						require("RewardPanel").create(rewardsList):show()
 					end
 
 					-- Ensure player resources in memory match server balances
@@ -7325,6 +7309,11 @@ ClientData.unloadLCRes = function(names)
 					if ClientView.getMenuUI() then
 						ClientView.getMenuUI():updateResource()
 					end
+
+					-- Directly show RewardPanel
+					pcall(function()
+						require("RewardPanel").create(rewardsList):show()
+					end)
 
 					ToastManager.push(res.msg or "Nhập mã quà tặng thành công!")
 				else

@@ -1629,7 +1629,7 @@ def proxy_to_shop_server(handler, path, post_data=None):
             return True
     except urllib.error.HTTPError as he:
         res_body = he.read()
-        handler.send_response(he.code)
+        handler.send_response(200)
         handler.send_header('Content-Type', 'application/json; charset=utf-8')
         handler.send_header('Content-Length', str(len(res_body)))
         handler.end_headers()
