@@ -147,7 +147,15 @@ function var_0_0.pop(arg_8_0)
 		arg_8_0._list:setClippingEnabled(false)
 	end
 	arg_8_0:stopAllActions()
-	arg_8_0:runAction(lc.ease(lc.moveTo(0.35, cc.p(-8 + ClientView.SCR_EDGE, lc.y(arg_8_0))), "SineO"))
+	local targetPos = cc.p(-8 + ClientView.SCR_EDGE, lc.y(arg_8_0))
+	local moveAct = lc.ease(lc.moveTo(0.35, targetPos), "SineO")
+	local endAct = lc.call(function()
+		if arg_8_0._list then
+			pcall(function() arg_8_0._list:forceDoLayout() end)
+			pcall(function() arg_8_0._list:refreshView() end)
+		end
+	end)
+	arg_8_0:runAction(lc.sequence(moveAct, endAct))
 
 	local var_8_0
 
