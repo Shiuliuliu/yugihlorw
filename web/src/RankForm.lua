@@ -554,22 +554,22 @@ function var_0_0.refreshSelfArea(arg_17_0)
 
 	var_17_0._avatar = var_17_1
 
-	if arg_17_0._leftArea._focusedTab._index ~= arg_17_0._unionIndex and var_17_1._nameArea then
-		local var_s_pos = lc.convertPos(cc.p(0, 0), var_17_1._nameArea, var_17_0)
+	if arg_17_0._leftArea._focusedTab._index ~= arg_17_0._unionIndex then
+		local self_x = lc.left(var_17_1) + 104
+		local self_y = lc.y(var_17_1) - 24
 		if var_17_0._lastLogin == nil then
 			local var_s_login = ClientView.createKeyValueLabel(Str(STR.LAST_LOGIN_TIME), "", ClientView.FontSize.S2, false)
 			var_s_login:setColor(ClientView.COLOR_TEXT_DARK)
 			var_s_login._value:setColor(ClientView.COLOR_TEXT_GREEN_2)
-			var_s_login:addToParent(var_17_0, cc.p(var_s_pos.x, var_s_pos.y - 30))
+			var_s_login:addToParent(var_17_0, cc.p(self_x, self_y))
 			var_17_0._lastLogin = var_s_login
 		else
-			var_17_0._lastLogin:setPosition(cc.p(var_s_pos.x, var_s_pos.y - 30))
+			var_17_0._lastLogin:setPosition(cc.p(self_x, self_y))
 			var_17_0._lastLogin:setVisible(true)
 			if var_17_0._lastLogin._value then var_17_0._lastLogin._value:setVisible(true) end
 		end
 		var_17_0._lastLogin._value:setString(Str(STR.ONLINE))
 		var_17_0._lastLogin._value:setColor(ClientView.COLOR_TEXT_GREEN_2)
-		var_17_0._lastLogin:setPosition(var_17_0._lastLogin:getPosition())
 	elseif var_17_0._lastLogin then
 		var_17_0._lastLogin:setVisible(false)
 		if var_17_0._lastLogin._value then var_17_0._lastLogin._value:setVisible(false) end
@@ -666,11 +666,12 @@ function var_0_0.setOrCreateItem(arg_20_0, arg_20_1, arg_20_2, arg_20_3)
 
 			arg_20_1._avatarArea = var_20_3
 
+			local login_x = lc.left(var_20_3) + 84
+			local login_y = lc.y(var_20_3) - 22
 			local var_last_login = ClientView.createKeyValueLabel(Str(STR.LAST_LOGIN_TIME), "", ClientView.FontSize.S2, false)
 			var_last_login:setColor(ClientView.COLOR_TEXT_DARK)
 			var_last_login._value:setColor(ClientView.COLOR_TEXT_DARK)
-			local var_pos = lc.convertPos(cc.p(0, 0), var_20_3._nameArea, arg_20_1)
-			var_last_login:addToParent(arg_20_1, cc.p(var_pos.x, var_pos.y - 30))
+			var_last_login:addToParent(arg_20_1, cc.p(login_x, login_y))
 			arg_20_1._lastLogin = var_last_login
 
 			if arg_20_3 == SglMsgType_pb.PB_TYPE_RANK_POWER then
@@ -780,16 +781,17 @@ function var_0_0.setOrCreateItem(arg_20_0, arg_20_1, arg_20_2, arg_20_3)
 		end
 		arg_20_1._avatarArea._nameArea._level:setString(arg_20_2._value)
 
+		local login_x = lc.left(arg_20_1._avatarArea) + 84
+		local login_y = lc.y(arg_20_1._avatarArea) - 22
+
 		if arg_20_1._lastLogin == nil then
 			local var_last_login = ClientView.createKeyValueLabel(Str(STR.LAST_LOGIN_TIME), "", ClientView.FontSize.S2, false)
 			var_last_login:setColor(ClientView.COLOR_TEXT_DARK)
 			var_last_login._value:setColor(ClientView.COLOR_TEXT_DARK)
-			local var_pos = lc.convertPos(cc.p(0, 0), arg_20_1._avatarArea._nameArea, arg_20_1)
-			var_last_login:addToParent(arg_20_1, cc.p(var_pos.x, var_pos.y - 30))
+			var_last_login:addToParent(arg_20_1, cc.p(login_x, login_y))
 			arg_20_1._lastLogin = var_last_login
 		else
-			local var_pos = lc.convertPos(cc.p(0, 0), arg_20_1._avatarArea._nameArea, arg_20_1)
-			arg_20_1._lastLogin:setPosition(cc.p(var_pos.x, var_pos.y - 30))
+			arg_20_1._lastLogin:setPosition(cc.p(login_x, login_y))
 		end
 
 		arg_20_1._lastLogin:setVisible(true)
@@ -815,7 +817,6 @@ function var_0_0.setOrCreateItem(arg_20_0, arg_20_1, arg_20_2, arg_20_3)
 			arg_20_1._lastLogin._value:setString(Str(STR.OFFLINE))
 			arg_20_1._lastLogin._value:setColor(ClientView.COLOR_TEXT_DARK)
 		end
-		arg_20_1._lastLogin:setPosition(arg_20_1._lastLogin:getPosition())
 	else
 		if arg_20_1._lastLogin then
 			arg_20_1._lastLogin:setVisible(false)
