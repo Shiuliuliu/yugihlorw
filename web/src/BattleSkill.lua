@@ -11506,30 +11506,25 @@ function var_0_0.castMonsterSpellSkill(arg_4_0, arg_4_1, arg_4_2, arg_4_3)
 		if graveUndead then
 			pOwner:setCardStatus(graveUndead, BattleData.CardStatus.leave, (var_4_1 or arg_4_1)._id, 14819, arg_4_3, BattleData.CardStatusVal.g2l_cost)
 			local wolfToSummon = nil
-			if ownerCard and ownerCard._status == BattleData.CardStatus.rare then
-				wolfToSummon = ownerCard
-			else
-				if pOwner._rareCards then
-					for _, rc in ipairs(pOwner._rareCards) do
-						if (rc._infoId == 40750 or rc:isInfoId(40750)) and rc._status == BattleData.CardStatus.rare then
-							wolfToSummon = rc
-							break
-						end
+			if pOwner._rareCards then
+				for _, rc in ipairs(pOwner._rareCards) do
+					if (rc._infoId == 40750 or rc:isInfoId(40750)) and rc._status == BattleData.CardStatus.rare then
+						wolfToSummon = rc
+						break
 					end
 				end
-				if not wolfToSummon then
-					wolfToSummon = B.createCard(40750, 1, pOwner)
-					wolfToSummon._originOwner = pOwner
-					pOwner:addCardToCards(wolfToSummon)
-					pOwner:addCardToRare(wolfToSummon)
-				end
 			end
-			if wolfToSummon then
-				local emptyPos = pOwner:getEmptyBoardPos(wolfToSummon) or pOwner:getEmptyBoardPos()
-				if emptyPos and not pOwner._isSpecialSummonDisabled and not pOwner._isSummonDisabled and (not pOwner.canSpecialSummon or pOwner:canSpecialSummon(wolfToSummon)) then
+			local emptyPos = pOwner:getEmptyBoardPos(wolfToSummon) or pOwner:getEmptyBoardPos()
+			if emptyPos and not pOwner._isSpecialSummonDisabled and not pOwner._isSummonDisabled and (not pOwner.canSpecialSummon or pOwner:canSpecialSummon(wolfToSummon or { _status = BattleData.CardStatus.rare, _infoId = 40750 })) then
+				if wolfToSummon then
 					if not wolfToSummon._saved then wolfToSummon._saved = {} end
 					wolfToSummon._saved._pos = emptyPos
-					pOwner:setCardStatus(wolfToSummon, BattleData.CardStatus.board, (var_4_1 or arg_4_1)._id, 14819, arg_4_3, BattleData.CardStatusVal.r2b_sync)
+					pOwner:setCardStatus(wolfToSummon, BattleData.CardStatus.board, (var_4_1 or arg_4_1)._id, 14819, arg_4_3, BattleData.CardStatusVal.r2b_compose)
+					var_4_13 = true
+				else
+					local newWolf = B.createCard(40750, 1, pOwner)
+					newWolf._originOwner = pOwner
+					pOwner:addCardByStatusPos(newWolf, BattleData.CardStatus.board, emptyPos, (var_4_1 or arg_4_1)._id, 14819, arg_4_3, BattleData.CardStatusVal.e2b_def)
 					var_4_13 = true
 				end
 			end
@@ -108239,7 +108234,7 @@ function var_0_0.canUseInitiativeSkill4(arg_40_0, arg_40_1, arg_40_2)
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled or not pOwner:canSpecialSummon(arg_40_1) then return false end
 		return pOwner:getEmptyBoardPos(arg_40_1) ~= nil
 	elseif var_40_0 == 14819 then
-		if arg_40_1._status ~= BattleData.CardStatus.board and arg_40_1._status ~= BattleData.CardStatus.rare then return false end
+		if arg_40_1._status ~= BattleData.CardStatus.board then return false end
 		local pOwner = arg_40_1._owner or arg_40_0
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then return false end
 		if pOwner.canSpecialSummonAnyCard and not pOwner:canSpecialSummonAnyCard() then return false end

@@ -20877,7 +20877,15 @@
     "res/40754.jpg",
     "res/40754_3.jpg",
     "res/40754_mask.png",
-    "res/40754_3_mask.png"
+    "res/40754_3_mask.png",
+    "res/jpg/lottery_221001.jpg",
+    "res/jpg/lottery_221001_mask.png",
+    "res/jpg/lottery_222001.jpg",
+    "res/jpg/lottery_222001_mask.png",
+    "res/jpg/lottery_223001.jpg",
+    "res/jpg/lottery_223001_mask.png",
+    "res/jpg/lottery_224001.jpg",
+    "res/jpg/lottery_224001_mask.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [
@@ -30525,6 +30533,70 @@
     "new/thumb/card_ico_30597_3.png": [
       82,
       82
+    ],
+    "res/jpg/lottery_221001.jpg": [
+      252,
+      530
+    ],
+    "lottery_221001.jpg": [
+      252,
+      530
+    ],
+    "res/jpg/lottery_221001_mask.png": [
+      252,
+      530
+    ],
+    "lottery_221001_mask.png": [
+      252,
+      530
+    ],
+    "res/jpg/lottery_222001.jpg": [
+      252,
+      530
+    ],
+    "lottery_222001.jpg": [
+      252,
+      530
+    ],
+    "res/jpg/lottery_222001_mask.png": [
+      252,
+      530
+    ],
+    "lottery_222001_mask.png": [
+      252,
+      530
+    ],
+    "res/jpg/lottery_223001.jpg": [
+      252,
+      530
+    ],
+    "lottery_223001.jpg": [
+      252,
+      530
+    ],
+    "res/jpg/lottery_223001_mask.png": [
+      252,
+      530
+    ],
+    "lottery_223001_mask.png": [
+      252,
+      530
+    ],
+    "res/jpg/lottery_224001.jpg": [
+      252,
+      530
+    ],
+    "lottery_224001.jpg": [
+      252,
+      530
+    ],
+    "res/jpg/lottery_224001_mask.png": [
+      252,
+      530
+    ],
+    "lottery_224001_mask.png": [
+      252,
+      530
     ]
   },
   "thumbs": {

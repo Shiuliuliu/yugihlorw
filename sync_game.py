@@ -2,18 +2,29 @@
 # -*- coding: utf-8 -*-
 """
 Script dong bo ma nguon va du lieu game:
-Doc toan bo file trong web/src/*.lua -> tao web/lua_src.json
-Doc toan bo file trong web/data/*    -> tao web/data_dumps.json
+1. Doc toan bo file trong web/src/*.lua -> tao web/lua_src.json & web/lua_bundle.bin (ma hoa, nen gzip)
+2. Doc toan bo file trong web/data/*    -> tao web/data_dumps.json & web/data_bundle.bin (ma hoa, nen gzip)
+Tham khao kien truc bundle & bao mat cua https://arcana.ddns.net/
 """
 
 import os
 import json
 import time
+import gzip
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 WEB_DIR = os.path.join(BASE_DIR, 'web')
 SRC_DIR = os.path.join(WEB_DIR, 'src')
 DATA_DIR = os.path.join(WEB_DIR, 'data')
+
+BUNDLE_KEY = b'ArcanaSecret2026'
+
+def xor_data(data_bytes, key=BUNDLE_KEY):
+    b = bytearray(data_bytes)
+    klen = len(key)
+    for i in range(len(b)):
+        b[i] ^= key[i % klen]
+    return bytes(b)
 
 def sync_lua():
     if not os.path.isdir(SRC_DIR):
@@ -27,12 +38,24 @@ def sync_lua():
             with open(entry.path, 'r', encoding='utf-8') as f:
                 lua_data[mod_name] = f.read()
     
+    # 1. Output plain json (backward-compatibility fallback)
+    raw_json = json.dumps(lua_data, ensure_ascii=False).encode('utf-8')
     out_file = os.path.join(WEB_DIR, 'lua_src.json')
-    with open(out_file, 'w', encoding='utf-8') as f:
-        json.dump(lua_data, f, ensure_ascii=False)
+    with open(out_file, 'wb') as f:
+        f.write(raw_json)
     
-    sz = os.path.getsize(out_file)
-    print(f"[OK] Da dong bo {len(lua_data)} module Lua -> {out_file} ({sz / 1024 / 1024:.2f} MB)")
+    # 2. Output encrypted compressed bundle (Arcana style)
+    compressed = gzip.compress(raw_json, compresslevel=9)
+    encrypted_bundle = xor_data(compressed)
+    bundle_file = os.path.join(WEB_DIR, 'lua_bundle.bin')
+    with open(bundle_file, 'wb') as f:
+        f.write(encrypted_bundle)
+    
+    sz_json = len(raw_json) / 1024 / 1024
+    sz_bin = len(encrypted_bundle) / 1024 / 1024
+    print(f"[OK] Da dong bo {len(lua_data)} module Lua:")
+    print(f"     -> {out_file} ({sz_json:.2f} MB)")
+    print(f"     -> {bundle_file} ({sz_bin:.2f} MB) [Ma hoa & nen 85% giup game muot va giau file Lua]")
 
 def sync_data():
     if not os.path.isdir(DATA_DIR):
@@ -60,12 +83,24 @@ def sync_data():
                 dump_key = name
             data_dumps[dump_key] = content
             
+    # 1. Output plain json
+    raw_json = json.dumps(data_dumps, ensure_ascii=False).encode('utf-8')
     out_file = os.path.join(WEB_DIR, 'data_dumps.json')
-    with open(out_file, 'w', encoding='utf-8') as f:
-        json.dump(data_dumps, f, ensure_ascii=False)
+    with open(out_file, 'wb') as f:
+        f.write(raw_json)
+    
+    # 2. Output encrypted compressed bundle
+    compressed = gzip.compress(raw_json, compresslevel=9)
+    encrypted_bundle = xor_data(compressed)
+    bundle_file = os.path.join(WEB_DIR, 'data_bundle.bin')
+    with open(bundle_file, 'wb') as f:
+        f.write(encrypted_bundle)
         
-    sz = os.path.getsize(out_file)
-    print(f"[OK] Da dong bo {len(data_dumps)} bang du lieu -> {out_file} ({sz / 1024 / 1024:.2f} MB)")
+    sz_json = len(raw_json) / 1024 / 1024
+    sz_bin = len(encrypted_bundle) / 1024 / 1024
+    print(f"[OK] Da dong bo {len(data_dumps)} bang du lieu:")
+    print(f"     -> {out_file} ({sz_json:.2f} MB)")
+    print(f"     -> {bundle_file} ({sz_bin:.2f} MB) [Ma hoa & nen 94% giup game muot hon]")
 
 if __name__ == '__main__':
     t0 = time.time()

@@ -8448,15 +8448,11 @@ function var_0_0.isGraveSkill(arg_304_0, arg_304_1, arg_304_2, arg_304_3)
 	elseif arg_304_1._id == 14819 then
 		local ownerCard = arg_304_1._owner or arg_304_2 or (arg_304_1._card)
 		if ownerCard == nil then
-			local cards = arg_304_0:getBattleCardsByInfoId("R", 40750)
-			if #cards > 0 then ownerCard = cards[1] end
-		end
-		if ownerCard == nil then
 			local cards = arg_304_0:getBattleCardsByInfoId("B", 40750)
 			if #cards > 0 then ownerCard = cards[1] end
 		end
 		local pOwner = (ownerCard and ownerCard._owner) or arg_304_0
-		if ownerCard and (ownerCard._status ~= BattleData.CardStatus.rare and ownerCard._status ~= BattleData.CardStatus.board) then
+		if ownerCard and ownerCard._status ~= BattleData.CardStatus.board then
 			return false
 		end
 		if pOwner._isSummonDisabled or pOwner._isSpecialSummonDisabled then

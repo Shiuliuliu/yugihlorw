@@ -897,9 +897,9 @@ local function patchData()
 					_joinComponent = { 0 },
 					_joinResult = { 0 },
 					_keyword = 304,
-					_link = { 2 },
+					_link = { 1 },
 					_linkAllCandidates = "0.0",
-					_linkCandidate = "0.0",
+					_linkCandidate = "K==304",
 					_linkCount = "#==1",
 					_linkSelectedCandidates = "0.0",
 					_maxCount = 3,
@@ -1644,7 +1644,7 @@ local function patchData()
 				Data._skillInfo[14816] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57410, _effectVal = { 0 }, _id = 14816, _isIgnoreDefend = 1, _modes = { 132, 134 }, _nameSid = 57409, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14817] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57412, _effectVal = { 0 }, _id = 14817, _isIgnoreDefend = 0, _modes = { 111 }, _nameSid = 57411, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14818] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57420, _effectVal = { 0 }, _id = 14818, _isIgnoreDefend = 0, _modes = { 101, 102 }, _nameSid = 57419, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 304 }, _refSkills = { 4339 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
-				Data._skillInfo[14819] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57425, _effectVal = { 0 }, _id = 14819, _isIgnoreDefend = 0, _modes = { 31, 33 }, _nameSid = 57424, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14819] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57425, _effectVal = { 0 }, _id = 14819, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57424, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14820] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57427, _effectVal = { 0 }, _id = 14820, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 57426, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 40750 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 500 } }
 				Data._skillInfo[14821] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57432, _effectVal = { 0 }, _id = 14821, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 57431, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14822] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57434, _effectVal = { 0 }, _id = 14822, _isIgnoreDefend = 0, _modes = { 23 }, _nameSid = 57433, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
@@ -5222,9 +5222,9 @@ function patchClientData()
 		[208001] = "lottery_109001", [208010] = "lottery_109001", [208050] = "lottery_109001",
 		[209001] = "lottery_110001", [209010] = "lottery_110001", [209050] = "lottery_110001",
 		[210001] = "lottery_101001", [210010] = "lottery_101001", [210050] = "lottery_101001",
-		[221001] = "lottery_221001", [221010] = "lottery_221001", [221050] = "lottery_221001",
-		[222001] = "lottery_222001", [222010] = "lottery_222001", [222050] = "lottery_222001",
-		[223001] = "lottery_223001", [223010] = "lottery_223001", [223050] = "lottery_223001",
+		[221001] = "lottery_221001", [221010] = "lottery_221001", [221050] = "lottery_221001", [1] = "lottery_221001",
+		[222001] = "lottery_222001", [222010] = "lottery_222001", [222050] = "lottery_222001", [2] = "lottery_222001",
+		[223001] = "lottery_223001", [223010] = "lottery_223001", [223050] = "lottery_223001", [3] = "lottery_223001",
 		[224001] = "lottery_224001", [224010] = "lottery_224001", [224050] = "lottery_224001", [4] = "lottery_224001",
 	}
 	ClientData._packImages = PACK_IMAGES

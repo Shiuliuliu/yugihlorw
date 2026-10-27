@@ -2331,10 +2331,10 @@ function var_0_0.showChoiceGrave(arg_85_0, arg_85_1, arg_85_2, arg_85_3, arg_85_
 	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14793, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14793) or (arg_85_1._card:isInfoId(40747) and arg_85_1._card._status == BattleData.CardStatus.rare) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú [Minecraft] trong Mộ để loại bỏ"
-	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14819, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14819) or arg_85_1._card:isInfoId(40750) then
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14819, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or (arg_85_1._card._status == BattleData.CardStatus.board and (arg_85_1._card:hasSkillFast(14819) or arg_85_1._card:isInfoId(40750))) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 quái thú Xác Sống trong Mộ để loại bỏ"
-	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14824, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14824) or arg_85_1._card:isInfoId(40751) then
+	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14824, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or (arg_85_1._card._status == BattleData.CardStatus.board and (arg_85_1._card:hasSkillFast(14824) or arg_85_1._card:isInfoId(40751))) then
 		var_85_0 = BattleListDialog.Mode.choice
 		var_85_1 = "Chọn 1 lá bài Phép hoặc Bẫy [Minecraft] từ Bộ bài lên tay"
 	elseif (arg_85_5 ~= nil and arg_85_1._card:isSkillAtIndex(14823, math.floor(arg_85_5 / BattleData.ChoiceId.stage_3))) or arg_85_1._card:hasSkillFast(14823) or arg_85_1._card:isInfoId(21150) then
@@ -4052,7 +4052,7 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		})
 	end
 
-	if arg_89_2._card:isInfoId(40750) or arg_89_2._card:hasSkillFast(14819) or (arg_89_1._choiceBase and arg_89_2._card:isSkillAtIndex(14819, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+	if arg_89_2._card._status == BattleData.CardStatus.board and (arg_89_2._card:isInfoId(40750) or arg_89_2._card:hasSkillFast(14819) or (arg_89_1._choiceBase and arg_89_2._card:isSkillAtIndex(14819, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)))) then
 		if var_89_0 and #var_89_0 > 0 then
 			var_89_1 = var_89_0[1]._id
 		end
@@ -4065,7 +4065,7 @@ function var_0_0.onChoiceGrave(arg_89_0, arg_89_1, arg_89_2, arg_89_3)
 		})
 	end
 
-	if arg_89_2._card:isInfoId(40751) or arg_89_2._card:hasSkillFast(14824) or (arg_89_1._choiceBase and arg_89_2._card:isSkillAtIndex(14824, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+	if arg_89_2._card._status == BattleData.CardStatus.board and (arg_89_2._card:isInfoId(40751) or arg_89_2._card:hasSkillFast(14824) or (arg_89_1._choiceBase and arg_89_2._card:isSkillAtIndex(14824, math.floor(arg_89_1._choiceBase / BattleData.ChoiceId.stage_3)))) then
 		if var_89_0 and #var_89_0 > 0 then
 			var_89_1 = var_89_0[1]._id
 		end
@@ -7559,11 +7559,11 @@ function var_0_0.checkChoiceGrave(arg_91_0, arg_91_1, arg_91_2, arg_91_3, arg_91
 		return var_91_0 == 1
 	end
 
-	if arg_91_2._card:hasSkillFast(14819) or arg_91_2._card:isInfoId(40750) or (arg_91_1._choiceBase and arg_91_2._card:isSkillAtIndex(14819, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+	if arg_91_2._card._status == BattleData.CardStatus.board and (arg_91_2._card:hasSkillFast(14819) or (arg_91_1._choiceBase and arg_91_2._card:isSkillAtIndex(14819, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)))) then
 		return var_91_0 == 1
 	end
 
-	if arg_91_2._card:hasSkillFast(14824) or arg_91_2._card:isInfoId(40751) or (arg_91_1._choiceBase and arg_91_2._card:isSkillAtIndex(14824, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3))) then
+	if arg_91_2._card._status == BattleData.CardStatus.board and (arg_91_2._card:hasSkillFast(14824) or (arg_91_1._choiceBase and arg_91_2._card:isSkillAtIndex(14824, math.floor(arg_91_1._choiceBase / BattleData.ChoiceId.stage_3)))) then
 		return var_91_0 == 1
 	end
 

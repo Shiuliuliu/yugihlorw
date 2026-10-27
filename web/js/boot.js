@@ -79,6 +79,35 @@
 		});
 	}
 
+	var BUNDLE_KEY = [65, 114, 99, 97, 110, 97, 83, 101, 99, 114, 101, 116, 50, 48, 50, 54]; // "ArcanaSecret2026"
+
+	function fetchBundle(url, fallbackUrl) {
+		if (typeof DecompressionStream === 'undefined') {
+			return fetchJson(fallbackUrl || url);
+		}
+		var bustUrl = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_t=' + Date.now();
+		return fetch(bustUrl, { cache: 'no-store' }).then(function (r) {
+			if (!r.ok) {
+				if (fallbackUrl) return fetchJson(fallbackUrl);
+				throw new Error(r.status + ' ' + url);
+			}
+			return r.arrayBuffer().then(function (buf) {
+				var u8 = new Uint8Array(buf);
+				for (var i = 0; i < u8.length; i++) {
+					u8[i] ^= BUNDLE_KEY[i % BUNDLE_KEY.length];
+				}
+				var stream = new Response(u8).body.pipeThrough(new DecompressionStream('gzip'));
+				return new Response(stream).text().then(function (txt) {
+					return JSON.parse(txt);
+				});
+			});
+		}).catch(function (err) {
+			console.warn('[boot] Bundle load fallback for ' + url + ':', err);
+			if (fallbackUrl) return fetchJson(fallbackUrl);
+			throw err;
+		});
+	}
+
 	function status(text) {
 		var el = document.getElementById('bootStatus');
 		if (el) el.textContent = text;
@@ -103,8 +132,8 @@
 		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261024v225500';
 		return Promise.all([
 			done(fetchJson('res_manifest.json?v=' + ver)),
-			done(fetchJson('lua_src.json?v=' + ver)),
-			done(fetchJson('data_dumps.json?v=' + ver)),
+			done(fetchBundle('lua_bundle.bin?v=' + ver, 'lua_src.json?v=' + ver)),
+			done(fetchBundle('data_bundle.bin?v=' + ver, 'data_dumps.json?v=' + ver)),
 			done(global.LuaVM({
 				print: function (text) {
 					if (!text) return;
