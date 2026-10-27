@@ -6,7 +6,7 @@
 
 	<meta charset="utf-8">
 
-	<script>window.JDZC_CONFIG = { version: '20261027v171000' };</script>
+	<script>window.JDZC_CONFIG = { version: '20261027v174000' };</script>
 
 	<title>Yugihlor - Trading "Nạp" Game</title>
 
@@ -597,53 +597,55 @@
 		trace: false,
 
 		preload: [
-
 			'res/general.lcres',
-
 			'res/avatar.lcres',
-
-			'res/find.lcres',
-
-			'res/effects/sd.lcres',
-
-			'res/cards_back.lcres',
-
-			'res/cards_back2.lcres',
-
-			'res/cards_back3.lcres',
-
-			'res/cards_back4.lcres',
-
-			'res/props.lcres',
-
 			'res/city.lcres',
-
 			'res/battle.lcres',
-
 			'res/bat_loading/bat_loading.lcres',
-
-			'res/effects/vs.lcres',
-
+			'res/props.lcres',
+			'res/cards_back.lcres',
+			'res/cards_back2.lcres',
+			'res/cards_back3.lcres',
+			'res/cards_back4.lcres',
 			'res/cards_img_1.lcres',
-
 			'res/cards_img_2.lcres',
-
 			'res/cards_img_3.lcres',
-
 			'res/cards_img_4.lcres',
-
 			'res/cards_img_5.lcres',
-
 			'res/cards_img_6.lcres',
-
 			'res/cards_img_7.lcres',
-
 			'res/cards_img_8.lcres',
-
 			'res/cards_img_9.lcres',
-
-			'res/cards_img_10.lcres'
-
+			'res/cards_img_10.lcres',
+			'res/activity.lcres',
+			'res/badge.lcres',
+			'res/copy.lcres',
+			'res/first_recharge.lcres',
+			'res/oppo.lcres',
+			'res/travel.lcres',
+			'res/find.lcres',
+			'res/chapter_01.lcres',
+			'res/chapter_02.lcres',
+			'res/chapter_03.lcres',
+			'res/chapter_04.lcres',
+			'res/chapter_05.lcres',
+			'res/chapter_06.lcres',
+			'res/chapter_07.lcres',
+			'res/chapter_08.lcres',
+			'res/chapter_09.lcres',
+			'res/chapter_10.lcres',
+			'res/effects/sd.lcres',
+			'res/effects/vs.lcres',
+			'res/effects/loading.lcres',
+			'res/effects/loading2.lcres',
+			'res/effects/loading3.lcres',
+			'res/effects/tili.lcres',
+			'res/effects/lingjiang.lcres',
+			'res/effects/juedou.lcres',
+			'res/effects/huodong.lcres',
+			'res/effects/haima_nv.lcres',
+			'res/effects/youxi_nv.lcres',
+			'res/effects/yuanbao.lcres'
 		],
 
 		region: { id: 1, ip: window.location.hostname || '127.0.0.1', port: 9191, name: 'S1 - Yugihlor - Trading "Nạp" Game' },
@@ -2352,6 +2354,21 @@
 
 
 
+	<script>
+		/* Register Service Worker for instant local caching (Arcana architecture) */
+		if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+			window.addEventListener('load', function () {
+				var swUrl = 'sw.js?v=' + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261027v174000');
+				navigator.serviceWorker.register(swUrl)
+					.then(function (reg) {
+						console.log('[SW] ServiceWorker active, scope:', reg.scope);
+					})
+					.catch(function (err) {
+						console.warn('[SW] ServiceWorker registration notice:', err);
+					});
+			});
+		}
+	</script>
 </body>
 
 </html>

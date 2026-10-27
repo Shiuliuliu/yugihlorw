@@ -7188,6 +7188,19 @@ function patchClientData()
 	for _ci = 1, 10 do
 		RESIDENT_CONTAINERS["cards_img_" .. _ci .. ".jpm"] = true
 		RESIDENT_CONTAINERS["cards_img_" .. _ci .. ".png.sfb"] = true
+		local _chStr = _ci < 10 and ("0" .. _ci) or ("" .. _ci)
+		RESIDENT_CONTAINERS["chapter_" .. _chStr .. ".jpm"] = true
+		RESIDENT_CONTAINERS["chapter_" .. _chStr .. ".png.sfb"] = true
+	end
+	local extra_residents = {
+		"activity", "badge", "copy", "first_recharge", "oppo", "travel",
+		"sd", "vs", "loading", "loading2", "loading3", "tili", "lingjiang",
+		"juedou", "huodong", "haima_nv", "youxi_nv", "yuanbao"
+	}
+	for _, _name in ipairs(extra_residents) do
+		RESIDENT_CONTAINERS[_name .. ".jpm"] = true
+		RESIDENT_CONTAINERS[_name .. ".png.sfb"] = true
+		RESIDENT_CONTAINERS[_name .. ".png"] = true
 	end
 
 	ClientData.unloadLCRes = function(names)

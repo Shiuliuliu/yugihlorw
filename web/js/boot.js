@@ -30,7 +30,7 @@
 	 * fetches fill only 0..40 and the game's numbers carry the rest. The
 	 * overlay comes down on 100, which makes "bar full" and "game up" the
 	 * same moment instead of leaving the player on a full bar. */
-	var JS_PHASE = 0.4;
+	var JS_PHASE = 0.85;
 	var Boot = {
 		lua: null,
 		loaded: 0,
@@ -56,6 +56,9 @@
 			if (el) el.style.display = 'none';
 			if (global.jdzcPreloadCommonBattleEffects) {
 				setTimeout(global.jdzcPreloadCommonBattleEffects, 2000);
+			}
+			if (global.jdzcRes && global.jdzcRes.startBackgroundPreloader) {
+				global.jdzcRes.startBackgroundPreloader();
 			}
 		},
 	};
@@ -126,7 +129,7 @@
 		 * units.  The bar advances only when a fetch/decoder promise resolves;
 		 * there is no timer-based fake progress. */
 		Boot.loaded = 0;
-		Boot.total = 13 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
+		Boot.total = 14 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
 		Boot.progress(0);
 		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
 		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261024v225500';
@@ -193,16 +196,19 @@
 				done(safe('Fonts', jdzcRes.preloadFonts())),
 				done(safe('jindutiao', jdzcRes.loadTexture('res/particle/jindutiao.png'))),
 				done(safe('CustomAssets', jdzcRes.preloadCustomAssets ? jdzcRes.preloadCustomAssets() : Promise.resolve())),
+				done(safe('ResidentImages', jdzcRes.preloadResidentImages ? jdzcRes.preloadResidentImages() : Promise.resolve())),
 				done(safe('Shaders', global.jdzcPreloadShaders ? global.jdzcPreloadShaders() : Promise.resolve())),
 				done(safe('BattleEffects', global.jdzcPreloadBattleEffects ? global.jdzcPreloadBattleEffects() : Promise.resolve())),
 				done(safe('DbBundle', global.jdzcLoadDbBundle ? global.jdzcLoadDbBundle() : Promise.resolve())),
 			]).then(function () {
-				/* Load containers with controlled concurrency (2 on iOS to avoid canvas memory exhaustion, 4 on desktop) */
+				/* Load containers with controlled concurrency (3 on iOS, 8 on desktop) */
 				var index = 0;
 				var concurrency = isIOS ? 3 : 8;
 				function loadNext() {
 					if (index >= preloadList.length) return Promise.resolve();
 					var path = preloadList[index++];
+					var niceName = path.replace(/^res\//, '').replace(/\.lcres$/, '');
+					status('Đang nạp atlas giao diện: ' + niceName + ' (' + index + '/' + preloadList.length + ')...');
 					return done(safe('Container ' + path, jdzcRes.loadContainer(path), 60000)).then(loadNext);
 				}
 				var workers = [];
@@ -260,7 +266,8 @@
 				var m = /^INIT_PROGRESS_(\d+)$/.exec(e.getUserString() || '');
 				if (!m) return;
 				var pct = parseInt(m[1], 10);
-				Boot.progress(pct / 100);
+				var mapped = JS_PHASE + ((pct - 40) / 60) * (1 - JS_PHASE);
+				Boot.progress(mapped);
 				if (pct >= 100) Boot.takeOverlayDown();
 			});
 

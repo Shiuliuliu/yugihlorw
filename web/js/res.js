@@ -899,7 +899,54 @@
 		return R.inflight[path];
 	};
 
+	var RESIDENT_CONTAINERS = {
+		'res/general.lcres': true,
+		'res/avatar.lcres': true,
+		'res/city.lcres': true,
+		'res/city_2.lcres': true,
+		'res/battle.lcres': true,
+		'res/bat_loading/bat_loading.lcres': true,
+		'res/props.lcres': true,
+		'res/cards_back.lcres': true,
+		'res/cards_back2.lcres': true,
+		'res/cards_back3.lcres': true,
+		'res/cards_back4.lcres': true,
+		'res/activity.lcres': true,
+		'res/badge.lcres': true,
+		'res/copy.lcres': true,
+		'res/first_recharge.lcres': true,
+		'res/oppo.lcres': true,
+		'res/travel.lcres': true,
+		'res/find.lcres': true,
+		'res/effects/sd.lcres': true,
+		'res/effects/vs.lcres': true,
+		'res/effects/loading.lcres': true,
+		'res/effects/loading2.lcres': true,
+		'res/effects/loading3.lcres': true,
+		'res/effects/tili.lcres': true,
+		'res/effects/lingjiang.lcres': true,
+		'res/effects/juedou.lcres': true,
+		'res/effects/huodong.lcres': true,
+		'res/effects/haima_nv.lcres': true,
+		'res/effects/youxi_nv.lcres': true,
+		'res/effects/yuanbao.lcres': true
+	};
+	for (var _c = 1; _c <= 10; _c++) {
+		RESIDENT_CONTAINERS['res/cards_img_' + _c + '.lcres'] = true;
+		var _chStr = _c < 10 ? '0' + _c : '' + _c;
+		RESIDENT_CONTAINERS['res/chapter_' + _chStr + '.lcres'] = true;
+	}
+
+	R.isResident = function (path) {
+		return !!(RESIDENT_CONTAINERS[path]);
+	};
+
 	R.unloadContainer = function (name) {
+		var container = R.containerOf[name];
+		if (container && RESIDENT_CONTAINERS[container]) {
+			/* Resident in memory (Arcana-style): never evict to ensure instant scene returns */
+			return;
+		}
 		/* name is an entry name, the way ClientData.unloadLCRes passes it */
 		if (/\.sfb$/.test(name)) {
 			var key = R.frameOwner[name];
@@ -910,13 +957,77 @@
 		} else {
 			cc.textureCache.removeTextureForKey(name);
 		}
-		/* The owning container must load again from scratch: its textures
-		 * were just evicted, and a load that only re-announces would leave
-		 * every sprite of the next visit on an empty placeholder. */
-		var container = R.containerOf[name];
 		if (container) delete R.loaded[container];
 		delete maskedInflight[name];
 		delete R.pending[name];
+	};
+
+	/* Preload resident background images & pack covers before entering game */
+	R.preloadResidentImages = function () {
+		var residentJpgs = [
+			'res/jpg/world_bg.jpg',
+			'res/jpg/legend_bg.jpg',
+			'res/jpg/city_bg_01.jpg',
+			'res/jpg/ui_scene_bg.jpg',
+			'res/jpg/battle_frame_bg.jpg',
+			'res/jpg/skin_frame.jpg',
+			'res/jpg/skin_bg.jpg',
+			'res/jpg/load_btn_server.jpg',
+			'res/jpg/load_btn_agreement.jpg',
+			'res/bat_scene/bat_scene_1_bg.jpg',
+			'res/bat_scene/bat_scene_11_bg.jpg',
+			'res/bat_scene/bat_scene_12_bg.jpg',
+			'res/bat_scene/bat_scene_13_bg.jpg',
+			'res/bat_scene/bat_scene_14_bg.jpg',
+			'res/bat_scene/bat_scene_15_bg.jpg',
+			'res/bat_scene/bat_scene_16_bg.jpg',
+			'res/bat_scene/bat_scene_17_bg.jpg',
+			'res/bat_scene/bat_scene_21_bg.jpg'
+		];
+		var residentMasked = [
+			{ key: 'res/jpg/lottery_221001.jpg', colour: 'res/jpg/lottery_221001.jpg', mask: 'res/jpg/lottery_221001_mask.png' },
+			{ key: 'res/jpg/lottery_222001.jpg', colour: 'res/jpg/lottery_222001.jpg', mask: 'res/jpg/lottery_222001_mask.png' },
+			{ key: 'res/jpg/lottery_223001.jpg', colour: 'res/jpg/lottery_223001.jpg', mask: 'res/jpg/lottery_223001_mask.png' },
+			{ key: 'res/jpg/lottery_224001.jpg', colour: 'res/jpg/lottery_224001.jpg', mask: 'res/jpg/lottery_224001_mask.png' }
+		];
+		var p1 = residentJpgs.map(function (path) {
+			return R.loadTexture(path).catch(function () {});
+		});
+		var p2 = residentMasked.map(function (item) {
+			return R.loadMaskedTexture(item.key, item.colour, item.mask).catch(function () {});
+		});
+		return Promise.all(p1.concat(p2));
+	};
+
+	/* Background preloader for card thumbnails while player is playing */
+	R.startBackgroundPreloader = function () {
+		if (R._bgPreloaderStarted) return;
+		R._bgPreloaderStarted = true;
+		var thumbs = (R.manifest && R.manifest.thumbs) ? R.manifest.thumbs : null;
+		if (!thumbs) return;
+		var queue = [];
+		['thumb_monster', 'thumb_magic', 'thumb_trap', 'thumb_rare'].forEach(function (type) {
+			var ids = thumbs[type] || [];
+			ids.forEach(function (id) {
+				queue.push('res/' + type + '/' + id + '.lcres');
+			});
+		});
+		var idx = 0;
+		function loadBatch() {
+			if (idx >= queue.length) return;
+			var batch = queue.slice(idx, idx + 4);
+			idx += 4;
+			Promise.all(batch.map(function (path) {
+				return R.loadContainer(path).catch(function () {});
+			})).then(function () {
+				if ('requestIdleCallback' in window) {
+					window.requestIdleCallback(loadBatch, { timeout: 2000 });
+				} else {
+					setTimeout(loadBatch, 100);
+				}
+			});
+		}
+		setTimeout(loadBatch, 5000);
 	};
 
 	/* Bitmap fonts. cc.LabelBMFont wants the .fnt already parsed in
