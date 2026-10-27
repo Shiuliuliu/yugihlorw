@@ -7203,7 +7203,28 @@ function patchClientData()
 		RESIDENT_CONTAINERS[_name .. ".png"] = true
 	end
 
-	ClientData.unloadLCRes = function(names)
+		-- Ensure panel backgrounds stay behind the frame and tabs tuck behind the frame border
+	local orig_createFrameBox = ClientView.createFrameBox
+	ClientView.createFrameBox = function(size)
+		local frameBox = orig_createFrameBox(size)
+		if frameBox and frameBox._bg then
+			frameBox._bg:setLocalZOrder(-2)
+		end
+		return frameBox
+	end
+
+	local orig_createHorizontalContentTab = ClientView.createHorizontalContentTab
+	ClientView.createHorizontalContentTab = function(size, tabInfos, ...)
+		local tabNode = orig_createHorizontalContentTab(size, tabInfos, ...)
+		if tabNode and tabNode._tabs then
+			for _, tab in ipairs(tabNode._tabs) do
+				tab:setLocalZOrder(-1)
+			end
+		end
+		return tabNode
+	end
+
+ClientData.unloadLCRes = function(names)
 		if type(names) ~= "table" then
 			return
 		end

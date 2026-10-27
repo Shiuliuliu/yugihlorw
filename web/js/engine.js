@@ -4410,17 +4410,76 @@
 			ccui.Scale9Sprite.WebGLRenderCmd.prototype;
 		if (s9WebGL) {
 			var TRANSFORM_DIRTY = cc.Node._dirtyFlags.transformDirty;
-			var s9Visit = s9WebGL.visit, s9VisitChildren = s9WebGL.visitChildren;
 			s9WebGL.visit = function (parentCmd) {
-				if (this._dirtyFlag & TRANSFORM_DIRTY) this.__childrenMoved = true;
-				return s9Visit.apply(this, arguments);
-			};
-			s9WebGL.visitChildren = function () {
-				if (this.__childrenMoved) {
-					this.__childrenMoved = false;
-					this._dirtyFlag |= TRANSFORM_DIRTY;
+				var node = this._node;
+				if (!node._visible) return;
+				if (!node._scale9Image) return;
+
+				if (node._positionsAreDirty) {
+					node._updatePositions();
+					node._positionsAreDirty = false;
 				}
-				return s9VisitChildren.apply(this, arguments);
+
+				parentCmd = parentCmd || this.getParentRenderCmd();
+				if (node._parent && node._parent._renderCmd)
+					this._curLevel = node._parent._renderCmd._curLevel + 1;
+
+				this._syncStatus(parentCmd);
+
+				healEmptyScale9(node);
+
+				var children = node._children, len = children ? children.length : 0;
+				var i = 0;
+				if (len > 0) {
+					node.sortAllChildren();
+					if (this._dirtyFlag & TRANSFORM_DIRTY) {
+						for (var c = 0; c < len; c++) {
+							if (children[c] && children[c]._renderCmd) {
+								children[c]._renderCmd._dirtyFlag |= TRANSFORM_DIRTY;
+							}
+						}
+					}
+					// 1. Visit children with _localZOrder < 0 BEFORE the 9-slice frame (backgrounds behind frame)
+					for (i = 0; i < len; i++) {
+						var child = children[i];
+						if (child && child._localZOrder < 0) {
+							if (child._renderCmd) child._renderCmd.visit(this);
+						} else {
+							break;
+						}
+					}
+				}
+
+				// 2. Visit Scale9Sprite's own 9-slice frame renderers (the frame itself)
+				if (node._scale9Enabled) {
+					var locRenderers = node._renderers;
+					var rendererLen = locRenderers ? locRenderers.length : 0;
+					for (var j = 0; j < rendererLen; j++) {
+						var renderer = locRenderers[j];
+						if (renderer && renderer._renderCmd) {
+							renderer._renderCmd.visit(this);
+						} else {
+							break;
+						}
+					}
+				} else {
+					node._adjustScale9ImageScale();
+					node._adjustScale9ImagePosition();
+					if (node._scale9Image && node._scale9Image._renderCmd)
+						node._scale9Image._renderCmd.visit(this);
+				}
+
+				// 3. Visit children with _localZOrder >= 0 AFTER the 9-slice frame (content, buttons, on top of frame)
+				if (len > 0) {
+					for (; i < len; i++) {
+						var child = children[i];
+						if (child && child._renderCmd) {
+							child._renderCmd.visit(this);
+						}
+					}
+				}
+
+				this._dirtyFlag = 0;
 			};
 		}
 
