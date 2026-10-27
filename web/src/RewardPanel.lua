@@ -91,7 +91,7 @@ function var_0_0.create(arg_1_0, arg_1_1)
 		end
 	end
 
-	if P and P.sortResultItems then P:sortResultItems(var_1_1) end
+	if P and P.sortResultItems then pcall(function() P:sortResultItems(var_1_1) end) end
 
 	var_1_0._bonuses = var_1_1
 
@@ -102,6 +102,7 @@ end
 
 function var_0_0.init(arg_2_0, arg_2_1)
 	var_0_0.super.init(arg_2_0, true)
+	arg_2_0._ignoreBlur = true
 	pcall(function()
 		arg_2_0:setVisible(true)
 		arg_2_0:setLocalZOrder(ClientData.ZOrder.dialog or 70)
@@ -118,13 +119,18 @@ function var_0_0.init(arg_2_0, arg_2_1)
 	var_2_0:setAnchorPoint(0.5, 0)
 	lc.addChildToCenter(arg_2_0, var_2_0)
 
-	local var_2_1 = cc.DragonBonesNode:createWithDecrypt("res/effects/lingjiang.lcres", "lingjiang", "lingjiang")
-
-	var_2_1:gotoAndPlay(arg_2_1 == var_0_0.MODE_BUY and "effect3" or arg_2_1 == var_0_0.MODE_SPLIT and "effect5" or "effect")
-	lc.addChildToCenter(arg_2_0, var_2_1)
-	var_2_1:runAction(lc.sequence(var_2_1:getAnimationDuration(arg_2_1 == var_0_0.MODE_BUY and "effect3" or arg_2_1 == var_0_0.MODE_SPLIT and "effect5" or "effect"), function()
-		var_2_1:gotoAndPlay(arg_2_1 == var_0_0.MODE_BUY and "effect4" or arg_2_1 == var_0_0.MODE_SPLIT and "effect6" or "effect2")
-	end))
+	local var_2_1 = nil
+	pcall(function()
+		var_2_1 = cc.DragonBonesNode:createWithDecrypt("res/effects/lingjiang.lcres", "lingjiang", "lingjiang")
+		if var_2_1 then
+			var_2_1:gotoAndPlay(arg_2_1 == var_0_0.MODE_BUY and "effect3" or arg_2_1 == var_0_0.MODE_SPLIT and "effect5" or "effect")
+			lc.addChildToCenter(arg_2_0, var_2_1)
+			local dur = (var_2_1.getAnimationDuration and var_2_1:getAnimationDuration(arg_2_1 == var_0_0.MODE_BUY and "effect3" or arg_2_1 == var_0_0.MODE_SPLIT and "effect5" or "effect")) or 0.5
+			var_2_1:runAction(lc.sequence(dur, function()
+				pcall(function() var_2_1:gotoAndPlay(arg_2_1 == var_0_0.MODE_BUY and "effect4" or arg_2_1 == var_0_0.MODE_SPLIT and "effect6" or "effect2") end)
+			end))
+		end
+	end)
 
 	local var_2_2 = arg_2_0._bonuses
 	local var_2_3 = lc.List.createV(cc.size(1000, 300), 10, 10)
@@ -189,7 +195,7 @@ function var_0_0.init(arg_2_0, arg_2_1)
 	local var_2_11 = math.max(140, math.min(300, calcH))
 
 	var_2_0:setContentSize(lc.w(var_2_0), var_2_11 + 220)
-	lc.offset(var_2_1, 0, var_2_11 - var_0_2)
+	if var_2_1 then lc.offset(var_2_1, 0, var_2_11 - var_0_2) end
 	var_2_3:setAnchorPoint(0.5, 0)
 	var_2_3:setContentSize(var_2_4 + 60, var_2_11)
 	var_2_3:setPosition(lc.w(arg_2_0) / 2, lc.bottom(var_2_0) + 40)
@@ -235,6 +241,12 @@ function var_0_0.onCleanup(arg_8_0)
 	local var_8_2 = (var_8_0 == var_0_0.MODE_CHEST or var_8_0 == var_0_0.MODE_LOTTERY) and "res/jpg/img_word_open_box.jpg" or var_8_0 == var_0_0.MODE_SPLIT and "res/jpg/img_word_split_card.jpg" or var_8_0 == var_0_0.MODE_MIX_FRAGMENT and "res/jpg/img_word_mix_frag.jpg" or var_8_0 == var_0_0.MODE_BUY and "res/jpg/img_word_buy_success.jpg" or "res/jpg/img_word_claim_reward.jpg"
 
 	lc.TextureCache:removeTextureForKey(lc.File:fullPathForFilename(var_8_2))
+end
+
+function var_0_0.show(arg_10_0, arg_10_1)
+	arg_10_0._ignoreBlur = true
+	var_0_0.super.show(arg_10_0, arg_10_1 or ClientData.ZOrder.dialog or 70)
+	pcall(function() arg_10_0:setVisible(true) end)
 end
 
 function var_0_0.hide(arg_9_0)

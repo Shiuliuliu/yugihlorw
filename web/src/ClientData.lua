@@ -7041,11 +7041,16 @@ function var_0_0.sendUserGiftExchange(arg_408_0, arg_408_1)
 					ClientView.getMenuUI():updateResource()
 				end
 
-				pcall(function()
+				local okShow, errShow = pcall(function()
 					local rp = require("RewardPanel")
 					local p = rp.create(rewardsList, rp.MODE_EXCHANGE)
+					p._ignoreBlur = true
 					p:show(ClientData.ZOrder.dialog or 70)
+					p:setVisible(true)
 				end)
+				if not okShow then
+					print("[GIFT CODE] Error displaying RewardPanel:", tostring(errShow))
+				end
 
 				ToastManager.push(res.msg or "Nhập mã quà tặng thành công!")
 			else

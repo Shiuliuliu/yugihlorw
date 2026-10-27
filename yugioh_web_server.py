@@ -1667,7 +1667,7 @@ def proxy_to_survival_server(handler, path, post_data=None):
 
 def send_chat_broadcast_to_server(msg_obj):
     global _CHAT_HISTORY_CACHE
-    _CHAT_HISTORY_CACHE = None
+    _CHAT_HISTORY_CACHE = {"data": None, "time": 0}
     try:
         import urllib.request
         data = json.dumps(msg_obj, ensure_ascii=False).encode('utf-8')
@@ -5448,7 +5448,7 @@ def db_save_chat_message(msg_obj):
 def db_get_today_chat_history():
     global _CHAT_HISTORY_CACHE
     now = time.time()
-    if _CHAT_HISTORY_CACHE["data"] is not None and (now - _CHAT_HISTORY_CACHE["time"] < 2.5):
+    if isinstance(_CHAT_HISTORY_CACHE, dict) and _CHAT_HISTORY_CACHE.get("data") is not None and (now - _CHAT_HISTORY_CACHE.get("time", 0) < 2.5):
         return _CHAT_HISTORY_CACHE["data"]
     ensure_chat_db()
     try:

@@ -12,6 +12,7 @@ end
 
 function var_0_0.init(arg_2_0, arg_2_1)
 	var_0_0.super.init(arg_2_0, var_0_1, nil, bor(BaseForm.FLAG.PAPER_BG))
+	arg_2_0._ignoreBlur = true
 
 	local formW = lc.w(arg_2_0._form)
 	local formH = lc.h(arg_2_0._form)

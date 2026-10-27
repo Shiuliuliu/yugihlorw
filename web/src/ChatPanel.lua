@@ -312,9 +312,10 @@ function var_0_0.resetList(arg_15_0)
 				return arg_15_0:setOrCreateItem(nil, var_15_3[iter_15_0])
 			end)
 			if ok and var_15_4 then
+				var_15_4:setVisible(true)
 				var_15_0:pushBackCustomItem(var_15_4)
 			else
-				print("[ChatPanel] Error creating item:", var_15_4)
+				print("[ChatPanel] Error creating item at index " .. tostring(iter_15_0) .. ":", tostring(var_15_4))
 			end
 		end
 	end

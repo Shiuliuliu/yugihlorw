@@ -7303,11 +7303,16 @@ ClientData.unloadLCRes = function(names)
 						ClientView.getMenuUI():updateResource()
 					end
 
-					pcall(function()
+					local okShow, errShow = pcall(function()
 						local rp = require("RewardPanel")
 						local p = rp.create(rewardsList, rp.MODE_EXCHANGE)
+						p._ignoreBlur = true
 						p:show(ClientData.ZOrder.dialog or 70)
+						p:setVisible(true)
 					end)
+					if not okShow then
+						print("[GIFT CODE] Error displaying RewardPanel:", tostring(errShow))
+					end
 
 					ToastManager.push(res.msg or "Nhập mã quà tặng thành công!")
 				else
@@ -7662,6 +7667,7 @@ ClientData.unloadLCRes = function(names)
 			name = (name and name ~= "") and name or (isSystem and "Hệ Thống" or "Duelist"),
 			level = level or (isSystem and 99 or 1),
 			avatar = avatar or (isSystem and 101 or 201),
+			avatar_frame = 0,
 			crown = crownObj and { info_id = crownObj._infoId, num = crownObj._num } or nil,
 			gold_cup = (crownObj and crownObj._infoId == 7204 and crownObj._num) or 0,
 			silver_cup = (crownObj and crownObj._infoId == 7205 and crownObj._num) or 0,
@@ -7699,6 +7705,7 @@ ClientData.unloadLCRes = function(names)
 				name = oppoName,
 				level = oppoLevel,
 				avatar = oppoAvatar,
+				avatar_frame = 0,
 				crown = oppCrown,
 				gold_cup = opp_gc,
 				silver_cup = opp_sc,
@@ -7834,16 +7841,21 @@ ClientData.unloadLCRes = function(names)
 
 	_G.processIncomingChatsJson = function(jsonStr)
 		if not jsonStr or jsonStr == "" then return end
-		local ok, q = pcall(function() return require("json").decode(jsonStr) end)
+		local jsonMod = json or (package and package.loaded and package.loaded["json"]) or require("json")
+		local ok, q = pcall(function() return jsonMod.decode(jsonStr) end)
 		if ok and q and #q > 0 then
 			for _, m in ipairs(q) do
 				local cardId = m.card_id or (m.items and m.items[1] and (m.items[1].info_id or m.items[1]._infoId)) or 0
-				local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
+				local contentVal = m.content or m.msg or (m.battle_data and (jsonMod and jsonMod.encode and jsonMod.encode(m.battle_data))) or ""
 				local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
 				local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
-				processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or 1, cardId, m.client_msg_id or "", crownId, crownNum, false, m.union_id or 0)
+				processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or m.msg_type or 1, cardId, m.client_msg_id or "", crownId, crownNum, true, m.union_id or 0)
 			end
 			pcall(flushPendingChatQueue)
+			local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
+			if cp and cp._isPop then
+				pcall(function() cp:resetList() end)
+			end
 		end
 	end
 	local function pollChatHistory()
@@ -7861,8 +7873,9 @@ ClientData.unloadLCRes = function(names)
 					_G._isPollingChat = false
 					_G._lastChatPoll = os.time()
 					local res = rawRes
+					local jsonMod = json or (package and package.loaded and package.loaded["json"]) or require("json")
 					if type(res) == "string" then
-						local ok, parsed = pcall(function() return require("json").decode(res) end)
+						local ok, parsed = pcall(function() return jsonMod.decode(res) end)
 						if ok and parsed then res = parsed end
 					end
 					if res and res.messages and #res.messages > 0 then
