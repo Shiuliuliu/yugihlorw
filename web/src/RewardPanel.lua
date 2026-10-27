@@ -102,6 +102,10 @@ end
 
 function var_0_0.init(arg_2_0, arg_2_1)
 	var_0_0.super.init(arg_2_0, true)
+	pcall(function()
+		arg_2_0:setVisible(true)
+		arg_2_0:setLocalZOrder(ClientData.ZOrder.dialog or 70)
+	end)
 
 	arg_2_0._mode = arg_2_1
 
@@ -123,7 +127,7 @@ function var_0_0.init(arg_2_0, arg_2_1)
 	end))
 
 	local var_2_2 = arg_2_0._bonuses
-	local var_2_3 = lc.List.createV(cc.size(), 10, 10)
+	local var_2_3 = lc.List.createV(cc.size(1000, 300), 10, 10)
 	var_2_3:setClippingEnabled(false)
 
 	arg_2_0:addChild(var_2_3)
@@ -151,10 +155,8 @@ function var_0_0.init(arg_2_0, arg_2_1)
 
 			var_2_9:setAnchorPoint(0, 0)
 			var_2_9:setPosition(var_2_5, 0)
-			var_2_9:setVisible(false)
-			var_2_9:runAction(lc.sequence(0.3 + iter_2_0 * 0.2, function()
-				var_2_9:setVisible(true)
-			end, lc.scaleTo(0.1, 1.2), lc.scaleTo(0.1, 1)))
+			var_2_9:setVisible(true)
+			var_2_9:runAction(lc.sequence(0.3 + iter_2_0 * 0.2, lc.scaleTo(0.1, 1.2), lc.scaleTo(0.1, 1)))
 			var_2_7:addChild(var_2_9)
 
 			var_2_5 = var_2_5 + lc.w(var_2_9) + var_0_3
@@ -179,7 +181,12 @@ function var_0_0.init(arg_2_0, arg_2_1)
 	var_2_3:refreshView()
 
 	local var_2_10 = lc.Director:getVisibleSize().height - var_0_2
-	local var_2_11 = math.min(300, var_2_3:getInnerContainerSize().height)
+	local calcH = (var_2_6 > 0 and (var_2_6 + 20) or 140)
+	local innerH = (var_2_3.getInnerContainerSize and var_2_3:getInnerContainerSize().height) or 0
+	if innerH > 0 then
+		calcH = math.max(calcH, innerH)
+	end
+	local var_2_11 = math.max(140, math.min(300, calcH))
 
 	var_2_0:setContentSize(lc.w(var_2_0), var_2_11 + 220)
 	lc.offset(var_2_1, 0, var_2_11 - var_0_2)

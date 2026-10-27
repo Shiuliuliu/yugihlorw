@@ -37,6 +37,7 @@ function var_0_0.create()
 	end)
 
 	-- Store panel instance for direct refresh from pollChatHistory
+	_G._chatPanel = var_1_0
 	pcall(function() ClientData._chatPanel = var_1_0 end)
 
 	return var_1_0
@@ -298,8 +299,15 @@ function var_0_0.resetList(arg_15_0)
 		for i, m in ipairs(cleaned) do var_15_3[i] = m end
 	end
 
+	if var_15_3 == nil or #var_15_3 == 0 then
+		pcall(function()
+			if ClientData.pollChatHistory then
+				ClientData.pollChatHistory()
+			end
+		end)
+	end
+
 	var_15_0:removeAllItems()
-	var_15_0._items = {}
 	local cacheLimit = (var_0_6 and var_0_6[var_15_1]) or 10
 	local cacheCount = math.min(cacheLimit, #var_15_3)
 	var_15_0:bindData(var_15_3, function(arg_16_0, arg_16_1)
@@ -312,7 +320,6 @@ function var_0_0.resetList(arg_15_0)
 				return arg_15_0:setOrCreateItem(nil, var_15_3[iter_15_0])
 			end)
 			if ok and var_15_4 then
-				table.insert(var_15_0._items, var_15_4)
 				var_15_0:pushBackCustomItem(var_15_4)
 			else
 				print("[ChatPanel] Error creating item:", var_15_4)

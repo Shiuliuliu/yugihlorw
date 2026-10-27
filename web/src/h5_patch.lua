@@ -1844,9 +1844,9 @@ function patchClientData()
 						end
 						end
 						pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
-						local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
-						if cp and cp._isPop then
-							cp:resetList()
+						local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel or _G._chatPanel
+						if cp then
+							pcall(function() cp:resetList() end)
 						end
 					end
 				end)
@@ -7308,13 +7308,13 @@ ClientData.unloadLCRes = function(names)
 
 					-- Close ExchangeCodeForm if open
 					if formInstance and formInstance.hide then
-						pcall(function() formInstance:hide() end)
+						pcall(function() formInstance:hide(true) end)
 					end
 					local curScene = lc._runningScene
 					if curScene and curScene._scene then
 						for _, child in ipairs(curScene._scene:getChildren()) do
 							if child.__cname == "ExchangeCodeForm" then
-								pcall(function() child:hide() end)
+								pcall(function() child:hide(true) end)
 							end
 						end
 					end
@@ -7332,30 +7332,11 @@ ClientData.unloadLCRes = function(names)
 						ClientView.getMenuUI():updateResource()
 					end
 
-					-- Dispatch message to listener (ExchangeCodeForm:onMsg)
-					local giftExt = User_pb and User_pb.SglUserMsg and User_pb.SglUserMsg.user_claim_gift_resp
-					local msg = {
-						type = SglMsgType_pb and SglMsgType_pb.PB_TYPE_USER_CLAIM_GIFT or 313,
-						status = 0,
-						rewards = rewardsList,
-						Extensions = {}
-					}
-					if giftExt then
-						msg.Extensions[giftExt] = rewardsList
-					end
-					msg.Extensions["user_claim_gift_resp"] = rewardsList
-					msg.Extensions[305] = rewardsList
-
-					local handled = false
-					if ClientData.onMsg then
-						handled = ClientData.onMsg(msg)
-					end
-					if not handled then
-						pcall(function()
-							local rp = require("RewardPanel")
-							rp.create(rewardsList, rp.MODE_EXCHANGE):show()
-						end)
-					end
+					pcall(function()
+						local rp = require("RewardPanel")
+						local p = rp.create(rewardsList, rp.MODE_EXCHANGE)
+						p:show(ClientData.ZOrder.dialog or 70)
+					end)
 
 					ToastManager.push(res.msg or "Nhập mã quà tặng thành công!")
 				else
@@ -8007,9 +7988,9 @@ ClientData.unloadLCRes = function(names)
 							end
 						end
 
-						local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
-						if cp and cp._isPop then
-							cp:resetList()
+						local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel or _G._chatPanel
+						if cp then
+							pcall(function() cp:resetList() end)
 						end
 					end
 				end)

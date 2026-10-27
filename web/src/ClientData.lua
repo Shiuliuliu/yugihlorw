@@ -7008,13 +7008,13 @@ function var_0_0.sendUserGiftExchange(arg_408_0, arg_408_1)
 				end
 
 				if arg_408_1 and arg_408_1.hide then
-					pcall(function() arg_408_1:hide() end)
+					pcall(function() arg_408_1:hide(true) end)
 				end
 				local curScene = lc._runningScene
 				if curScene and curScene._scene then
 					for _, child in ipairs(curScene._scene:getChildren()) do
 						if child.__cname == "ExchangeCodeForm" then
-							pcall(function() child:hide() end)
+							pcall(function() child:hide(true) end)
 						end
 					end
 				end
@@ -7032,7 +7032,9 @@ function var_0_0.sendUserGiftExchange(arg_408_0, arg_408_1)
 				end
 
 				pcall(function()
-					require("RewardPanel").create(rewardsList):show()
+					local rp = require("RewardPanel")
+					local p = rp.create(rewardsList, rp.MODE_EXCHANGE)
+					p:show(ClientData.ZOrder.dialog or 70)
 				end)
 
 				ToastManager.push(res.msg or "Nhập mã quà tặng thành công!")
