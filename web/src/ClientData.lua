@@ -6607,11 +6607,19 @@ function var_0_0.sendChat(arg_374_0, arg_374_1, arg_374_2)
 end
 
 function var_0_0.pollChatHistory()
+	if _G._isPollingChat then return end
+	local now = os.time()
+	if _G._lastChatPoll and (now - _G._lastChatPoll) < 8 then return end
+	_G._isPollingChat = true
+	_G._lastChatPoll = now
+
 	pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
 	pcall(function()
 		local api = jsbridge and jsbridge.object("jdzcApi")
 		if api and api.post then
 			api:post("chat_history", {}, function(rawRes)
+				_G._isPollingChat = false
+				_G._lastChatPoll = os.time()
 				local res = rawRes
 				if type(res) == "string" then
 					local ok, parsed = pcall(function() return require("json").decode(res) end)
@@ -6628,12 +6636,14 @@ function var_0_0.pollChatHistory()
 						end
 					end
 					pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
-					local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or var_0_0._chatPanel
+					local cp = var_0_0._chatPanel or _G._chatPanel or (ClientView and rawget(ClientView, "ChatPanel"))
 					if cp and cp._isPop then
 						cp:resetList()
 					end
 				end
 			end)
+		else
+			_G._isPollingChat = false
 		end
 	end)
 end

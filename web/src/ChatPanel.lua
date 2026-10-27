@@ -255,9 +255,9 @@ function var_0_0.resetList(arg_15_0)
 	var_15_0:setContentSize(lc.w(var_15_0), var_15_0._originH - (var_15_2 and 76 or 0))
 
 	pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
-	local var_15_3 = P._playerMessage._msgAll[var_15_1]
+	local var_15_3 = (P and P._playerMessage and P._playerMessage._msgAll and P._playerMessage._msgAll[var_15_1]) or {}
 
-	if var_15_3 and #var_15_3 > 0 then
+	if #var_15_3 > 0 then
 		local uniqueMap = {}
 		local cleaned = {}
 		for _, m in ipairs(var_15_3) do
@@ -297,14 +297,6 @@ function var_0_0.resetList(arg_15_0)
 		end)
 		for i = #var_15_3, 1, -1 do var_15_3[i] = nil end
 		for i, m in ipairs(cleaned) do var_15_3[i] = m end
-	end
-
-	if var_15_3 == nil or #var_15_3 == 0 then
-		pcall(function()
-			if ClientData.pollChatHistory then
-				ClientData.pollChatHistory()
-			end
-		end)
 	end
 
 	var_15_0:removeAllItems()

@@ -1666,6 +1666,8 @@ def proxy_to_survival_server(handler, path, post_data=None):
         return True
 
 def send_chat_broadcast_to_server(msg_obj):
+    global _CHAT_HISTORY_CACHE
+    _CHAT_HISTORY_CACHE = None
     try:
         import urllib.request
         data = json.dumps(msg_obj, ensure_ascii=False).encode('utf-8')
@@ -5459,8 +5461,7 @@ def db_get_today_chat_history():
                                    msg_type AS type, card_id, union_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
                                    gold_cup, silver_cup, bronze_cup, trophy
                             FROM chat_messages
-                            WHERE created_at >= NOW() - INTERVAL 24 HOUR
-                              AND msg_type = 1
+                            WHERE msg_type = 1
                             ORDER BY id DESC
                             LIMIT 50
                         )
@@ -5470,8 +5471,7 @@ def db_get_today_chat_history():
                                    msg_type AS type, card_id, union_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
                                    gold_cup, silver_cup, bronze_cup, trophy
                             FROM chat_messages
-                            WHERE created_at >= NOW() - INTERVAL 24 HOUR
-                              AND msg_type = 3
+                            WHERE msg_type = 3
                             ORDER BY id DESC
                             LIMIT 30
                         )
@@ -5481,10 +5481,19 @@ def db_get_today_chat_history():
                                    msg_type AS type, card_id, union_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
                                    gold_cup, silver_cup, bronze_cup, trophy
                             FROM chat_messages
-                            WHERE created_at >= NOW() - INTERVAL 24 HOUR
-                              AND msg_type = 2
+                            WHERE msg_type = 2
                             ORDER BY id DESC
                             LIMIT 50
+                        )
+                        UNION ALL
+                        (
+                            SELECT id, client_msg_id, account_id, sender_name AS name, level, avatar,
+                                   msg_type AS type, card_id, union_id, content, content AS msg, timestamp_ms AS timestamp, created_at,
+                                   gold_cup, silver_cup, bronze_cup, trophy
+                            FROM chat_messages
+                            WHERE msg_type = 4
+                            ORDER BY id DESC
+                            LIMIT 30
                         )
                     ) combined
                     ORDER BY id ASC

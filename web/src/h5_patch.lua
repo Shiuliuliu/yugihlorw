@@ -1823,37 +1823,8 @@ end
 
 function patchClientData()
 	ClientData.pollChatHistory = function()
-		pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
-		pcall(function()
-			local api = jsbridge and jsbridge.object("jdzcApi")
-			if api and api.post then
-				api:post("chat_history", {}, function(rawRes)
-					local res = rawRes
-					if type(res) == "string" then
-						local ok, parsed = pcall(function() return require("json").decode(res) end)
-						if ok and parsed then res = parsed end
-					end
-					if res and res.messages and #res.messages > 0 then
-						for _, m in ipairs(res.messages) do
-							local cardId = m.card_id or (m.items and m.items[1] and (m.items[1].info_id or m.items[1]._infoId)) or 0
-							local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
-							local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
-							local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
-						if _G.addRawChatMessage then
-							_G.addRawChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or m.msg_type or 1, cardId, m.client_msg_id or "", crownId, crownNum, true, m.union_id or 0)
-						end
-						end
-						pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
-						local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel or _G._chatPanel
-						if cp then
-							pcall(function() cp:resetList() end)
-						end
-					end
-				end)
-			end
-		end)
+		if _G.pollChatHistory then _G.pollChatHistory() end
 	end
-	_G.pollChatHistory = ClientData.pollChatHistory
 	ClientData._isWorking = true
 
 	-- DECK REMARK / RENAME SUPPORT (Task 2)
@@ -7877,10 +7848,18 @@ ClientData.unloadLCRes = function(names)
 	end
 	local function pollChatHistory()
 		pcall(flushPendingChatQueue)
+		if _G._isPollingChat then return end
+		local now = os.time()
+		if _G._lastChatPoll and (now - _G._lastChatPoll) < 8 then return end
+		_G._isPollingChat = true
+		_G._lastChatPoll = now
+
 		pcall(function()
 			local api = jsbridge and jsbridge.object("jdzcApi")
 			if api and api.post then
 				api:post("chat_history", {}, function(rawRes)
+					_G._isPollingChat = false
+					_G._lastChatPoll = os.time()
 					local res = rawRes
 					if type(res) == "string" then
 						local ok, parsed = pcall(function() return require("json").decode(res) end)
@@ -7988,16 +7967,19 @@ ClientData.unloadLCRes = function(names)
 							end
 						end
 
-						local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel or _G._chatPanel
-						if cp then
+						local cp = ClientData._chatPanel or _G._chatPanel or (ClientView and rawget(ClientView, "ChatPanel"))
+						if cp and cp._isPop then
 							pcall(function() cp:resetList() end)
 						end
 					end
 				end)
+			else
+				_G._isPollingChat = false
 			end
 		end)
 	end
 	ClientData.pollChatHistory = pollChatHistory
+	_G.pollChatHistory = pollChatHistory
 
 	lc.addEventListener(Data.Event.login, function()
 		pcall(function()
