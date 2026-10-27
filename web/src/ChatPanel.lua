@@ -24,6 +24,14 @@ function var_0_0.create()
 	var_1_0:setContentSize(var_0_2)
 	var_1_0:init()
 
+	var_1_0:registerScriptHandler(function(event)
+		if event == "enter" then
+			var_1_0:onEnter()
+		elseif event == "exit" then
+			var_1_0:onExit()
+		end
+	end)
+
 	var_1_0._listener = lc.addEventListener(Data.Event.message, function(arg_2_0)
 		var_1_0:onMessageEvent(arg_2_0)
 	end)
@@ -67,6 +75,7 @@ function var_0_0.init(arg_3_0)
 	local var_3_4 = lc.List.createV(cc.size(lc.w(var_3_3) - ClientView.FRAME_INNER_LEFT - ClientView.FRAME_INNER_RIGHT - 16, lc.h(var_3_3) - ClientView.FRAME_INNER_TOP - ClientView.FRAME_INNER_BOTTOM), 16, 16)
 
 	var_3_4:setAnchorPoint(0.5, 0)
+	var_3_4:setClippingEnabled(false)
 
 	var_3_4._originH = lc.h(var_3_4)
 
@@ -133,6 +142,9 @@ function var_0_0.pop(arg_8_0)
 
 	arg_8_0._arrowPop:setSpriteFrame("img_btn_push")
 	arg_8_0._contentBg:setVisible(true)
+	if arg_8_0._list then
+		arg_8_0._list:setClippingEnabled(false)
+	end
 	arg_8_0:stopAllActions()
 	arg_8_0:runAction(lc.ease(lc.moveTo(0.35, cc.p(-8 + ClientView.SCR_EDGE, lc.y(arg_8_0))), "SineO"))
 
@@ -287,6 +299,7 @@ function var_0_0.resetList(arg_15_0)
 	end
 
 	var_15_0:removeAllItems()
+	var_15_0._items = {}
 	local cacheLimit = (var_0_6 and var_0_6[var_15_1]) or 10
 	local cacheCount = math.min(cacheLimit, #var_15_3)
 	var_15_0:bindData(var_15_3, function(arg_16_0, arg_16_1)
@@ -299,14 +312,21 @@ function var_0_0.resetList(arg_15_0)
 				return arg_15_0:setOrCreateItem(nil, var_15_3[iter_15_0])
 			end)
 			if ok and var_15_4 then
+				table.insert(var_15_0._items, var_15_4)
 				var_15_0:pushBackCustomItem(var_15_4)
+			else
+				print("[ChatPanel] Error creating item:", var_15_4)
 			end
 		end
 	end
 
 	pcall(function() var_15_0:forceDoLayout() end)
 	pcall(function() var_15_0:refreshView() end)
-	var_15_0:jumpToTop()
+	if var_15_0.gotoTop then
+		var_15_0:gotoTop()
+	else
+		var_15_0:jumpToTop()
+	end
 end
 
 function var_0_0.updateList(arg_17_0, arg_17_1)

@@ -10616,6 +10616,16 @@ local function var_0_9()
 		end
 
 		var_0_3("bootstrap:loadPlayerData:done")
+		pcall(function()
+			if ClientData and ClientData.pollChatHistory then
+				ClientData.pollChatHistory()
+			end
+			if _G.flushPendingChatQueue then
+				_G.flushPendingChatQueue()
+			end
+			local loginEvt = cc.EventCustom:new(Data.Event.login)
+			lc.Dispatcher:dispatchEvent(loginEvt)
+		end)
 		var_8_0.patchEffectPersistence()
 		var_8_0.patchImprintPersistence()
 		var_8_0.patchDeckDraftRecovery()

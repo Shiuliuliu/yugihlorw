@@ -1451,6 +1451,11 @@ function var_0_0.loadPlayerData(arg_58_0, arg_58_1)
 	var_0_0._baseTime = lc.Director:getCurrentTime()
 
 	arg_58_0:init(arg_58_1)
+
+	pcall(function()
+		if var_0_0.pollChatHistory then var_0_0.pollChatHistory() end
+		if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end
+	end)
 end
 
 function var_0_0.reconnectRegionServer()

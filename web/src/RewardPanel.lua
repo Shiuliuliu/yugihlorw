@@ -124,6 +124,7 @@ function var_0_0.init(arg_2_0, arg_2_1)
 
 	local var_2_2 = arg_2_0._bonuses
 	local var_2_3 = lc.List.createV(cc.size(), 10, 10)
+	var_2_3:setClippingEnabled(false)
 
 	arg_2_0:addChild(var_2_3)
 

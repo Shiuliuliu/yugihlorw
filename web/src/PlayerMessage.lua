@@ -23,11 +23,12 @@ function var_0_0.ctor(arg_1_0)
 end
 
 function var_0_0.clear(arg_3_0)
+	local oldMsgAll = arg_3_0._msgAll
 	arg_3_0._msgAll = {
-		{},
-		{},
-		{},
-		{}
+		(oldMsgAll and oldMsgAll[1]) or {},
+		(oldMsgAll and oldMsgAll[2]) or {},
+		(oldMsgAll and oldMsgAll[3]) or {},
+		(oldMsgAll and oldMsgAll[4]) or {}
 	}
 	pcall(function()
 		if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end
