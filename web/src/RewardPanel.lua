@@ -102,7 +102,6 @@ end
 
 function var_0_0.init(arg_2_0, arg_2_1)
 	var_0_0.super.init(arg_2_0, true)
-	arg_2_0._ignoreBlur = true
 	pcall(function()
 		arg_2_0:setVisible(true)
 		arg_2_0:setLocalZOrder(ClientData.ZOrder.dialog or 70)
@@ -244,7 +243,6 @@ function var_0_0.onCleanup(arg_8_0)
 end
 
 function var_0_0.show(arg_10_0, arg_10_1)
-	arg_10_0._ignoreBlur = true
 	var_0_0.super.show(arg_10_0, arg_10_1 or ClientData.ZOrder.dialog or 70)
 	pcall(function() arg_10_0:setVisible(true) end)
 end

@@ -6625,10 +6625,10 @@ function var_0_0.pollChatHistory()
 					local ok, parsed = pcall(function() return require("json").decode(res) end)
 					if ok and parsed then res = parsed end
 				end
-				if res and res.messages and #res.messages > 0 then
+				if res and type(res) == "table" and res.messages and #res.messages > 0 then
 					for _, m in ipairs(res.messages) do
 						local cardId = m.card_id or (m.items and m.items[1] and (m.items[1].info_id or m.items[1]._infoId)) or 0
-						local contentVal = m.content or m.msg or (m.battle_data and require("json").encode(m.battle_data)) or ""
+						local contentVal = m.content or m.msg or m.battle_data or ""
 						local crownId = m.crown_id or (m.crown and (m.crown.info_id or m.crown._infoId)) or 0
 						local crownNum = m.crown_num or (m.crown and (m.crown.num or m.crown._num)) or 0
 						if _G.addRawChatMessage then
@@ -6636,7 +6636,7 @@ function var_0_0.pollChatHistory()
 						end
 					end
 					pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
-					local cp = var_0_0._chatPanel or _G._chatPanel or (ClientView and rawget(ClientView, "ChatPanel"))
+					local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or var_0_0._chatPanel or _G._chatPanel or (ClientView and rawget(ClientView, "ChatPanel"))
 					if cp and cp._isPop then
 						cp:resetList()
 					end
@@ -7044,7 +7044,6 @@ function var_0_0.sendUserGiftExchange(arg_408_0, arg_408_1)
 				local okShow, errShow = pcall(function()
 					local rp = require("RewardPanel")
 					local p = rp.create(rewardsList, rp.MODE_EXCHANGE)
-					p._ignoreBlur = true
 					p:show(ClientData.ZOrder.dialog or 70)
 					p:setVisible(true)
 				end)

@@ -6,7 +6,7 @@ var_0_0.Panels = {}
 function var_0_0.init(arg_1_0, arg_1_1, arg_1_2)
 	arg_1_0._isForce = arg_1_1
 	arg_1_0._hideBg = arg_1_2
-	arg_1_0._ignoreBlur = true
+	arg_1_0._ignoreBlur = lc._runningScene and lc._runningScene._sceneId == ClientData.SceneId.battle
 
 	arg_1_0:addTouchEventListener(function(arg_2_0, arg_2_1)
 		if arg_2_1 == ccui.TouchEventType.ended and not arg_1_0._isForce then
@@ -40,9 +40,6 @@ function var_0_0.onEnter(arg_3_0)
 
 	if not arg_3_0._ignoreBlur then
 		arg_3_0:updateBg()
-	else
-		arg_3_0:setVisible(true)
-		arg_3_0:updatePanels()
 	end
 end
 
@@ -59,11 +56,6 @@ function var_0_0.onExit(arg_5_0)
 
 	if not arg_5_0._ignoreBlur then
 		arg_5_0:updateBg()
-	else
-		if #var_0_0.Panels > 0 then
-			var_0_0.Panels[#var_0_0.Panels]:setVisible(true)
-			var_0_0.Panels[#var_0_0.Panels]:updatePanels()
-		end
 	end
 end
 
