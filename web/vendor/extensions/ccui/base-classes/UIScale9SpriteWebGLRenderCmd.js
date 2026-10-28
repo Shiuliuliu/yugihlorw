@@ -50,16 +50,39 @@
         if (node._parent && node._parent._renderCmd)
             this._curLevel = node._parent._renderCmd._curLevel + 1;
 
+        var renderer = cc.renderer;
+        if (renderer && isNaN(node._customZ)) {
+            node._vertexZ = renderer.assignedZ;
+            renderer.assignedZ += renderer.assignedZStep;
+        }
+
         this._syncStatus(parentCmd);
 
+        var children = node._children;
+        var len = children ? children.length : 0;
+        var i = 0;
+        if (len > 0) {
+            node.sortAllChildren();
+            // 1. Visit children with _localZOrder < 0 FIRST (e.g. background fill _bg)
+            for (; i < len; i++) {
+                var child = children[i];
+                if (child && child._localZOrder < 0) {
+                    if (child._renderCmd) child._renderCmd.visit(this);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        // 2. Visit 9-slice frame renderers SECOND (draws ON TOP OF background fill)
         if(node._scale9Enabled) {
             var locRenderers = node._renderers;
             var rendererLen = locRenderers.length;
             for(var j=0; j < rendererLen; j++) {
-                var renderer = locRenderers[j];
-                if(renderer) {
-                    var tempCmd = renderer._renderCmd;
-                    tempCmd.visit(this);
+                var locRenderer = locRenderers[j];
+                if(locRenderer) {
+                    var tempCmd = locRenderer._renderCmd;
+                    if(tempCmd) tempCmd.visit(this);
                 }
                 else
                     break;
@@ -68,10 +91,18 @@
         else {
             node._adjustScale9ImageScale();
             node._adjustScale9ImagePosition();
-            node._scale9Image._renderCmd.visit(this);
+            if(node._scale9Image._renderCmd) node._scale9Image._renderCmd.visit(this);
         }
+
+        // 3. Visit children with _localZOrder >= 0 THIRD (draws ON TOP OF frame)
+        for (; i < len; i++) {
+            var ch = children[i];
+            if (ch && ch._renderCmd) {
+                ch._renderCmd.visit(this);
+            }
+        }
+
         this._dirtyFlag = 0;
-        this.originVisit(parentCmd);
     };
 
     proto.transform = function(parentCmd, recursive){

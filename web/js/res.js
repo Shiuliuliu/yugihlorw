@@ -539,6 +539,7 @@
 				var iconTex = cc.textureCache.getTextureForKey(customIcon.path) || cc.textureCache.addImage(customIcon.path);
 				if (iconTex) {
 					frame = new cc.SpriteFrame(iconTex, cc.rect(0, 0, customIcon.w, customIcon.h), false, cc.p(0, 0), cc.size(customIcon.w, customIcon.h));
+					frame._textureLoaded = true;
 				}
 			}
 			if (!frame) {
@@ -1088,12 +1089,47 @@
 		var thumbs = (R.manifest && R.manifest.thumbs) ? R.manifest.thumbs : null;
 		if (!thumbs) return Promise.resolve();
 		var queue = [];
+		var queuedSet = {};
+		function addToQueue(p) {
+			if (!p) return;
+			if (!queuedSet[p] && R.manifest && R.manifest.containers && R.manifest.containers[p]) {
+				queuedSet[p] = true;
+				queue.push(p);
+			}
+		}
+
 		['thumb_monster', 'thumb_magic', 'thumb_trap', 'thumb_rare'].forEach(function (type) {
 			var ids = thumbs[type] || [];
 			ids.forEach(function (id) {
-				queue.push('res/' + type + '/' + id + '.lcres');
+				addToQueue('res/' + type + '/' + id + '.lcres');
+				addToQueue('res/' + type + '/' + id + '_3.lcres');
 			});
 		});
+
+		/* Preload battlefield cutouts (_f) so summoning in battle is zero-delay */
+		if (R.manifest && R.manifest.containers) {
+			for (var c in R.manifest.containers) {
+				if (c.indexOf('_f.lcres') >= 0 || c.indexOf('_f/') >= 0) {
+					addToQueue(c);
+				}
+			}
+		}
+
+		/* Ensure all custom card containers are preloaded */
+		if (R.CUSTOM_ICON_REPLACEMENTS) {
+			Object.keys(R.CUSTOM_ICON_REPLACEMENTS).forEach(function (k) {
+				var m = /^card_ico_(\d+)(_3)?$/.exec(k);
+				if (m) {
+					var id = m[1];
+					['thumb_rare', 'thumb_monster', 'thumb_magic', 'thumb_trap'].forEach(function (t) {
+						addToQueue('res/' + t + '/' + id + '.lcres');
+						addToQueue('res/' + t + '/' + id + '_3.lcres');
+						addToQueue('res/' + t + '_f/' + id + '.lcres');
+						addToQueue('res/' + t + '_f/' + id + '_3.lcres');
+					});
+				}
+			});
+		}
 		var total = queue.length;
 		if (total === 0) return Promise.resolve();
 		var loaded = 0;
@@ -1366,11 +1402,16 @@
 		});
 		var promises = assets.map(function (path) {
 			return new Promise(function (resolve) {
-				var timer = setTimeout(function () { resolve(null); }, 5000);
+				var timer = setTimeout(function () { resolve(null); }, 15000);
 				cc.textureCache.addImage(versionedUrl(path), function (tex) {
 					clearTimeout(timer);
 					if (tex && !(tex instanceof Error)) {
 						cc.textureCache._textures[path] = tex;
+						cc.textureCache._textures[versionedUrl(path)] = tex;
+						var cleanP = path.replace(/^res\//, '');
+						cc.textureCache._textures[cleanP] = tex;
+						var baseP = path.split('/').pop();
+						cc.textureCache._textures[baseP] = tex;
 					}
 					resolve(tex);
 				});

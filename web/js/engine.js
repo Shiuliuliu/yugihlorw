@@ -465,6 +465,32 @@
 	 * Hand back an empty texture registered under that name instead. The
 	 * resource layer fills that very object when the container lands, and
 	 * every sprite holding it redraws off the texture's own "load" event. */
+	var baseGetTextureForKey = cc.textureCache.getTextureForKey.bind(cc.textureCache);
+	cc.textureCache.getTextureForKey = function (url) {
+		if (!url || typeof url !== 'string') return baseGetTextureForKey(url);
+		var tex = baseGetTextureForKey(url);
+		if (tex) return tex;
+		var clean = url.split('?')[0];
+		if (clean !== url) {
+			tex = baseGetTextureForKey(clean);
+			if (tex) return tex;
+		}
+		if (clean.indexOf('res/') === 0) {
+			var withoutRes = clean.replace(/^res\//, '');
+			tex = baseGetTextureForKey(withoutRes);
+			if (tex) return tex;
+		} else {
+			tex = baseGetTextureForKey('res/' + clean);
+			if (tex) return tex;
+		}
+		var baseName = clean.split('/').pop();
+		if (baseName && baseName !== clean) {
+			tex = baseGetTextureForKey(baseName);
+			if (tex) return tex;
+		}
+		return null;
+	};
+
 	var baseAddImage = cc.textureCache.addImage.bind(cc.textureCache);
 
 	cc.textureCache.addImage = function (url, cb, target) {
@@ -884,6 +910,11 @@
 			tex = cc.textureCache.addImage(versioned);
 			if (tex && !(tex instanceof Error)) {
 				cc.textureCache._textures[item.path] = tex;
+				cc.textureCache._textures[versioned] = tex;
+				var cleanItemP = item.path.replace(/^res\//, '');
+				cc.textureCache._textures[cleanItemP] = tex;
+				var baseItemP = item.path.split('/').pop();
+				cc.textureCache._textures[baseItemP] = tex;
 			}
 		}
 		if (tex && !(tex instanceof Error)) {
@@ -4490,18 +4521,76 @@
 		var s9WebGL = ccui.Scale9Sprite.WebGLRenderCmd &&
 			ccui.Scale9Sprite.WebGLRenderCmd.prototype;
 		if (s9WebGL) {
-			var TRANSFORM_DIRTY = cc.Node._dirtyFlags.transformDirty;
-			var s9Visit = s9WebGL.visit, s9VisitChildren = s9WebGL.visitChildren;
 			s9WebGL.visit = function (parentCmd) {
-				if (this._dirtyFlag & TRANSFORM_DIRTY) this.__childrenMoved = true;
-				return s9Visit.apply(this, arguments);
-			};
-			s9WebGL.visitChildren = function () {
-				if (this.__childrenMoved) {
-					this.__childrenMoved = false;
-					this._dirtyFlag |= TRANSFORM_DIRTY;
+				var node = this._node;
+				if (!node._visible || !node._scale9Image)
+					return;
+
+				healEmptyScale9(node);
+
+				if (node._positionsAreDirty) {
+					node._updatePositions();
+					node._positionsAreDirty = false;
 				}
-				return s9VisitChildren.apply(this, arguments);
+
+				parentCmd = parentCmd || this.getParentRenderCmd();
+				if (node._parent && node._parent._renderCmd)
+					this._curLevel = node._parent._renderCmd._curLevel + 1;
+
+				var renderer = cc.renderer;
+				if (renderer && isNaN(node._customZ)) {
+					node._vertexZ = renderer.assignedZ;
+					renderer.assignedZ += renderer.assignedZStep;
+				}
+
+				this._syncStatus(parentCmd);
+
+				var children = node._children;
+				var len = children ? children.length : 0;
+				var i = 0;
+				if (len > 0) {
+					node.sortAllChildren();
+					/* 1. Visit children with _localZOrder < 0 FIRST (e.g. background fill _bg) */
+					for (; i < len; i++) {
+						var child = children[i];
+						if (child && child._localZOrder < 0) {
+							if (child._renderCmd) child._renderCmd.visit(this);
+						} else {
+							break;
+						}
+					}
+				}
+
+				/* 2. Visit 9-slice frame renderers SECOND (draws ON TOP OF background fill) */
+				if (node._scale9Enabled) {
+					var locRenderers = node._renderers;
+					var rendererLen = locRenderers.length;
+					for (var j = 0; j < rendererLen; j++) {
+						var locRenderer = locRenderers[j];
+						if (locRenderer) {
+							var tempCmd = locRenderer._renderCmd;
+							if (tempCmd) tempCmd.visit(this);
+						} else {
+							break;
+						}
+					}
+				} else {
+					node._adjustScale9ImageScale();
+					node._adjustScale9ImagePosition();
+					if (node._scale9Image && node._scale9Image._renderCmd) {
+						node._scale9Image._renderCmd.visit(this);
+					}
+				}
+
+				/* 3. Visit children with _localZOrder >= 0 THIRD (draws ON TOP OF frame) */
+				for (; i < len; i++) {
+					var ch = children[i];
+					if (ch && ch._renderCmd) {
+						ch._renderCmd.visit(this);
+					}
+				}
+
+				this._dirtyFlag = 0;
 			};
 		}
 
