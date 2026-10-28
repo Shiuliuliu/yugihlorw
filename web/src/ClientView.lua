@@ -721,7 +721,7 @@ function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 
 			lc.File:setPopupNotify(false)
 
-			local var_5_23 = lc.TextureCache:addImage(var_0_0.getCardImageName(arg_5_1, arg_5_2))
+			local var_5_23 = lc.TextureCache:addImage(var_0_0.getCardImageName(arg_5_1, arg_5_2, arg_5_0._showInBattle))
 			if var_5_23 then
 				arg_5_0._image:setTexture(var_5_23)
 			end
@@ -1299,7 +1299,20 @@ function var_0_0.getCardLevelName(arg_33_0)
 	return "card_frame_level_0" .. arg_33_0
 end
 
-function var_0_0.getCardImageName(arg_34_0, arg_34_1)
+-- Tra ve true neu card nay co anh rieng khi dung tren ban dau (_f.jpm).
+-- Sky Striker: monsters 12313-12320, Link rares 40725-40736 (Spells ko co on-field art).
+function var_0_0.hasOnFieldArt(arg_34_9)
+	local var_34_9 = tonumber(arg_34_9)
+
+	if var_34_9 == nil then
+		return false
+	end
+
+	return var_34_9 >= 12313 and var_34_9 <= 12320
+		or var_34_9 >= 40725 and var_34_9 <= 40736
+end
+
+function var_0_0.getCardImageName(arg_34_0, arg_34_1, arg_34_2)
 	local var_34_0, var_34_1, var_34_2 = Data.removeAdditional(arg_34_0)
 
 	arg_34_0 = var_34_0
@@ -1314,8 +1327,27 @@ function var_0_0.getCardImageName(arg_34_0, arg_34_1)
 		var_34_4 = "res/thumb_magic/%s.lcres"
 	elseif var_34_5 == Data.CardType.trap then
 		var_34_4 = "res/thumb_trap/%s.lcres"
-	elseif var_34_5 == Data.CardType.rare or var_34_5 == Data.CardType.polymerization_skin then
+	elseif var_34_5 == Data.CardType.rare or var_34_5 == Data.CardType.rare_skin or var_34_5 == Data.CardType.polymerization_skin then
 		var_34_4 = "res/thumb_rare/%s.lcres"
+	end
+
+	-- Battlefield only: arg_34_2 is the card frame's own _showInBattle flag
+	if arg_34_2 and var_0_0.hasOnFieldArt(var_34_3) then
+		local var_34_9f
+
+		if var_34_5 == Data.CardType.monster or var_34_5 == Data.CardType.monster_skin then
+			var_34_9f = "res/thumb_monster_f/%s.lcres"
+		elseif var_34_5 == Data.CardType.rare or var_34_5 == Data.CardType.rare_skin or var_34_5 == Data.CardType.polymerization_skin then
+			var_34_9f = "res/thumb_rare_f/%s.lcres"
+		end
+
+		if var_34_9f ~= nil then
+			local var_34_10f = var_34_3 .. "_f.jpm"
+
+			TextureManager.loadTexture(var_34_10f, string.format(var_34_9f, var_34_3))
+
+			return var_34_10f
+		end
 	end
 
 	if ClientData.isAnotherCardImageSkin() or (var_34_0 == 10305 or var_34_0 == 10306) and not ClientData.isYYB() then
@@ -1340,9 +1372,154 @@ function var_0_0.getCardImageName(arg_34_0, arg_34_1)
 	return var_34_11
 end
 
+do
+	local var_sky_icons = {}
+
+	local var_sky_rect = {
+		[12313] = {86, 0, 82, 82, false},
+		[12314] = {0, 8, 82, 82, false},
+		[12315] = {83, 21, 82, 82, false},
+		[12316] = {81, 0, 82, 82, false},
+		[12317] = {17, 8, 82, 82, false},
+		[12318] = {86, 0, 82, 82, false},
+		[12319] = {91, 0, 82, 82, false},
+		[12320] = {99, 0, 82, 82, false},
+		[21134] = {0, 0, 82, 82, true},
+		[21135] = {0, 0, 82, 82, true},
+		[21136] = {0, 0, 82, 82, true},
+		[21137] = {0, 0, 82, 82, true},
+		[21138] = {0, 0, 82, 82, true},
+		[21139] = {0, 0, 82, 82, true},
+		[21140] = {0, 0, 82, 82, true},
+		[21141] = {0, 0, 82, 82, true},
+		[21142] = {0, 0, 82, 82, true},
+		[21143] = {0, 0, 82, 82, true},
+		[21144] = {0, 0, 82, 82, true},
+		[21145] = {0, 0, 82, 82, true},
+		[21146] = {0, 0, 82, 82, true},
+		[21147] = {0, 0, 82, 82, true},
+		[40725] = {76, 0, 82, 82, false},
+		[40726] = {126, 23, 82, 82, false},
+		[40727] = {99, 0, 82, 82, false},
+		[40728] = {1, 14, 82, 82, false},
+		[40729] = {82, 0, 82, 82, false},
+		[40730] = {85, 0, 82, 82, false},
+		[40731] = {86, 0, 82, 82, false},
+		[40732] = {17, 49, 82, 82, false},
+		[40733] = {88, 0, 82, 82, false},
+		[40734] = {97, 1, 82, 82, false},
+		[40735] = {19, 28, 82, 82, false},
+		[40736] = {86, 0, 82, 82, false},
+	}
+
+	for iter_sky = 12313, 12320 do
+		var_sky_icons[iter_sky] = true
+	end
+
+	for iter_sky = 21134, 21147 do
+		var_sky_icons[iter_sky] = true
+	end
+
+	for iter_sky = 40725, 40736 do
+		var_sky_icons[iter_sky] = true
+	end
+
+	var_0_0.SKY_ICON_IDS = var_sky_icons
+
+	-- Dang ky mot khung `card_ico_<id>` tu anh the. Tra ve true neu khung da co.
+	--
+	-- Lan goi DAU TIEN se dang ky luon ca 34 khung, khong chi khung duoc hoi: `res.js`
+	-- coi mot khung la "ve duoc" chi khi TEXTURE cua no da load xong
+	-- (`res.isDrawableFrame` -> `tex.isLoaded()`), ma `lc.TextureCache:addImage` vua goi
+	-- thi anh con dang nap. Danh sach trong game duoc dung NGAY, nen neu chi dang ky
+	-- dung khung dang hoi thi sprite se ra 0x0. Dang ky truoc ca bo de texture kip nap.
+	-- (Do duoc: hoi ngay -> 0x0, cho 5s roi tao sprite -> 82x82.)
+	local var_sky_warm = false
+
+	function var_0_0.registerCardIconFrame(arg)
+		if not var_0_0.SKY_ICON_IDS[arg] then
+			return false
+		end
+
+		if not var_sky_warm then
+			var_sky_warm = true
+
+			for iter_warm in pairs(var_0_0.SKY_ICON_IDS) do
+				if iter_warm ~= arg then
+					var_0_0.registerCardIconFrame(iter_warm)
+				end
+			end
+		end
+
+		local var_name = string.format("card_ico_%d", ClientData.getPicIdByInfoId(arg))
+
+		if lc.FrameCache:getSpriteFrame(var_name) ~= nil then
+			return true
+		end
+
+		local var_path = var_0_0.getCardImageName(arg)
+
+		-- Phep: anh icon rieng 82x82 (ca tranh thu nho, work/sky/spell_icons.py).
+		-- Khung 242 + sourceSize 82 KHONG thu nho duoc sprite - do duoc icon tran 242px.
+		if var_sky_rect[arg] ~= nil and var_sky_rect[arg][5] then
+			var_path = arg .. "_82.jpg"
+
+			TextureManager.loadTexture(var_path, string.format("res/thumb_magic/%s_82.lcres", arg))
+		end
+
+		local var_tex = lc.TextureCache:addImage(var_path)
+
+		if var_tex == nil then
+			return false
+		end
+
+		-- Khung cat cho tung la do `work/sky/icon_rects.py` tinh san va nhung vao day:
+		-- quai/Link do MAT roi neo theo dinh dau; PHEP thi lay CA tranh (resize=true)
+		-- vi phep la canh vat, cat la mat nghia.
+		local var_rect = var_sky_rect[arg]
+		local var_side = 82
+
+		if var_rect == nil then
+			return false
+		end
+
+		local var_box = string.format("{{%d,%d},{%d,%d}}",
+			var_rect[1], var_rect[2], var_rect[3], var_rect[4])
+
+		-- Phep: khung lay ca tranh (242x242) nhung `sourceSize` = 82x82 de sprite duoc
+		-- ve o 82x82 - tuc THU NHO, khong cat. Quai/Link: khung da la 82x82 nen
+		-- sourceSize trung khop voi khung.
+		local var_src = var_rect[3]
+
+		local var_xml = '<?xml version="1.0" encoding="UTF-8"?>'
+			.. '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
+			.. '<plist version="1.0"><dict>'
+			.. '<key>frames</key><dict>'
+			.. '<key>' .. var_name .. '</key><dict>'
+			.. '<key>frame</key><string>' .. var_box .. '</string>'
+			.. '<key>offset</key><string>{0,0}</string>'
+			.. '<key>rotated</key><false/>'
+			.. '<key>sourceColorRect</key><string>' .. var_box .. '</string>'
+			.. '<key>sourceSize</key><string>{' .. var_src .. ',' .. var_src .. '}</string>'
+			.. '</dict></dict>'
+			.. '<key>metadata</key><dict><key>format</key><integer>2</integer>'
+			.. '<key>size</key><string>{256,256}</string></dict>'
+			.. '</dict></plist>'
+
+		lc.FrameCache:addSpriteFramesWithFileContent(var_xml, var_tex)
+
+		return lc.FrameCache:getSpriteFrame(var_name) ~= nil
+	end
+end
+
 function var_0_0.getCardIconName(arg_35_0)
 	local var_35_0 = Data.removeAdditional(arg_35_0)
 	local var_35_1 = string.format("card_ico_%d", ClientData.getPicIdByInfoId(var_35_0))
+
+	-- Bo Thien Khong Hoang: khung icon dang ky dong tu anh the
+	if lc.FrameCache:getSpriteFrame(var_35_1) == nil then
+		var_0_0.registerCardIconFrame(var_35_0)
+	end
 
 	if ClientData.isAnotherCardImageSkin() and lc.FrameCache:getSpriteFrame(var_35_1 .. "_3") then
 		var_35_1 = var_35_1 .. "_3"

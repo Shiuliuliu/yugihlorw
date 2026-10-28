@@ -5571,6 +5571,16 @@ function var_0_0.getSkillsByMode(arg_118_0, arg_118_1, arg_118_2)
 			for iter_118_202 = 1, #var_118_428 do
 				table.insert(var_118_0, var_118_428[iter_118_202])
 			end
+
+			-- GY guards of keyword skill modules (ids >= 20001), see
+			-- KeywordSkill.fortressGuards in BattleSkill.lua.
+			if PlayerBattle.KeywordSkill then
+				local var_118_kw = PlayerBattle.KeywordSkill.fortressGuards(arg_118_0._owner, arg_118_1)
+
+				for iter_118_kw = 1, #var_118_kw do
+					table.insert(var_118_0, var_118_kw[iter_118_kw])
+				end
+			end
 		end
 
 		if arg_118_1 == Data.SkillMode.under_attack_damage and arg_118_0._owner:accountDamage(arg_118_0) > 0 then
@@ -6995,7 +7005,7 @@ function var_0_0.disableUnderSkillByType(arg_160_0, arg_160_1, arg_160_2, arg_16
 	for iter_160_0 = 1, #arg_160_0._underSkills do
 		local var_160_1 = arg_160_0._underSkills[iter_160_0]
 
-		if var_160_1._disabled ~= true and var_160_1._sid ~= 14673 and var_160_1._sid ~= 14719 and var_160_1._sid ~= 14720 and var_160_1._sid ~= 14721 and var_160_1._sid ~= 14787 and not (var_160_1._sid >= 14706 and var_160_1._sid <= 14710) and var_160_1._cid ~= arg_160_0._id and math.floor(var_160_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_160_1 and var_160_1._mode ~= Data.SkillMode.halo and var_160_1._mode ~= Data.SkillMode.under_attack and var_160_1._mode ~= Data.SkillMode.under_attack_damage and var_160_1._mode ~= Data.SkillMode.under_spell_damage and arg_160_0:disableUnderSkill(var_160_1, arg_160_2, arg_160_3, arg_160_4) then
+		if var_160_1._disabled ~= true and var_160_1._sid ~= 14673 and var_160_1._sid ~= 14719 and var_160_1._sid ~= 14720 and var_160_1._sid ~= 14721 and var_160_1._sid ~= 14787 and not (var_160_1._sid >= 14706 and var_160_1._sid <= 14710) and var_160_1._cid ~= arg_160_0._id and (PlayerBattle.KeywordSkill and var_160_1._sid >= PlayerBattle.KeywordSkill.BASE and PlayerBattle.KeywordSkill.group(var_160_1._sid) or math.floor(var_160_1._sid / Data.INFO_ID_GROUP_SIZE)) == arg_160_1 and var_160_1._mode ~= Data.SkillMode.halo and var_160_1._mode ~= Data.SkillMode.under_attack and var_160_1._mode ~= Data.SkillMode.under_attack_damage and var_160_1._mode ~= Data.SkillMode.under_spell_damage and arg_160_0:disableUnderSkill(var_160_1, arg_160_2, arg_160_3, arg_160_4) then
 			var_160_0 = true
 		end
 	end
@@ -7029,7 +7039,7 @@ function var_0_0.disableUnderSkillByOppoType(arg_161_0, arg_161_1, arg_161_2, ar
 			ignoreDefendOk = true
 		end
 
-		if var_161_1._disabled ~= true and var_161_1._sid ~= 14719 and var_161_1._sid ~= 14720 and var_161_1._sid ~= 14721 and var_161_1._sid ~= 14777 and var_161_1._sid ~= 14787 and not (var_161_1._sid >= 14706 and var_161_1._sid <= 14710) and var_161_1._cid ~= arg_161_0._id and math.floor(var_161_1._sid / Data.INFO_ID_GROUP_SIZE) == arg_161_1 and isOppo and ignoreDefendOk and var_161_1._mode ~= Data.SkillMode.halo and var_161_1._mode ~= Data.SkillMode.under_attack and var_161_1._mode ~= Data.SkillMode.under_attack_damage and var_161_1._mode ~= Data.SkillMode.under_spell_damage and arg_161_0:disableUnderSkill(var_161_1, arg_161_2, arg_161_3, arg_161_4) then
+		if var_161_1._disabled ~= true and var_161_1._sid ~= 14719 and var_161_1._sid ~= 14720 and var_161_1._sid ~= 14721 and var_161_1._sid ~= 14777 and var_161_1._sid ~= 14787 and not (var_161_1._sid >= 14706 and var_161_1._sid <= 14710) and var_161_1._cid ~= arg_161_0._id and (PlayerBattle.KeywordSkill and var_161_1._sid >= PlayerBattle.KeywordSkill.BASE and PlayerBattle.KeywordSkill.group(var_161_1._sid) or math.floor(var_161_1._sid / Data.INFO_ID_GROUP_SIZE)) == arg_161_1 and isOppo and ignoreDefendOk and var_161_1._mode ~= Data.SkillMode.halo and var_161_1._mode ~= Data.SkillMode.under_attack and var_161_1._mode ~= Data.SkillMode.under_attack_damage and var_161_1._mode ~= Data.SkillMode.under_spell_damage and arg_161_0:disableUnderSkill(var_161_1, arg_161_2, arg_161_3, arg_161_4) then
 			var_161_0 = true
 		end
 	end
@@ -7064,7 +7074,7 @@ function var_0_0.disableUnderSkillByOppoTypeAndCheckShield(arg_162_0, arg_162_1,
 			ignoreDefendOk = true
 		end
 
-		if var_162_2._disabled ~= true and var_162_2._sid ~= 14719 and var_162_2._sid ~= 14720 and var_162_2._sid ~= 14721 and var_162_2._sid ~= 14777 and not (var_162_2._sid >= 14706 and var_162_2._sid <= 14710) and var_162_2._cid ~= arg_162_0._id and math.floor(var_162_2._sid / Data.INFO_ID_GROUP_SIZE) == arg_162_1 and isOppo and (var_162_3 == nil or not var_162_3:hasShieldInType(arg_162_5)) and ignoreDefendOk and var_162_2._mode ~= Data.SkillMode.halo and var_162_2._mode ~= Data.SkillMode.under_attack and var_162_2._mode ~= Data.SkillMode.under_attack_damage and var_162_2._mode ~= Data.SkillMode.under_spell_damage and arg_162_0:disableUnderSkill(var_162_2, arg_162_2, arg_162_3, arg_162_4) then
+		if var_162_2._disabled ~= true and var_162_2._sid ~= 14719 and var_162_2._sid ~= 14720 and var_162_2._sid ~= 14721 and var_162_2._sid ~= 14777 and not (var_162_2._sid >= 14706 and var_162_2._sid <= 14710) and var_162_2._cid ~= arg_162_0._id and (PlayerBattle.KeywordSkill and var_162_2._sid >= PlayerBattle.KeywordSkill.BASE and PlayerBattle.KeywordSkill.group(var_162_2._sid) or math.floor(var_162_2._sid / Data.INFO_ID_GROUP_SIZE)) == arg_162_1 and isOppo and (var_162_3 == nil or not var_162_3:hasShieldInType(arg_162_5)) and ignoreDefendOk and var_162_2._mode ~= Data.SkillMode.halo and var_162_2._mode ~= Data.SkillMode.under_attack and var_162_2._mode ~= Data.SkillMode.under_attack_damage and var_162_2._mode ~= Data.SkillMode.under_spell_damage and arg_162_0:disableUnderSkill(var_162_2, arg_162_2, arg_162_3, arg_162_4) then
 			var_162_0 = true
 			var_162_1 = var_162_3
 		end

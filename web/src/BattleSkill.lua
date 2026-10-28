@@ -27929,6 +27929,18 @@ function var_0_0.castMonster2HaloSkill(arg_6_0, arg_6_1, arg_6_2, arg_6_3)
 		end
 	end
 
+	-- Keyword skill module dispatch: avoids editing the gigantic if/elseif
+	-- chain below: that chain names 821 ids (9001..9991) and has no
+	-- fallback, so a new id reaches nothing here. See the "keyword skill
+	-- modules" block at the end of this file.
+	if var_6_4 >= var_0_0.KeywordSkill.BASE then
+		local var_6_kw = var_0_0.KeywordSkill.cast(arg_6_0, arg_6_1, arg_6_2, arg_6_3, var_6_6, var_6_7, var_6_15, var_6_8)
+
+		if var_6_kw ~= nil and var_6_kw ~= false then
+			return var_6_kw
+		end
+	end
+
 	if var_6_4 == 9001 then
 		var_6_13 = arg_6_0:setCardStatusByChoice(var_6_15, var_6_5, var_6_4, arg_6_3, BattleData.CardStatus.leave)
 
@@ -72972,6 +72984,12 @@ function var_0_0.canUseMagic(arg_22_0, arg_22_1, arg_22_2)
 		return false
 	end
 
+	-- Spells whose skills belong to a keyword module: the id chain below
+	-- names none of them and would answer "unimplemented ai magic" / false.
+	if arg_22_1._skills[1] ~= nil and arg_22_1._skills[1]._id >= var_0_0.KeywordSkill.BASE then
+		return var_0_0.KeywordSkill.canUseMagic(arg_22_0, arg_22_1, arg_22_2)
+	end
+
 	local var_22_0 = arg_22_1._skills[1]
 	local var_22_1 = var_22_0._id
 	local var_22_2 = Data._skillInfo[var_22_1]
@@ -83020,6 +83038,13 @@ function var_0_0.canUseInitiativeSkill(arg_36_0, arg_36_1, arg_36_2)
 
 	if arg_36_1._owner._mark14000 and arg_36_1:isSameNameWith(arg_36_1._owner._mark14000) then
 		return false
+	end
+
+	-- The chain below ends in an `else` which answers false for every id it
+	-- does not name - so an id >= 20001 was never offered at all, however
+	-- well its effect was written. Keyword modules answer for their own ids.
+	if arg_36_2._id >= var_0_0.KeywordSkill.BASE then
+		return var_0_0.KeywordSkill.canUse(arg_36_0, arg_36_1, arg_36_2)
 	end
 
 	if (not (arg_36_2._id >= 2410) or not (arg_36_2._id < 3000)) and (not (arg_36_2._id >= 4605) or not (arg_36_2._id < 5000)) and (not (arg_36_2._id >= 5336) or not (arg_36_2._id < 6000)) and (not (arg_36_2._id >= 7316) or not (arg_36_2._id < 8000)) and (not (arg_36_2._id >= 8077) or not (arg_36_2._id < 9000)) and (not (arg_36_2._id >= 9001) or not (arg_36_2._id < 10000)) and not (arg_36_2._id >= 13001) and arg_36_2._id ~= 3469 and arg_36_2._id ~= 6509 or arg_36_2._id == 2475 or arg_36_2._id == 2488 or arg_36_2._id == 2664 or arg_36_2._id == 2982 or arg_36_2._id == 2985 or arg_36_2._id == 9251 or arg_36_2._id == 9253 or arg_36_2._id == 9254 or arg_36_2._id == 9257 or arg_36_2._id == 9259 or arg_36_2._id == 9261 or arg_36_2._id == 9265 or arg_36_2._id == 9403 or arg_36_2._id == 9414 or arg_36_2._id == 4798 or arg_36_2._id == 4799 or arg_36_2._id == 4800 or arg_36_2._id == 4888 or arg_36_2._id == 7396 or arg_36_2._id == 13471 or arg_36_2._id == 13761 or arg_36_2._id == 14677 then
@@ -108686,5 +108711,1814 @@ function var_0_0.moveCardToPileTop(arg_49_0, arg_49_1)
 
 	return true
 end
+
+
+local var_0_1 = {}
+
+var_0_0.KeywordSkill = var_0_1
+
+-- First skill id that is not part of the shipped table.
+var_0_1.BASE = 20001
+
+-- keyword id -> module (one class per keyword)
+var_0_1.modules = {}
+
+function var_0_1.register(arg_1_0, arg_1_1)
+	var_0_1.modules[arg_1_0] = arg_1_1
+
+	return arg_1_1
+end
+
+-- The keyword a card carries. Shipped skills filter on keywords the same way:
+-- they keep a representative card id in `_refCards[1]` and read its `_keyword`.
+function var_0_1.keywordOf(arg_2_0)
+	local var_2_0 = arg_2_0 and Data.getInfo(arg_2_0)
+
+	return var_2_0 and var_2_0._keyword or nil
+end
+
+function var_0_1.cast(arg_3_0, arg_3_1, arg_3_2, arg_3_3, arg_3_4, arg_3_5, arg_3_6, arg_3_7)
+	-- A battle card's `_id` is an INSTANCE number (1006, 1013, ...), not the card
+	-- info id: in a live duel `card._id = 1006` while `card._info._id = 12314`.
+	-- Resolving the keyword from `_id` therefore found no card at all and every
+	-- skill declined (`kw=nil` in work/sky/observe8.log).
+	-- The skill's own card decides the module: a GY guard is cast with the
+	-- fortress as `arg_3_1` (see fortressGuards below).
+	local var_3_src = arg_3_2 and arg_3_2._owner or arg_3_1
+	local var_3_0 = var_0_1.keywordOf(var_3_src and ((var_3_src._info and var_3_src._info._id) or var_3_src._id))
+	local var_3_1 = var_3_0 and var_0_1.modules[var_3_0]
+
+	if not var_3_1 then
+		return false
+	end
+
+	local var_3_2 = var_3_1.handlers[arg_3_4._effectVal[1]]
+
+	if not var_3_2 then
+		return false
+	end
+
+	return var_3_2({
+		battle = arg_3_0,
+		card = arg_3_1,
+		skill = arg_3_2,
+		mode = arg_3_3,
+		info = arg_3_4,
+		val = arg_3_5,
+		chosen = arg_3_6,
+		opponent = arg_3_7,
+		owner = arg_3_2._owner or arg_3_1,
+		id = arg_3_2._id,
+		module = var_3_1
+	})
+end
+
+--[[ Can this skill be offered?
+
+`canUseInitiativeSkill` filters (owner frozen, skill frozen, ...) and then
+dispatches on the skill id to one of five hand-written chains. The band that
+answers for 9001..9991 is `canUseInitiativeSkill2`, whose fallthrough is
+`return false`: an id it does not name can never be used, however well the
+effect is implemented. So the caller asks here for ids that belong to a module,
+after those generic filters have already run. A skill is offered when its
+module has a handler for it; a module can override `canUse` to add conditions.
+--------------------------------------------------------------------------- ]]
+
+function var_0_1.canUse(arg_5_0, arg_5_1, arg_5_2)
+	-- same instance-id trap as `cast` above: use the card info id when there is one
+	local var_5_0 = var_0_1.keywordOf(arg_5_1 and ((arg_5_1._info and arg_5_1._info._id) or arg_5_1._id))
+	local var_5_1 = var_5_0 and var_0_1.modules[var_5_0]
+
+	if not var_5_1 then
+		return false
+	end
+
+	if var_5_1.canUse then
+		return var_5_1.canUse(arg_5_0, arg_5_1, arg_5_2)
+	end
+
+	-- A module without its own gate: offered when it has a handler.
+	local var_5_2 = Data._skillInfo[arg_5_2._id]
+
+	return var_5_2 ~= nil and var_5_1.handlers[var_5_2._effectVal[1]] ~= nil
+end
+
+--[[ GY guards on the fortress's damage pass
+
+BattleCard.getSkillsByMode, fortress branch, collects the skills that may answer
+damage to the player's LP from a hardcoded id list (13698 Gia Cat Luong "Thanh
+Trong", 14235, 7604 ...). The hook inserted there (apply_lua_patch.py) asks this
+for the keyword skills of cards in the player's GY that carry the same modes
+(under_attack_damage 14 / under_spell_damage 24).
+--------------------------------------------------------------------------- ]]
+
+function var_0_1.fortressGuards(arg_7_0, arg_7_1)
+	local var_7_0 = {}
+	-- "GL" like 13698: a guard keeps answering from the banished zone for the
+	-- rest of the turn it was used in (the recipe checks that itself).
+	local var_7_1 = arg_7_0:getBattleCards("GL")
+
+	for iter_7_0 = 1, #var_7_1 do
+		local var_7_2 = var_7_1[iter_7_0]
+
+		for iter_7_1 = 1, #var_7_2._skills do
+			local var_7_3 = var_7_2._skills[iter_7_1]
+
+			if var_7_3._id >= var_0_1.BASE and B.skillHasMode(var_7_3, arg_7_1) then
+				var_7_0[#var_7_0 + 1] = var_7_3
+			end
+		end
+	end
+
+	return var_7_0
+end
+
+--[[ Can this Spell be activated?
+
+`PlayerBattle.canUseMagic` (the gate the hand-card drag and the AI both ask,
+BattleUiTouch.lua:324 / BattleAi.lua:513) ends, for Normal and Equip Spells, in a
+chain keyed on the card's FIRST skill id whose fallthrough is `print("unimplemented
+ai magic!") return false` - so a Normal Spell whose first skill is >= 20001 could
+never leave the hand. The hook sits after that function's generic filters
+(disabled magic, forbidden card, ...), so they still apply; only the id chain is
+replaced. Field Spells and a Continuous Spell with no free zone are answered
+the same way the shipped code answers them.
+--------------------------------------------------------------------------- ]]
+
+function var_0_1.canUseMagic(arg_6_0, arg_6_1, arg_6_2)
+	if arg_6_1._info._type ~= Data.MagicTrapType.once and not arg_6_1:isFieldMagic() and arg_6_0:getEmptyGroundPos() == nil then
+		return false
+	end
+
+	if arg_6_1._info._type == Data.MagicTrapType.show and #arg_6_0:getBattleCardsByInfoId("S", arg_6_1._infoId) > 0 then
+		return false, "existed"
+	end
+
+	local var_6_0 = var_0_1.keywordOf(arg_6_1._info and arg_6_1._info._id)
+	local var_6_1 = var_6_0 and var_0_1.modules[var_6_0]
+
+	if not var_6_1 then
+		return false
+	end
+
+	if var_6_1.canUseMagic then
+		return var_6_1.canUseMagic(arg_6_0, arg_6_1, arg_6_2)
+	end
+
+	return true
+end
+
+--[[ Which shield family answers this skill?
+
+The type shields (Khiên Quái / Phép / Bẫy 11002-11004, 12002-12004 and the
+opponent-only 12008-12010) recognise an effect by `floor(skill id / 1000)`: 3 is a
+monster's skill, 4 a Spell's, 5 a Trap's (BattleCard.disableUnderSkillByType /
+ByOppoType / ByOppoTypeAndCheckShield). An id >= 20001 lands in group 20, which no
+shield checks, so no shield in the game ever stopped a keyword skill, pierce flag
+or not (2026-09-23 audit). The hook inserted into those three functions by
+apply_lua_patch.py asks here instead: a keyword skill belongs to the family of the
+card it is written for (`_refCards[1]`, the row's own card).
+--------------------------------------------------------------------------- ]]
+
+function var_0_1.group(arg_8_0)
+	local var_8_0 = Data._skillInfo[arg_8_0]
+	local var_8_1 = var_8_0 and var_8_0._refCards and var_8_0._refCards[1]
+	local var_8_2 = var_8_1 ~= nil and var_8_1 > 0 and Data.getType(var_8_1) or nil
+
+	if var_8_2 == Data.CardType.magic then
+		return Data.SkillType.magicSpell
+	elseif var_8_2 == Data.CardType.trap then
+		return Data.SkillType.trapSpell
+	elseif var_8_2 == Data.CardType.monster or var_8_2 == Data.CardType.rare then
+		return Data.SkillType.monsterSpell
+	end
+
+	return math.floor(arg_8_0 / Data.INFO_ID_GROUP_SIZE)
+end
+
+--[[ A Spell was activated (BattleStep's magic arrival step, the same place the
+engine counts `_totalCastedMagicCount`; hook inserted by apply_lua_patch.py).
+The card's module may keep its own count, e.g. a per-turn cap.
+--------------------------------------------------------------------------- ]]
+
+function var_0_1.onMagicCast(arg_9_0)
+	local var_9_0 = var_0_1.keywordOf(arg_9_0 and arg_9_0._info and arg_9_0._info._id)
+	local var_9_1 = var_9_0 and var_0_1.modules[var_9_0]
+
+	if var_9_1 and var_9_1.onMagicCast then
+		var_9_1.onMagicCast(arg_9_0)
+	end
+end
+
+--[[ Sky Striker Ace / "Thiên Không Hoàng" — keyword 54744 ---------------------
+
+v2: every skill row carries a recipe key in `_effectVal[1]`; one executor runs
+the recipe (work/sky/handlers_group_v2_core.lua), the recipes and their texts are
+generated together by work/sky/design.py.
+--------------------------------------------------------------------------- ]]
+
+local var_0_2 = class("SkyStrikerSkill")
+
+var_0_1.register(54744, var_0_2)
+
+var_0_2.handlers = {}
+
+local var_0_3 = BattleData.CardStatus
+
+-- Handler keys are the card's slot in the set. They are generated, together
+-- with the group functions above, by work/sky/assemble_handlers.py - do not
+-- hand-write an assignment here, because two groups can claim one number and
+-- the later line would silently win.
+-- >>> group handlers >>>
+-- from handlers_group_v2_core.lua
+--[[ Thiên Không Hoàng (Sky Striker) v2 — one executor, one recipe per skill ----
+
+Spliced into BattleSkill.lua (keyword skill block) by work/sky/assemble_handlers.py.
+`var_0_2` is the SkyStrikerSkill class, `var_0_3` is BattleData.CardStatus.
+NO local in this file may be named var_0_1 / var_0_2 / var_0_3: the block is
+spliced into the same chunk where those names are the framework, this class and
+the status table (see the note that used to open handlers_group_f.lua).
+
+WHY A REWRITE (2026-09-23)
+--------------------------
+v1 delivered almost every effect through the halo poll (mode 1). Measured in
+work/sky/LANDING.md: anything the halo pass queues that MOVES a card (search,
+destroy, summon, bounce) is dropped by the step machine; only stat entries land.
+So v1's auto searches/removals mostly did nothing, and its texts and handlers had
+drifted apart (work/sky_deck_report.html).
+
+v2 uses the engine's own event channels, each of which runs a normal spell step
+with an account pass, so card moves land:
+  * `using` (2) / `g2b` (9)  - the monster arrived on the board (BattleStep.lua
+    2896-2905: summon, special summon, Link summon; grave->board is g2b);
+  * `magic` (61)             - the Spell was activated (BattleStep.lua 2992);
+  * `bcs2gl` (3)             - the card left the board / S-T zone for GY or
+    banishment, not as a cost or tribute (BattleStep.lua 2906, 2999);
+  * initiative 31 / 32 / 34  - the player's button on the field / GY / hand
+    (BattleCard.canCastInitiativeSkill), limited to once per turn with the
+    engine's own per-player counter `_castedSkillCounts` (reset at the start of
+    the player's round, BattleStep.lua:499);
+  * `halo` (1)               - ONLY continuous stat auras. They are cast with
+    mode halo on purpose: BattleStep.accountHalo removes every halo-mode entry
+    and re-casts the halo skills each pass, so the aura follows the card and
+    disappears when it leaves - the shipped aura pattern (e.g. ES 7713).
+
+Every recipe is a list of ops (see RECIPES in handlers_group_v2_recipes.lua,
+generated from work/sky/design.py together with the skill texts, so text and
+effect come from the same table). An op marked `need` must be possible or the
+whole skill is refused; the others are "then, if possible". `exec` first checks
+every `need` op without side effects, which is also what the button gate and
+the Spell activation gate ask, so a button is only lit when it will do something.
+
+Target picking: the button route delivers no target for ids >= 20001
+(work/sky/INITIATIVE.md), so every op picks its own: the opponent's monster with
+the highest ATK, the first Spell/Trap, a search card whose name is not already
+in the hand, etc.
+--------------------------------------------------------------------------- ]]
+
+var_0_2.RECIPES = var_0_2.RECIPES or {}
+
+-- Does `x` match `what`? `what` is a card info id, or one of
+-- "mon" (monster of the set), "link" (Link of the set), "spell" (Spell of the
+-- set), "any" (any card of the set), "oppmon" / "oppst" / "oppcard" (no keyword
+-- filter - used on the opponent's side).
+function var_0_2.match(x, what, kw)
+	if x == nil or x._info == nil then
+		return false
+	end
+
+	if type(what) == "number" then
+		return x._info._id == what
+	end
+
+	if what == "oppmon" then
+		return x:isMonsterRare()
+	elseif what == "oppst" then
+		return x._type == Data.CardType.magic or x._type == Data.CardType.trap
+	elseif what == "oppcard" then
+		return true
+	end
+
+	if x._info._keyword ~= kw then
+		return false
+	end
+
+	if what == "mon" then
+		return x:isMonsterRare() and not x:isToken()
+	elseif what == "link" then
+		return x:isMonsterRare() and x:isLink()
+	elseif what == "spell" then
+		return x._type == Data.CardType.magic
+	end
+
+	return true
+end
+
+-- A card already chosen by this cast, or already queued to move by another
+-- effect, must not be picked twice.
+function var_0_2.busy(x, ks_c)
+	if ks_c.used[x] then
+		return true
+	end
+
+	if x._underSkills ~= nil and x:hasChangeStatusUnderSkill({
+		var_0_3.leave,
+		var_0_3.pile,
+		var_0_3.hand,
+		var_0_3.board,
+		var_0_3.grave
+	}) then
+		return true
+	end
+
+	-- A move another effect already turned into a status change waits in the
+	-- players' `_cardStatusToChange` queues (live or parked by saveStatus); a card
+	-- in there is spoken for too (measured: Linkage sent a Link to the hand while
+	-- Ciela's chain summoned that same card).
+	for ks_p = 1, 2 do
+		local ks_player = ks_p == 1 and ks_c.me or ks_c.opp
+		local ks_q = ks_player and ks_player._cardStatusToChange
+		local ks_saved = ks_player and ks_player._saved
+
+		while ks_q ~= nil do
+			for ks_i = 1, #ks_q do
+				if ks_q[ks_i]._card == x then
+					return true
+				end
+			end
+
+			ks_q = ks_saved and ks_saved._cardStatusToChange
+			ks_saved = ks_saved and ks_saved._saved
+		end
+	end
+
+	return false
+end
+
+-- Candidates of `what` in `zones` (a string of zone letters) of `who`.
+function var_0_2.cands(ks_c, who, zones, what)
+	local ks_out = {}
+	local ks_kw = ks_c.kw
+
+	for ks_i = 1, #zones do
+		local ks_l = who:getBattleCards(string.sub(zones, ks_i, ks_i))
+
+		for ks_j = 1, #ks_l do
+			local ks_x = ks_l[ks_j]
+
+			if ks_x ~= ks_c.card and not var_0_2.busy(ks_x, ks_c) and var_0_2.match(ks_x, what, ks_kw) then
+				ks_out[#ks_out + 1] = ks_x
+			end
+		end
+	end
+
+	return ks_out
+end
+
+function var_0_2.maxAtk(ks_list)
+	local ks_best = nil
+
+	for ks_i = 1, #ks_list do
+		if ks_best == nil or (ks_list[ks_i]._atk or 0) > (ks_best._atk or 0) then
+			ks_best = ks_list[ks_i]
+		end
+	end
+
+	return ks_best
+end
+
+-- Search pick: prefer a card whose name is not in the hand yet, so repeated
+-- searches build a hand instead of stacking copies.
+function var_0_2.freshest(ks_c, ks_list)
+	local ks_inHand = {}
+	local ks_hand = ks_c.me:getBattleCards("H")
+
+	for ks_i = 1, #ks_hand do
+		if ks_hand[ks_i]._info then
+			ks_inHand[ks_hand[ks_i]._info._id] = true
+		end
+	end
+
+	for ks_i = 1, #ks_list do
+		if not ks_inHand[ks_list[ks_i]._info._id] then
+			return ks_list[ks_i]
+		end
+	end
+
+	return ks_list[1]
+end
+
+function var_0_2.spellsInGrave(ks_player, ks_kw)
+	local ks_n = 0
+	local ks_l = ks_player:getBattleCards("G")
+	-- distinct cards: the GY list can hold one card twice (measured in a live duel,
+	-- observe_v3_rule.log: 5 Spells listed as 10), and a count must not double them
+	local ks_seen = {}
+
+	for ks_i = 1, #ks_l do
+		local ks_x = ks_l[ks_i]
+
+		-- `ks_kw` given: only Spells of that set count
+		if not ks_seen[ks_x] and ks_x._type == Data.CardType.magic and (ks_kw == nil or ks_x._info and ks_x._info._keyword == ks_kw) then
+			ks_seen[ks_x] = true
+			ks_n = ks_n + 1
+		end
+	end
+
+	return ks_n
+end
+
+-- Spells of the set activated this turn -----------------------------------
+-- "Mỗi lượt chỉ phát động tối đa 7 lá phép Thiên Không Hoàng". The engine only
+-- keeps a whole-duel total (`_totalCastedMagicCount`), so BattleStep's magic
+-- arrival step calls KeywordSkill.onMagicCast (apply_lua_patch.py) and the count
+-- lives on the player, keyed by the turn: both players' round numbers, the pair
+-- the GY guards already use to name a turn.
+var_0_2.SPELLS_PER_TURN = 7
+
+function var_0_2.turnKey(ks_player)
+	return tostring(ks_player._round) .. ":" .. tostring(ks_player._opponent and ks_player._opponent._round)
+end
+
+function var_0_2.spellsThisTurn(ks_player)
+	local ks_t = ks_player._ksSpellTurn
+
+	if ks_t == nil or ks_t.key ~= var_0_2.turnKey(ks_player) then
+		return 0
+	end
+
+	return ks_t.n
+end
+
+function var_0_2.onMagicCast(ks_card)
+	local ks_player = ks_card._owner
+
+	if ks_player == nil then
+		return
+	end
+
+	local ks_key = var_0_2.turnKey(ks_player)
+
+	if ks_player._ksSpellTurn == nil or ks_player._ksSpellTurn.key ~= ks_key then
+		ks_player._ksSpellTurn = {
+			n = 0,
+			key = ks_key
+		}
+	end
+
+	ks_player._ksSpellTurn.n = ks_player._ksSpellTurn.n + 1
+end
+
+-- Free slots for monsters arriving through this cast (board moves already
+-- queued by it count against the space).
+function var_0_2.room(ks_c, ks_link)
+	if ks_link then
+		return ks_c.me:getEmptyLinkPosCount() - ks_c.linkAdds
+	end
+
+	return ks_c.me:getEmptyBoardPosCount() - ks_c.boardAdds
+end
+
+function var_0_2.move(ks_c, ks_x, ks_status, ks_val)
+	ks_c.used[ks_x] = true
+
+	ks_c.battle:setCardStatus(ks_x, ks_status, ks_c.cid, ks_c.id, ks_c.qmode, ks_val)
+end
+
+-- Put `x` on our board as a Special Summon. Links go through the engine's Link
+-- arrival (`r2b_link` into an empty Link position, as the shipped 13678 does).
+function var_0_2.summon(ks_c, ks_x)
+	if ks_x:isLink() then
+		if var_0_2.room(ks_c, true) <= 0 then
+			return false
+		end
+
+		local ks_pos = ks_c.me:getEmptyLinkPos(ks_x)
+
+		if ks_pos == nil then
+			return false
+		end
+
+		ks_x._saved = ks_x._saved or {}
+		ks_x._saved._pos = ks_pos
+		ks_c.linkAdds = ks_c.linkAdds + 1
+		ks_c.boardAdds = ks_c.boardAdds + 1
+
+		var_0_2.move(ks_c, ks_x, var_0_3.board, BattleData.CardStatusVal.r2b_link)
+
+		return true
+	end
+
+	if var_0_2.room(ks_c, false) <= 0 then
+		return false
+	end
+
+	ks_c.boardAdds = ks_c.boardAdds + 1
+
+	var_0_2.move(ks_c, ks_x, var_0_3.board)
+
+	return true
+end
+
+-- Opponent targets -------------------------------------------------------
+
+function var_0_2.oppPick(ks_c, ks_kind, ks_sel)
+	local ks_opp = ks_c.opp
+	local ks_list = {}
+
+	if ks_kind == "mon" or ks_kind == "card" then
+		local ks_b = ks_opp:getBoardCards()
+
+		for ks_i = 1, #ks_b do
+			if not var_0_2.busy(ks_b[ks_i], ks_c) then
+				ks_list[#ks_list + 1] = ks_b[ks_i]
+			end
+		end
+
+		if ks_sel == "weaker" then
+			local ks_f = {}
+
+			for ks_i = 1, #ks_list do
+				if (ks_list[ks_i]._atk or 0) < (ks_c.card._atk or 0) then
+					ks_f[#ks_f + 1] = ks_list[ks_i]
+				end
+			end
+
+			ks_list = ks_f
+		elseif ks_sel == "atk2500" then
+			local ks_f = {}
+
+			for ks_i = 1, #ks_list do
+				if (ks_list[ks_i]._atk or 0) >= 2500 then
+					ks_f[#ks_f + 1] = ks_list[ks_i]
+				end
+			end
+
+			ks_list = ks_f
+		end
+
+		if #ks_list > 0 then
+			return var_0_2.maxAtk(ks_list), ks_list
+		end
+
+		if ks_kind == "mon" then
+			return nil, ks_list
+		end
+	end
+
+	-- Spell/Trap: open zone, set zone, field zone.
+	local ks_zones = "SCD"
+
+	for ks_i = 1, #ks_zones do
+		local ks_l = ks_opp:getBattleCards(string.sub(ks_zones, ks_i, ks_i))
+
+		for ks_j = 1, #ks_l do
+			if not var_0_2.busy(ks_l[ks_j], ks_c) then
+				return ks_l[ks_j], { ks_l[ks_j] }
+			end
+		end
+	end
+
+	return nil, {}
+end
+
+-- The ops ------------------------------------------------------------------
+-- Each op is `function(c, spec, dry) -> ok`. With `dry` it only answers whether
+-- it could act; without it, it queues the engine calls and answers whether it
+-- did. Only ops whose spec carries `need = true` gate the skill.
+
+var_0_2.OPS = {}
+
+-- Move cards of the set: {op="fetch", what=, from="PG", to="hand"|"board"|"grave", n=, pick="max"}
+-- (`pick="max"` takes the highest ATK instead of a name not yet in the hand)
+var_0_2.OPS.fetch = function(ks_c, ks_s, ks_dry)
+	local ks_list = var_0_2.cands(ks_c, ks_c.me, ks_s.from or "P", ks_s.what or "any")
+	local ks_to = ks_s.to or "hand"
+
+	-- `notsame`: never another copy of this very card (S.P.E.C.T.R.A.-Tàn Quang)
+	if ks_s.notsame then
+		local ks_keep = {}
+
+		for ks_i = 1, #ks_list do
+			if ks_list[ks_i]._info._id ~= ks_c.card._info._id then
+				ks_keep[#ks_keep + 1] = ks_list[ks_i]
+			end
+		end
+
+		ks_list = ks_keep
+	end
+
+	-- a Link belongs to the Extra Deck: it may be revived to the board, never
+	-- added to the hand or sent to the GY from here
+	if ks_to ~= "board" then
+		local ks_keep = {}
+
+		for ks_i = 1, #ks_list do
+			if not ks_list[ks_i]:isLink() then
+				ks_keep[#ks_keep + 1] = ks_list[ks_i]
+			end
+		end
+
+		ks_list = ks_keep
+	end
+	local ks_n = ks_s.n or 1
+	local ks_done = 0
+
+	if ks_dry then
+		if ks_to == "board" then
+			for ks_i = 1, #ks_list do
+				if var_0_2.room(ks_c, ks_list[ks_i]:isLink()) > 0 then
+					return true
+				end
+			end
+
+			return false
+		end
+
+		return #ks_list > 0
+	end
+
+	while ks_done < ks_n and #ks_list > 0 do
+		local ks_x = ks_s.pick == "max" and var_0_2.maxAtk(ks_list) or var_0_2.freshest(ks_c, ks_list)
+
+		for ks_i = 1, #ks_list do
+			if ks_list[ks_i] == ks_x then
+				table.remove(ks_list, ks_i)
+
+				break
+			end
+		end
+
+		if ks_to == "board" then
+			if var_0_2.summon(ks_c, ks_x) then
+				ks_done = ks_done + 1
+			end
+		else
+			var_0_2.move(ks_c, ks_x, ks_to == "grave" and var_0_3.grave or var_0_3.hand)
+
+			ks_done = ks_done + 1
+		end
+	end
+
+	return ks_done > 0
+end
+
+-- One card of the listed ids to the board, from the Deck or GY:
+-- {op="fetchany", ids={...}, n=1}. An id not already on our board is tried
+-- first. Keep n at 1: when one cast lands TWO monsters that both have an
+-- on-summon skill, the first one's chain parks the second move
+-- (BattleStep.saveStatus) and it was measured never to come back - the step
+-- machine stalled at after_account_status (observe_v2.log, zero-button case).
+var_0_2.OPS.fetchany = function(ks_c, ks_s, ks_dry)
+	local ks_done = 0
+	local ks_ids = {}
+
+	for ks_pass = 1, 2 do
+		for ks_i = 1, #ks_s.ids do
+			local ks_on = #ks_c.me:getBattleCardsByInfoId("B", ks_s.ids[ks_i]) > 0
+
+			if (ks_pass == 1) ~= ks_on then
+				ks_ids[#ks_ids + 1] = ks_s.ids[ks_i]
+			end
+		end
+	end
+
+	for ks_i = 1, #ks_ids do
+		if ks_done >= (ks_s.n or 1) then
+			break
+		end
+
+		local ks_list = var_0_2.cands(ks_c, ks_c.me, ks_s.from or "PG", ks_ids[ks_i])
+
+		if #ks_list > 0 then
+			if ks_dry then
+				return var_0_2.room(ks_c, false) > 0
+			end
+
+			if var_0_2.summon(ks_c, ks_list[1]) then
+				ks_done = ks_done + 1
+			end
+		end
+	end
+
+	return ks_done > 0
+end
+
+-- This card itself: {op="self", to="board"|"grave"|"leave", cost=true}
+var_0_2.OPS.self = function(ks_c, ks_s, ks_dry)
+	local ks_x = ks_c.card
+
+	if ks_s.to == "board" then
+		if var_0_2.room(ks_c, ks_x:isLink()) <= 0 then
+			return false
+		end
+
+		if ks_dry then
+			return true
+		end
+
+		return var_0_2.summon(ks_c, ks_x)
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	var_0_2.move(ks_c, ks_x, ks_s.to == "leave" and var_0_3.leave or var_0_3.grave, ks_s.cost and BattleData.CardStatusVal.x2gl_cost or nil)
+
+	return true
+end
+
+-- Condition only: {op="if", mine="mon"|"empty_or_mon", spells=3, setspells=6}
+-- (`spells`: any Spell in our GY; `setspells`: Spells of this set only)
+var_0_2.OPS["if"] = function(ks_c, ks_s, ks_dry)
+	if ks_s.spells ~= nil and var_0_2.spellsInGrave(ks_c.me) < ks_s.spells then
+		return false
+	end
+
+	if ks_s.setspells ~= nil and var_0_2.spellsInGrave(ks_c.me, ks_c.kw) < ks_s.setspells then
+		return false
+	end
+
+	if ks_s.mine ~= nil then
+		local ks_b = ks_c.me:getBoardCards()
+		local ks_has = false
+
+		for ks_i = 1, #ks_b do
+			if ks_b[ks_i] ~= ks_c.card and var_0_2.match(ks_b[ks_i], "mon", ks_c.kw) then
+				ks_has = true
+			end
+		end
+
+		if ks_s.mine == "mon" then
+			return ks_has
+		end
+
+		return ks_has or #ks_b == 0
+	end
+
+	return true
+end
+
+-- Hit the opponent's field:
+-- {op="hit", kind="mon"|"st"|"card", sel="max"|"weaker"|"atk2500",
+--  to="grave"|"hand"|"leave"|"steal"|"negate"|"freeze", all=true}
+var_0_2.OPS.hit = function(ks_c, ks_s, ks_dry)
+	local ks_t, ks_list
+
+	-- `same`: the card the previous hit of this cast took ("... lấy quái đó")
+	if ks_s.same and ks_c.last ~= nil then
+		ks_t, ks_list = ks_c.last, { ks_c.last }
+	else
+		ks_t, ks_list = var_0_2.oppPick(ks_c, ks_s.kind or "mon", ks_s.sel)
+	end
+
+	if ks_t == nil then
+		return false
+	end
+
+	local ks_to = ks_s.to or "grave"
+
+	if ks_to == "steal" and var_0_2.room(ks_c, ks_t:isLink()) <= 0 then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	local ks_targets = ks_s.all and ks_list or { ks_t }
+
+	-- `n`: up to n distinct targets (each pick skips cards already taken)
+	if not ks_s.all and (ks_s.n or 1) > 1 then
+		ks_c.used[ks_t] = true
+
+		for ks_k = 2, ks_s.n do
+			local ks_more = var_0_2.oppPick(ks_c, ks_s.kind or "mon", ks_s.sel)
+
+			if ks_more == nil then
+				break
+			end
+
+			ks_targets[#ks_targets + 1] = ks_more
+			ks_c.used[ks_more] = true
+		end
+
+		ks_c.used[ks_t] = nil
+	end
+
+	ks_c.last = ks_t
+
+	for ks_i = 1, #ks_targets do
+		local ks_x = ks_targets[ks_i]
+
+		if ks_to == "zero" then
+			ks_c.used[ks_x] = true
+
+			ks_c.battle:incNegativeStatus(ks_x, {
+				BattleData.NegativeType.boardMonsterSkillFrozen
+			}, false, ks_c.cid, ks_c.id, ks_c.qmode)
+			ks_c.battle:decAtk(ks_x, ks_x._atk or 0, false, ks_c.cid, ks_c.id, ks_c.qmode)
+		elseif ks_to == "negate" or ks_to == "freeze" then
+			ks_c.used[ks_x] = true
+
+			ks_c.battle:incNegativeStatus(ks_x, {
+				ks_to == "negate" and BattleData.NegativeType.boardMonsterSkillFrozen or BattleData.NegativeType.atkFrozen
+			}, false, ks_c.cid, ks_c.id, ks_c.qmode)
+		elseif ks_to == "hand" then
+			var_0_2.move(ks_c, ks_x, var_0_3.hand, ks_x._owner ~= ks_x._originOwner and BattleData.CardStatusVal.b2h_oppo or nil)
+		elseif ks_to == "steal" then
+			ks_c.boardAdds = ks_c.boardAdds + 1
+
+			var_0_2.move(ks_c, ks_x, var_0_3.board, BattleData.CardStatusVal.b2b_oppo_forever)
+		else
+			var_0_2.move(ks_c, ks_x, ks_to == "leave" and var_0_3.leave or var_0_3.grave)
+		end
+
+		-- `burn`: the opponent also takes damage equal to that card's ATK
+		if ks_s.burn and ks_c.opp._fortress ~= nil and (ks_x._atk or 0) > 0 then
+			ks_c.battle:addDamage(ks_c.opp._fortress, ks_x._atk, ks_c.cid, ks_c.id, ks_c.qmode)
+		end
+	end
+
+	return true
+end
+
+-- The opponent's graveyard: {op="ograve", to="leave"|"steal"|"auto"}
+-- "auto" = Special Summon it to our board with 3+ Spells in our GY, else banish.
+var_0_2.OPS.ograve = function(ks_c, ks_s, ks_dry)
+	local ks_list = var_0_2.cands(ks_c, ks_c.opp, "G", "oppmon")
+	local ks_x = var_0_2.maxAtk(ks_list)
+
+	if ks_x == nil then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	local ks_steal = ks_s.to == "steal" or ks_s.to == "auto" and var_0_2.spellsInGrave(ks_c.me) >= 3
+
+	if ks_steal and not ks_x:isLink() and var_0_2.room(ks_c, false) > 0 then
+		ks_c.boardAdds = ks_c.boardAdds + 1
+
+		var_0_2.move(ks_c, ks_x, var_0_3.board, BattleData.CardStatusVal.g2b_oppo)
+	else
+		var_0_2.move(ks_c, ks_x, var_0_3.leave)
+	end
+
+	return true
+end
+
+-- The top of the opponent's Deck to their GY: {op="omill", n=2}
+var_0_2.OPS.omill = function(ks_c, ks_s, ks_dry)
+	local ks_l = ks_c.opp:getBattleCards("P")
+
+	if #ks_l == 0 then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	local ks_done = 0
+
+	for ks_i = 1, #ks_l do
+		if ks_done >= (ks_s.n or 1) then
+			break
+		end
+
+		-- distinct cards only: a card already chosen by this cast (or already on
+		-- its way elsewhere) is skipped, so "2 cards" really moves two
+		if not var_0_2.busy(ks_l[ks_i], ks_c) then
+			var_0_2.move(ks_c, ks_l[ks_i], var_0_3.grave)
+
+			ks_done = ks_done + 1
+		end
+	end
+
+	return ks_done > 0
+end
+
+-- Our monsters: {op="buff", who="self"|"team"|"max", atk=, shields={ids}, extra=true}
+-- Permanent (not halo): lands through the ordinary account pass.
+function var_0_2.ourTargets(ks_c, ks_who)
+	if ks_who == "self" then
+		return { ks_c.card }
+	end
+
+	local ks_b = ks_c.me:getBoardCards()
+	local ks_out = {}
+
+	for ks_i = 1, #ks_b do
+		local ks_x = ks_b[ks_i]
+
+		if var_0_2.match(ks_x, "mon", ks_c.kw) or ks_who == "all" then
+			if ks_who ~= "others" or ks_x ~= ks_c.card then
+				if ks_who ~= "link" or ks_x:isLink() then
+					ks_out[#ks_out + 1] = ks_x
+				end
+			end
+		end
+	end
+
+	if ks_who == "max" then
+		local ks_m = var_0_2.maxAtk(ks_out)
+
+		return ks_m and { ks_m } or {}
+	end
+
+	return ks_out
+end
+
+var_0_2.OPS.buff = function(ks_c, ks_s, ks_dry)
+	local ks_t = var_0_2.ourTargets(ks_c, ks_s.who or "self")
+
+	if #ks_t == 0 then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	for ks_i = 1, #ks_t do
+		local ks_x = ks_t[ks_i]
+
+		if ks_s.atk ~= nil then
+			ks_c.battle:incAtk(ks_x, ks_s.atk, false, ks_c.cid, ks_c.id, ks_c.qmode)
+		end
+
+		if ks_s.hp ~= nil then
+			ks_c.battle:incHp(ks_x, ks_s.hp, false, ks_c.cid, ks_c.id, ks_c.qmode)
+		end
+
+		if ks_s.shields ~= nil then
+			ks_c.battle:incShield(ks_x, ks_s.shields, false, false, ks_c.cid, ks_c.id, ks_c.qmode)
+		end
+
+		if ks_s.extra then
+			ks_c.battle:incPositiveStatus(ks_x, {
+				BattleData.PositiveType.shieldAttackMore
+			}, false, ks_c.cid, ks_c.id, ks_c.qmode)
+		end
+	end
+
+	return true
+end
+
+-- Continuous aura, halo mode only: {op="aura", who=, atk=, per="spells", side="opp"}
+-- Cast with mode halo and removable, so BattleStep.accountHalo drops and re-casts
+-- it every pass: the numbers follow the GY and vanish with this card.
+var_0_2.OPS.aura = function(ks_c, ks_s, ks_dry)
+	if ks_c.mode ~= Data.SkillMode.halo then
+		return false
+	end
+
+	local ks_amt = ks_s.atk or 0
+
+	if ks_s.per == "spells" then
+		ks_amt = ks_amt * var_0_2.spellsInGrave(ks_c.me)
+	end
+
+	if ks_amt == 0 then
+		return false
+	end
+
+	local ks_t
+
+	if ks_s.side == "opp" then
+		ks_t = ks_c.opp:getBoardCards()
+	else
+		ks_t = var_0_2.ourTargets(ks_c, ks_s.who or "team")
+	end
+
+	if #ks_t == 0 then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	for ks_i = 1, #ks_t do
+		if ks_s.side == "opp" then
+			ks_c.battle:decAtk(ks_t[ks_i], ks_amt, true, ks_c.cid, ks_c.id, Data.SkillMode.halo)
+		else
+			ks_c.battle:incAtk(ks_t[ks_i], ks_amt, true, ks_c.cid, ks_c.id, Data.SkillMode.halo)
+		end
+	end
+
+	return true
+end
+
+-- Life points: {op="damage", val=} onto the opponent's fortress, {op="heal", val=}
+var_0_2.OPS.damage = function(ks_c, ks_s, ks_dry)
+	if ks_c.opp._fortress == nil then
+		return false
+	end
+
+	if not ks_dry then
+		ks_c.battle:addDamage(ks_c.opp._fortress, ks_s.val, ks_c.cid, ks_c.id, ks_c.qmode)
+	end
+
+	return true
+end
+
+var_0_2.OPS.heal = function(ks_c, ks_s, ks_dry)
+	if ks_c.me._fortress == nil then
+		return false
+	end
+
+	if not ks_dry then
+		ks_c.battle:incHp(ks_c.me._fortress, ks_s.val, false, ks_c.cid, ks_c.id, ks_c.qmode)
+	end
+
+	return true
+end
+
+-- {op="draw", n=}
+var_0_2.OPS.draw = function(ks_c, ks_s, ks_dry)
+	if #ks_c.me:getBattleCards("P") == 0 then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	return ks_c.battle:drawCards(ks_s.n or 1, ks_c.cid, ks_c.id, ks_c.qmode) and true or false
+end
+
+-- Tokens, the shipped way (BattleSkill.lua 2016 branch): create, check, add.
+-- {op="token", id=, n=}
+var_0_2.OPS.token = function(ks_c, ks_s, ks_dry)
+	if var_0_2.room(ks_c, false) <= 0 or Data.getInfo(ks_s.id) == nil then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	local ks_done = false
+
+	for ks_i = 1, ks_s.n or 1 do
+		if var_0_2.room(ks_c, false) <= 0 then
+			break
+		end
+
+		local ks_tok = B.createCard(ks_s.id, 1)
+
+		if ks_c.me:canSpecialSummon(ks_tok) then
+			ks_c.boardAdds = ks_c.boardAdds + 1
+
+			ks_c.battle:addCardByStatusPos(ks_tok, var_0_3.board, nil, ks_c.cid, ks_c.id, ks_c.qmode, BattleData.CardStatusVal.e2b_def)
+
+			ks_done = true
+		end
+	end
+
+	return ks_done
+end
+
+-- Tribute 1 other monster we control: {op="tribute"}
+var_0_2.OPS.tribute = function(ks_c, ks_s, ks_dry)
+	local ks_b = ks_c.me:getBoardCards()
+	local ks_x = nil
+
+	for ks_i = 1, #ks_b do
+		if ks_b[ks_i] ~= ks_c.card and not var_0_2.busy(ks_b[ks_i], ks_c) and (ks_x == nil or (ks_b[ks_i]._atk or 0) < (ks_x._atk or 0)) then
+			ks_x = ks_b[ks_i]
+		end
+	end
+
+	if ks_x == nil then
+		return false
+	end
+
+	if not ks_dry then
+		var_0_2.move(ks_c, ks_x, var_0_3.grave, BattleData.CardStatusVal.b2g_sacrifice)
+	end
+
+	return true
+end
+
+-- Destroy one of our OTHER monsters of the set (Amatsu): {op="selfhit"}
+var_0_2.OPS.selfhit = function(ks_c, ks_s, ks_dry)
+	local ks_t = var_0_2.ourTargets(ks_c, "others")
+	local ks_x = nil
+
+	for ks_i = 1, #ks_t do
+		if not var_0_2.busy(ks_t[ks_i], ks_c) and (ks_x == nil or (ks_t[ks_i]._atk or 0) < (ks_x._atk or 0)) then
+			ks_x = ks_t[ks_i]
+		end
+	end
+
+	if ks_x == nil then
+		return false
+	end
+
+	if not ks_dry then
+		var_0_2.move(ks_c, ks_x, var_0_3.grave)
+	end
+
+	return true
+end
+
+-- Grant shipped combat skills, the way Tam Quoc 13714/13716/13721 do it: the
+-- `extraSkill` status plus a value of 65536 * level + skill id.
+-- {op="grant", who=, skills={1153, ...}}
+var_0_2.OPS.grant = function(ks_c, ks_s, ks_dry)
+	local ks_t = var_0_2.ourTargets(ks_c, ks_s.who or "self")
+
+	if #ks_t == 0 then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	for ks_i = 1, #ks_t do
+		for ks_j = 1, #ks_s.skills do
+			ks_c.battle:incPositiveStatus(ks_t[ks_i], {
+				BattleData.PositiveType.extraSkill
+			}, true, ks_c.cid, ks_c.id, ks_c.qmode)
+			ks_c.battle:incPositiveValue(ks_t[ks_i], BattleData.PositiveType.extraSkill, 65536 + ks_s.skills[ks_j], Data.AggregateType.table, ks_c.cid, ks_c.id, ks_c.qmode)
+		end
+	end
+
+	return true
+end
+
+-- "Tuong Chan Sinh Menh" (shield skill 12005, shieldExHp) on our fortress: while it
+-- holds, damage to our LP is ignored (BattleSkill 12005 branch). The single-round
+-- bit makes it fall at the start of OUR next round (BattleStep round begin ->
+-- fortress:decShieldWhenRoundBegin), so it covers the opponent's whole turn.
+-- {op="lifeshield"}
+var_0_2.OPS.lifeshield = function(ks_c, ks_s, ks_dry)
+	local ks_f = ks_c.me._fortress
+
+	if ks_f == nil then
+		return false
+	end
+
+	if not ks_dry then
+		ks_c.battle:incShield(ks_f, {
+			12005
+		}, true, false, ks_c.cid, ks_c.id, ks_c.qmode)
+	end
+
+	return true
+end
+
+-- The GY guard of Gia Cat Luong "Thanh Trong" (BattleSkill 13698): while this card
+-- lies in the GY and our LP is about to take damage, cancel that damage and banish
+-- this card. Delivered on the fortress's under_attack_damage / under_spell_damage
+-- pass (BattleCard.getSkillsByMode fortress branch, hook KeywordSkill.fortressGuards).
+-- {op="guard"}
+--
+-- Like 13698, the card keeps guarding from the banished zone for the rest of that
+-- turn: the round numbers of both players are remembered when it leaves the GY
+-- (`_markGuardA/B`, the 13698 `_mark13698_1/2` pair), and the banished copy answers
+-- only while they still match.
+var_0_2.OPS.guard = function(ks_c, ks_s, ks_dry)
+	local ks_f = ks_c.me._fortress
+	local ks_card = ks_c.card
+	local ks_inGrave = ks_card._status == var_0_3.grave
+	local ks_stillOn = ks_card._status == var_0_3.leave and ks_card._markGuardA == ks_c.me._round and ks_card._markGuardB == ks_c.opp._round
+
+	if not ks_inGrave and not ks_stillOn or ks_f == nil or ks_c.me:accountDamage(ks_f) <= 0 then
+		return false
+	end
+
+	if ks_dry then
+		return true
+	end
+
+	ks_f:removeUnderSkillByDamage()
+
+	if ks_inGrave then
+		ks_card._markGuardA = ks_c.me._round
+		ks_card._markGuardB = ks_c.opp._round
+
+		var_0_2.move(ks_c, ks_card, var_0_3.leave, BattleData.CardStatusVal.x2gl_cost)
+	end
+
+	return true
+end
+
+-- "Mỗi trận chỉ 1 lần": {op="duelonce", need=true}, put FIRST in the recipe.
+-- The mark lives on the PlayerBattle, which BattleUi / BattleReview create anew
+-- for every duel, so it is per duel and replays the same on both clients.
+var_0_2.OPS.duelonce = function(ks_c, ks_s, ks_dry)
+	local ks_used = ks_c.me._ksDuelOnce
+
+	if ks_used ~= nil and ks_used[ks_c.id] then
+		return false
+	end
+
+	if not ks_dry then
+		ks_c.me._ksDuelOnce = ks_used or {}
+		ks_c.me._ksDuelOnce[ks_c.id] = true
+	end
+
+	return true
+end
+
+-- The executor ---------------------------------------------------------------
+
+-- Build the op context from the framework's cast context (or from a card/skill
+-- pair for the gates, where nothing is cast yet).
+function var_0_2.ctx(ks_battle, ks_card, ks_skill, ks_mode)
+	local ks_me = ks_card._owner
+
+	return {
+		battle = ks_battle,
+		me = ks_me,
+		opp = ks_me._opponent,
+		card = ks_card,
+		id = ks_skill._id,
+		cid = (ks_skill._owner or ks_card)._id,
+		mode = ks_mode,
+		-- a halo pass re-tags queued moves as `once` (accountHalo would drop a
+		-- halo-tagged move, work/sky/LANDING.md); auras pass `halo` themselves.
+		qmode = ks_mode == Data.SkillMode.halo and Data.SkillMode.once or ks_mode,
+		kw = ks_card._info and ks_card._info._keyword,
+		used = {},
+		boardAdds = 0,
+		linkAdds = 0
+	}
+end
+
+function var_0_2.exec(ks_c, ks_recipe, ks_dry)
+	local ks_can = false
+
+	for ks_i = 1, #ks_recipe do
+		local ks_s = ks_recipe[ks_i]
+
+		if ks_s.need and not var_0_2.OPS[ks_s.op](ks_c, ks_s, true) then
+			return false
+		end
+
+		if ks_s.op ~= "if" and var_0_2.OPS[ks_s.op](ks_c, ks_s, true) then
+			ks_can = true
+		end
+	end
+
+	if ks_dry then
+		-- usable when at least one op could act (a Spell whose every clause is
+		-- optional is still refused when none of them has anything to do)
+		return ks_can
+	end
+
+	local ks_any = false
+
+	for ks_i = 1, #ks_recipe do
+		local ks_s = ks_recipe[ks_i]
+
+		-- a condition op gates the ops that follow it (up to the next `if`)
+		if ks_s.op == "if" then
+			if not var_0_2.OPS["if"](ks_c, ks_s, false) then
+				if ks_s.need then
+					return ks_any
+				end
+
+				-- skip to the op after the guarded run
+				ks_c.skip = true
+			else
+				ks_c.skip = false
+			end
+		elseif ks_s.fallback then
+			-- "if there was nothing to hit: draw 1" - the anti-brick clause of the
+			-- removal Spells; it runs only when every op before it came up empty
+			if not ks_any and var_0_2.OPS[ks_s.op](ks_c, ks_s, false) then
+				ks_any = true
+			end
+		elseif not ks_c.skip or ks_s.always then
+			if var_0_2.OPS[ks_s.op](ks_c, ks_s, false) then
+				ks_any = true
+			elseif ks_s.need then
+				return ks_any
+			end
+		end
+	end
+
+	return ks_any
+end
+
+-- Framework entry (KeywordSkill.cast -> handlers[key]).
+function var_0_2.run(ks_fc)
+	local ks_recipe = var_0_2.RECIPES[ks_fc.info._effectVal[1]]
+
+	if ks_recipe == nil or ks_fc.card == nil or (ks_fc.skill and ks_fc.skill._owner or ks_fc.card)._owner == nil then
+		return false
+	end
+
+	local ks_isAura = false
+
+	for ks_i = 1, #ks_recipe do
+		if ks_recipe[ks_i].op == "aura" then
+			ks_isAura = true
+		end
+	end
+
+	-- An aura recipe answers the halo pass only; every other recipe answers
+	-- anything BUT the halo pass (the halo channel cannot move cards).
+	if ks_isAura ~= (ks_fc.mode == Data.SkillMode.halo) then
+		return false
+	end
+
+	-- A GY guard is cast with the FORTRESS as the card (see OPS.guard); the card the
+	-- skill belongs to is `skill._owner`.
+	local ks_card = ks_fc.skill and ks_fc.skill._owner or ks_fc.card
+
+	return var_0_2.exec(var_0_2.ctx(ks_card._owner, ks_card, ks_fc.skill, ks_fc.mode), ks_recipe, false)
+end
+
+-- Button gate (KeywordSkill.canUse). The UI asks per zone
+-- (BattleCard.canCastInitiativeSkill): field -> 31, GY -> 32, hand -> 34.
+function var_0_2.canUse(ks_player, ks_card, ks_skill)
+	local ks_info = Data._skillInfo[ks_skill._id]
+	local ks_recipe = ks_info and var_0_2.RECIPES[ks_info._effectVal[1]]
+
+	if ks_recipe == nil then
+		return false
+	end
+
+	local ks_st = ks_card._status
+	local ks_mode = nil
+
+	if ks_st == var_0_3.board or ks_st == var_0_3.show or ks_st == var_0_3.field then
+		ks_mode = Data.SkillMode.initiative_bcs
+	elseif ks_st == var_0_3.grave then
+		ks_mode = Data.SkillMode.initiative_grave
+	elseif ks_st == var_0_3.hand then
+		ks_mode = Data.SkillMode.initiative_hand
+	end
+
+	if ks_mode == nil or not B.skillHasMode(ks_skill, ks_mode) then
+		return false
+	end
+
+	-- "Mỗi lượt chỉ 1 lần": the engine's own per-player, per-round counter.
+	if ks_player._castedSkillCounts ~= nil and ks_player._castedSkillCounts[ks_skill._id] ~= nil then
+		return false
+	end
+
+	return var_0_2.exec(var_0_2.ctx(ks_player, ks_card, ks_skill, ks_mode), ks_recipe, true)
+end
+
+-- Spell activation gate (KeywordSkill.canUseMagic): a Spell whose activation
+-- effect cannot do anything is not playable, like the shipped chain answers for
+-- its own ids. Field/Continuous Spells with no activation effect are playable.
+function var_0_2.canUseMagic(ks_player, ks_card)
+	if var_0_2.spellsThisTurn(ks_player) >= var_0_2.SPELLS_PER_TURN then
+		return false
+	end
+
+	for ks_i = 1, #ks_card._skills do
+		local ks_skill = ks_card._skills[ks_i]
+		local ks_info = Data._skillInfo[ks_skill._id]
+		local ks_recipe = ks_info and var_0_2.RECIPES[ks_info._effectVal[1]]
+
+		if ks_recipe ~= nil and B.skillHasMode(ks_skill, Data.SkillMode.magic) then
+			return var_0_2.exec(var_0_2.ctx(ks_player, ks_card, ks_skill, Data.SkillMode.magic), ks_recipe, true)
+		end
+	end
+
+	return true
+end
+
+-- from handlers_group_v2_recipes.lua
+--[[ Thiên Không Hoàng v2 recipes - GENERATED by work/sky/design.py, do not edit.
+
+Key = the skill row's `_effectVal[1]`. Each entry is the op list the
+executor in handlers_group_v2_core.lua runs; the comment above it is the
+text the player reads for that same skill.
+--------------------------------------------------------------------------- ]]
+
+-- 20001 / card 12313 / Raye-Xuất Kích: Khi được triệu hồi: lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[1] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+}
+
+-- 20002 / card 12313 / Raye-Chuyển Giáp: Chủ động: Mỗi lượt chỉ 1 lần. Nếu mộ phe ta có từ 6 bài phép "Thiên Không Hoàng" trở lên: hi sinh lá này, triệu hồi đặc biệt quái Link "Thiên Không Hoàng" có tấn công cao nhất từ bộ bài phụ.
+var_0_2.RECIPES[2] = {
+	{ op = "if", setspells = 6, need = true },
+	{ op = "fetch", what = "link", from = "R", to = "board", n = 1, need = true, pick = "max" },
+	{ op = "self", to = "grave", cost = true, need = true },
+}
+
+-- 20003 / card 12313 / Raye-Tái Triển Khai: Khi bị phá hủy: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ bộ bài.
+var_0_2.RECIPES[3] = {
+	{ op = "fetch", what = "mon", from = "P", to = "board", n = 1, need = true },
+}
+
+-- 20004 / card 12314 / Roze-Tiếp Viện: Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Khi sân phe ta không có quái hoặc có quái "Thiên Không Hoàng": triệu hồi đặc biệt lá này từ tay.
+var_0_2.RECIPES[4] = {
+	{ op = "if", mine = "empty_or_mon", need = true },
+	{ op = "self", to = "board", cost = false, need = true },
+}
+
+-- 20005 / card 12314 / Roze-Phong Tỏa: Khi được triệu hồi: vô hiệu kỹ năng của quái đối phương có tấn công cao nhất và biến tấn công của nó thành 0 (xuyên "Khiên quái thú").
+var_0_2.RECIPES[5] = {
+	{ op = "hit", kind = "mon", to = "zero", sel = "max", need = true },
+}
+
+-- 20006 / card 12314 / Roze-Trở Lại: Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Triệu hồi đặc biệt lá này từ mộ.
+var_0_2.RECIPES[6] = {
+	{ op = "self", to = "board", cost = false, need = true },
+}
+
+-- 20007 / card 12315 / Aileron-Tiếp Tế: Khi được triệu hồi: lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[7] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+}
+
+-- 20008 / card 12315 / Aileron-Cánh Phụ: Khi bài này có mặt: quái "Thiên Không Hoàng" khác phe ta tăng 400 tấn công.
+var_0_2.RECIPES[8] = {
+	{ op = "aura", who = "others", atk = 400 },
+}
+
+-- 20009 / card 12316 / Cyanos-Gọi Roze: Khi được triệu hồi: triệu hồi đặc biệt 1 "Thiên Không Hoàng - Roze" từ bộ bài hoặc mộ.
+var_0_2.RECIPES[9] = {
+	{ op = "fetch", what = 12314, from = "PG", to = "board", n = 1, need = true },
+}
+
+-- 20010 / card 12316 / Cyanos-Di Sản: Khi bị phá hủy: lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[10] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+}
+
+-- 20011 / card 12316 / Cyanos-Thành Trống: Khi lá này nằm trong mộ, khi phe ta sắp chịu sát thương vào LP: loại bỏ lá này khỏi mộ, phe ta bỏ qua mọi sát thương vào LP đến hết lượt này.
+var_0_2.RECIPES[11] = {
+	{ op = "guard", need = true },
+}
+
+-- 20012 / card 12317 / Ciela-Giáng Lâm: Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Khi phe ta có quái "Thiên Không Hoàng" trên sân: triệu hồi đặc biệt lá này từ tay.
+var_0_2.RECIPES[12] = {
+	{ op = "if", mine = "mon", need = true },
+	{ op = "self", to = "board", cost = false, need = true },
+}
+
+-- 20013 / card 12317 / Ciela-Hồi Sinh: Khi được triệu hồi: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ mộ.
+var_0_2.RECIPES[13] = {
+	{ op = "fetch", what = "mon", from = "G", to = "board", n = 1, need = true },
+}
+
+-- 20014 / card 12317 / Ciela-Ân Huệ: Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[14] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+	{ op = "self", to = "leave", cost = true, need = true },
+}
+
+-- 20015 / card 12318 / Akash-Uy Lực: Khi được triệu hồi: phá hủy quái đối phương mạnh nhất có tấn công thấp hơn lá này (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[15] = {
+	{ op = "hit", kind = "mon", to = "grave", sel = "weaker", need = true },
+}
+
+-- 20016 / card 12318 / Akash-Liên Kích: Chủ động: Mỗi lượt chỉ 1 lần. Lá này tăng 500 tấn công và được tấn công thêm 1 lần.
+var_0_2.RECIPES[16] = {
+	{ op = "buff", who = "self", atk = 500, extra = true, need = true },
+}
+
+-- 20017 / card 12318 / Akash-Truyền Lửa: Khi bị phá hủy: lấy 1 quái "Thiên Không Hoàng" khác từ mộ vào tay.
+var_0_2.RECIPES[17] = {
+	{ op = "fetch", what = "mon", from = "G", to = "hand", n = 1, need = true },
+}
+
+-- 20018 / card 12319 / Himmel-Giải Mã: Khi được triệu hồi: phá hủy 1 bài phép hoặc bẫy trên sân đối phương (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[18] = {
+	{ op = "hit", kind = "st", to = "grave", sel = "max", need = true },
+}
+
+-- 20019 / card 12319 / Himmel-Thông Tuệ: Chủ động: Mỗi lượt chỉ 1 lần. Lấy 1 bài phép "Thiên Không Hoàng" từ mộ vào tay.
+var_0_2.RECIPES[19] = {
+	{ op = "fetch", what = "spell", from = "G", to = "hand", n = 1, need = true },
+}
+
+-- 20020 / card 12319 / Himmel-Kết Giới: Khi lá này nằm trong mộ, khi phe ta sắp chịu sát thương vào LP: loại bỏ lá này khỏi mộ, phe ta bỏ qua mọi sát thương vào LP đến hết lượt này.
+var_0_2.RECIPES[20] = {
+	{ op = "guard", need = true },
+}
+
+-- 20021 / card 12320 / H.A.M.P.-Phẫu Thuật: Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Gửi quái đối phương có tấn công cao nhất vào mộ, sau đó triệu hồi đặc biệt lá này từ tay (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[21] = {
+	{ op = "hit", kind = "mon", to = "grave", sel = "max", need = true },
+	{ op = "self", to = "board", cost = false, need = true },
+}
+
+-- 20022 / card 12320 / H.A.M.P.-Sát Thủ: Khi được triệu hồi: lá này nhận "Vô Song" và "Đoạt Linh Hồn".
+var_0_2.RECIPES[22] = {
+	{ op = "grant", who = "self", skills = { 1153, 1030 }, need = true },
+}
+
+-- 20023 / card 12320 / H.A.M.P.-Phản Kích: Khi bị phá hủy: phá hủy quái đối phương có tấn công cao nhất.
+var_0_2.RECIPES[23] = {
+	{ op = "hit", kind = "mon", to = "grave", sel = "max", need = true },
+}
+
+-- 20024 / card 21134 / Engage-Huy Động: Khi kích hoạt: lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay. Nếu mộ phe ta có từ 3 bài phép trở lên: rút thêm 1 lá.
+var_0_2.RECIPES[24] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+	{ op = "if", spells = 3 },
+	{ op = "draw", n = 1 },
+}
+
+-- 20025 / card 21134 / Engage-Tiếp Liệu: Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, lấy 1 bài phép "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[25] = {
+	{ op = "fetch", what = "spell", from = "P", to = "hand", n = 1, need = true },
+	{ op = "self", to = "leave", cost = true, need = true },
+}
+
+-- 20026 / card 21135 / Area Zero-Không Phận: Khi bài này có mặt: quái "Thiên Không Hoàng" phe ta tăng 500 tấn công.
+var_0_2.RECIPES[26] = {
+	{ op = "aura", who = "team", atk = 500 },
+}
+
+-- 20027 / card 21135 / Area Zero-Trinh Sát: Chủ động: Mỗi lượt chỉ 1 lần. Lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[27] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+}
+
+-- 20028 / card 21135 / Area Zero-Tiếp Tế: Chủ động: Mỗi lượt chỉ 1 lần. Phe ta hồi 1000 LP.
+var_0_2.RECIPES[28] = {
+	{ op = "heal", val = 1000, need = true },
+}
+
+-- 20029 / card 21135 / Area Zero-Rút Lui: Khi bị phá hủy: lấy 1 bài phép "Thiên Không Hoàng" khác từ mộ vào tay.
+var_0_2.RECIPES[29] = {
+	{ op = "fetch", what = "spell", from = "G", to = "hand", n = 1, need = true },
+}
+
+-- 20030 / card 21136 / Linkage-Liên Kết: Khi kích hoạt: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ bộ bài, sau đó lấy 1 quái "Thiên Không Hoàng" từ mộ vào tay.
+var_0_2.RECIPES[30] = {
+	{ op = "fetch", what = "mon", from = "P", to = "board", n = 1, need = true },
+	{ op = "fetch", what = "mon", from = "G", to = "hand", n = 1, need = false },
+}
+
+-- 20031 / card 21136 / Linkage-Tái Liên Kết: Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[31] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+	{ op = "self", to = "leave", cost = true, need = true },
+}
+
+-- 20032 / card 21137 / Hercules-Căn Cứ: Khi bài này có mặt: quái Link "Thiên Không Hoàng" phe ta tăng 800 tấn công.
+var_0_2.RECIPES[32] = {
+	{ op = "aura", who = "link", atk = 800 },
+}
+
+-- 20033 / card 21137 / Hercules-Tiếp Lực: Chủ động: Mỗi lượt chỉ 1 lần. Quái "Thiên Không Hoàng" có tấn công cao nhất phe ta được tấn công thêm 1 lần.
+var_0_2.RECIPES[33] = {
+	{ op = "buff", who = "max", extra = true, need = true },
+}
+
+-- 20034 / card 21137 / Hercules-Cứu Hộ: Khi bị phá hủy: lấy 1 quái "Thiên Không Hoàng" từ mộ vào tay.
+var_0_2.RECIPES[34] = {
+	{ op = "fetch", what = "mon", from = "G", to = "hand", n = 1, need = true },
+}
+
+-- 20035 / card 21138 / Scissors Cross-Cắt Kéo: Khi kích hoạt: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ bộ bài hoặc mộ, sau đó lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[35] = {
+	{ op = "fetch", what = "mon", from = "PG", to = "board", n = 1, need = true },
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = false },
+}
+
+-- 20036 / card 21138 / Scissors Cross-Thu Quân: Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[36] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+	{ op = "self", to = "leave", cost = true, need = true },
+}
+
+-- 20037 / card 21139 / Multirole-Tái Nạp: Chủ động: Mỗi lượt chỉ 1 lần. Lấy 1 bài phép "Thiên Không Hoàng" từ mộ vào tay.
+var_0_2.RECIPES[37] = {
+	{ op = "fetch", what = "spell", from = "G", to = "hand", n = 1, need = true },
+}
+
+-- 20038 / card 21139 / Multirole-Xuất Kích: Chủ động: Mỗi lượt chỉ 1 lần. Triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ bộ bài.
+var_0_2.RECIPES[38] = {
+	{ op = "fetch", what = "mon", from = "P", to = "board", n = 1, need = true },
+}
+
+-- 20039 / card 21139 / Multirole-Dự Phòng: Khi bị phá hủy: lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[39] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+}
+
+-- 20040 / card 21140 / Hornet-Bầy Ong: Khi kích hoạt: triệu hồi đặc biệt 2 Token "Thiên Không Hoàng" (1500 tấn công) lên sân phe ta, sau đó lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[40] = {
+	{ op = "token", id = 12322, n = 2, need = false },
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = false },
+}
+
+-- 20041 / card 21140 / Hornet-Trinh Sát: Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[41] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+	{ op = "self", to = "leave", cost = true, need = true },
+}
+
+-- 20042 / card 21141 / Shark Cannon-Pháo Cá Mập: Khi kích hoạt: loại bỏ quái mạnh nhất trong mộ đối phương. Nếu mộ phe ta có từ 3 bài phép trở lên: triệu hồi đặc biệt quái đó lên sân phe ta thay vì loại bỏ. Sau đó rút 1 lá.
+var_0_2.RECIPES[42] = {
+	{ op = "ograve", to = "auto", need = true },
+	{ op = "draw", n = 1 },
+}
+
+-- 20043 / card 21142 / Jamming-Sóng Nhiễu: Khi kích hoạt: phá hủy 1 bài phép hoặc bẫy trên sân đối phương (xuyên "Khiên ma thuật", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả"). Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm quái đối phương có tấn công cao nhất. Nếu không có mục tiêu nào: rút 1 lá.
+var_0_2.RECIPES[43] = {
+	{ op = "hit", kind = "st", to = "grave", sel = "max", need = false },
+	{ op = "if", spells = 3 },
+	{ op = "hit", kind = "mon", to = "grave", sel = "max", need = false },
+	{ op = "draw", n = 1, fallback = true },
+}
+
+-- 20044 / card 21143 / Eagle Booster-Hộ Giáp: Khi kích hoạt: mọi quái "Thiên Không Hoàng" phe ta tăng 500 tấn công và nhận "Khiên quái thú", "Khiên ma thuật", "Tường Chắn Bẫy"; phe ta hồi 1000 LP. Nếu mộ phe ta có từ 3 bài phép trở lên: nhận thêm "Khiên Chắn Phá Hủy".
+var_0_2.RECIPES[44] = {
+	{ op = "buff", who = "team", atk = 500, shields = { 12008, 12009, 12010 }, need = true },
+	{ op = "heal", val = 1000 },
+	{ op = "if", spells = 3 },
+	{ op = "buff", who = "team", shields = { 12006 } },
+}
+
+-- 20045 / card 21144 / Widow Anchor-Mỏ Neo: Khi kích hoạt: vô hiệu kỹ năng của quái đối phương có tấn công cao nhất (xuyên "Khiên ma thuật"). Nếu mộ phe ta có từ 3 bài phép trở lên: lấy quái đó về sân phe ta. Nếu không có mục tiêu nào: rút 1 lá.
+var_0_2.RECIPES[45] = {
+	{ op = "hit", kind = "mon", to = "negate", sel = "max", need = false },
+	{ op = "if", spells = 3 },
+	{ op = "hit", kind = "mon", to = "steal", sel = "max", need = false, same = true },
+	{ op = "draw", n = 1, fallback = true },
+}
+
+-- 20046 / card 21145 / Afterburners-Đốt Sau: Khi kích hoạt: phá hủy quái đối phương có tấn công cao nhất (xuyên "Khiên ma thuật", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả"). Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm 1 bài phép hoặc bẫy trên sân đối phương. Nếu không có mục tiêu nào: rút 1 lá.
+var_0_2.RECIPES[46] = {
+	{ op = "hit", kind = "mon", to = "grave", sel = "max", need = false },
+	{ op = "if", spells = 3 },
+	{ op = "hit", kind = "st", to = "grave", sel = "max", need = false },
+	{ op = "draw", n = 1, fallback = true },
+}
+
+-- 20047 / card 21146 / Vector Blast-Chớp Vector: Khi kích hoạt: gửi 2 lá trên cùng bộ bài đối phương vào mộ. Nếu mộ phe ta có từ 3 bài phép trở lên: đưa quái đối phương có tấn công cao nhất về tay chủ (xuyên "Khiên ma thuật").
+var_0_2.RECIPES[47] = {
+	{ op = "omill", n = 2, need = true },
+	{ op = "if", spells = 3 },
+	{ op = "hit", kind = "mon", to = "hand", sel = "max", need = false },
+}
+
+-- 20048 / card 21147 / Lemnisgate-Vô Hạn: Khi kích hoạt: đưa quái đối phương có tấn công cao nhất về tay chủ (xuyên "Khiên ma thuật"), sau đó rút 1 lá (không có mục tiêu thì vẫn rút 1 lá).
+var_0_2.RECIPES[48] = {
+	{ op = "hit", kind = "mon", to = "hand", sel = "max", need = false },
+	{ op = "draw", n = 1, always = true },
+}
+
+-- 20049 / card 40725 / Kagari-Hỏa Tuyến: Khi được triệu hồi: lấy 1 bài phép "Thiên Không Hoàng" từ mộ vào tay.
+var_0_2.RECIPES[49] = {
+	{ op = "fetch", what = "spell", from = "G", to = "hand", n = 1, need = true },
+}
+
+-- 20050 / card 40725 / Kagari-Nhiệt Lượng: Khi bài này có mặt: lá này tăng 100 tấn công cho mỗi bài phép trong mộ phe ta.
+var_0_2.RECIPES[50] = {
+	{ op = "aura", who = "self", atk = 100, per = "spells" },
+}
+
+-- 20051 / card 40726 / Shizuku-Tĩnh Thủy: Khi được triệu hồi: lấy 1 bài phép "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[51] = {
+	{ op = "fetch", what = "spell", from = "P", to = "hand", n = 1, need = true },
+}
+
+-- 20052 / card 40726 / Shizuku-Băng Áp: Khi bài này có mặt: quái đối phương giảm 100 tấn công cho mỗi bài phép trong mộ phe ta.
+var_0_2.RECIPES[52] = {
+	{ op = "aura", side = "opp", atk = 100, per = "spells" },
+}
+
+-- 20053 / card 40727 / Hayate-Gió Cuốn: Khi được triệu hồi: gửi 1 bài phép "Thiên Không Hoàng" từ bộ bài vào mộ, sau đó rút 1 lá.
+var_0_2.RECIPES[53] = {
+	{ op = "fetch", what = "spell", from = "P", to = "grave", n = 1, need = true },
+	{ op = "draw", n = 1 },
+}
+
+-- 20054 / card 40727 / Hayate-Đột Kích: Chủ động: Mỗi lượt chỉ 1 lần. Gây 1500 sát thương trực tiếp lên thành đối phương.
+var_0_2.RECIPES[54] = {
+	{ op = "damage", val = 1500, need = true },
+}
+
+-- 20055 / card 40728 / Kaina-Khóa Đòn: Khi được triệu hồi: quái đối phương có tấn công cao nhất không thể tấn công (xuyên "Khiên quái thú").
+var_0_2.RECIPES[55] = {
+	{ op = "hit", kind = "mon", to = "freeze", sel = "max", need = true },
+}
+
+-- 20056 / card 40728 / Kaina-Tiếp Viện: Chủ động: Mỗi trận chỉ 1 lần. Phe ta hồi 1500 LP và nhận "Tường Chắn Sinh Mệnh" đến khi bắt đầu lượt kế của phe ta.
+var_0_2.RECIPES[56] = {
+	{ op = "duelonce", need = true },
+	{ op = "heal", val = 1500, need = true },
+	{ op = "lifeshield" },
+}
+
+-- 20057 / card 40729 / Zeke-Hư Không: Khi được triệu hồi: loại bỏ quái đối phương có tấn công cao nhất ra khỏi trận (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[57] = {
+	{ op = "hit", kind = "mon", to = "leave", sel = "max", need = true },
+}
+
+-- 20058 / card 40729 / Zeke-Hấp Thụ: Chủ động: Mỗi lượt chỉ 1 lần. Hi sinh 1 quái khác phe ta, lá này tăng 1000 tấn công.
+var_0_2.RECIPES[58] = {
+	{ op = "tribute", need = true },
+	{ op = "buff", who = "self", atk = 1000 },
+}
+
+-- 20059 / card 40730 / Camellia-Hoa Trà: Khi được triệu hồi: gửi 1 bài phép "Thiên Không Hoàng" từ bộ bài vào mộ, sau đó rút 1 lá.
+var_0_2.RECIPES[59] = {
+	{ op = "fetch", what = "spell", from = "P", to = "grave", n = 1, need = true },
+	{ op = "draw", n = 1 },
+}
+
+-- 20060 / card 40730 / Camellia-Tàn Hoa: Khi bị phá hủy: phá hủy quái đối phương có tấn công cao nhất (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[60] = {
+	{ op = "hit", kind = "mon", to = "grave", sel = "max", need = true },
+}
+
+-- 20061 / card 40731 / Azalea-Đỗ Quyên: Khi được triệu hồi: phá hủy 1 lá bài trên sân đối phương (ưu tiên quái có tấn công cao nhất; xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[61] = {
+	{ op = "hit", kind = "card", to = "grave", sel = "max", need = true },
+}
+
+-- 20062 / card 40731 / Azalea-Hồi Hoa: Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, phá hủy 1 bài phép hoặc bẫy trên sân đối phương (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[62] = {
+	{ op = "hit", kind = "st", to = "grave", sel = "max", need = true },
+	{ op = "self", to = "leave", cost = true, need = true },
+}
+
+-- 20063 / card 40732 / Azalea Temperance-Tiết Chế: Khi được triệu hồi: đưa quái đối phương có tấn công cao nhất về tay chủ (xuyên "Khiên quái thú"), sau đó lấy 1 bài phép "Thiên Không Hoàng" từ mộ vào tay.
+var_0_2.RECIPES[63] = {
+	{ op = "hit", kind = "mon", to = "hand", sel = "max", need = true },
+	{ op = "fetch", what = "spell", from = "G", to = "hand", n = 1, need = false },
+}
+
+-- 20064 / card 40732 / Azalea Temperance-Tái Sinh: Khi bị phá hủy: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ mộ.
+var_0_2.RECIPES[64] = {
+	{ op = "fetch", what = "mon", from = "G", to = "board", n = 1, need = true },
+}
+
+-- 20065 / card 40733 / Engage Zero-Hiệp Đồng: Khi được triệu hồi: vô hiệu kỹ năng của mọi quái đối phương có tấn công từ 2500 trở lên (xuyên "Khiên quái thú").
+var_0_2.RECIPES[65] = {
+	{ op = "hit", kind = "mon", to = "negate", sel = "atk2500", need = true, all = true },
+}
+
+-- 20066 / card 40733 / Engage Zero-Chỉ Huy: Chủ động: Mỗi lượt chỉ 1 lần. Lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+var_0_2.RECIPES[66] = {
+	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = true },
+}
+
+-- 20067 / card 40734 / Amatsu-Nguyên Mẫu: Khi được triệu hồi: phá hủy 1 lá bài trên sân đối phương và 1 quái "Thiên Không Hoàng" khác phe ta (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[67] = {
+	{ op = "hit", kind = "card", to = "grave", sel = "max", need = true },
+	{ op = "selfhit", need = true },
+}
+
+-- 20068 / card 40734 / Amatsu-Kế Thừa: Khi bị phá hủy: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ mộ.
+var_0_2.RECIPES[68] = {
+	{ op = "fetch", what = "mon", from = "G", to = "board", n = 1, need = true },
+}
+
+-- 20069 / card 40735 / Zero-Song Tử: Khi được triệu hồi: lấy 1 bài phép "Thiên Không Hoàng" từ bộ bài hoặc mộ vào tay.
+var_0_2.RECIPES[69] = {
+	{ op = "fetch", what = "spell", from = "PG", to = "hand", n = 1, need = true },
+}
+
+-- 20070 / card 40735 / Zero-Phân Tách: Chủ động: Mỗi lượt chỉ 1 lần. Hi sinh lá này, triệu hồi đặc biệt 1 "Thiên Không Hoàng - Raye" hoặc "Thiên Không Hoàng - Roze" từ bộ bài hoặc mộ (ưu tiên lá chưa có trên sân).
+var_0_2.RECIPES[70] = {
+	{ op = "fetchany", ids = { 12313, 12314 }, n = 1, need = true },
+	{ op = "self", to = "grave", cost = true, need = true },
+}
+
+-- 20071 / card 40736 / S.P.E.C.T.R.A.-Quang Phổ: Khi được triệu hồi: phá hủy tối đa 2 lá bài trên sân đối phương (ưu tiên quái có tấn công cao nhất; xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả"), sau đó lá này nhận "Vô Song" và "Đoạt Linh Hồn".
+var_0_2.RECIPES[71] = {
+	{ op = "hit", kind = "card", to = "grave", sel = "max", need = false, n = 2 },
+	{ op = "grant", who = "self", skills = { 1153, 1030 }, need = true },
+}
+
+-- 20072 / card 40736 / S.P.E.C.T.R.A.-Giáp Quang: Khi được triệu hồi: lá này nhận "Khiên quái thú", "Khiên ma thuật", "Tường Chắn Bẫy" và "Khiên Chắn Phá Hủy".
+var_0_2.RECIPES[72] = {
+	{ op = "buff", who = "self", shields = { 12008, 12009, 12010, 12006 }, need = true },
+}
+
+-- 20073 / card 40736 / S.P.E.C.T.R.A.-Tiêu Diệt: Chủ động: Mỗi lượt chỉ 1 lần. Phá hủy quái đối phương có tấn công cao nhất, sau đó đối phương chịu sát thương bằng tấn công của quái đó (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+var_0_2.RECIPES[73] = {
+	{ op = "hit", kind = "mon", to = "grave", sel = "max", need = true, burn = true },
+}
+
+-- 20074 / card 40736 / S.P.E.C.T.R.A.-Tàn Quang: Khi bị phá hủy: triệu hồi đặc biệt 1 quái Link "Thiên Không Hoàng" khác "S.P.E.C.T.R.A." có tấn công cao nhất từ bộ bài phụ.
+var_0_2.RECIPES[74] = {
+	{ op = "fetch", what = "link", from = "R", to = "board", n = 1, need = true, pick = "max", notsame = true },
+}
+
+for ks_key in pairs(var_0_2.RECIPES) do
+	var_0_2.handlers[ks_key] = var_0_2.run
+end
+
+
+-- <<< group handlers <<<
+-- <<< keyword skill modules <<<
+
 
 return var_0_0

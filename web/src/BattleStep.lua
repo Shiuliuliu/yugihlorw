@@ -3170,6 +3170,12 @@ function var_0_0.afterAccountStatus(arg_33_0)
 		elseif var_33_3._type == Data.CardType.magic then
 			if var_33_8 == BattleData.CardStatus.hand and (var_33_9 == BattleData.CardStatus.grave or var_33_9 == BattleData.CardStatus.leave) and var_33_3._statusVal == BattleData.CardStatusVal.h2g_magic or var_33_9 == BattleData.CardStatus.show or var_33_9 == BattleData.CardStatus.field then
 				var_33_3._owner._totalCastedMagicCount = var_33_3._owner._totalCastedMagicCount + 1
+
+				-- keyword modules count their own Spells (a per-turn cap), see
+				-- KeywordSkill.onMagicCast in BattleSkill.lua
+				if var_0_0.KeywordSkill and var_33_3._skills[1] ~= nil and var_33_3._skills[1]._id >= var_0_0.KeywordSkill.BASE then
+					var_0_0.KeywordSkill.onMagicCast(var_33_3)
+				end
 				arg_33_0._spellType = Data.SkillMode.magic
 				arg_33_0._stepStatus = BattleData.Status.before_account_spell
 
