@@ -31,6 +31,9 @@
 		frameContainer: {},     /* frame name -> the container that registers it */
 	};
 
+	var isIOS = (typeof window !== 'undefined' && window.navigator) ?
+		(/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) : false;
+
 	/* Is this container's art actually still in the sprite-frame cache?
 	 *
 	 * R.loaded is set once, when a container's entries land, and until now
