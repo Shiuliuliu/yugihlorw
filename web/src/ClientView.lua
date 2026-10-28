@@ -1540,7 +1540,7 @@ function var_0_0.getCardIconName(arg_35_0)
 		[30592] = true, [30593] = true,
 		[40727] = true, [40728] = true, [40729] = true, [40730] = true,
 		[40731] = true, [40732] = true, [40733] = true,
-		[40742] = true, [40743] = true, [12337] = true, [12338] = true, [12339] = true, [12340] = true, [21148] = true, [21149] = true, [21150] = true, [30596] = true, [40745] = true, [40746] = true, [40747] = true, [40748] = true, [40744] = true, [12346] = true, [12347] = true, [12348] = true, [40749] = true, [40750] = true, [40751] = true, [40752] = true, [40753] = true, [40754] = true
+		[40742] = true, [40743] = true, [12337] = true, [12338] = true, [12339] = true, [12340] = true, [21148] = true, [21149] = true, [21150] = true, [30596] = true, [40745] = true, [40746] = true, [40747] = true, [40748] = true, [40744] = true, [12346] = true, [12347] = true, [12348] = true, [40749] = true, [40750] = true, [40751] = true, [40752] = true, [40753] = true, [40754] = true, [12349] = true, [12350] = true, [12351] = true, [12352] = true, [12353] = true, [12354] = true, [12355] = true, [12356] = true, [12357] = true, [21151] = true, [21152] = true, [21153] = true, [21154] = true, [21155] = true, [21156] = true, [21157] = true, [21158] = true, [21159] = true, [21160] = true, [21161] = true, [21162] = true, [21163] = true, [21164] = true, [40755] = true, [40756] = true, [40757] = true, [40758] = true, [40759] = true, [40760] = true, [40761] = true, [40762] = true, [40763] = true, [40764] = true, [40765] = true, [40766] = true
 	}
 
 	if lc.FrameCache:getSpriteFrame(var_35_1) == nil and not customCards[var_35_0] and (not var_35_0 or var_35_0 < 10000) then
