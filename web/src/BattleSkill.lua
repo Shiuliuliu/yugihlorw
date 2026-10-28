@@ -110311,7 +110311,7 @@ var_0_2.RECIPES[39] = {
 
 -- 20040 / card 21140 / Hornet-Bầy Ong: Khi kích hoạt: triệu hồi đặc biệt 2 Token "Thiên Không Hoàng" (1500 tấn công) lên sân phe ta, sau đó lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
 var_0_2.RECIPES[40] = {
-	{ op = "token", id = 12322, n = 2, need = false },
+	{ op = "token", id = 12349, n = 2, need = false },
 	{ op = "fetch", what = "mon", from = "P", to = "hand", n = 1, need = false },
 }
 
