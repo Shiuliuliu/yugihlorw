@@ -30,7 +30,7 @@
 	 * fetches fill only 0..40 and the game's numbers carry the rest. The
 	 * overlay comes down on 100, which makes "bar full" and "game up" the
 	 * same moment instead of leaving the player on a full bar. */
-	var JS_PHASE = 0.85;
+	var JS_PHASE = 0.95;
 	var Boot = {
 		lua: null,
 		loaded: 0,
@@ -123,106 +123,127 @@
 		}
 		var config = global.JDZC_CONFIG;
 
-		status('Đang tải dữ liệu cấu hình...');
+		status('Stage 10%: Nạp Virtual FileSystem & Data Config...');
+		Boot.progress(0.05);
 
-		/* Four bootstrap resources plus each configured preload are real work
-		 * units.  The bar advances only when a fetch/decoder promise resolves;
-		 * there is no timer-based fake progress. */
-		Boot.loaded = 0;
-		Boot.total = 14 + ((global.JDZC_CONFIG && global.JDZC_CONFIG.preload) || []).length;
-		Boot.progress(0);
-		function done(p) { return p.then(function (v) { Boot.loaded++; Boot.fetchProgress(Boot.loaded / Boot.total); return v; }); }
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261024v225500';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261028v130000';
+
+		function safe(tag, p, timeoutMs) {
+			if (!p || typeof p.then !== 'function') return Promise.resolve(p);
+			var limit = timeoutMs || 45000;
+			var timerId = null;
+			var timer = new Promise(function (resolve) {
+				timerId = setTimeout(function () {
+					timerId = null;
+					console.warn('[boot] ' + tag + ' timed out (' + limit + 'ms), proceeding to prevent freeze');
+					resolve(null);
+				}, limit);
+			});
+			return Promise.race([
+				Promise.resolve(p).then(function (v) {
+					if (timerId !== null) { clearTimeout(timerId); timerId = null; }
+					return v;
+				}, function (err) {
+					if (timerId !== null) { clearTimeout(timerId); timerId = null; }
+					throw err;
+				}),
+				timer
+			]).catch(function (err) {
+				console.warn('[boot] ' + tag + ' notice:', err);
+				return null;
+			});
+		}
+
+		/* Stage 1: Virtual FileSystem, Lua Sources, Data Dumps & LuaVM (0% - 15%) */
 		return Promise.all([
-			done(fetchJson('res_manifest.json?v=' + ver)),
-			done(fetchBundle('lua_bundle.bin?v=' + ver, 'lua_src.json?v=' + ver)),
-			done(fetchBundle('data_bundle.bin?v=' + ver, 'data_dumps.json?v=' + ver)),
-			done(global.LuaVM({
+			fetchJson('res_manifest.json?v=' + ver),
+			fetchBundle('lua_bundle.bin?v=' + ver, 'lua_src.json?v=' + ver),
+			fetchBundle('data_bundle.bin?v=' + ver, 'data_dumps.json?v=' + ver),
+			global.LuaVM({
 				print: function (text) {
 					if (!text) return;
 					if (text.indexOf('math.random') !== -1 || text.indexOf('updateInitiativeSkills') !== -1 || text.indexOf('skillFrozen') !== -1 || text.indexOf('[BATTLE]') !== -1 || text.indexOf('[BATTLE_STEP]') !== -1 || text.indexOf('Create DragonBones') !== -1 || text.indexOf('sendBattleUseCard') !== -1 || text.indexOf('++++++++') !== -1) return;
 					console.log(text);
 				}
-			})),
+			})
 		]).then(function (all) {
-			var manifest = all[0], sources = all[1], dumps = all[2],
-			    Module = all[3];
-
+			var manifest = all[0], sources = all[1], dumps = all[2], Module = all[3];
 			jdzcRes.init(manifest, config.resBase);
 			jdzcRes.setDumps(dumps);
 
-			/* RegionScene, the first screen, builds its UI the moment it is
-			 * created and cannot wait for a container to arrive, so the few
-			 * it needs are resident before Lua starts. Everything after it
-			 * goes through LoadingScene, which is event-driven and happy to
-			 * wait.
-			 *
-			 * The language table is in the same class of problem, only worse:
-			 * main.lua loads it and then reads Str() from it on the next
-			 * line, which is safe on the device because loadRes is
-			 * synchronous there. It is fetched first here so the parser can
-			 * be handed a complete table before Lua runs. */
-			status('Đang tải tài nguyên hình ảnh...');
-			var preloadList = config.preload || [];
-			function safe(tag, p, timeoutMs) {
-				if (!p || typeof p.then !== 'function') return Promise.resolve(p);
-				var limit = timeoutMs || 45000;
-				var timerId = null;
-				var timer = new Promise(function (resolve) {
-					timerId = setTimeout(function () {
-						timerId = null;
-						console.warn('[boot] ' + tag + ' timed out (' + limit + 'ms), proceeding to prevent freeze');
-						resolve(null);
-					}, limit);
-				});
-				return Promise.race([
-					Promise.resolve(p).then(function (v) {
-						if (timerId !== null) { clearTimeout(timerId); timerId = null; }
-						return v;
-					}, function (err) {
-						if (timerId !== null) { clearTimeout(timerId); timerId = null; }
-						throw err;
-					}),
-					timer
-				]).catch(function (err) {
-					console.warn('[boot] ' + tag + ' notice:', err);
-					return null;
-				});
-			}
+			Boot.progress(0.15);
+			status('Stage 25%: Nạp Ngôn Ngữ, Font Chữ & Resident UI...');
+
+			/* Stage 2: Language, Fonts, Shaders, Resident Backgrounds & Custom UI (15% - 35%) */
 			return Promise.all([
-				done(safe('Language', jdzcRes.preloadLanguage(), 60000)),
-				done(safe('Texts', jdzcRes.preloadTexts())),
-				done(safe('Pvr', jdzcRes.preloadPvr())),
-				done(safe('Fonts', jdzcRes.preloadFonts())),
-				done(safe('jindutiao', jdzcRes.loadTexture('res/particle/jindutiao.png'))),
-				done(safe('CustomAssets', jdzcRes.preloadCustomAssets ? jdzcRes.preloadCustomAssets() : Promise.resolve())),
-				done(safe('ResidentImages', jdzcRes.preloadResidentImages ? jdzcRes.preloadResidentImages() : Promise.resolve())),
-				done(safe('Shaders', global.jdzcPreloadShaders ? global.jdzcPreloadShaders() : Promise.resolve())),
-				done(safe('BattleEffects', global.jdzcPreloadBattleEffects ? global.jdzcPreloadBattleEffects() : Promise.resolve())),
-				done(safe('DbBundle', global.jdzcLoadDbBundle ? global.jdzcLoadDbBundle() : Promise.resolve())),
+				safe('Language', jdzcRes.preloadLanguage(), 60000),
+				safe('Texts', jdzcRes.preloadTexts()),
+				safe('Pvr', jdzcRes.preloadPvr()),
+				safe('Fonts', jdzcRes.preloadFonts()),
+				safe('jindutiao', jdzcRes.loadTexture('res/particle/jindutiao.png')),
+				safe('CustomAssets', jdzcRes.preloadCustomAssets ? jdzcRes.preloadCustomAssets() : Promise.resolve()),
+				safe('ResidentImages', jdzcRes.preloadResidentImages ? jdzcRes.preloadResidentImages() : Promise.resolve()),
+				safe('Shaders', global.jdzcPreloadShaders ? global.jdzcPreloadShaders() : Promise.resolve())
 			]).then(function () {
-				/* Load containers with controlled concurrency (3 on iOS, 8 on desktop) */
+				Boot.progress(0.35);
+				status('Stage 35%: Nạp Atlas Đồ Họa Giao Diện...');
+
+				/* Stage 3: Load All 49 UI & Card Atlases (35% - 55%) */
+				var preloadList = config.preload || [];
 				var index = 0;
-				var concurrency = isIOS ? 3 : 8;
-				function loadNext() {
+				var concurrency = isIOS ? 4 : 10;
+				function loadNextAtlas() {
 					if (index >= preloadList.length) return Promise.resolve();
 					var path = preloadList[index++];
 					var niceName = path.replace(/^res\//, '').replace(/\.lcres$/, '');
-					status('Đang nạp atlas giao diện: ' + niceName + ' (' + index + '/' + preloadList.length + ')...');
-					return done(safe('Container ' + path, jdzcRes.loadContainer(path), 60000)).then(loadNext);
+					var p = 0.35 + (index / preloadList.length) * 0.20;
+					Boot.progress(p);
+					status('Stage ' + Math.round(p * 100) + '%: Nạp Atlas Đồ Họa (' + index + '/' + preloadList.length + ' — ' + niceName + ')');
+					return safe('Container ' + path, jdzcRes.loadContainer(path), 60000).then(loadNextAtlas);
 				}
-				var workers = [];
+				var atlasWorkers = [];
 				for (var w = 0; w < Math.min(concurrency, preloadList.length); w++) {
-					workers.push(loadNext());
+					atlasWorkers.push(loadNextAtlas());
 				}
-				return Promise.all(workers);
+				return Promise.all(atlasWorkers);
+			}).then(function () {
+				Boot.progress(0.55);
+				status('Stage 55%: Nạp Hoạt Ảnh DragonBones & Âm Thanh...');
+
+				/* Stage 4: DragonBones Animations & All Audio (55% - 70%) */
+				return Promise.all([
+					safe('DbBundle', global.jdzcLoadDbBundle ? global.jdzcLoadDbBundle() : Promise.resolve()),
+					safe('BattleEffects', global.jdzcPreloadBattleEffects ? global.jdzcPreloadBattleEffects() : Promise.resolve())
+				]).then(function () {
+					Boot.progress(0.60);
+					if (jdzcRes.preloadAllAudio) {
+						return jdzcRes.preloadAllAudio(function (loaded, total) {
+							var p = 0.60 + (loaded / total) * 0.10;
+							Boot.progress(p);
+							status('Stage ' + Math.round(p * 100) + '%: Nạp Âm Thanh (' + loaded + '/' + total + ')');
+						});
+					}
+				});
+			}).then(function () {
+				Boot.progress(0.70);
+				status('Stage 70%: Nạp Toàn Bộ Kho Thẻ Bài...');
+
+				/* Stage 5: Preload All Card Thumbnails (70% - 95%) */
+				if (jdzcRes.preloadAllCardThumbnails) {
+					return jdzcRes.preloadAllCardThumbnails(function (loaded, total) {
+						var p = 0.70 + (loaded / total) * 0.25;
+						Boot.progress(p);
+						status('Stage ' + Math.round(p * 100) + '%: Nạp Kho Thẻ Bài (' + loaded + ' / ' + total + ' thẻ)');
+					});
+				}
 			}).then(function () {
 				return [sources, dumps, Module];
 			});
 		}).then(function (all) {
 			var sources = all[0], Module = all[2];
 
-			status('Đang khởi động engine game...');
+			Boot.progress(0.95);
+			status('Stage 95%: Khởi Chạy Engine Lua & Module Graph...');
 
 			var lua = new global.JdzcLua(Module);
 			Boot.lua = lua;
@@ -255,12 +276,6 @@
 				console.error('[lua error] ' + msg);
 			};
 
-			/* main.lua reports where its boot chain is through
-			 * Data.Event.application ("event_application", Data.lua), one
-			 * INIT_PROGRESS_<n> event per milestone. Left registered on
-			 * purpose: ClientData listens on the same event, and removing a
-			 * listener from inside its own dispatch splices the vector being
-			 * iterated. `Boot.done` makes it a no-op after boot. */
 			cc.eventManager.addCustomListener('event_application', function (e) {
 				if (Boot.done) return;
 				var m = /^INIT_PROGRESS_(\d+)$/.exec(e.getUserString() || '');
@@ -268,10 +283,14 @@
 				var pct = parseInt(m[1], 10);
 				var mapped = JS_PHASE + ((pct - 40) / 60) * (1 - JS_PHASE);
 				Boot.progress(mapped);
-				if (pct >= 100) Boot.takeOverlayDown();
+				if (pct >= 100) {
+					Boot.progress(1.0);
+					status('Stage 100%: Hoàn tất! Chào mừng tới Yu-Gi-Oh!');
+					Boot.takeOverlayDown();
+				}
 			});
 
-			status('Đang vào thế giới Yu-Gi-Oh!... ');
+			status('Stage 98%: Đang vào thế giới Yu-Gi-Oh!...');
 			lua.run('require("h5_boot")', 'h5_boot');
 
 			/* Safety net: a boot chain that dies before 100 would leave the

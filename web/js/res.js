@@ -1012,24 +1012,8 @@
 	};
 
 	R.unloadContainer = function (name) {
-		var container = R.containerOf[name];
-		if (container && RESIDENT_CONTAINERS[container]) {
-			/* Resident in memory (Arcana-style): never evict to ensure instant scene returns */
-			return;
-		}
-		/* name is an entry name, the way ClientData.unloadLCRes passes it */
-		if (/\.sfb$/.test(name)) {
-			var key = R.frameOwner[name];
-			var tex = key && cc.textureCache.getTextureForKey(key);
-			if (tex) cc.spriteFrameCache.removeSpriteFramesFromTexture(tex);
-			if (key) cc.textureCache.removeTextureForKey(key);
-			delete R.frameOwner[name];
-		} else {
-			cc.textureCache.removeTextureForKey(name);
-		}
-		if (container) delete R.loaded[container];
-		delete maskedInflight[name];
-		delete R.pending[name];
+		/* Resident in memory (Arcana architecture): never evict to ensure instant zero-latency scene transitions and no re-fetching */
+		return;
 	};
 
 	/* Preload resident background images & pack covers before entering game */
@@ -1069,12 +1053,37 @@
 		return Promise.all(p1.concat(p2));
 	};
 
-	/* Background preloader for card thumbnails while player is playing */
-	R.startBackgroundPreloader = function () {
-		if (R._bgPreloaderStarted) return;
-		R._bgPreloaderStarted = true;
+	/* Preload all audio assets into CacheStorage / browser cache */
+	R.preloadAllAudio = function (onProgress) {
+		var audios = (R.manifest && R.manifest.audios) ? R.manifest.audios : [];
+		if (!audios.length) return Promise.resolve();
+		var total = audios.length;
+		var loaded = 0;
+		var concurrency = isIOS ? 4 : 12;
+		var index = 0;
+		function loadNext() {
+			if (index >= audios.length) return Promise.resolve();
+			var path = audios[index++];
+			var url = versionedUrl(path);
+			return fetch(url).then(function () {
+				loaded++;
+				if (onProgress) onProgress(loaded, total, path);
+			}).catch(function () {
+				loaded++;
+				if (onProgress) onProgress(loaded, total, path);
+			}).then(loadNext);
+		}
+		var workers = [];
+		for (var w = 0; w < Math.min(concurrency, audios.length); w++) {
+			workers.push(loadNext());
+		}
+		return Promise.all(workers);
+	};
+
+	/* Preload all card thumbnails into texture memory and CacheStorage */
+	R.preloadAllCardThumbnails = function (onProgress) {
 		var thumbs = (R.manifest && R.manifest.thumbs) ? R.manifest.thumbs : null;
-		if (!thumbs) return;
+		if (!thumbs) return Promise.resolve();
 		var queue = [];
 		['thumb_monster', 'thumb_magic', 'thumb_trap', 'thumb_rare'].forEach(function (type) {
 			var ids = thumbs[type] || [];
@@ -1082,22 +1091,29 @@
 				queue.push('res/' + type + '/' + id + '.lcres');
 			});
 		});
-		var idx = 0;
-		function loadBatch() {
-			if (idx >= queue.length) return;
-			var batch = queue.slice(idx, idx + 4);
-			idx += 4;
-			Promise.all(batch.map(function (path) {
-				return R.loadContainer(path).catch(function () {});
-			})).then(function () {
-				if ('requestIdleCallback' in window) {
-					window.requestIdleCallback(loadBatch, { timeout: 2000 });
-				} else {
-					setTimeout(loadBatch, 100);
-				}
-			});
+		var total = queue.length;
+		if (total === 0) return Promise.resolve();
+		var loaded = 0;
+		var concurrency = isIOS ? 6 : 16;
+		var index = 0;
+		function loadNext() {
+			if (index >= queue.length) return Promise.resolve();
+			var path = queue[index++];
+			return R.loadContainer(path).catch(function () {}).then(function () {
+				loaded++;
+				if (onProgress) onProgress(loaded, total, path);
+			}).then(loadNext);
 		}
-		setTimeout(loadBatch, 5000);
+		var workers = [];
+		for (var w = 0; w < Math.min(concurrency, queue.length); w++) {
+			workers.push(loadNext());
+		}
+		return Promise.all(workers);
+	};
+
+	/* Background preloader (no-op since full preload occurs at boot) */
+	R.startBackgroundPreloader = function () {
+		return;
 	};
 
 	/* Bitmap fonts. cc.LabelBMFont wants the .fnt already parsed in
