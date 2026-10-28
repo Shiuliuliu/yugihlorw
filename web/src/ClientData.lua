@@ -1741,6 +1741,9 @@ function var_0_0.getNameByInfoId(arg_77_0)
 		if arg_77_0 % 1000 == 300 or arg_77_0 == 300 then
 			return "Tru tiên"
 		end
+		if arg_77_0 == 54744 or arg_77_0 % 1000 == 744 then
+			return "Thiên Không Hoàng"
+		end
 		return Str(STR.CARD_KEYWORD_BEGIN + arg_77_0 % 1000)
 	elseif cardType == Data.CardType.flag then
 		return Str(STR.MONSTER_FLAG_BEGIN + arg_77_0 % 1000)

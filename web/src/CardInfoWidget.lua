@@ -190,6 +190,8 @@ function var_0_0.createKeyword(arg_9_0)
 		kwStr = "liqi"
 	elseif var_9_4._keyword == 304 then
 		kwStr = "minecraft"
+	elseif var_9_4._keyword == 54744 then
+		kwStr = "Thiên Không Hoàng"
 	else
 		kwStr = Str(STR.CARD_KEYWORD_BEGIN + var_9_4._keyword)
 	end

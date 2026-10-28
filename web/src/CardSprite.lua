@@ -4460,7 +4460,7 @@ function var_0_0.createPropArea(arg_110_0)
 	lc.addChildToPos(var_110_1, var_110_5, cc.p(lc.x(var_110_2), 36))
 	var_110_5:setScale(0.8)
 
-	local var_110_6 = ClientView.createTTF(Str(STR.CARD_KEYWORD_BEGIN + arg_110_0._card._info._keyword), ClientView.FontSize.S1, ClientView.COLOR_TEXT_DARK)
+	local var_110_6 = ClientView.createTTF(arg_110_0._card._info._keyword == 54744 and "Thiên Không Hoàng" or Str(STR.CARD_KEYWORD_BEGIN + arg_110_0._card._info._keyword), ClientView.FontSize.S1, ClientView.COLOR_TEXT_DARK)
 
 	lc.addChildToPos(var_110_1, var_110_6, cc.p(lc.x(var_110_3), 36))
 	var_110_6:setScale(0.8)
