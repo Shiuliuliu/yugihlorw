@@ -6071,13 +6071,11 @@ function var_0_0.hasSkillFast(arg_127_0, arg_127_1)
 	-- Lauriel - Phuc mong phon hoa (12394): khi o tren san, tat ca quai co tu khoa "liqi" (303) nhan 3043 Nguyen To Tuong Tac (12002, 12003, 12004)
 	if (arg_127_1 == 3043 or arg_127_1 == 12002 or arg_127_1 == 12003 or arg_127_1 == 12004) and arg_127_0._status == BattleData.CardStatus.board and (arg_127_0:isKeyword(303) or (arg_127_0._info and arg_127_0._info._keyword == 303)) then
 		local owner = arg_127_0._owner
-		if owner and owner._boardCards then
-			for iter_lau = 1, #owner._boardCards do
-				local bc = owner._boardCards[iter_lau]
-				if bc and bc._status == BattleData.CardStatus.board and (bc._infoId == 12394 or bc._id == 12394) and not bc._isCardSkillDisabledInRound then
-					return true
-				end
+		if owner then
+			if owner._isBoardDirty or owner._hasLauriel12394 == nil then
+				owner:getBoardCards()
 			end
+			return owner._hasLauriel12394 == true
 		end
 	end
 

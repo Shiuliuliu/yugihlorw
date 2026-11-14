@@ -339,6 +339,7 @@ function var_0_0.getBoardCards(arg_11_0)
 		arg_11_0._hasShin12368 = false
 		arg_11_0._hasShin12369 = false
 		arg_11_0._hasShin12370 = false
+		arg_11_0._hasLauriel12394 = false
 
 		for iter_11_0 = 1, Data.MAX_CARD_COUNT_ON_BOARD + 1 do
 			local var_11_0 = arg_11_0._boardCards[iter_11_0]
@@ -352,6 +353,8 @@ function var_0_0.getBoardCards(arg_11_0)
 					arg_11_0._hasShin12369 = true
 				elseif infId == 12370 then
 					arg_11_0._hasShin12370 = true
+				elseif infId == 12394 and not var_11_0._isCardSkillDisabledInRound then
+					arg_11_0._hasLauriel12394 = true
 				end
 			end
 		end

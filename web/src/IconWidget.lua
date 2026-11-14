@@ -179,8 +179,19 @@ function var_0_0.resetIcon(arg_9_0)
 		arg_9_0._img._shader = nil
 	end
 
+	if arg_9_0._frame then
+		arg_9_0._frame:setEffect(nil)
+		arg_9_0._frame._shader = nil
+		arg_9_0._frame:setVisible(true)
+		arg_9_0._frame:setOpacity(255)
+		arg_9_0._frame:setScale(1)
+	end
+
 	if arg_9_0._name then
+		arg_9_0._name:setVisible(true)
+		arg_9_0._name:setOpacity(255)
 		arg_9_0._name:setScale(0.6)
+		arg_9_0._name:setAnchorPoint(0.5, 0.5)
 	end
 
 	if arg_9_0._fragmentIcon then
@@ -352,29 +363,6 @@ function var_0_0.setData(arg_13_0, arg_13_1, arg_13_2)
 		arg_13_0._countBg._count:setVisible(false)
 	end
 
-	if band(arg_13_2, var_0_0.DisplayFlag.NAME) ~= 0 then
-		local var_13_4 = ClientData.getNameByInfoId(arg_13_1._infoId)
-
-		var_13_2:setVisible(true)
-		var_13_2:setScale(0.6)
-		var_13_2:setString(var_13_4)
-		var_13_2:setColor(arg_13_0._nameColor)
-		-- item names sit under a fixed-width icon, in a grid: a Vietnamese name
-		-- that runs past the icon runs into its neighbours
-		local var_frame_w = lc.w(var_13_0) > 0 and lc.w(var_13_0) or var_0_0.SIZE
-		local var_frame_h = lc.h(var_13_0) > 0 and lc.h(var_13_0) or var_0_0.SIZE
-		ClientView.fitLabel(var_13_2, var_frame_w + 8)
-		arg_13_0:setContentSize(var_frame_w, var_frame_h + 24)
-		var_13_2:setPosition(lc.w(arg_13_0) / 2, lc.sh(var_13_2) / 2)
-		var_13_0:setPosition(lc.w(arg_13_0) / 2, lc.h(arg_13_0) - var_frame_h / 2)
-	else
-		var_13_2:setVisible(false)
-		local var_frame_w = lc.w(var_13_0) > 0 and lc.w(var_13_0) or var_0_0.SIZE
-		local var_frame_h = lc.h(var_13_0) > 0 and lc.h(var_13_0) or var_0_0.SIZE
-		arg_13_0:setContentSize(var_frame_w, var_frame_h)
-		var_13_0:setPosition(lc.w(arg_13_0) / 2, lc.h(arg_13_0) / 2)
-	end
-
 	if arg_13_0._decArea then
 		arg_13_0._decArea:removeFromParent()
 
@@ -412,6 +400,26 @@ function var_0_0.setData(arg_13_0, arg_13_1, arg_13_2)
 	end
 
 	arg_13_0:setSpriteDisplay(var_13_0, var_13_11, var_13_12)
+
+	local var_frame_w = math.max(lc.w(var_13_0), var_0_0.SIZE)
+	local var_frame_h = math.max(lc.h(var_13_0), var_0_0.SIZE)
+
+	if band(arg_13_2, var_0_0.DisplayFlag.NAME) ~= 0 then
+		local var_13_4 = ClientData.getNameByInfoId(arg_13_1._infoId)
+
+		var_13_2:setVisible(true)
+		var_13_2:setScale(0.6)
+		var_13_2:setString(var_13_4)
+		var_13_2:setColor(arg_13_0._nameColor)
+		ClientView.fitLabel(var_13_2, var_frame_w + 8)
+		arg_13_0:setContentSize(var_frame_w, var_frame_h + 24)
+		var_13_2:setPosition(lc.w(arg_13_0) / 2, lc.sh(var_13_2) / 2)
+		var_13_0:setPosition(lc.w(arg_13_0) / 2, lc.h(arg_13_0) - var_frame_h / 2)
+	else
+		var_13_2:setVisible(false)
+		arg_13_0:setContentSize(var_frame_w, var_frame_h)
+		var_13_0:setPosition(lc.w(arg_13_0) / 2, lc.h(arg_13_0) / 2)
+	end
 
 	if arg_13_0._fragmentIcon then
 		arg_13_0._fragmentIcon:removeFromParent()

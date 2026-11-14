@@ -92565,7 +92565,9 @@ function var_0_0.canUseInitiativeSkill1(arg_37_0, arg_37_1, arg_37_2)
 			return false
 		end
 
-		for _, pc in ipairs(arg_37_0:filterCanChangeToHandCards(arg_37_0:getBattleCards("P"))) do
+		local pCards = arg_37_0._pileCards or arg_37_0:getBattleCards("P")
+		for iter_p = 1, #pCards do
+			local pc = pCards[iter_p]
 			if (pc:isMagic() or pc:isTrap() or pc._type == Data.CardType.magic or pc._type == Data.CardType.trap) and (pc:isKeyword(303) or (pc._info and pc._info._keyword == 303)) then
 				return true
 			end
@@ -92601,7 +92603,9 @@ function var_0_0.canUseInitiativeSkill1(arg_37_0, arg_37_1, arg_37_2)
 			return false
 		end
 
-		for _, pc in ipairs(arg_37_0:filterCanChangeToHandCards(arg_37_0:getBattleCards("P"))) do
+		local pCards = arg_37_0._pileCards or arg_37_0:getBattleCards("P")
+		for iter_p = 1, #pCards do
+			local pc = pCards[iter_p]
 			if (pc:isMonster() or pc:isMonsterRare() or pc._type == Data.CardType.monster or pc._type == Data.CardType.rare) and (pc:isKeyword(303) or (pc._info and pc._info._keyword == 303)) then
 				return true
 			end
@@ -92627,10 +92631,13 @@ function var_0_0.canUseInitiativeSkill1(arg_37_0, arg_37_1, arg_37_2)
 		for _, bc in ipairs(arg_37_0:getBoardCards()) do
 			if (bc:isMonster() or bc:isMonsterRare() or bc._type == Data.CardType.monster or bc._type == Data.CardType.rare) and (bc:isKeyword(303) or (bc._info and bc._info._keyword == 303)) then
 				countLiqi = countLiqi + 1
+				if countLiqi >= 2 then
+					return true
+				end
 			end
 		end
 
-		return countLiqi >= 2
+		return false
 	elseif var_37_0 == 20231 then
 		if arg_37_0._castedSkillCounts[var_37_0] ~= nil and arg_37_0._castedSkillCounts[var_37_0] > 0 then
 			return false
@@ -92696,17 +92703,17 @@ function var_0_0.canUseInitiativeSkill1(arg_37_0, arg_37_1, arg_37_2)
 			return false
 		end
 
-		local hasDeckLiqi = false
-		for _, c in ipairs(arg_37_0:filterCanChangeToHandCards(arg_37_0:getBattleCards("P"))) do
+		local pCards = arg_37_0._pileCards or arg_37_0:getBattleCards("P")
+		for iter_p = 1, #pCards do
+			local c = pCards[iter_p]
 			if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare)
 				and (c:isKeyword(303) or (c._info and c._info._keyword == 303))
 				and c:getStar() <= 6 then
-				hasDeckLiqi = true
-				break
+				return true
 			end
 		end
 
-		return hasDeckLiqi
+		return false
 	elseif var_37_0 == 20235 then
 		-- HELEN (12386): Chu dong tay: LP phe ta thap hon doi phuong -> trieu hoi dac biet len san
 		if arg_37_1._status ~= BattleData.CardStatus.hand then

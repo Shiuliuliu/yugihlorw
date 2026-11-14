@@ -137,22 +137,23 @@ function var_0_0.createItem(arg_9_0, arg_9_1, arg_9_2)
 		var_9_3:registerTouchHandles(arg_9_0._itemTouchHandles)
 		lc.addChildToPos(var_9_0, var_9_3, cc.p(var_9_1 * (iter_9_0 - 0.5), lc.ch(var_9_0)))
 
+		local badgeY = math.max(lc.h(var_9_3._frame), 104) - 2
 		if var_9_2._status == BattleData.CardStatus.grave then
 			local var_9_4 = lc.createSprite("initiative_grave")
 
-			lc.addChildToPos(var_9_3, var_9_4, cc.p(14, lc.h(var_9_3._frame) + 10))
+			lc.addChildToPos(var_9_3, var_9_4, cc.p(14, badgeY))
 		elseif var_9_2._status == BattleData.CardStatus.rare then
 			local var_9_5 = lc.createSprite("initiative_rare")
 
-			lc.addChildToPos(var_9_3, var_9_5, cc.p(14, lc.h(var_9_3._frame) + 10))
+			lc.addChildToPos(var_9_3, var_9_5, cc.p(14, badgeY))
 		elseif var_9_2._status == BattleData.CardStatus.hand then
 			local var_9_6 = lc.createSprite("initiative_rare")
 
-			lc.addChildToPos(var_9_3, var_9_6, cc.p(14, lc.h(var_9_3._frame) + 10))
+			lc.addChildToPos(var_9_3, var_9_6, cc.p(14, badgeY))
 		elseif var_9_2._status == BattleData.CardStatus.leave then
 			local var_9_7 = lc.createSprite("initiative_grave")
 
-			lc.addChildToPos(var_9_3, var_9_7, cc.p(14, lc.h(var_9_3._frame) + 10))
+			lc.addChildToPos(var_9_3, var_9_7, cc.p(14, badgeY))
 		end
 
 		local dbSkillNames = {
@@ -269,25 +270,40 @@ function var_0_0.createItem(arg_9_0, arg_9_1, arg_9_2)
 			[20192] = "Di Ngôn Công Chúa",
 			[20193] = "Hồi Sinh Công Chúa",
 			[20219] = "Thứ Nguyên Chúc Phúc",
+			[20220] = "Thần Điện Không Gian",
+			[20221] = "Kết Giới Thứ Nguyên",
 			[20222] = "Chiến Tuyến Thứ Nguyên",
 			[20223] = "Tiếp Tế Thứ Nguyên",
 			[20224] = "Chiến Lực Liqi",
 			[20225] = "Triệu Tập Liqi",
-		[20230] = "Thứ Nguyên Giáng Lâm",
-		[20231] = "Long Kiếm Liên Trảm",
-		[20232] = "Thần Tiễn Triệu Tập",
-		[20233] = "Tiếp Tế Tinh Linh",
-		[20235] = "Khúc Ca Cứu Rỗi",
-		[20238] = "Hồi Sinh Định Mệnh",
-		[20239] = "Phong Tỏa Không Gian",
-		[20240] = "Ký Ức Thời Gian",
-		[20250] = "Thứ Nguyên Triệu Hồi",
-		[20252] = "Thanh Tẩy Ma Pháp",
+			[20230] = "Thứ Nguyên Giáng Lâm",
+			[20231] = "Long Kiếm Liên Trảm",
+			[20232] = "Thần Tiễn Triệu Tập",
+			[20233] = "Tiếp Tế Tinh Linh",
+			[20234] = "Bản Năng Sinh Tồn",
+			[20235] = "Khúc Ca Cứu Rỗi",
+			[20236] = "Khúc Ca Định Mệnh",
+			[20237] = "Luân Hồi Chuyển Thế",
+			[20238] = "Hồi Sinh Định Mệnh",
+			[20239] = "Phong Tỏa Không Gian",
+			[20240] = "Ký Ức Thời Gian",
+			[20241] = "Triệu Tập Cây Cối",
+			[20242] = "Hồi Sinh Cây Cối",
+			[20243] = "Hạt Đậu Năng Lượng",
+			[20244] = "Nắng Ấm Tiếp Tế",
+			[20245] = "Củ Cải Bảo Vệ",
+			[20246] = "Tiến Hóa Dung Hợp",
+			[20247] = "Liên Xạ Hai Phát",
+			[20250] = "Thứ Nguyên Triệu Hồi",
+			[20251] = "Bảo Hộ Thứ Nguyên",
+			[20252] = "Thanh Tẩy Ma Pháp",
+			[20253] = "Vệ Thần Giáng Thế",
+			[20092] = "Âm Hồn Triệu Tập",
 			[20195] = "Truy Tìm Phép Bẫy",
 			[20198] = "Triệu Tập Thủ Hộ",
 			[20199] = "Bố Trí Mê Cung",
 			[20204] = "Hồi Quy Cạm Bẫy",
-	[20207] = "Đẩy Lùi Xâm Phạm",
+			[20207] = "Đẩy Lùi Xâm Phạm",
 			[20208] = "Thu Hồi Tàn Tích",
 			[20211] = "Tìm Kiếm Thuộc Hạ",
 			[20212] = "Xáo Trộn Mộ Phần",
@@ -306,8 +322,16 @@ function var_0_0.createItem(arg_9_0, arg_9_1, arg_9_2)
 				end
 			end
 			if not var_9_9 or var_9_9 == "" or tonumber(var_9_9) then
-				var_9_9 = Str(iter_9_1._owner._info._nameSid)
+				if iter_9_1._owner and iter_9_1._owner._info and iter_9_1._owner._info._nameSid then
+					var_9_9 = Str(iter_9_1._owner._info._nameSid)
+				elseif iter_9_1._owner and iter_9_1._owner.getName then
+					var_9_9 = iter_9_1._owner:getName()
+				end
 			end
+		end
+
+		if not var_9_9 or var_9_9 == "" or tonumber(var_9_9) then
+			var_9_9 = "Kỹ Năng"
 		end
 
 		if iter_9_1._id == 3851 then
@@ -341,15 +365,24 @@ function var_0_0.createItem(arg_9_0, arg_9_1, arg_9_2)
 			lc.addChildToPos(var_9_0, var_9_14, cc.p(lc.right(var_9_3) - 10, lc.bottom(var_9_3) + 36), 2)
 		end
 
+		var_9_3._frame:setVisible(true)
+		var_9_3._frame:setOpacity(255)
+
+		var_9_3._name:setVisible(true)
+		var_9_3._name:setOpacity(255)
+		var_9_3._name:setColor(ClientView.COLOR_TEXT_WHITE)
 		var_9_3._name:setString(var_9_9)
 		var_9_3._name:setScale(0.6)
-		ClientView.fitLabel(var_9_3._name, lc.w(var_9_3._frame) + 16, 0.45)
-		var_9_3._name:setPosition(lc.w(var_9_3) / 2, lc.sh(var_9_3._name) / 2)
+
+		local frameW = math.max(lc.w(var_9_3._frame), 104)
+		local frameH = math.max(lc.h(var_9_3._frame), 104)
+		ClientView.fitLabel(var_9_3._name, frameW + 16, 0.45)
+		var_9_3._name:setPosition(lc.w(var_9_3) / 2, 12)
 
 		if not var_9_3._skillBadge then
 			local var_9_sk_ico = lc.createSprite("img_icon_skill")
 			if var_9_sk_ico then
-				lc.addChildToPos(var_9_3._frame, var_9_sk_ico, cc.p(20, lc.h(var_9_3._frame) - 20), 2)
+				lc.addChildToPos(var_9_3._frame, var_9_sk_ico, cc.p(18, frameH - 18), 2)
 				var_9_3._skillBadge = var_9_sk_ico
 			end
 		end

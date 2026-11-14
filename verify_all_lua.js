@@ -15,6 +15,8 @@ async function testFiles() {
         'D:/yugitauapk/web/src/BattleHelper.lua',
         'D:/yugitauapk/web/src/IllustrationForm.lua',
         'D:/yugitauapk/web/src/CardInfoWidget.lua',
+        'D:/yugitauapk/web/src/IconWidget.lua',
+        'D:/yugitauapk/web/src/BattleInitiativeSkillsDialog.lua',
         'D:/yugitauapk/web/src/BattleCardStatus.lua',
         'D:/yugitauapk/web/src/PlayerCard.lua',
         'D:/yugitauapk/web/data/monster.lua',

@@ -27,13 +27,14 @@ void main()
 {
     vec4 textureColor = v_fragmentColor * texture2D(CC_Texture0, v_texCoord);
     vec3 fragRGB = textureColor.rgb;
-    if (textureColor.a > 0.0)
+    if (textureColor.a > 0.001)
     {
         vec3 fragHSV = rgb2hsv(fragRGB).xyz;
-        fragHSV.x = mod(fragHSV.x -56.0 / 360.0, 1.0);
-        fragHSV.y = clamp(fragHSV.y - 0.8, 0.0, 1.0);
+        fragHSV.x = fract(fragHSV.x - 56.0 / 360.0 + 1.0);
+        fragHSV.y = clamp(fragHSV.y * 0.35, 0.0, 1.0);
+        fragHSV.z = min(1.0, fragHSV.z * 1.15 + 0.05);
         fragRGB = hsv2rgb(fragHSV);
     }
 
-    gl_FragColor = vec4(fragRGB, textureColor.a);
+    gl_FragColor = vec4(fragRGB * textureColor.a, textureColor.a);
 }
