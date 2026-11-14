@@ -845,9 +845,19 @@
 		}
 		for (var ai = 0; ai < aliases.length; ai++) {
 			var ak = aliases[ai];
-			if (tex && !cc.textureCache.getTextureForKey(ak)) {
-				cc.textureCache.cacheImage(ak, tex);
+			var existing = cc.textureCache.getTextureForKey(ak);
+			if (tex) {
+				if (existing && existing !== tex && !existing.isLoaded() && element) {
+					try {
+						existing.initWithElement(element);
+						existing._textureLoaded = true;
+						existing.handleLoadedTexture();
+						existing.dispatchEvent('load');
+					} catch (e) {}
+				}
+				cc.textureCache._textures[ak] = tex;
 				R.resolvePending(ak);
+				R.announce(ak);
 			}
 		}
 
@@ -1287,7 +1297,20 @@
 			}
 		}
 
-		['thumb_monster', 'thumb_magic', 'thumb_trap', 'thumb_rare'].forEach(function (type) {
+		/* Priority 1: Priority new cards and traps/magics first so deck views are instantaneous */
+		var priorityCards = [
+			'30383', '30598', '30599', '30600', '30601', '30602', '30603', '30604', '30605', '30606', '30607',
+			'40801', '40802', '40803', '40804', '40805', '40806', '40807', '40808', '40809', '40810',
+			'40774', '40776'
+		];
+		priorityCards.forEach(function (id) {
+			['thumb_trap', 'thumb_magic', 'thumb_rare', 'thumb_monster'].forEach(function (type) {
+				addToQueue('res/' + type + '/' + id + '.lcres');
+				addToQueue('res/' + type + '/' + id + '_3.lcres');
+			});
+		});
+
+		['thumb_trap', 'thumb_magic', 'thumb_rare', 'thumb_monster'].forEach(function (type) {
 			var ids = thumbs[type] || [];
 			ids.forEach(function (id) {
 				addToQueue('res/' + type + '/' + id + '.lcres');
@@ -1310,7 +1333,7 @@
 				var m = /^card_ico_(\d+)(_3)?$/.exec(k);
 				if (m) {
 					var id = m[1];
-					['thumb_rare', 'thumb_monster', 'thumb_magic', 'thumb_trap'].forEach(function (t) {
+					['thumb_trap', 'thumb_magic', 'thumb_rare', 'thumb_monster'].forEach(function (t) {
 						addToQueue('res/' + t + '/' + id + '.lcres');
 						addToQueue('res/' + t + '/' + id + '_3.lcres');
 						addToQueue('res/' + t + '_f/' + id + '.lcres');
@@ -1322,7 +1345,7 @@
 		var total = queue.length;
 		if (total === 0) return Promise.resolve();
 		var loaded = 0;
-		var concurrency = isIOS ? 6 : 16;
+		var concurrency = isIOS ? 6 : 10;
 		var index = 0;
 		function loadNext() {
 			if (index >= queue.length) return Promise.resolve();

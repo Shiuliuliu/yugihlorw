@@ -240,7 +240,7 @@
 					if (index >= preloadList.length) return Promise.resolve();
 					var path = preloadList[index++];
 					var niceName = path.replace(/^res\//, '').replace(/\.lcres$/, '');
-					var p = 0.35 + (index / preloadList.length) * 0.35;
+					var p = 0.35 + (index / preloadList.length) * 0.20;
 					Boot.progress(p);
 					status('Stage ' + Math.round(p * 100) + '%: Nạp Atlas Giao Diện (' + index + '/' + preloadList.length + ' — ' + niceName + ')');
 					return safe('Container ' + path, jdzcRes.loadContainer(path), 60000).then(loadNextAtlas);
@@ -251,31 +251,46 @@
 				}
 				return Promise.all(atlasWorkers);
 			}).then(function () {
-				Boot.progress(0.70);
-				status('Stage 70%: Nạp Hoạt Ảnh DragonBones & Âm Thanh...');
+				Boot.progress(0.55);
+				status('Stage 55%: Nạp Hoạt Ảnh DragonBones & Âm Thanh...');
 
-				/* Stage 4: DragonBones Animations & Audio (70% - 85%) (Arcana Architecture) */
+				/* Stage 4: DragonBones Animations & Audio (55% - 70%) */
 				return Promise.all([
 					safe('DbBundle', global.jdzcLoadDbBundle ? global.jdzcLoadDbBundle() : Promise.resolve()),
 					safe('BattleEffects', global.jdzcPreloadBattleEffects ? global.jdzcPreloadBattleEffects() : Promise.resolve())
 				]).then(function () {
-					Boot.progress(0.75);
+					Boot.progress(0.60);
 					if (jdzcRes.preloadAllAudio) {
 						return jdzcRes.preloadAllAudio(function (loaded, total) {
-							var p = 0.75 + (loaded / total) * 0.10;
+							var p = 0.60 + (loaded / total) * 0.10;
 							Boot.progress(p);
 							status('Stage ' + Math.round(p * 100) + '%: Nạp Âm Thanh (' + loaded + '/' + total + ')');
 						});
 					}
 				});
 			}).then(function () {
+				Boot.progress(0.70);
+				status('Stage 70%: Nạp Toàn Bộ Kho Thẻ Bài...');
+
+				/* Stage 5: Preload All Card Thumbnails (70% - 95%) */
+				if (isIOS) {
+					Boot.progress(0.95);
+					status('Stage 95%: Tối ưu bộ nhớ iOS hoàn tất...');
+				} else if (jdzcRes.preloadAllCardThumbnails) {
+					return jdzcRes.preloadAllCardThumbnails(function (loaded, total) {
+						var p = 0.70 + (loaded / total) * 0.25;
+						Boot.progress(p);
+						status('Stage ' + Math.round(p * 100) + '%: Nạp Kho Thẻ Bài (' + loaded + ' / ' + total + ' thẻ)');
+					});
+				}
+			}).then(function () {
 				return [sources, dumps, Module];
 			});
 		}).then(function (all) {
 			var sources = all[0], Module = all[2];
 
-			Boot.progress(0.85);
-			status('Stage 85%: Khởi Chạy Engine Lua & Module Graph...');
+			Boot.progress(0.95);
+			status('Stage 95%: Khởi Chạy Engine Lua & Module Graph...');
 
 			var lua = new global.JdzcLua(Module);
 			Boot.lua = lua;
