@@ -1339,9 +1339,35 @@
 		return Promise.all(workers);
 	};
 
-	/* Background preloader (no-op since full preload occurs at boot) */
+	/* Background preloader for card thumbnails while player is playing (Arcana architecture) */
 	R.startBackgroundPreloader = function () {
-		return;
+		if (R._bgPreloaderStarted) return;
+		R._bgPreloaderStarted = true;
+		var thumbs = (R.manifest && R.manifest.thumbs) ? R.manifest.thumbs : null;
+		if (!thumbs) return;
+		var queue = [];
+		['thumb_monster', 'thumb_magic', 'thumb_trap', 'thumb_rare'].forEach(function (type) {
+			var ids = thumbs[type] || [];
+			ids.forEach(function (id) {
+				queue.push('res/' + type + '/' + id + '.lcres');
+			});
+		});
+		var idx = 0;
+		function loadBatch() {
+			if (idx >= queue.length) return;
+			var batch = queue.slice(idx, idx + 4);
+			idx += 4;
+			Promise.all(batch.map(function (path) {
+				return R.loadContainer(path).catch(function () {});
+			})).then(function () {
+				if ('requestIdleCallback' in window) {
+					window.requestIdleCallback(loadBatch, { timeout: 2000 });
+				} else {
+					setTimeout(loadBatch, 150);
+				}
+			});
+		}
+		setTimeout(loadBatch, 3000);
 	};
 
 	/* Bitmap fonts. cc.LabelBMFont wants the .fnt already parsed in

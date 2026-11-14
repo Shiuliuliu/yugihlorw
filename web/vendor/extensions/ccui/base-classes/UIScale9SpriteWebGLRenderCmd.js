@@ -52,6 +52,21 @@
 
         this._syncStatus(parentCmd);
 
+        var children = node._children, len = children.length, i = 0;
+        if (len > 0) {
+            node.sortAllChildren();
+            // Draw children with localZOrder < 0 FIRST (so background sits BEHIND the scale9 frame)
+            for (i = 0; i < len; i++) {
+                var child = children[i];
+                if (child && child._localZOrder < 0) {
+                    child._renderCmd.visit(this);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        // Draw scale9 slices (the frame itself)
         if(node._scale9Enabled) {
             var locRenderers = node._renderers;
             var rendererLen = locRenderers.length;
@@ -70,8 +85,15 @@
             node._adjustScale9ImagePosition();
             if(node._scale9Image && node._scale9Image._renderCmd) node._scale9Image._renderCmd.visit(this);
         }
+
+        // Draw children with localZOrder >= 0 AFTER the frame
+        if (len > 0) {
+            for (; i < len; i++) {
+                if (children[i]) children[i]._renderCmd.visit(this);
+            }
+        }
+
         this._dirtyFlag = 0;
-        this.originVisit(parentCmd);
     };
 
     proto.transform = function(parentCmd, recursive){

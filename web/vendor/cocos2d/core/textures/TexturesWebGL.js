@@ -298,19 +298,11 @@ cc._tmp.WebGLTexture2D = function () {
             }
             gl.texImage2D(gl.TEXTURE_2D, 0, format, pixelsWide, pixelsHigh, 0, format, type, data);
 
-            var isPot = (pixelsWide > 0 && (pixelsWide & (pixelsWide - 1)) === 0) &&
-                        (pixelsHigh > 0 && (pixelsHigh & (pixelsHigh - 1)) === 0);
-            if (isPot) {
-                try {
-                    gl.generateMipmap(gl.TEXTURE_2D);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-                    self._hasMipmaps = true;
-                } catch (e) {
-                    self._hasMipmaps = false;
-                }
-            } else {
-                self._hasMipmaps = false;
-            }
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            self._hasMipmaps = false;
 
             self._contentSize.width = contentSize.width;
             self._contentSize.height = contentSize.height;
@@ -493,27 +485,11 @@ cc._tmp.WebGLTexture2D = function () {
             // Specify OpenGL texture image
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, self._htmlElementObj);
 
-            var pixelsWide = self._htmlElementObj.width;
-            var pixelsHigh = self._htmlElementObj.height;
-            var isPot = (pixelsWide > 0 && (pixelsWide & (pixelsWide - 1)) === 0) &&
-                        (pixelsHigh > 0 && (pixelsHigh & (pixelsHigh - 1)) === 0);
-
-            if (isPot) {
-                try {
-                    gl.generateMipmap(gl.TEXTURE_2D);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-                    self._hasMipmaps = true;
-                } catch (e) {
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                    self._hasMipmaps = false;
-                }
-            } else {
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                self._hasMipmaps = false;
-            }
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            self._hasMipmaps = false;
 
             self.shaderProgram = cc.shaderCache.programForKey(cc.SHADER_POSITION_TEXTURE);
             cc.glBindTexture2D(null);
