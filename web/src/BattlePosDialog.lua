@@ -373,7 +373,7 @@ function var_0_0.createCardItem(arg_24_0, arg_24_1)
 	end
 	local var_24_1 = require("CardThumbnail").create(arg_24_1._infoId, nil, skinId)
 
-	if not arg_24_1:isXYZ() and not arg_24_1:isLink() then
+	if not arg_24_1:isXYZ() and not arg_24_1:isLink() and arg_24_1._infoId ~= 40776 then
 		var_24_1._frame._starArea:update(arg_24_1:getStar(), arg_24_1._infoId)
 	end
 

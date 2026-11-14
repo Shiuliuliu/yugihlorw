@@ -336,6 +336,11 @@ function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 	var_2_12:setScale(1.2)
 
 	var_2_7._hpValue = var_2_12
+	local isLinkCardInit = (var_2_4 and ((var_2_4._link and var_2_4._link[1] ~= 0) or (var_2_4._option and band(var_2_4._option, Data.MonsterOption.is_link) ~= 0) or var_2_4._id == 40776)) or arg_2_0 == 40776
+	if isLinkCardInit then
+		local linkValInit = (var_2_4 and var_2_4._id == 40776 or arg_2_0 == 40776) and 5 or (var_2_4 and var_2_4._link and var_2_4._link[1] ~= 0 and #var_2_4._link or 1)
+		var_2_12:setString(linkValInit)
+	end
 
 	local var_2_13 = var_0_0.createBMFont(var_0_0.BMFont.huali_32, var_2_4._star or 0)
 
@@ -407,8 +412,18 @@ function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 	lc.addChildToPos(var_2_7, var_2_21, cc.p(lc.cw(var_2_7), lc.h(var_2_7) - 58), 2)
 
 	var_2_7._starArea = var_2_21
+	local isLinkFrame = (var_2_4 and ((var_2_4._link and var_2_4._link[1] ~= 0) or (var_2_4._option and band(var_2_4._option, Data.MonsterOption.is_link) ~= 0) or var_2_4._id == 40776 or var_2_4._id == 40774 or (var_2_4._star and var_2_4._star == 0))) or arg_2_0 == 40776 or arg_2_0 == 40774
+	if isLinkFrame then
+		var_2_21:setVisible(false)
+		if var_2_21._icons then
+			for iter_124_0 = 1, #var_2_21._icons do
+				var_2_21._icons[iter_124_0]:setVisible(false)
+			end
+		end
+	end
 
-	local var_2_22 = lc.createSprite("card_magictrap_12")
+	local var_2_22 = lc.createSprite("card_magictrap_13")
+	var_2_22:setVisible(false)
 
 	lc.addChildToCenter(var_2_7, var_2_22, 2)
 	lc.offset(var_2_22, 20, 0)
@@ -623,8 +638,22 @@ function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 		})
 
 		if var_5_11 then
-			arg_5_0._starValue:setVisible(arg_5_0._showInBattle and (not var_5_4._link or var_5_4._link[1] == 0))
-			arg_5_0._starIcon:setVisible(arg_5_0._showInBattle and (not var_5_4._link or var_5_4._link[1] == 0))
+			local isLinkCard = (var_5_4._link and var_5_4._link[1] ~= 0) or (var_5_4._option and band(var_5_4._option, Data.MonsterOption.is_link) ~= 0) or (var_5_4._id == 40776)
+			local isXyzMonsterCard = not isLinkCard and (var_5_4._option and band(var_5_4._option, Data.MonsterOption.is_xyz) ~= 0)
+			if isLinkCard then
+				arg_5_0._starValue:setVisible(false)
+				arg_5_0._starIcon:setVisible(false)
+			else
+				arg_5_0._starValue:setVisible(arg_5_0._showInBattle == true)
+				arg_5_0._starIcon:setVisible(arg_5_0._showInBattle == true)
+				if isXyzMonsterCard then
+					arg_5_0._starValue:setString(var_5_4._star)
+					arg_5_0._starIcon:setSpriteFrame("card_quality3")
+				else
+					arg_5_0._starValue:setString(var_5_4._star)
+					arg_5_0._starIcon:setSpriteFrame((var_5_4._option and band(var_5_4._option, Data.MonsterOption.is_adjust) ~= 0) and "card_quality2" or "card_quality")
+				end
+			end
 			arg_5_0._atkValue:setAnchorPoint(cc.p(arg_5_0._showInBattle and 1 or 0.5, 0.5))
 			arg_5_0._hpValue:setAnchorPoint(cc.p(arg_5_0._showInBattle and 1 or 0.5, 0.5))
 			arg_5_0._atkValue:setPosition(arg_5_0._showInBattle and cc.p(arg_5_0._starValue._defaultPos.x, arg_5_0._starValue._defaultPos.y - 60) or arg_5_0._atkValue._defaultPos)
@@ -635,7 +664,8 @@ function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 			local var_5_18 = var_5_4._option
 
 			arg_5_0._atkValue:setString(var_5_18 ~= nil and band(var_5_18, Data.MonsterOption.hide_atk) > 0 and "?" or ClientData.formatNum(var_5_4._atk[1], 99999))
-			arg_5_0._hpValue:setString(var_5_18 ~= nil and band(var_5_18, Data.MonsterOption.hide_def) > 0 and "?" or var_5_4._link and var_5_4._link[1] ~= 0 and #var_5_4._link or ClientData.formatNum(var_5_4._hp[1], 99999))
+			local linkCountText = (var_5_4._id == 40776) and 5 or (var_5_4._link and var_5_4._link[1] ~= 0 and #var_5_4._link or 1)
+			arg_5_0._hpValue:setString(var_5_18 ~= nil and band(var_5_18, Data.MonsterOption.hide_def) > 0 and "?" or ((var_5_4._link and var_5_4._link[1] ~= 0) or var_5_4._id == 40776) and linkCountText or ClientData.formatNum(var_5_4._hp[1], 99999))
 
 			if arg_5_0._showInBattle and var_5_3 and var_5_3 > 0 then
 				arg_5_0._extraBg:setVisible(true)
@@ -643,6 +673,9 @@ function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 			else
 				arg_5_0._extraBg:setVisible(false)
 			end
+		else
+			arg_5_0._starValue:setVisible(false)
+			arg_5_0._starIcon:setVisible(false)
 		end
 
 		arg_5_0._costBg:setVisible(var_5_11 and var_5_5 ~= Data.CardType.rare and not arg_5_0._showInBattle)
@@ -666,18 +699,26 @@ function var_0_0.createCardFrame(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 		arg_5_0._nameValue:setVisible(arg_5_0._showFg and not arg_5_0._showInBattle)
 		arg_5_0._nameValue:setString(var_5_2 and Str(var_5_4._nameSid) or Str(var_5_4._nameSid))
 		arg_5_0._nameValue:setScale(math.min(1, 180 / lc.w(arg_5_0._nameValue)))
-		arg_5_0._starArea:setVisible(var_5_11 and not arg_5_0._showInBattle)
+		local isLinkCard = (var_5_4._link and var_5_4._link[1] ~= 0) or (var_5_4._option and band(var_5_4._option, Data.MonsterOption.is_link) ~= 0) or var_5_4._id == 40776 or var_5_4._id == 40774 or (var_5_4._star and var_5_4._star == 0)
+		arg_5_0._starArea:setVisible(var_5_11 and not arg_5_0._showInBattle and not isLinkCard)
 
-		if var_5_11 and not arg_5_0._showInBattle then
+		if var_5_11 and not arg_5_0._showInBattle and not isLinkCard then
 			arg_5_0._starArea:update(var_5_4._star, arg_5_1)
+		else
+			arg_5_0._starArea:setVisible(false)
+			if arg_5_0._starArea and arg_5_0._starArea._icons then
+				for iter_124_0 = 1, #arg_5_0._starArea._icons do
+					arg_5_0._starArea._icons[iter_124_0]:setVisible(false)
+				end
+			end
 		end
 
 		local var_5_19 = ClientView.getMagicTrapTypeFrameName(arg_5_1)
-
-		arg_5_0._magicTrapMark:setVisible(arg_5_0._showFg and var_5_19 ~= "")
-
-		if arg_5_0._magicTrapMark:isVisible() then
+		if var_5_19 and var_5_19 ~= "" then
 			arg_5_0._magicTrapMark:setSpriteFrame(var_5_19)
+			arg_5_0._magicTrapMark:setVisible(arg_5_0._showFg == true)
+		else
+			arg_5_0._magicTrapMark:setVisible(false)
 		end
 
 		arg_5_0._qualityBg:setVisible(arg_5_0._showFg and not arg_5_0._showInBattle)
@@ -1396,7 +1437,14 @@ do
 		[21161] = {0, 0, 82, 82, true},
 		[21162] = {0, 0, 82, 82, true},
 		[21163] = {0, 0, 82, 82, true},
-		[21164] = {0, 0, 82, 82, true},
+				[21164] = {0, 0, 82, 82, true},
+		[21165] = {0, 0, 82, 82, true},
+		[21166] = {0, 0, 82, 82, true},
+				[21167] = {0, 0, 82, 82, true},
+		[21168] = {0, 0, 82, 82, true},
+		[21169] = {0, 0, 82, 82, true},
+		[21170] = {0, 0, 82, 82, true},
+		[21171] = {0, 0, 82, 82, true},
 		[40755] = {76, 0, 82, 82, false},
 		[40756] = {126, 23, 82, 82, false},
 		[40757] = {99, 0, 82, 82, false},
@@ -1415,7 +1463,7 @@ do
 		var_sky_icons[iter_sky] = true
 	end
 
-	for iter_sky = 21151, 21164 do
+	for iter_sky = 21151, 21171 do
 		var_sky_icons[iter_sky] = true
 	end
 
@@ -1540,7 +1588,7 @@ function var_0_0.getCardIconName(arg_35_0)
 		[30592] = true, [30593] = true,
 		[40727] = true, [40728] = true, [40729] = true, [40730] = true,
 		[40731] = true, [40732] = true, [40733] = true,
-		[40742] = true, [40743] = true, [12337] = true, [12338] = true, [12339] = true, [12340] = true, [21148] = true, [21149] = true, [21150] = true, [30596] = true, [40745] = true, [40746] = true, [40747] = true, [40748] = true, [40744] = true, [12346] = true, [12347] = true, [12348] = true, [40749] = true, [40750] = true, [40751] = true, [40752] = true, [40753] = true, [40754] = true, [12349] = true, [12350] = true, [12351] = true, [12352] = true, [12353] = true, [12354] = true, [12355] = true, [12356] = true, [12357] = true, [21151] = true, [21152] = true, [21153] = true, [21154] = true, [21155] = true, [21156] = true, [21157] = true, [21158] = true, [21159] = true, [21160] = true, [21161] = true, [21162] = true, [21163] = true, [21164] = true, [40755] = true, [40756] = true, [40757] = true, [40758] = true, [40759] = true, [40760] = true, [40761] = true, [40762] = true, [40763] = true, [40764] = true, [40765] = true, [40766] = true
+		[40742] = true, [40743] = true, [12337] = true, [12338] = true, [12339] = true, [12340] = true, [21148] = true, [21149] = true, [21150] = true, [30596] = true, [40745] = true, [40746] = true, [40747] = true, [40748] = true, [40744] = true, [12346] = true, [12347] = true, [12348] = true, [40749] = true, [40750] = true, [40751] = true, [40752] = true, [40753] = true, [40754] = true, [12349] = true, [12350] = true, [12351] = true, [12352] = true, [12353] = true, [12354] = true, [12355] = true, [12356] = true, [12357] = true, [21151] = true, [21152] = true, [21153] = true, [21154] = true, [21155] = true, [21156] = true, [21157] = true, [21158] = true, [21159] = true, [21160] = true, [21161] = true, [21162] = true, [21163] = true, [21164] = true, [40755] = true, [40756] = true, [40757] = true, [40758] = true, [40759] = true, [40760] = true, [40761] = true, [40762] = true, [40763] = true, [40764] = true, [40765] = true, [40766] = true, [12366] = true, [12358] = true, [12359] = true, [40767] = true, [40768] = true, [40769] = true, [40770] = true, [40771] = true, [40772] = true, [40773] = true, [21165] = true, [21166] = true, [12360] = true, [21167] = true, [40774] = true, [40775] = true, [12361] = true, [12362] = true, [21168] = true, [21169] = true, [21170] = true, [40776] = true, [40777] = true, [40778] = true, [40779] = true, [40780] = true, [21171] = true, [12365] = true, [12364] = true, [12363] = true, [12367] = true, [12368] = true, [12369] = true, [12370] = true, [30598] = true, [30599] = true, [30600] = true, [30601] = true, [12371] = true, [12372] = true, [12373] = true, [12374] = true, [12375] = true, [12376] = true, [12377] = true, [12378] = true, [12379] = true, [12380] = true, [12381] = true, [30602] = true, [30603] = true, [30604] = true, [30605] = true, [21172] = true, [21173] = true, [12383] = true, [21174] = true, [21175] = true, [12384] = true, [12385] = true, [12386] = true, [12387] = true, [12388] = true, [40782] = true, [21176] = true, [21177] = true, [30607] = true, [12389] = true, [12390] = true, [12391] = true, [40783] = true, [21178] = true, [12392] = true, [12393] = true, [12394] = true
 	}
 
 	if lc.FrameCache:getSpriteFrame(var_35_1) == nil and not customCards[var_35_0] and (not var_35_0 or var_35_0 < 10000) then
@@ -1627,6 +1675,14 @@ function var_0_0.getMagicTrapTypeFrameName(arg_39_0)
 	local var_39_0, var_39_1, var_39_2 = Data.removeAdditional(arg_39_0)
 
 	arg_39_0 = var_39_0
+
+	if arg_39_0 == 30603 then
+		return "card_magictrap_13"
+	elseif arg_39_0 == 21173 then
+		return "card_magictrap_14"
+	elseif (arg_39_0 >= 30598 and arg_39_0 <= 30602) or arg_39_0 == 30604 or arg_39_0 == 30605 or (arg_39_0 >= 21171 and arg_39_0 <= 21175 and arg_39_0 ~= 21173) then
+		return ""
+	end
 
 	local var_39_3, var_39_4 = Data.getInfo(arg_39_0)
 
@@ -2673,12 +2729,20 @@ function var_0_0.createBMFont(arg_91_0, arg_91_1, arg_91_2, arg_91_3)
 			var_91_0 = cc.Label:createWithBMFont(arg_91_0, arg_91_1)
 		end
 
+		if not var_91_0 then
+			if arg_91_2 and arg_91_3 then
+				var_91_0 = cc.Label:createWithTTF(tostring(arg_91_1 or ""), var_0_0.TTF_FONT, var_91_1, cc.size(arg_91_3, 0), arg_91_2)
+			else
+				var_91_0 = cc.Label:createWithTTF(tostring(arg_91_1 or ""), var_0_0.TTF_FONT, var_91_1)
+			end
+		end
+
 		-- Most of these labels are built empty - createBMFont(font, "") - and
 		-- given their words later, so deciding the font only from the text
 		-- handed in at creation misses nearly every caption in the game and
 		-- leaves it drawn in a bitmap font that has no accented letters at
 		-- all. Watch what arrives instead: "Hãy" comes out "Hy" otherwise.
-		local var_91_2 = var_91_0.setString
+		local var_91_2 = var_91_0 and var_91_0.setString
 
 		function var_91_0.setString(arg_90_2, arg_90_1)
 			if not arg_90_2._vnOutlineFont and var_0_0.needsOutlineFont(arg_90_1) then
@@ -3473,6 +3537,15 @@ function var_0_0.createEvolutionArea(arg_123_0, arg_123_1)
 end
 
 function var_0_0.createStarArea(arg_124_0, arg_124_1)
+	local isLinkCardInit = false
+	local v_info = Data.getInfo(arg_124_1)
+	if v_info then
+		if (v_info._link and v_info._link[1] ~= 0) or (v_info._option and band(v_info._option, Data.MonsterOption.is_link) ~= 0) or v_info._id == 40776 or (v_info._star and v_info._star == 0) then
+			isLinkCardInit = true
+		end
+	elseif arg_124_1 == 40776 then
+		isLinkCardInit = true
+	end
 	local var_124_0 = cc.size(240, 26)
 	local var_124_1 = lc.createNode(var_124_0)
 
@@ -3499,8 +3572,32 @@ function var_0_0.createStarArea(arg_124_0, arg_124_1)
 	end
 
 	var_124_1._icons = var_124_2
+	var_124_1._infoId = arg_124_1
+	if isLinkCardInit then
+		var_124_1:setVisible(false)
+		for iter_124_0 = 1, var_0_0.MAX_STAR_COUNT do
+			var_124_2[iter_124_0]:setVisible(false)
+		end
+	end
 
 	function var_124_1.update(arg_125_0, arg_125_1, arg_125_2)
+		local checkId = arg_125_2 or arg_125_0._infoId
+		local var_125_1 = checkId and Data.getInfo(checkId)
+		local isLink = false
+		if var_125_1 then
+			if (var_125_1._link and var_125_1._link[1] ~= 0) or (var_125_1._option and band(var_125_1._option, Data.MonsterOption.is_link) ~= 0) or var_125_1._id == 40776 or (var_125_1._star and var_125_1._star == 0) then
+				isLink = true
+			end
+		elseif checkId == 40776 then
+			isLink = true
+		end
+		if isLink or arg_125_1 == 0 or arg_125_1 == Data.XYZ_STAR or not arg_125_1 then
+			arg_125_0:setVisible(false)
+			for iter_125_0 = 1, var_0_0.MAX_STAR_COUNT do
+				arg_125_0._icons[iter_125_0]:setVisible(false)
+			end
+			return
+		end
 		local var_125_0 = "card_quality"
 		local var_125_1 = Data.getInfo(arg_125_2)
 
@@ -6285,11 +6382,20 @@ function var_0_0.createCardPackage(arg_294_0, arg_294_1)
 
 	local var_294_8 = cc.ShaderSprite:createWithFilename(var_294_7)
 
-	var_294_0:setContentSize(cc.size(lc.w(var_294_2), lc.h(var_294_8) + lc.h(var_294_2) + lc.h(var_294_6)))
+	local bodyW = lc.w(var_294_2)
+	if not bodyW or bodyW <= 0 or bodyW ~= bodyW then bodyW = 252 end
+	local bodyH = lc.h(var_294_2)
+	if not bodyH or bodyH <= 0 or bodyH ~= bodyH then bodyH = 530 end
+	local headH = lc.h(var_294_6)
+	if not headH or headH <= 0 or headH ~= headH then headH = 80 end
+	local footH = lc.h(var_294_8)
+	if not footH or footH <= 0 or footH ~= footH then footH = 60 end
+
+	var_294_0:setContentSize(cc.size(bodyW, footH + bodyH + headH))
 	var_294_0:setAnchorPoint(cc.p(0.5, 0.5))
-	lc.addChildToPos(var_294_0, var_294_8, cc.p(lc.cw(var_294_0), lc.ch(var_294_8)))
-	lc.addChildToPos(var_294_0, var_294_6, cc.p(lc.cw(var_294_0), lc.h(var_294_0) - lc.ch(var_294_6)))
-	lc.addChildToPos(var_294_0, var_294_2, cc.p(lc.cw(var_294_0), lc.h(var_294_8) + lc.ch(var_294_2)))
+	lc.addChildToPos(var_294_0, var_294_8, cc.p(lc.cw(var_294_0), footH / 2))
+	lc.addChildToPos(var_294_0, var_294_6, cc.p(lc.cw(var_294_0), lc.h(var_294_0) - headH / 2))
+	lc.addChildToPos(var_294_0, var_294_2, cc.p(lc.cw(var_294_0), footH + bodyH / 2))
 
 	-- Title banner for theme pack name
 	local packTitle = ClientData.getPackTitle and ClientData.getPackTitle(arg_294_0._value)
@@ -6302,7 +6408,7 @@ function var_0_0.createCardPackage(arg_294_0, arg_294_1)
 		local titleLabel = ClientView.createTTF(packTitle, ClientView.FontSize.S1, cc.c3b(255, 230, 130))
 		titleLabel:enableOutline(cc.c4b(30, 20, 10, 255), 2)
 		lc.addChildToCenter(titleBg, titleLabel)
-		lc.addChildToPos(var_294_0, titleBg, cc.p(lc.cw(var_294_0), lc.h(var_294_0) - lc.h(var_294_6) - 16), 10)
+		lc.addChildToPos(var_294_0, titleBg, cc.p(lc.cw(var_294_0), lc.h(var_294_0) - headH - 16), 10)
 		var_294_0._titleBg = titleBg
 	end
 

@@ -196,7 +196,9 @@ var_0_0.CardKeyword = {
 	hyyx = 105,
 	ysyx = 14,
 	liqi = 303,
-	minecraft = 304
+	minecraft = 304,
+	dragonball = 306,
+	shin = 307, labrynth = 308, pvz = 309
 }
 var_0_0.CardActivateType = {
 	material = 2,
@@ -1848,7 +1850,7 @@ function var_0_0.getType(arg_12_0)
 end
 
 function var_0_0.getSkillType(arg_13_0)
-	if arg_13_0 == 14677 or arg_13_0 == 14714 or arg_13_0 == 14718 or arg_13_0 == 14721 or arg_13_0 == 14723 or arg_13_0 == 14724 or arg_13_0 == 14725 or arg_13_0 == 14728 or arg_13_0 == 14729 or arg_13_0 == 14731 or arg_13_0 == 14732 or arg_13_0 == 14738 or arg_13_0 == 14741 or arg_13_0 == 14742 or arg_13_0 == 14745 or arg_13_0 == 14747 or arg_13_0 == 14748 or arg_13_0 == 14763 or arg_13_0 == 14764 or arg_13_0 == 14765 or arg_13_0 == 14766 or arg_13_0 == 14770 or arg_13_0 == 14774 or arg_13_0 == 14776 or arg_13_0 == 14779 or arg_13_0 == 14781 or arg_13_0 == 14783 or arg_13_0 == 14784 or arg_13_0 == 14785 or arg_13_0 == 14786 or arg_13_0 == 14789 or arg_13_0 == 14793 or arg_13_0 == 14794 or arg_13_0 == 14798 or arg_13_0 == 14804 or arg_13_0 == 14805 or arg_13_0 == 14806 or arg_13_0 == 14807 or arg_13_0 == 14808 or arg_13_0 == 14809 or arg_13_0 == 14810 or arg_13_0 == 14811 or arg_13_0 == 14814 or arg_13_0 == 14817 or arg_13_0 == 14818 or arg_13_0 == 14819 or arg_13_0 == 14821 or arg_13_0 == 14822 or arg_13_0 == 14824 or arg_13_0 == 14825 or arg_13_0 == 14831 then
+	if arg_13_0 == 14677 or arg_13_0 == 14714 or arg_13_0 == 14718 or arg_13_0 == 14721 or arg_13_0 == 14723 or arg_13_0 == 14724 or arg_13_0 == 14725 or arg_13_0 == 14728 or arg_13_0 == 14729 or arg_13_0 == 14731 or arg_13_0 == 14732 or arg_13_0 == 14738 or arg_13_0 == 14741 or arg_13_0 == 14742 or arg_13_0 == 14745 or arg_13_0 == 14747 or arg_13_0 == 14748 or arg_13_0 == 14763 or arg_13_0 == 14764 or arg_13_0 == 14765 or arg_13_0 == 14766 or arg_13_0 == 14770 or arg_13_0 == 14774 or arg_13_0 == 14776 or arg_13_0 == 14779 or arg_13_0 == 14781 or arg_13_0 == 14783 or arg_13_0 == 14784 or arg_13_0 == 14785 or arg_13_0 == 14786 or arg_13_0 == 14789 or arg_13_0 == 14793 or arg_13_0 == 14794 or arg_13_0 == 14797 or arg_13_0 == 14798 or arg_13_0 == 14804 or arg_13_0 == 14805 or arg_13_0 == 14806 or arg_13_0 == 14807 or arg_13_0 == 14808 or arg_13_0 == 14809 or arg_13_0 == 14810 or arg_13_0 == 14811 or arg_13_0 == 14814 or arg_13_0 == 14817 or arg_13_0 == 14818 or arg_13_0 == 14819 or arg_13_0 == 14821 or arg_13_0 == 14822 or arg_13_0 == 14824 or arg_13_0 == 14825 or arg_13_0 == 14831 or arg_13_0 == 14832 then
 		return var_0_0.SkillType.monsterSpell
 	end
 
@@ -1883,6 +1885,66 @@ function var_0_0.getSkillType(arg_13_0)
 
 	if arg_13_0 == 14682 or arg_13_0 == 14683 or arg_13_0 == 14690 or arg_13_0 == 14691 or arg_13_0 == 14692 or arg_13_0 == 14693 or arg_13_0 == 14717 or arg_13_0 == 14730 then
 		return var_0_0.SkillType.defend
+	end
+
+	if (arg_13_0 >= 20117 and arg_13_0 <= 20120) or (arg_13_0 >= 20194 and arg_13_0 <= 20209) then
+		return var_0_0.SkillType.trapSpell
+	end
+
+	if arg_13_0 >= 20210 and arg_13_0 <= 20218 then
+		return var_0_0.SkillType.magicSpell
+	end
+
+	if arg_13_0 >= 20135 and arg_13_0 <= 20193 then
+		return var_0_0.SkillType.monsterSpell
+	end
+
+	if arg_13_0 >= 20219 and arg_13_0 <= 20221 then
+		return var_0_0.SkillType.defend
+	end
+
+	if arg_13_0 >= 20222 and arg_13_0 <= 20223 then
+		return var_0_0.SkillType.monsterSpell
+	end
+
+	if arg_13_0 >= 20224 and arg_13_0 <= 20225 then
+		return var_0_0.SkillType.trapSpell
+	end
+
+	if arg_13_0 == 20226 or arg_13_0 == 20229 then
+		return var_0_0.SkillType.magicSpell
+	end
+
+	if arg_13_0 == 20227 or arg_13_0 == 20228 then
+		return var_0_0.SkillType.monsterSpell
+	end
+
+	if (arg_13_0 >= 20230 and arg_13_0 <= 20240) then
+		return var_0_0.SkillType.monsterSpell
+	end
+
+	if arg_13_0 == 20241 or arg_13_0 == 20242 or arg_13_0 == 20248 then
+		return var_0_0.SkillType.magicSpell
+	end
+
+	if arg_13_0 == 20243 then
+		return var_0_0.SkillType.trapSpell
+	end
+
+	if arg_13_0 >= 20244 and arg_13_0 <= 20247 then
+		return var_0_0.SkillType.monsterSpell
+	end
+
+	if arg_13_0 == 20249 then
+		return var_0_0.SkillType.monsterHalo
+	end
+
+	if arg_13_0 == 20250 or arg_13_0 == 20252 then
+		return var_0_0.SkillType.monsterSpell
+	end
+
+	if arg_13_0 == 20251 or arg_13_0 == 20253 then
+		return var_0_0.SkillType.monsterHalo
 	end
 
 	if arg_13_0 >= 20000 then
@@ -2460,3 +2522,17 @@ function table.removeByValue(arg_63_0, arg_63_1, arg_63_2)
 end
 
 Data = var_0_0
+
+function isMonsterCard(c)
+	if not c then return false end
+	if c.isMonster and c:isMonster() then return true end
+	if c.isMonsterRare and c:isMonsterRare() then return true end
+	local t = c._type or (c._info and c._info._type)
+	return t == Data.CardType.monster or t == Data.CardType.rare
+end
+
+function isLabrynthCard(c)
+	if not c then return false end
+	if c.isKeyword and c:isKeyword(308) then return true end
+	return (c._info and c._info._keyword == 308) or c._keyword == 308
+end

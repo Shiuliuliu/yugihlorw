@@ -583,6 +583,64 @@
 	cc.spriteFrameCache.addSpriteFramesWithData = function () {};
 
 	var CUSTOM_FRAME_IMAGE_MAP = {
+		'card_ico_12363': 'res/new/thumb/card_ico_12363.png',
+		'card_ico_12363_3': 'res/new/thumb/card_ico_12363_3.png',
+		'card_ico_12364': 'res/new/thumb/card_ico_12364.png',
+		'card_ico_12364_3': 'res/new/thumb/card_ico_12364_3.png',
+		'card_ico_12365': 'res/new/thumb/card_ico_12365.png',
+		'card_ico_12365_3': 'res/new/thumb/card_ico_12365_3.png',
+		'card_ico_12371': 'res/new/thumb/card_ico_12371.png',
+		'card_ico_12371_3': 'res/new/thumb/card_ico_12371_3.png',
+		'card_ico_12372': 'res/new/thumb/card_ico_12372.png',
+		'card_ico_12372_3': 'res/new/thumb/card_ico_12372_3.png',
+		'card_ico_12373': 'res/new/thumb/card_ico_12373.png',
+		'card_ico_12373_3': 'res/new/thumb/card_ico_12373_3.png',
+		'card_ico_12374': 'res/new/thumb/card_ico_12374.png',
+		'card_ico_12374_3': 'res/new/thumb/card_ico_12374_3.png',
+		'card_ico_12375': 'res/new/thumb/card_ico_12375.png',
+		'card_ico_12375_3': 'res/new/thumb/card_ico_12375_3.png',
+		'card_ico_12376': 'res/new/thumb/card_ico_12376.png',
+		'card_ico_12376_3': 'res/new/thumb/card_ico_12376_3.png',
+		'card_ico_12377': 'res/new/thumb/card_ico_12377.png',
+		'card_ico_12377_3': 'res/new/thumb/card_ico_12377_3.png',
+		'card_ico_12378': 'res/new/thumb/card_ico_12378.png',
+		'card_ico_12378_3': 'res/new/thumb/card_ico_12378_3.png',
+		'card_ico_12379': 'res/new/thumb/card_ico_12379.png',
+		'card_ico_12379_3': 'res/new/thumb/card_ico_12379_3.png',
+		'card_ico_12380': 'res/new/thumb/card_ico_12380.png',
+		'card_ico_12380_3': 'res/new/thumb/card_ico_12380_3.png',
+		'card_ico_12381': 'res/new/thumb/card_ico_12381.png',
+		'card_ico_12381_3': 'res/new/thumb/card_ico_12381_3.png',
+		'card_ico_21172': 'res/new/thumb/card_ico_21172.png',
+		'card_ico_21172_3': 'res/new/thumb/card_ico_21172_3.png',
+		'card_ico_21173': 'res/new/thumb/card_ico_21173.png',
+		'card_ico_21173_3': 'res/new/thumb/card_ico_21173_3.png',
+		'card_ico_30598': 'res/new/thumb/card_ico_30598.png',
+		'card_ico_30598_3': 'res/new/thumb/card_ico_30598_3.png',
+		'card_ico_30599': 'res/new/thumb/card_ico_30599.png',
+		'card_ico_30599_3': 'res/new/thumb/card_ico_30599_3.png',
+		'card_ico_30600': 'res/new/thumb/card_ico_30600.png',
+		'card_ico_30600_3': 'res/new/thumb/card_ico_30600_3.png',
+		'card_ico_30601': 'res/new/thumb/card_ico_30601.png',
+		'card_ico_30601_3': 'res/new/thumb/card_ico_30601_3.png',
+		'card_ico_30602': 'res/new/thumb/card_ico_30602.png',
+		'card_ico_30602_3': 'res/new/thumb/card_ico_30602_3.png',
+		'card_ico_30603': 'res/new/thumb/card_ico_30603.png',
+		'card_ico_30603_3': 'res/new/thumb/card_ico_30603_3.png',
+		'card_ico_30604': 'res/new/thumb/card_ico_30604.png',
+		'card_ico_30604_3': 'res/new/thumb/card_ico_30604_3.png',
+		'card_ico_30605': 'res/new/thumb/card_ico_30605.png',
+		'card_ico_30605_3': 'res/new/thumb/card_ico_30605_3.png',
+		'card_ico_12370': 'res/new/thumb/card_ico_12370.png',
+		'card_ico_12370_3': 'res/new/thumb/card_ico_12370_3.png',
+		'card_ico_12369': 'res/new/thumb/card_ico_12369.png',
+		'card_ico_12369_3': 'res/new/thumb/card_ico_12369_3.png',
+		'card_ico_12368': 'res/new/thumb/card_ico_12368.png',
+		'card_ico_12368_3': 'res/new/thumb/card_ico_12368_3.png',
+		'card_ico_12367': 'res/new/thumb/card_ico_12367.png',
+		'card_ico_12367_3': 'res/new/thumb/card_ico_12367_3.png',
+		'card_ico_12366': 'res/new/thumb/card_ico_12366.png',
+		'card_ico_12366_3': 'res/new/thumb/card_ico_12366_3.png',
 		'img_icon_res1_s': 'res/new/linh_thach_34.png',
 		'res_ico_1': 'res/new/linh_thach_76.png',
 		'img_icon_res3_s': 'res/new/linh_thach_vip_36.png',
@@ -711,6 +769,64 @@
 		'card_ico_12356_3': 'res/new/thumb/card_ico_12356_3.png',
 		'card_ico_12357': 'res/new/thumb/card_ico_12357.png',
 		'card_ico_12357_3': 'res/new/thumb/card_ico_12357_3.png',
+		'card_ico_12358': 'res/new/thumb/card_ico_12358.png',
+		'card_ico_12358_3': 'res/new/thumb/card_ico_12358_3.png',
+		'card_ico_12359': 'res/new/thumb/card_ico_12359.png',
+		'card_ico_12359_3': 'res/new/thumb/card_ico_12359_3.png',
+		'card_ico_40767': 'res/new/thumb/card_ico_40767.png',
+		'card_ico_40767_3': 'res/new/thumb/card_ico_40767_3.png',
+		'card_ico_40768': 'res/new/thumb/card_ico_40768.png',
+		'card_ico_40768_3': 'res/new/thumb/card_ico_40768_3.png',
+		'card_ico_40769': 'res/new/thumb/card_ico_40769.png',
+		'card_ico_40769_3': 'res/new/thumb/card_ico_40769_3.png',
+		'card_ico_40770': 'res/new/thumb/card_ico_40770.png',
+		'card_ico_40770_3': 'res/new/thumb/card_ico_40770_3.png',
+		'card_ico_40771': 'res/new/thumb/card_ico_40771.png',
+		'card_ico_40771_3': 'res/new/thumb/card_ico_40771_3.png',
+		'card_ico_40772': 'res/new/thumb/card_ico_40772.png',
+		'card_ico_40772_3': 'res/new/thumb/card_ico_40772_3.png',
+		'card_ico_40773': 'res/new/thumb/card_ico_40773.png',
+		'card_ico_40773_3': 'res/new/thumb/card_ico_40773_3.png',
+		'card_ico_21165': 'res/new/thumb/card_ico_21165.png',
+		'card_ico_21165_3': 'res/new/thumb/card_ico_21165_3.png',
+		'card_ico_21166': 'res/new/thumb/card_ico_21166.png',
+		'card_ico_21166_3': 'res/new/thumb/card_ico_21166_3.png',
+		'card_ico_12360': 'res/new/thumb/card_ico_12360.png',
+		'card_ico_12360_3': 'res/new/thumb/card_ico_12360_3.png',
+		'card_ico_21167': 'res/new/thumb/card_ico_21167.png',
+		'card_ico_21167_3': 'res/new/thumb/card_ico_21167_3.png',
+		'card_ico_40774': 'res/new/thumb/card_ico_40774.png',
+		'card_ico_40774_3': 'res/new/thumb/card_ico_40774_3.png',
+		'card_ico_40775': 'res/new/thumb/card_ico_40775.png',
+		'card_ico_40775_3': 'res/new/thumb/card_ico_40775_3.png',
+		'card_ico_40780': 'res/new/thumb/card_ico_40780.png',
+		'card_ico_40780_3': 'res/new/thumb/card_ico_40780_3.png',
+
+		'card_ico_21171': 'res/new/thumb/card_ico_21171.png',
+		'card_ico_21171_3': 'res/new/thumb/card_ico_21171_3.png',
+
+		'card_ico_12361': 'res/new/thumb/card_ico_12361.png',
+		'card_ico_12361_3': 'res/new/thumb/card_ico_12361_3.png',
+		'card_ico_12362': 'res/new/thumb/card_ico_12362.png',
+		'card_ico_12362_3': 'res/new/thumb/card_ico_12362_3.png',
+		'card_ico_21168': 'res/new/thumb/card_ico_21168.png',
+		'card_ico_21168_3': 'res/new/thumb/card_ico_21168_3.png',
+		'card_ico_21169': 'res/new/thumb/card_ico_21169.png',
+		'card_ico_21169_3': 'res/new/thumb/card_ico_21169_3.png',
+		'card_ico_21170': 'res/new/thumb/card_ico_21170.png',
+		'card_ico_21170_3': 'res/new/thumb/card_ico_21170_3.png',
+		'card_ico_40776': 'res/new/thumb/card_ico_40776.png',
+		'card_ico_40776_3': 'res/new/thumb/card_ico_40776_3.png',
+		'card_ico_40777': 'res/new/thumb/card_ico_40777.png',
+		'card_ico_40777_3': 'res/new/thumb/card_ico_40777_3.png',
+		'card_ico_40778': 'res/new/thumb/card_ico_40778.png',
+		'card_ico_40778_3': 'res/new/thumb/card_ico_40778_3.png',
+		'card_ico_40779': 'res/new/thumb/card_ico_40779.png',
+		'card_ico_40779_3': 'res/new/thumb/card_ico_40779_3.png',
+
+
+
+
 		'card_ico_21151': 'res/new/thumb/card_ico_21151.png',
 		'card_ico_21151_3': 'res/new/thumb/card_ico_21151_3.png',
 		'card_ico_21152': 'res/new/thumb/card_ico_21152.png',
@@ -877,7 +993,12 @@
 	var negativeFrameMap = {};
 
 	function getCustomSpriteFrame(name) {
-		if (negativeFrameMap[name]) return null;
+		var custom = (global.jdzcRes && global.jdzcRes.CUSTOM_ICON_REPLACEMENTS) || global.CUSTOM_ICON_REPLACEMENTS;
+		if (custom && custom[name]) {
+			delete negativeFrameMap[name];
+		} else if (negativeFrameMap[name]) {
+			return null;
+		}
 		var custom = (global.jdzcRes && global.jdzcRes.CUSTOM_ICON_REPLACEMENTS) || global.CUSTOM_ICON_REPLACEMENTS;
 		if (!custom || !custom[name]) {
 			if (CUSTOM_FRAME_IMAGE_MAP && CUSTOM_FRAME_IMAGE_MAP[name]) {
@@ -1131,7 +1252,12 @@
 					       dimensions, hAlign, vAlign);
 		},
 		createWithBMFont: function (fnt, text, hAlign, maxWidth) {
-			return new cc.LabelBMFont(String(unescapeNewlines(text)), fnt, maxWidth, hAlign);
+			try {
+				return new cc.LabelBMFont(String(unescapeNewlines(text)), fnt, maxWidth, hAlign);
+			} catch (e) {
+				console.warn('[engine] createWithBMFont fallback to LabelTTF:', e);
+				return new cc.LabelTTF(String(unescapeNewlines(text)), global.jdzcFontFamily ? global.jdzcFontFamily() : 'Arial', 20);
+			}
 		},
 		createWithCharMap: function (file, w, h, start) {
 			return new cc.LabelAtlas('', file, w, h, start);
@@ -3909,7 +4035,7 @@
 
 			if (texture || res.exists(key) || /\d+(_\d+)?\.(jpm|jpg)$/.test(key)) {
 				var sprite = new Cls();
-				if (size) sprite.setContentSize(cc.size(size[0], size[1]));
+				if (size && Array.isArray(size) && typeof size[0] === 'number' && typeof size[1] === 'number') sprite.setContentSize(cc.size(size[0], size[1]));
 				if (texture) {
 					/* the cache is holding the key but the pixels are still
 					 * in flight; the resource layer fills the sprite in */
@@ -4050,7 +4176,7 @@
 
 			var sprite = new Cls();
 			var size = res.sizeOf(a) || (cached && cached._contentSize && cached._contentSize.width > 0 ? [cached._contentSize.width, cached._contentSize.height] : null);
-			if (size) sprite.setContentSize(cc.size(size[0], size[1]));
+			if (size && Array.isArray(size) && typeof size[0] === 'number' && typeof size[1] === 'number') sprite.setContentSize(cc.size(size[0], size[1]));
 
 			if (cached) {
 				res.awaitTexture(a, sprite);
@@ -4289,7 +4415,7 @@
 			var sprite = new ccui.Scale9Sprite();
 			var pendingSize = null;
 			var size = res.sizeOf(file);
-			if (size) {
+			if (size && Array.isArray(size) && typeof size[0] === 'number' && typeof size[1] === 'number') {
 				sprite.setContentSize(cc.size(size[0], size[1]));
 			}
 
@@ -4521,76 +4647,18 @@
 		var s9WebGL = ccui.Scale9Sprite.WebGLRenderCmd &&
 			ccui.Scale9Sprite.WebGLRenderCmd.prototype;
 		if (s9WebGL) {
+			var TRANSFORM_DIRTY = cc.Node._dirtyFlags.transformDirty;
+			var s9Visit = s9WebGL.visit, s9VisitChildren = s9WebGL.visitChildren;
 			s9WebGL.visit = function (parentCmd) {
-				var node = this._node;
-				if (!node._visible || !node._scale9Image)
-					return;
-
-				healEmptyScale9(node);
-
-				if (node._positionsAreDirty) {
-					node._updatePositions();
-					node._positionsAreDirty = false;
+				if (this._dirtyFlag & TRANSFORM_DIRTY) this.__childrenMoved = true;
+				return s9Visit.apply(this, arguments);
+			};
+			s9WebGL.visitChildren = function () {
+				if (this.__childrenMoved) {
+					this.__childrenMoved = false;
+					this._dirtyFlag |= TRANSFORM_DIRTY;
 				}
-
-				parentCmd = parentCmd || this.getParentRenderCmd();
-				if (node._parent && node._parent._renderCmd)
-					this._curLevel = node._parent._renderCmd._curLevel + 1;
-
-				var renderer = cc.renderer;
-				if (renderer && isNaN(node._customZ)) {
-					node._vertexZ = renderer.assignedZ;
-					renderer.assignedZ += renderer.assignedZStep;
-				}
-
-				this._syncStatus(parentCmd);
-
-				var children = node._children;
-				var len = children ? children.length : 0;
-				var i = 0;
-				if (len > 0) {
-					node.sortAllChildren();
-					/* 1. Visit children with _localZOrder < 0 FIRST (e.g. background fill _bg) */
-					for (; i < len; i++) {
-						var child = children[i];
-						if (child && child._localZOrder < 0) {
-							if (child._renderCmd) child._renderCmd.visit(this);
-						} else {
-							break;
-						}
-					}
-				}
-
-				/* 2. Visit 9-slice frame renderers SECOND (draws ON TOP OF background fill) */
-				if (node._scale9Enabled) {
-					var locRenderers = node._renderers;
-					var rendererLen = locRenderers.length;
-					for (var j = 0; j < rendererLen; j++) {
-						var locRenderer = locRenderers[j];
-						if (locRenderer) {
-							var tempCmd = locRenderer._renderCmd;
-							if (tempCmd) tempCmd.visit(this);
-						} else {
-							break;
-						}
-					}
-				} else {
-					node._adjustScale9ImageScale();
-					node._adjustScale9ImagePosition();
-					if (node._scale9Image && node._scale9Image._renderCmd) {
-						node._scale9Image._renderCmd.visit(this);
-					}
-				}
-
-				/* 3. Visit children with _localZOrder >= 0 THIRD (draws ON TOP OF frame) */
-				for (; i < len; i++) {
-					var ch = children[i];
-					if (ch && ch._renderCmd) {
-						ch._renderCmd.visit(this);
-					}
-				}
-
-				this._dirtyFlag = 0;
+				return s9VisitChildren.apply(this, arguments);
 			};
 		}
 
@@ -4641,7 +4709,7 @@
 				var pendingScale9 = false;
 				var pendingCaps = null;
 				var size = res.sizeOf(fileName);
-				if (size) {
+				if (size && Array.isArray(size) && typeof size[0] === 'number' && typeof size[1] === 'number') {
 					imageView.setContentSize(cc.size(size[0], size[1]));
 				}
 

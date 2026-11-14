@@ -373,9 +373,34 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
     is_tien_nghich = (222001 <= pkg_num <= 222050) or (pkg_num == 2)
     is_kmr = (223001 <= pkg_num <= 223050) or (pkg_num == 3)
     is_minecraft = (224001 <= pkg_num <= 224050) or (pkg_num == 4)
-    is_fairy_hero = is_tru_tien or is_tien_nghich or is_kmr or is_minecraft or (pkg_num in SERVER_FAIRY_HERO_CARDS_MAP)
+    is_sky_striker = (225001 <= pkg_num <= 225050) or (pkg_num == 5)
+    is_dragon_ball = (226001 <= pkg_num <= 226050) or (pkg_num == 6)
+    is_liqi = (227001 <= pkg_num <= 227050) or (pkg_num == 7)
+    is_labrynth = (228001 <= pkg_num <= 228050) or (pkg_num == 8)
+    is_fairy_hero = is_tru_tien or is_tien_nghich or is_kmr or is_minecraft or is_sky_striker or is_dragon_ball or is_liqi or is_labrynth or (pkg_num in SERVER_FAIRY_HERO_CARDS_MAP)
     if is_fairy_hero:
-        if is_minecraft or (pkg_num in (4, 224001, 224010, 224050)):
+        sr_pool = []
+        if is_dragon_ball or (pkg_num in (6, 226001, 226010, 226050)):
+            series_name = "7 Viên Bi Rồng"
+            gr_pool = [21166, 21171, 40779]
+            ur_pool = [12358, 12359, 12360, 12363, 12364, 12365, 21165, 21167, 21168, 21169, 21170, 40767, 40768, 40769, 40770, 40771, 40774, 40780]
+            sr_pool = [12361, 40775]
+        elif is_liqi or (pkg_num in (7, 227001, 227010, 227050)):
+            series_name = "Liên Quân"
+            gr_pool = [40781, 12394]
+            ur_pool = [12382, 12383, 12384, 12385, 12386, 12387, 12388, 12393, 40782, 21174, 21175, 30606]
+            sr_pool = []
+        elif is_labrynth or (pkg_num in (8, 228001, 228010, 228050)):
+            series_name = "Mê Cung Labrynth"
+            gr_pool = [12381]
+            ur_pool = [12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380, 21172, 21173, 30598, 30599, 30601, 30602, 30603, 30604, 30605]
+            sr_pool = []
+        elif is_sky_striker or (pkg_num in (5, 225001, 225010, 225050)):
+            series_name = "Thiên Không Hoàng"
+            gr_pool = [40766]
+            ur_pool = [12349, 12350, 12351, 12352, 12353, 12354, 12355, 12356, 21151, 21152, 21153, 21155, 21156, 21157, 21158, 21159, 21160, 21161, 21162, 21163, 21164, 40755, 40756, 40758, 40759, 40760, 40761, 40762, 40763, 40764, 40765]
+            sr_pool = [21154, 40757]
+        elif is_minecraft or (pkg_num in (4, 224001, 224010, 224050)):
             series_name = "Minecraft"
             gr_pool = [12339, 40753]
             ur_pool = [12337, 12338, 12340, 12341, 12342, 12343, 12344, 12345, 12346, 12347, 21148, 21149, 21150, 30596, 30597, 40747, 40748, 40749, 40750, 40751, 40752, 40754]
@@ -426,7 +451,10 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                         picked_cid = random.choice(ur_pool)
                         has_ur = True
                     else:
-                        if random.random() < 0.60:
+                        if sr_pool and random.random() < 0.20:
+                            target_quality = 'SR'
+                            picked_cid = random.choice(sr_pool)
+                        elif random.random() < 0.60:
                             target_quality = 'R'
                             picked_cid = random.choice(r_pool)
                         else:
@@ -441,7 +469,7 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     if cquality == 'GR':
                         curr_gr_pity = 0
                         char_name = user_acc.get('character_name', '') if user_acc else ''
-                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft"):
+                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft", "Thiên Không Hoàng", "7 Viên Bi Rồng", "Liên Quân", "Mê Cung Labrynth"):
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được {series_name} cấp GR [{cname}]!"
                         else:
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
@@ -495,7 +523,10 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                         ur_count_this_batch += 1
                         user_pity = 0.0
                     else:
-                        if random.random() < 0.60:
+                        if sr_pool and random.random() < 0.20:
+                            target_quality = 'SR'
+                            picked_cid = random.choice(sr_pool)
+                        elif random.random() < 0.60:
                             target_quality = 'R'
                             picked_cid = random.choice(r_pool)
                         else:
@@ -513,7 +544,7 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     if cquality == 'GR':
                         curr_gr_pity = 0
                         char_name = user_acc.get('character_name', '') if user_acc else ''
-                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft"):
+                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft", "Thiên Không Hoàng", "7 Viên Bi Rồng", "Liên Quân", "Mê Cung Labrynth"):
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được {series_name} cấp GR [{cname}]!"
                         else:
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
@@ -1066,64 +1097,83 @@ class ShopHTTPHandler(SimpleHTTPRequestHandler):
             server_cost_type = 1  # 1: gold, 3: gem
             is_legit_item = False
 
-            special_fixed = {
-                15: (12330, 7000, 3),
-                16: (12336, 50000, 3),
-                17: (40745, 20000, 3),
-                59: (40209, 200000, 1),
-                60: (20005, 5000, 1),
-                61: (20051, 100000, 1),
-                62: (20030, 100000, 1),
-                63: (40713, 500000, 1),
-                546: (12330, 7000, 3),
-                547: (12336, 50000, 3),
-                548: (40745, 20000, 3),
-                583: (12330, 7000, 3),
-            }
-            if prod_id in special_fixed:
-                card_id, server_cost, server_cost_type = special_fixed[prod_id]
-                is_legit_item = True
-            elif card_id == 40209:
-                server_cost, server_cost_type, is_legit_item = 200000, 1, True
-            elif card_id == 20005:
-                server_cost, server_cost_type, is_legit_item = 5000, 1, True
-            elif card_id == 20051:
-                server_cost, server_cost_type, is_legit_item = 100000, 1, True
-            elif card_id == 20030:
-                server_cost, server_cost_type, is_legit_item = 100000, 1, True
-            elif card_id == 40713:
-                server_cost, server_cost_type, is_legit_item = 500000, 1, True
-            elif card_id == 12248:
-                server_cost, server_cost_type, is_legit_item = 500000, 1, True
-            elif card_id == 12330:
-                server_cost, server_cost_type, is_legit_item = 7000, 3, True
-            elif card_id == 12336:
-                server_cost, server_cost_type, is_legit_item = 50000, 3, True
-            elif card_id == 40745:
-                server_cost, server_cost_type, is_legit_item = 20000, 3, True
-            elif card_id == 30592:
-                server_cost, server_cost_type, is_legit_item = 50000, 3, True
-            elif card_id == 40731:
-                server_cost, server_cost_type, is_legit_item = 5000, 3, True
-            elif card_id == 40732:
-                server_cost, server_cost_type, is_legit_item = 5000, 3, True
-            elif prod_id > 0:
-                pool = ALL_SHOP_PRODUCTS.get(shop_type, {})
-                pinfo = pool.get(prod_id)
-                if not pinfo:
+            # 1. First priority: look up in the requested shop_type catalog
+            if prod_id > 0 and shop_type in ALL_SHOP_PRODUCTS and prod_id in ALL_SHOP_PRODUCTS[shop_type]:
+                pinfo = ALL_SHOP_PRODUCTS[shop_type][prod_id]
+                cid = int(pinfo.get('cardId', 0) or pinfo.get('infoId', 0))
+                c_cost = int(pinfo.get('cost', 0) or pinfo.get('price', 0))
+                c_type = int(pinfo.get('resType', 1))
+                if cid > 0 and c_cost > 0:
+                    card_id = cid
+                    server_cost = c_cost
+                    server_cost_type = c_type
+                    is_legit_item = True
+
+            # 2. If not found in requested shop catalog, check specific shop fixed lists and overrides
+            if not is_legit_item:
+                special_fixed_privilege = {
+                    15: (12330, 7000, 3),
+                    16: (12336, 50000, 3),
+                    17: (40745, 20000, 3),
+                    24: (12367, 5000, 3),
+                    546: (12330, 7000, 3),
+                    547: (12336, 50000, 3),
+                    548: (40745, 20000, 3),
+                    559: (12367, 5000, 3),
+                    583: (12330, 7000, 3),
+                }
+                special_fixed_depot = {
+                    59: (40209, 200000, 1),
+                    60: (20005, 5000, 1),
+                    61: (20051, 100000, 1),
+                    62: (20030, 100000, 1),
+                    63: (40713, 500000, 1),
+                }
+                if shop_type == 'privilege' and prod_id in special_fixed_privilege:
+                    card_id, server_cost, server_cost_type = special_fixed_privilege[prod_id]
+                    is_legit_item = True
+                elif shop_type == 'depot' and prod_id in special_fixed_depot:
+                    card_id, server_cost, server_cost_type = special_fixed_depot[prod_id]
+                    is_legit_item = True
+                elif card_id == 40209:
+                    server_cost, server_cost_type, is_legit_item = 200000, 1, True
+                elif card_id == 20005:
+                    server_cost, server_cost_type, is_legit_item = 5000, 1, True
+                elif card_id == 20051:
+                    server_cost, server_cost_type, is_legit_item = 100000, 1, True
+                elif card_id == 20030:
+                    server_cost, server_cost_type, is_legit_item = 100000, 1, True
+                elif card_id == 40713:
+                    server_cost, server_cost_type, is_legit_item = 500000, 1, True
+                elif card_id == 12248:
+                    server_cost, server_cost_type, is_legit_item = 500000, 1, True
+                elif card_id == 12330:
+                    server_cost, server_cost_type, is_legit_item = 7000, 3, True
+                elif card_id == 12336:
+                    server_cost, server_cost_type, is_legit_item = 50000, 3, True
+                elif card_id == 40745:
+                    server_cost, server_cost_type, is_legit_item = 20000, 3, True
+                elif card_id == 30592:
+                    server_cost, server_cost_type, is_legit_item = 50000, 3, True
+                elif card_id == 40731:
+                    server_cost, server_cost_type, is_legit_item = 5000, 3, True
+                elif card_id == 40732:
+                    server_cost, server_cost_type, is_legit_item = 5000, 3, True
+                elif card_id == 12367:
+                    server_cost, server_cost_type, is_legit_item = 5000, 3, True
+                elif prod_id > 0:
                     for st, sp in ALL_SHOP_PRODUCTS.items():
                         if prod_id in sp:
                             pinfo = sp[prod_id]
-                            break
-                if pinfo:
-                    cid = int(pinfo.get('cardId', 0) or pinfo.get('infoId', 0))
-                    c_cost = int(pinfo.get('cost', 0) or pinfo.get('price', 0))
-                    c_type = pinfo.get('resType', 1)
-                    if cid > 0 and c_cost > 0:
-                        card_id = cid
-                        server_cost = c_cost
-                        server_cost_type = c_type
-                        is_legit_item = True
+                            cid = int(pinfo.get('cardId', 0) or pinfo.get('infoId', 0))
+                            c_cost = int(pinfo.get('cost', 0) or pinfo.get('price', 0))
+                            c_type = int(pinfo.get('resType', 1))
+                            if cid > 0 and c_cost > 0:
+                                card_id = cid
+                                server_cost = c_cost
+                                server_cost_type = c_type
+                                is_legit_item = True
+                                break
 
             if not is_legit_item and card_id in FIXED_DEPOT_PRICES:
                 f_cost = FIXED_DEPOT_PRICES[card_id]

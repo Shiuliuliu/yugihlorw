@@ -442,6 +442,7 @@ function var_0_0.initData(arg_22_0, arg_22_1)
 	arg_22_0._storyName = arg_22_1._storyName
 	arg_22_0._isSkipStory = false
 	arg_22_0._isBattleEndSended = false
+	arg_22_0._hayateVideoPlayed = nil
 
 	if arg_22_1._replayBattleType then
 		arg_22_0._replayType = arg_22_1._replayBattleType
@@ -2514,6 +2515,16 @@ function var_0_0.tryExitScene(arg_85_0)
 		arg_85_0:hideSetting()
 		arg_85_0:pause()
 	else
+		local isOngoingPvp = (arg_85_0._isOnlinePvp or ClientData._currentMatchId or arg_85_0._battleType == Data.BattleType.PVP_clash or arg_85_0._battleType == Data.BattleType.PVP_room or arg_85_0._battleType == Data.BattleType.PVP_ladder or arg_85_0._battleType == Data.BattleType.PVP_dark or arg_85_0._battleType == Data.BattleType.PVP_survival or arg_85_0._battleType == Data.BattleType.PVP_survival_ex) and not arg_85_0._isBattleFinished and (arg_85_0._player and not arg_85_0._player._isFinished)
+		if isOngoingPvp then
+			local dlg = require("Dialog").showDialog("Bạn có chắc chắn muốn rời trận đấu?\nRời trận khi đang thi đấu sẽ tính là ĐẦU HÀNG và BỊ TRỪ ĐIỂM XẾP HẠNG!")
+			function dlg._okHandler()
+				arg_85_0:hideSetting()
+				arg_85_0:retreat(arg_85_0._player)
+			end
+			dlg:setLocalZOrder(BattleScene.ZOrder.form)
+			return
+		end
 		arg_85_0:exitScene()
 	end
 end
@@ -3272,12 +3283,6 @@ function var_0_0.oppoTryUseCard(arg_102_0)
 	end
 
 	if arg_102_0._isWaitting == false then
-		local nextOp = arg_102_0._opponent._ops[arg_102_0._opponent._replayIndex]
-		if nextOp and nextOp._card == BattleData.UseCardId.round then
-			arg_102_0:hideThinking()
-			arg_102_0._opponent:use()
-			return true
-		end
 		return false
 	end
 
@@ -3866,15 +3871,17 @@ function var_0_0.playVideo(arg_120_0)
 end
 
 function var_0_0.resetBattle(arg_121_0)
-	PlayerBattle._randomSeed = PlayerBattle._originRandomSeed
+	local initSeed = (arg_121_0._input and arg_121_0._input._randomSeed) or PlayerBattle._originRandomSeed or 12345
+	PlayerBattle._originRandomSeed = initSeed
+	PlayerBattle._randomSeed = initSeed
 
-	if arg_121_0._player._isAttacker then
-		arg_121_0._player:resetWhenBattleStart()
-		arg_121_0._opponent:resetWhenBattleStart()
-	else
-		arg_121_0._opponent:resetWhenBattleStart()
-		arg_121_0._player:resetWhenBattleStart()
-	end
+	-- Always shuffle the attacker's deck first, then defender's deck second,
+	-- so the RNG sequence matches on both players' machines and during replay.
+	local attacker = arg_121_0._player._isAttacker and arg_121_0._player or arg_121_0._opponent
+	local defender = arg_121_0._player._isAttacker and arg_121_0._opponent or arg_121_0._player
+
+	attacker:resetWhenBattleStart()
+	defender:resetWhenBattleStart()
 end
 
 function var_0_0.loadUnitTestFile(arg_122_0, arg_122_1)

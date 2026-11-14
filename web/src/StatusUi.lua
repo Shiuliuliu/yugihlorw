@@ -451,11 +451,13 @@ function var_0_0.accountStatus(arg_20_0, arg_20_1, arg_20_2)
 		if arg_20_0._pBoardCards then
 			for _, spr in pairs(arg_20_0._pBoardCards) do
 				if spr and spr.updateAtkHp then spr:updateAtkHp() end
+				if spr and spr.updatePositiveStatus then spr:updatePositiveStatus() end
 			end
 		end
 		if arg_20_0._opponentUi and arg_20_0._opponentUi._pBoardCards then
 			for _, spr in pairs(arg_20_0._opponentUi._pBoardCards) do
 				if spr and spr.updateAtkHp then spr:updateAtkHp() end
+				if spr and spr.updatePositiveStatus then spr:updatePositiveStatus() end
 			end
 		end
 	end

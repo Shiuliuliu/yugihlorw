@@ -84,10 +84,55 @@
 
 	var BUNDLE_KEY = [65, 114, 99, 97, 110, 97, 83, 101, 99, 114, 101, 116, 50, 48, 50, 54]; // "ArcanaSecret2026"
 
-	function fetchBundle(url, fallbackUrl) {
-		if (typeof DecompressionStream === 'undefined') {
-			return fetchJson(fallbackUrl || url);
+	function decompressGzipBytes(u8) {
+		// Priority 1: pako.ungzip (100% universal across all iOS, iPadOS, Safari, Chrome, Android, zero streaming bug)
+		var pakoLib = (typeof pako !== 'undefined' && pako.ungzip) ? pako : (global.pako && global.pako.ungzip ? global.pako : null);
+		if (pakoLib) {
+			try {
+				var decompressed = pakoLib.ungzip(u8);
+				return Promise.resolve(new TextDecoder().decode(decompressed));
+			} catch (pe) {
+				console.warn('[boot] pako ungzip notice:', pe);
+			}
 		}
+		// Priority 2: Native DecompressionStream with direct writer/reader
+		if (typeof DecompressionStream !== 'undefined') {
+			return new Promise(function (resolve, reject) {
+				try {
+					var ds = new DecompressionStream('gzip');
+					var writer = ds.writable.getWriter();
+					writer.write(u8);
+					writer.close();
+					var reader = ds.readable.getReader();
+					var chunks = [];
+					var totalLen = 0;
+					function readNext() {
+						reader.read().then(function (res) {
+							if (res.done) {
+								var out = new Uint8Array(totalLen);
+								var off = 0;
+								for (var i = 0; i < chunks.length; i++) {
+									out.set(chunks[i], off);
+									off += chunks[i].length;
+								}
+								resolve(new TextDecoder().decode(out));
+							} else {
+								chunks.push(res.value);
+								totalLen += res.value.length;
+								readNext();
+							}
+						}).catch(reject);
+					}
+					readNext();
+				} catch (e) {
+					reject(e);
+				}
+			});
+		}
+		return Promise.reject(new Error('No decompression mechanism available'));
+	}
+
+	function fetchBundle(url, fallbackUrl) {
 		var bustUrl = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_t=' + Date.now();
 		return fetch(bustUrl, { cache: 'no-store' }).then(function (r) {
 			if (!r.ok) {
@@ -99,8 +144,7 @@
 				for (var i = 0; i < u8.length; i++) {
 					u8[i] ^= BUNDLE_KEY[i % BUNDLE_KEY.length];
 				}
-				var stream = new Response(u8).body.pipeThrough(new DecompressionStream('gzip'));
-				return new Response(stream).text().then(function (txt) {
+				return decompressGzipBytes(u8).then(function (txt) {
 					return JSON.parse(txt);
 				});
 			});
@@ -126,7 +170,7 @@
 		status('Stage 10%: Nạp Virtual FileSystem & Data Config...');
 		Boot.progress(0.05);
 
-		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261028v130000';
+		var ver = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261029v124500';
 
 		function safe(tag, p, timeoutMs) {
 			if (!p || typeof p.then !== 'function') return Promise.resolve(p);
@@ -229,7 +273,12 @@
 				status('Stage 70%: Nạp Toàn Bộ Kho Thẻ Bài...');
 
 				/* Stage 5: Preload All Card Thumbnails (70% - 95%) */
-				if (jdzcRes.preloadAllCardThumbnails) {
+				if (isIOS) {
+					/* On iOS Safari / WKWebView, texture memory is strictly capped by Jetsam.
+					 * Skip synchronous startup thumbnail preload: cards load zero-latency on demand as viewed. */
+					Boot.progress(0.95);
+					status('Stage 95%: Tối ưu bộ nhớ iOS hoàn tất...');
+				} else if (jdzcRes.preloadAllCardThumbnails) {
 					return jdzcRes.preloadAllCardThumbnails(function (loaded, total) {
 						var p = 0.70 + (loaded / total) * 0.25;
 						Boot.progress(p);
@@ -348,6 +397,16 @@
 		Boot.start().catch(function (e) {
 			status('boot failed: ' + (e && e.stack ? e.stack : e));
 			cc.error(e);
+			try {
+				if (!sessionStorage.getItem('yugihlor_boot_retried')) {
+					sessionStorage.setItem('yugihlor_boot_retried', '1');
+					var p1 = ('caches' in global) ? caches.keys().then(function (ns) { return Promise.all(ns.map(function (n) { return caches.delete(n); })); }) : Promise.resolve();
+					var p2 = ('serviceWorker' in navigator) ? navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); }) : Promise.resolve();
+					Promise.all([p1, p2]).then(function () {
+						global.location.replace(global.location.pathname + '?_cb=' + Date.now());
+					});
+				}
+			} catch (re) {}
 		});
 	};
 

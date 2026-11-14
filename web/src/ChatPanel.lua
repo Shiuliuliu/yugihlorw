@@ -15,7 +15,7 @@ local var_0_6 = {
 	6
 }
 local var_0_7 = 100
-local var_0_8 = 1
+local var_0_8 = 0
 
 function var_0_0.create()
 	local var_1_0 = var_0_0.new(lc.EXTEND_WIDGET)
@@ -153,22 +153,23 @@ function var_0_0.pop(arg_8_0)
 		if arg_8_0._list then
 			pcall(function() arg_8_0._list:forceDoLayout() end)
 			pcall(function() arg_8_0._list:refreshView() end)
+			pcall(function() arg_8_0:resetList() end)
 		end
 	end)
 	arg_8_0:runAction(lc.sequence(moveAct, endAct))
 
-	local var_8_0
+	local var_8_0 = var_0_1.world
 
-	if P:getMaxCharacterLevel() >= var_0_8 and P._playerMessage:getNewWorld() > 0 then
+	if P._playerMessage:getNewWorld() > 0 then
 		var_8_0 = var_0_1.world
-	elseif P._playerMessage:getNewBulletin() > 0 then
-		var_8_0 = var_0_1.bulletin
 	elseif P._playerMessage:getNewBattle() > 0 then
 		var_8_0 = var_0_1.battle
+	elseif P._playerMessage:getNewBulletin() > 0 then
+		var_8_0 = var_0_1.bulletin
 	end
 
 	pcall(function() if _G.flushPendingChatQueue then _G.flushPendingChatQueue() end end)
-	arg_8_0._contentBg:showTab(var_8_0 or P:getMaxCharacterLevel() < var_0_8 and var_0_1.bulletin or var_0_1.world, true)
+	arg_8_0._contentBg:showTab(var_8_0 or var_0_1.world, true)
 
 	pcall(function()
 		if ClientData.pollChatHistory then
@@ -202,7 +203,7 @@ function var_0_0.checkShowTab(arg_11_0, arg_11_1, arg_11_2)
 
 			return false
 		end
-	elseif arg_11_1 == var_0_1.world and P:getMaxCharacterLevel() < var_0_8 then
+	elseif arg_11_1 == var_0_1.world and var_0_8 > 0 and P:getMaxCharacterLevel() < var_0_8 then
 		ToastManager.push(string.format(Str(STR.WORLD_CHAT_TIP), var_0_8))
 
 		return false
@@ -330,11 +331,13 @@ function var_0_0.resetList(arg_15_0)
 
 	pcall(function() var_15_0:forceDoLayout() end)
 	pcall(function() var_15_0:refreshView() end)
-	if var_15_0.gotoTop then
-		var_15_0:gotoTop()
-	else
-		var_15_0:jumpToTop()
-	end
+	pcall(function()
+		if var_15_0.gotoTop then
+			var_15_0:gotoTop()
+		else
+			var_15_0:jumpToTop()
+		end
+	end)
 end
 
 function var_0_0.updateList(arg_17_0, arg_17_1)

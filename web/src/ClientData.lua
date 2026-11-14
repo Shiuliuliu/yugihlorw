@@ -1744,6 +1744,15 @@ function var_0_0.getNameByInfoId(arg_77_0)
 		if arg_77_0 == 54744 or arg_77_0 % 1000 == 744 then
 			return "Thiên Không Hoàng"
 		end
+		if arg_77_0 % 1000 == 306 or arg_77_0 == 306 then
+			return "7 viên ngọc rồng"
+		end
+		if arg_77_0 % 1000 == 307 or arg_77_0 == 307 then
+			return "shin"
+		end
+		if arg_77_0 % 1000 == 308 or arg_77_0 == 308 then
+			return "Labrynth"
+		end
 		return Str(STR.CARD_KEYWORD_BEGIN + arg_77_0 % 1000)
 	elseif cardType == Data.CardType.flag then
 		return Str(STR.MONSTER_FLAG_BEGIN + arg_77_0 % 1000)
@@ -7047,8 +7056,13 @@ function var_0_0.sendUserGiftExchange(arg_408_0, arg_408_1)
 				local okShow, errShow = pcall(function()
 					local rp = require("RewardPanel")
 					local p = rp.create(rewardsList, rp.MODE_EXCHANGE)
+					p._ignoreBlur = true
 					p:show(ClientData.ZOrder.dialog or 70)
 					p:setVisible(true)
+				end)
+				pcall(function()
+					local rewardMsg = res.msg or "Nhập mã quà tặng thành công!"
+					require("Dialog").showDialog(rewardMsg, nil, true)
 				end)
 				if not okShow then
 					print("[GIFT CODE] Error displaying RewardPanel:", tostring(errShow))

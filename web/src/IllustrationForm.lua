@@ -368,7 +368,8 @@ function var_0_0.setOrCreateItem(arg_16_0, arg_16_1, arg_16_2)
 				_infoId = iter_16_1._id
 			})
 
-			var_16_10:setGray(not var_16_8[iter_16_1._id])
+			local isOwned = (var_16_8 and var_16_8[iter_16_1._id] and var_16_8[iter_16_1._id] > 0) or (ClientData._player and ClientData._player._playerCard and ClientData._player._playerCard:getCardCount(iter_16_1._id) > 0)
+			var_16_10:setGray(not isOwned)
 			var_16_10._name:setColor(ClientView.COLOR_BMFONT)
 			lc.addChildToPos(arg_16_1, var_16_10, var_16_9)
 

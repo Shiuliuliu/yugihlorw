@@ -55,7 +55,10 @@ function var_0_0.updateList(arg_3_0)
 			var_3_0:pushBackCustomItem(arg_3_0:createKeyword())
 		end
 
-		var_3_0:pushBackCustomItem(arg_3_0:createDesc())
+		local descItem = arg_3_0:createDesc()
+		if descItem then
+			var_3_0:pushBackCustomItem(descItem)
+		end
 		var_3_0:pushBackCustomItem(arg_3_0:createUseLimit())
 	end
 
@@ -192,6 +195,12 @@ function var_0_0.createKeyword(arg_9_0)
 		kwStr = "minecraft"
 	elseif var_9_4._keyword == 54744 then
 		kwStr = "Thiên Không Hoàng"
+	elseif var_9_4._keyword == 306 then
+		kwStr = "7 viên ngọc rồng"
+	elseif var_9_4._keyword == 307 then
+		kwStr = "shin"
+	elseif var_9_4._keyword == 308 then
+		kwStr = "Labrynth"
 	else
 		kwStr = Str(STR.CARD_KEYWORD_BEGIN + var_9_4._keyword)
 	end
@@ -203,9 +212,17 @@ function var_0_0.createKeyword(arg_9_0)
 end
 
 function var_0_0.createDesc(arg_10_0)
+	local var_10_4 = Data.getInfo(arg_10_0._infoId)
+	if not var_10_4 or not var_10_4._descSid or var_10_4._descSid == 0 then
+		return nil
+	end
+	local descStr = Str(var_10_4._descSid)
+	if not descStr or descStr == "" or descStr == "0" then
+		return nil
+	end
+
 	local var_10_0, var_10_1, var_10_2, var_10_3 = arg_10_0:createItemBegin(Str(STR.MEMOIR))
-	local var_10_4 = Data.getInfo(var_10_1)
-	local var_10_5 = var_10_0:createRichText(Str(var_10_4._descSid), ClientView.COLOR_TEXT_LIGHT, var_10_2 - 10)
+	local var_10_5 = var_10_0:createRichText(descStr, ClientView.COLOR_TEXT_LIGHT, var_10_2 - 10)
 
 	lc.addChildToPos(var_10_0, var_10_5, cc.p(var_0_3, var_10_3))
 
@@ -259,15 +276,18 @@ function var_0_0.createSkill(arg_13_0)
 		end
 	else
 		for iter_13_1 = 1, #var_13_4._skillId do
-			local var_13_10 = Data._skillInfo[var_13_4._skillId[iter_13_1]]
+			local skId = var_13_4._skillId[iter_13_1]
+			if skId ~= 3851 and skId ~= 6753 and skId ~= 9298 and skId ~= arg_13_0._extraSid then
+				local var_13_10 = Data._skillInfo[skId]
 
-			if var_13_10 then
-				local var_13_11 = {
-					_skillInfo = var_13_10,
-					_skillLevel = arg_13_0._level
-				}
+				if var_13_10 then
+					local var_13_11 = {
+						_skillInfo = var_13_10,
+						_skillLevel = arg_13_0._level
+					}
 
-				table.insert(var_13_7, var_13_11)
+					table.insert(var_13_7, var_13_11)
+				end
 			end
 		end
 	end

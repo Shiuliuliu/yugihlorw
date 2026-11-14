@@ -17,6 +17,8 @@
 *.swp
 *.swo
 *~
+*.key
+*.crt
 live_screen_b64.txt
 screen.png
 test_token_*.jpg

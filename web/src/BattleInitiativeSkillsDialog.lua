@@ -28,7 +28,7 @@ function var_0_0.init(arg_2_0, arg_2_1, arg_2_2, arg_2_3)
 	lc.addChildToPos(arg_2_0, var_2_0, cc.p(lc.cw(arg_2_0), 140))
 
 	arg_2_0._form = var_2_0
-	titleBg = lc.createSprite({
+	local titleBg = lc.createSprite({
 		_name = "img_form_title_bg_1",
 		_crect = ClientView.CRECT_FORM_TITLE_BG1_CRECT,
 		_size = cc.size(560, ClientView.CRECT_FORM_TITLE_BG1_CRECT.height)
@@ -66,7 +66,16 @@ function var_0_0.registerItemTouchHandles(arg_3_0, arg_3_1, arg_3_2, arg_3_3, ar
 	arg_3_0._itemTouchHandles._longHandle = arg_3_4
 end
 
+-- the dialog on screen, if any
+local var_0_1
+
 function var_0_0.show(arg_4_0)
+	if var_0_1 and var_0_1 ~= arg_4_0 and not tolua.isnull(var_0_1) and var_0_1:getParent() then
+		var_0_1:removeFromParent()
+	end
+
+	var_0_1 = arg_4_0
+
 	lc.addChildToCenter(lc._runningScene, arg_4_0, BattleScene.ZOrder.form)
 	lc.offset(arg_4_0._form, 0, -350)
 	arg_4_0._form:runAction(lc.sequence(lc.ease(lc.moveBy(lc.absTime(var_0_0.ACTION_DURATION), cc.p(0, 350)), "BackO")))
@@ -146,8 +155,160 @@ function var_0_0.createItem(arg_9_0, arg_9_1, arg_9_2)
 			lc.addChildToPos(var_9_3, var_9_7, cc.p(14, lc.h(var_9_3._frame) + 10))
 		end
 
+		local dbSkillNames = {
+		[20117] = "Rào Chắn Không Gian",
+		[20118] = "Xung Lực Thống Trị",
+		[20119] = "Tia Lửa Thống Trị",
+		[20120] = "Nghiện Bẫy",
+			[20075] = "Triệu Hồi Bản Thể",
+			[20076] = "Ý Chí Saiyan - SSJ 3",
+			[20077] = "Thần Tốc Liên Trảm",
+			[20078] = "Áp Lực Hoang Dã",
+			[20079] = "Thần Cảnh Tuyệt Đối",
+			[20080] = "Tìm Kiếm Thần Khí",
+			[20081] = "Hồi Sinh Chiến Binh",
+			[20082] = "Xóa Sổ Bộ Bài Phụ",
+			[20083] = "Sóng Thần Lam Sắc",
+			[20084] = "Hủy Diệt Toàn Diện",
+			[20085] = "Phong Khóa Vực",
+			[20086] = "Điều Ước Trái Đất",
+			[20087] = "Điều Ước Porunga",
+			[20088] = "Dende Xuất Hiện",
+			[20089] = "Trị Liệu Thần Kỳ",
+			[20090] = "Dò Tìm Ngọc Rồng",
+			[20091] = "Bói Toán Dẫn Lối",
+			[20092] = "Âm Hồn Triệu Tập",
+			[20093] = "Biến Hóa Viện Trợ",
+			[20094] = "Bảo Hộ Tiên Đậu",
+			[20095] = "Hồi Phục Sinh Lực",
+			[20096] = "Hoàng Tử Thần Binh",
+			[20097] = "Kiêu Hãnh Saiyan",
+			[20098] = "Final Explosion",
+			[20099] = "Bản Lĩnh Bất Khuất",
+			[20100] = "Bụi Phấn Phân Giải - Stardust Breaker",
+			[20101] = "Kiếm Khí Hợp Thể - Final Kamehameha",
+			[20102] = "Vũ Điệu Hợp Thể",
+			[20104] = "Hợp Thể Potara",
+			[20105] = "Công Lý Đen Tối",
+			[20106] = "Cuồng Nộ Saiyan",
+			[20107] = "Hủy Diệt Bộc Phát",
+			[20108] = "Đại Đình Chiến Thần Cấp",
+			[20109] = "Nguyện Ước Tối Cao",
+			[20110] = "Chiến Binh Công Lý Xuất Trận",
+			[20111] = "Triệu Tập Đồng Đội",
+			[20112] = "Dò Tìm Ngọc Rồng",
+			[20113] = "Nghiên Cứu Di Vật",
+			[20114] = "Vận Khí Tụ Lực",
+			[20115] = "Tái Sinh Tái Chiến",
+			[20116] = "Định Hình Phương Hướng",
+			[20121] = "Shin đi bơi",
+			[20122] = "Nạp đạn",
+			[20131] = "Ăn vạ - Kéo viện binh",
+			[20135] = "Báo Thức Mê Cung",
+			[20136] = "Đồng Hồ Hồi Quy",
+			[20137] = "Lò Sưởi Mê Cung",
+			[20138] = "Thiêu Rụi Chiến Lợi",
+			[20139] = "Tro Tàn Trỗi Dậy",
+			[20140] = "Đèn Chùm Mê Cung",
+			[20141] = "Ánh Nến Phản Phép",
+			[20142] = "Thắp Lại Ánh Đèn",
+			[20143] = "Hầu Gái Dẫn Lối",
+			[20144] = "Tiếp Đón Mê Cung",
+			[20145] = "Triệu Tập Hầu Gái",
+			[20146] = "Bẫy Ngầm Hiện Thân",
+			[20147] = "Triệu Tập Arianna",
+			[20241] = "Triệu Tập Cây Cối",
+			[20242] = "Hồi Sinh Cây Cối",
+			[20246] = "Tiến Hóa Dung Hợp",
+			[20247] = "Liên Xạ Hai Phát",
+
+			[20148] = "Thu Hồi Mê Cung",
+			[20149] = "Kỵ Sĩ Hộ Vệ",
+			[20150] = "Khiên Chắn Mê Cung",
+			[20151] = "Chiến Ý Mê Cung",
+			[20152] = "Song Kiếm Liên Trảm",
+			[20153] = "Uy Áp Kỵ Sĩ",
+			[20154] = "Thệ Ước Trung Thành",
+			[20155] = "Quản Gia Tiếp Đón",
+			[20156] = "Chuẩn Bị Cạm Bẫy",
+			[20157] = "Quản Gia Tái Xuất",
+			[20158] = "Thu Thập Mộ Phần",
+			[20159] = "Giáp Quỷ Bất Hoại",
+			[20160] = "Tượng Đá Canh Gác",
+			[20161] = "Tấm Khiên Mê Cung",
+			[20162] = "Uy Lực Bẫy Ngầm",
+			[20163] = "Ác Quỷ Phục Kích",
+			[20164] = "Truy Tìm Bẫy Mê Cung",
+			[20165] = "Hộ Mệnh Vực Thẳm",
+			[20166] = "Quý Cô Giá Lâm",
+			[20167] = "Quyền Uy Lâu Đài Bạc",
+			[20168] = "Hộ Giáp Bạch Ngân",
+			[20169] = "Bảo Hộ Cạm Bẫy",
+			[20170] = "Phán Quyết Bạch Ngân",
+			[20171] = "Thiết Lập Mê Cung",
+			[20172] = "Hoàng Tộc Tăng Trí",
+			[20173] = "Phong Ấn Ngoại Điện",
+			[20174] = "Trừng Phạt Kẻ Xâm Nhập",
+			[20175] = "Di Sản Bạch Ngân",
+			[20176] = "Nữ Hoàng Lâm Triều",
+			[20177] = "Sức Mạnh Lâu Đài Bạc",
+			[20178] = "Hộ Vệ Bạch Ngân",
+			[20179] = "Kết Giới Bẫy Bạc",
+			[20180] = "Bắt Giữ Kẻ Xâm Nhập",
+			[20181] = "Bẻ Gãy Kế Hoạch",
+			[20182] = "Khôi Phục Cạm Bẫy",
+			[20183] = "Tái Sinh Không Gian",
+			[20184] = "Triệu Gọi Binh Đoàn",
+			[20185] = "Công Chúa Xuất Chinh",
+			[20186] = "Hoàng Quyền Tuyệt Đối",
+			[20187] = "Bất Khả Xâm Phạm",
+			[20188] = "Tam Trọng Kết Giới",
+			[20189] = "Kho Báu Hoàng Gia",
+			[20190] = "Điều Động Hoàng Gia",
+			[20191] = "Tiêu Diệt Dị Giới",
+			[20192] = "Di Ngôn Công Chúa",
+			[20193] = "Hồi Sinh Công Chúa",
+			[20219] = "Thứ Nguyên Chúc Phúc",
+			[20222] = "Chiến Tuyến Thứ Nguyên",
+			[20223] = "Tiếp Tế Thứ Nguyên",
+			[20224] = "Chiến Lực Liqi",
+			[20225] = "Triệu Tập Liqi",
+		[20230] = "Thứ Nguyên Giáng Lâm",
+		[20231] = "Long Kiếm Liên Trảm",
+		[20232] = "Thần Tiễn Triệu Tập",
+		[20233] = "Tiếp Tế Tinh Linh",
+		[20235] = "Khúc Ca Cứu Rỗi",
+		[20238] = "Hồi Sinh Định Mệnh",
+		[20239] = "Phong Tỏa Không Gian",
+		[20240] = "Ký Ức Thời Gian",
+		[20250] = "Thứ Nguyên Triệu Hồi",
+		[20252] = "Thanh Tẩy Ma Pháp",
+			[20195] = "Truy Tìm Phép Bẫy",
+			[20198] = "Triệu Tập Thủ Hộ",
+			[20199] = "Bố Trí Mê Cung",
+			[20204] = "Hồi Quy Cạm Bẫy",
+	[20207] = "Đẩy Lùi Xâm Phạm",
+			[20208] = "Thu Hồi Tàn Tích",
+			[20211] = "Tìm Kiếm Thuộc Hạ",
+			[20212] = "Xáo Trộn Mộ Phần",
+			[20215] = "Hiệu Triệu Cạm Bẫy",
+			[20216] = "Tiêu Diệt Xâm Lược",
+			[20217] = "Thu Hồi Phép Bẫy",
+			[20218] = "Thao Túng Linh Hồn",
+		}
 		local var_9_8 = Data._skillInfo[iter_9_1._id]
-		local var_9_9 = Str(var_9_8._nameSid)
+		local var_9_9 = dbSkillNames[iter_9_1._id] or (var_9_8 and Str(var_9_8._nameSid))
+		if not var_9_9 or var_9_9 == "" or tonumber(var_9_9) then
+			if var_9_8 and var_9_8._descSid then
+				local desc = Str(var_9_8._descSid)
+				if desc and desc ~= "" and not tonumber(desc) then
+					var_9_9 = string.splitByChar(desc, "\n")[1] or desc
+				end
+			end
+			if not var_9_9 or var_9_9 == "" or tonumber(var_9_9) then
+				var_9_9 = Str(iter_9_1._owner._info._nameSid)
+			end
+		end
 
 		if iter_9_1._id == 3851 then
 			var_9_9 = Str(iter_9_1._owner._info._briefNameSid)

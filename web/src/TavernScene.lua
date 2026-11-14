@@ -92,7 +92,7 @@ function var_0_1.init(arg_2_0, arg_2_1, arg_2_2)
 
 	table.insert(var_2_1, {
 		_index = var_0_1.TAB.fairy_hero_card,
-		_str = "Gói bài tiên hiệp"
+		_str = "Gói bài mở rộng 2"
 	})
 
 	if not ClientData.isAnotherSkin2Locked() then
@@ -345,6 +345,34 @@ function var_0_1.generateCardPackageData(arg_5_0)
 		local mc50 = getValidPackInfo(224050) or mc1
 		if mc1 then
 			table.insert(var_5_fairy_hero, var_5_9(mc1, mc10, mc50))
+		end
+
+		local sk1 = getValidPackInfo(225001)
+		local sk10 = getValidPackInfo(225010) or sk1
+		local sk50 = getValidPackInfo(225050) or sk1
+		if sk1 then
+			table.insert(var_5_fairy_hero, var_5_9(sk1, sk10, sk50))
+		end
+
+		local db1 = getValidPackInfo(226001)
+		local db10 = getValidPackInfo(226010) or db1
+		local db50 = getValidPackInfo(226050) or db1
+		if db1 then
+			table.insert(var_5_fairy_hero, var_5_9(db1, db10, db50))
+		end
+
+		local liqi1 = getValidPackInfo(227001)
+		local liqi10 = getValidPackInfo(227010) or liqi1
+		local liqi50 = getValidPackInfo(227050) or liqi1
+		if liqi1 then
+			table.insert(var_5_fairy_hero, var_5_9(liqi1, liqi10, liqi50))
+		end
+
+		local lab1 = getValidPackInfo(228001)
+		local lab10 = getValidPackInfo(228010) or lab1
+		local lab50 = getValidPackInfo(228050) or lab1
+		if lab1 then
+			table.insert(var_5_fairy_hero, var_5_9(lab1, lab10, lab50))
 		end
 	end
 
@@ -781,7 +809,11 @@ function var_0_1.createRecruitItem(arg_29_0, arg_29_1, arg_29_2)
 		arg_29_0:sendShowDetail(arg_29_2)
 	end)
 
-	var_29_3:setContentSize(var_29_2:getContentSize())
+	local btnSize = var_29_2:getContentSize()
+	if not btnSize.width or btnSize.width <= 0 or btnSize.width ~= btnSize.width then
+		btnSize = cc.size(252, 670)
+	end
+	var_29_3:setContentSize(btnSize)
 	var_29_3:setZoomScale(0.02)
 	lc.addChildToCenter(var_29_3, var_29_2)
 

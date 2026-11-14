@@ -40,6 +40,8 @@ function var_0_0.onEnter(arg_3_0)
 
 	if not arg_3_0._ignoreBlur then
 		arg_3_0:updateBg()
+	else
+		arg_3_0:setVisible(true)
 	end
 end
 
@@ -64,6 +66,10 @@ function var_0_0.onCleanup(arg_6_0)
 end
 
 function var_0_0.updateBg(arg_7_0)
+	if lc._runningScene and lc._runningScene._sceneId == ClientData.SceneId.battle then
+		return
+	end
+
 	local var_7_0 = arg_7_0:getParent():getChildren()
 
 	for iter_7_0 = 2, #var_7_0 do
@@ -104,34 +110,14 @@ function var_0_0.updateBg(arg_7_0)
 end
 
 function var_0_0.afterBlur(arg_8_0, arg_8_1)
+	if lc._runningScene and lc._runningScene._sceneId == ClientData.SceneId.battle then
+		return
+	end
+
 	if arg_8_0 == var_0_0.Panels[#var_0_0.Panels] then
 		var_0_0._isBlurring = false
 
 		arg_8_0:updatePanels()
-
-		local p = arg_8_0:getParent()
-		local var_8_0 = p and p._layer
-
-		if var_8_0 and var_8_0._sceneId == ClientData.SceneId.battle then
-			var_8_0:setVisible(true)
-			var_8_0:runAction(cc.Sequence:create(cc.DelayTime:create(0), cc.CallFunc:create(function()
-				local var_9_0 = {
-					var_8_0._battleUi,
-					var_8_0._battleUi._layer,
-					var_8_0._battleUi._skySpr
-				}
-
-				for iter_9_0 = 1, #var_9_0 do
-					local var_9_1 = var_9_0[iter_9_0]
-					local var_9_2 = var_9_1:getPosition()
-
-					var_9_1:setPositionX(var_9_2 + 1)
-					var_9_1:setPositionX(var_9_2)
-				end
-
-				var_8_0:setVisible(false)
-			end)))
-		end
 	end
 end
 
@@ -151,6 +137,10 @@ function var_0_0.hideTopMost()
 end
 
 function var_0_0.updatePanels(arg_13_0)
+	if lc._runningScene and lc._runningScene._sceneId == ClientData.SceneId.battle then
+		return
+	end
+
 	local var_13_0 = #var_0_0.Panels
 	local var_13_1 = lc._runningScene._sceneId
 	local var_13_2 = {}

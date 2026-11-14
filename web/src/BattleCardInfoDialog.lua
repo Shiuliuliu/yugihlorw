@@ -21,9 +21,13 @@ function var_0_0.init(arg_2_0, arg_2_1, arg_2_2)
 	arg_2_0:addChild(var_2_1)
 	var_2_1:showCardInfo(false)
 
-	if arg_2_2._type == Data.CardType.monster then
+	if arg_2_2._type == Data.CardType.monster or arg_2_2._type == Data.CardType.rare then
 		var_2_1._pAtkSpr:setString(ClientData.formatNum(arg_2_2._maxAtk, 99999))
-		var_2_1._pHpSpr:setString(ClientData.formatNum(arg_2_2._maxHp, 99999))
+		if (arg_2_2.isLink and arg_2_2:isLink()) or arg_2_2._infoId == 40776 then
+			var_2_1._pHpSpr:setString((arg_2_2.getLink and arg_2_2:getLink()) or 5)
+		else
+			var_2_1._pHpSpr:setString(ClientData.formatNum(arg_2_2._maxHp, 99999))
+		end
 	end
 
 	var_2_1:setCameraMask(ClientData.CAMERA_2D_FLAG)

@@ -242,6 +242,104 @@
 	}
 
 	var CUSTOM_ICON_REPLACEMENTS = {
+		'card_ico_12393': { path: 'res/new/thumb/card_ico_12393.png', w: 82, h: 82 },
+		'card_ico_12393_3': { path: 'res/new/thumb/card_ico_12393_3.png', w: 82, h: 82 },
+		'card_ico_12394': { path: 'res/new/thumb/card_ico_12394.png', w: 82, h: 82 },
+		'card_ico_12394_3': { path: 'res/new/thumb/card_ico_12394_3.png', w: 82, h: 82 },
+		'card_ico_12392_3': { path: 'res/new/thumb/card_ico_12392_3.png', w: 82, h: 82 },
+		'card_ico_12392': { path: 'res/new/thumb/card_ico_12392.png', w: 82, h: 82 },
+		'card_ico_21178_3': { path: 'res/new/thumb/card_ico_21178_3.png', w: 82, h: 82 },
+		'card_ico_21178': { path: 'res/new/thumb/card_ico_21178.png', w: 82, h: 82 },
+		'card_ico_21176': { path: 'res/new/thumb/card_ico_21176.png', w: 82, h: 82 },
+		'card_ico_21176_3': { path: 'res/new/thumb/card_ico_21176_3.png', w: 82, h: 82 },
+		'card_ico_21177': { path: 'res/new/thumb/card_ico_21177.png', w: 82, h: 82 },
+		'card_ico_21177_3': { path: 'res/new/thumb/card_ico_21177_3.png', w: 82, h: 82 },
+		'card_ico_30607': { path: 'res/new/thumb/card_ico_30607.png', w: 82, h: 82 },
+		'card_ico_30607_3': { path: 'res/new/thumb/card_ico_30607_3.png', w: 82, h: 82 },
+		'card_ico_12389': { path: 'res/new/thumb/card_ico_12389.png', w: 82, h: 82 },
+		'card_ico_12389_3': { path: 'res/new/thumb/card_ico_12389_3.png', w: 82, h: 82 },
+		'card_ico_12390': { path: 'res/new/thumb/card_ico_12390.png', w: 82, h: 82 },
+		'card_ico_12390_3': { path: 'res/new/thumb/card_ico_12390_3.png', w: 82, h: 82 },
+		'card_ico_40783': { path: 'res/new/thumb/card_ico_40783.png', w: 82, h: 82 },
+		'card_ico_40783_3': { path: 'res/new/thumb/card_ico_40783_3.png', w: 82, h: 82 },
+		'card_ico_12391': { path: 'res/new/thumb/card_ico_12391.png', w: 82, h: 82 },
+		'card_ico_12391_3': { path: 'res/new/thumb/card_ico_12391_3.png', w: 82, h: 82 },
+		'card_ico_40782': { path: 'res/new/thumb/card_ico_40782.png', w: 82, h: 82 },
+		'card_ico_40782_3': { path: 'res/new/thumb/card_ico_40782_3.png', w: 82, h: 82 },
+		'card_ico_12388': { path: 'res/new/thumb/card_ico_12388.png', w: 82, h: 82 },
+		'card_ico_12388_3': { path: 'res/new/thumb/card_ico_12388_3.png', w: 82, h: 82 },
+		'card_ico_12387': { path: 'res/new/thumb/card_ico_12387.png', w: 82, h: 82 },
+		'card_ico_12387_3': { path: 'res/new/thumb/card_ico_12387_3.png', w: 82, h: 82 },
+		'card_ico_12386': { path: 'res/new/thumb/card_ico_12386.png', w: 82, h: 82 },
+		'card_ico_12386_3': { path: 'res/new/thumb/card_ico_12386_3.png', w: 82, h: 82 },
+		'card_ico_12385': { path: 'res/new/thumb/card_ico_12385.png', w: 82, h: 82 },
+		'card_ico_12385_3': { path: 'res/new/thumb/card_ico_12385_3.png', w: 82, h: 82 },
+		'card_ico_12384': { path: 'res/new/thumb/card_ico_12384.png', w: 82, h: 82 },
+		'card_ico_12384_3': { path: 'res/new/thumb/card_ico_12384_3.png', w: 82, h: 82 },
+		'card_ico_30606': { path: 'res/new/thumb/card_ico_30606.png', w: 82, h: 82 },
+		'card_ico_30606_3': { path: 'res/new/thumb/card_ico_30606_3.png', w: 82, h: 82 },
+		'card_ico_12382': { path: 'res/new/thumb/card_ico_12382.png', w: 82, h: 82 },
+		'card_ico_12382_3': { path: 'res/new/thumb/card_ico_12382_3.png', w: 82, h: 82 },
+		'card_ico_40781': { path: 'res/new/thumb/card_ico_40781.png', w: 82, h: 82 },
+		'card_ico_40781_3': { path: 'res/new/thumb/card_ico_40781_3.png', w: 82, h: 82 },
+		'card_ico_21174': { path: 'res/new/thumb/card_ico_21174.png', w: 82, h: 82 },
+		'card_ico_21174_3': { path: 'res/new/thumb/card_ico_21174_3.png', w: 82, h: 82 },
+		'card_ico_12383': { path: 'res/new/thumb/card_ico_12383.png', w: 82, h: 82 },
+		'card_ico_12383_3': { path: 'res/new/thumb/card_ico_12383_3.png', w: 82, h: 82 },
+		'card_ico_21175': { path: 'res/new/thumb/card_ico_21175.png', w: 82, h: 82 },
+		'card_ico_21175_3': { path: 'res/new/thumb/card_ico_21175_3.png', w: 82, h: 82 },
+		'card_ico_30598': { path: 'res/new/thumb/card_ico_30598.png', w: 82, h: 82 },
+		'card_ico_30598_3': { path: 'res/new/thumb/card_ico_30598_3.png', w: 82, h: 82 },
+		'card_ico_30599': { path: 'res/new/thumb/card_ico_30599.png', w: 82, h: 82 },
+		'card_ico_30599_3': { path: 'res/new/thumb/card_ico_30599_3.png', w: 82, h: 82 },
+		'card_ico_30600': { path: 'res/new/thumb/card_ico_30600.png', w: 82, h: 82 },
+		'card_ico_30600_3': { path: 'res/new/thumb/card_ico_30600_3.png', w: 82, h: 82 },
+		'card_ico_30601': { path: 'res/new/thumb/card_ico_30601.png', w: 82, h: 82 },
+		'card_ico_30601_3': { path: 'res/new/thumb/card_ico_30601_3.png', w: 82, h: 82 },
+		'card_ico_30602': { path: 'res/new/thumb/card_ico_30602.png', w: 82, h: 82 },
+		'card_ico_30602_3': { path: 'res/new/thumb/card_ico_30602_3.png', w: 82, h: 82 },
+		'card_ico_30603': { path: 'res/new/thumb/card_ico_30603.png', w: 82, h: 82 },
+		'card_ico_30603_3': { path: 'res/new/thumb/card_ico_30603_3.png', w: 82, h: 82 },
+		'card_ico_30604': { path: 'res/new/thumb/card_ico_30604.png', w: 82, h: 82 },
+		'card_ico_30604_3': { path: 'res/new/thumb/card_ico_30604_3.png', w: 82, h: 82 },
+		'card_ico_30605': { path: 'res/new/thumb/card_ico_30605.png', w: 82, h: 82 },
+		'card_ico_30605_3': { path: 'res/new/thumb/card_ico_30605_3.png', w: 82, h: 82 },
+		'card_ico_21172': { path: 'res/new/thumb/card_ico_21172.png', w: 82, h: 82 },
+		'card_ico_21172_3': { path: 'res/new/thumb/card_ico_21172_3.png', w: 82, h: 82 },
+		'card_ico_21173': { path: 'res/new/thumb/card_ico_21173.png', w: 82, h: 82 },
+		'card_ico_21173_3': { path: 'res/new/thumb/card_ico_21173_3.png', w: 82, h: 82 },
+		'card_ico_12377': { path: 'res/new/thumb/card_ico_12377.png', w: 82, h: 82 },
+		'card_ico_12377_3': { path: 'res/new/thumb/card_ico_12377_3.png', w: 82, h: 82 },
+		'card_ico_12378': { path: 'res/new/thumb/card_ico_12378.png', w: 82, h: 82 },
+		'card_ico_12378_3': { path: 'res/new/thumb/card_ico_12378_3.png', w: 82, h: 82 },
+		'card_ico_12379': { path: 'res/new/thumb/card_ico_12379.png', w: 82, h: 82 },
+		'card_ico_12379_3': { path: 'res/new/thumb/card_ico_12379_3.png', w: 82, h: 82 },
+		'card_ico_12380': { path: 'res/new/thumb/card_ico_12380.png', w: 82, h: 82 },
+		'card_ico_12380_3': { path: 'res/new/thumb/card_ico_12380_3.png', w: 82, h: 82 },
+		'card_ico_12381': { path: 'res/new/thumb/card_ico_12381.png', w: 82, h: 82 },
+		'card_ico_12381_3': { path: 'res/new/thumb/card_ico_12381_3.png', w: 82, h: 82 },
+		'card_ico_12371': { path: 'res/new/thumb/card_ico_12371.png', w: 82, h: 82 },
+		'card_ico_12371_3': { path: 'res/new/thumb/card_ico_12371_3.png', w: 82, h: 82 },
+		'card_ico_12372': { path: 'res/new/thumb/card_ico_12372.png', w: 82, h: 82 },
+		'card_ico_12372_3': { path: 'res/new/thumb/card_ico_12372_3.png', w: 82, h: 82 },
+		'card_ico_12373': { path: 'res/new/thumb/card_ico_12373.png', w: 82, h: 82 },
+		'card_ico_12373_3': { path: 'res/new/thumb/card_ico_12373_3.png', w: 82, h: 82 },
+		'card_ico_12374': { path: 'res/new/thumb/card_ico_12374.png', w: 82, h: 82 },
+		'card_ico_12374_3': { path: 'res/new/thumb/card_ico_12374_3.png', w: 82, h: 82 },
+		'card_ico_12375': { path: 'res/new/thumb/card_ico_12375.png', w: 82, h: 82 },
+		'card_ico_12375_3': { path: 'res/new/thumb/card_ico_12375_3.png', w: 82, h: 82 },
+		'card_ico_12376': { path: 'res/new/thumb/card_ico_12376.png', w: 82, h: 82 },
+		'card_ico_12376_3': { path: 'res/new/thumb/card_ico_12376_3.png', w: 82, h: 82 },
+		'card_ico_12370': { path: 'res/new/thumb/card_ico_12370.png', w: 82, h: 82 },
+		'card_ico_12370_3': { path: 'res/new/thumb/card_ico_12370_3.png', w: 82, h: 82 },
+		'card_ico_12369': { path: 'res/new/thumb/card_ico_12369.png', w: 82, h: 82 },
+		'card_ico_12369_3': { path: 'res/new/thumb/card_ico_12369_3.png', w: 82, h: 82 },
+		'card_ico_12368': { path: 'res/new/thumb/card_ico_12368.png', w: 82, h: 82 },
+		'card_ico_12368_3': { path: 'res/new/thumb/card_ico_12368_3.png', w: 82, h: 82 },
+		'card_ico_12367': { path: 'res/new/thumb/card_ico_12367.png', w: 82, h: 82 },
+		'card_ico_12367_3': { path: 'res/new/thumb/card_ico_12367_3.png', w: 82, h: 82 },
+		'card_ico_12366': { path: 'res/new/thumb/card_ico_12366.png', w: 82, h: 82 },
+		'card_ico_12366_3': { path: 'res/new/thumb/card_ico_12366_3.png', w: 82, h: 82 },
 		'card_ico_40749': { path: 'res/new/thumb/card_ico_40749.png', w: 82, h: 82 },
 		'card_ico_40749_3': { path: 'res/new/thumb/card_ico_40749_3.png', w: 82, h: 82 },
 		'card_ico_12346': { path: 'res/new/thumb/card_ico_12346.png', w: 82, h: 82 },
@@ -280,6 +378,68 @@
 		'card_ico_12356_3': { path: 'res/new/thumb/card_ico_12356_3.png', w: 82, h: 82 },
 		'card_ico_12357': { path: 'res/new/thumb/card_ico_12357.png', w: 82, h: 82 },
 		'card_ico_12357_3': { path: 'res/new/thumb/card_ico_12357_3.png', w: 82, h: 82 },
+		'card_ico_12358': { path: 'res/new/thumb/card_ico_12358.png', w: 82, h: 82 },
+		'card_ico_12358_3': { path: 'res/new/thumb/card_ico_12358_3.png', w: 82, h: 82 },
+		'card_ico_12359': { path: 'res/new/thumb/card_ico_12359.png', w: 82, h: 82 },
+		'card_ico_12359_3': { path: 'res/new/thumb/card_ico_12359_3.png', w: 82, h: 82 },
+		'card_ico_40767': { path: 'res/new/thumb/card_ico_40767.png', w: 82, h: 82 },
+		'card_ico_40767_3': { path: 'res/new/thumb/card_ico_40767_3.png', w: 82, h: 82 },
+		'card_ico_40768': { path: 'res/new/thumb/card_ico_40768.png', w: 82, h: 82 },
+		'card_ico_40768_3': { path: 'res/new/thumb/card_ico_40768_3.png', w: 82, h: 82 },
+		'card_ico_40769': { path: 'res/new/thumb/card_ico_40769.png', w: 82, h: 82 },
+		'card_ico_40769_3': { path: 'res/new/thumb/card_ico_40769_3.png', w: 82, h: 82 },
+		'card_ico_40770': { path: 'res/new/thumb/card_ico_40770.png', w: 82, h: 82 },
+		'card_ico_40770_3': { path: 'res/new/thumb/card_ico_40770_3.png', w: 82, h: 82 },
+		'card_ico_40771': { path: 'res/new/thumb/card_ico_40771.png', w: 82, h: 82 },
+		'card_ico_40771_3': { path: 'res/new/thumb/card_ico_40771_3.png', w: 82, h: 82 },
+		'card_ico_40772': { path: 'res/new/thumb/card_ico_40772.png', w: 82, h: 82 },
+		'card_ico_40772_3': { path: 'res/new/thumb/card_ico_40772_3.png', w: 82, h: 82 },
+		'card_ico_40773': { path: 'res/new/thumb/card_ico_40773.png', w: 82, h: 82 },
+		'card_ico_40773_3': { path: 'res/new/thumb/card_ico_40773_3.png', w: 82, h: 82 },
+		'card_ico_21165': { path: 'res/new/thumb/card_ico_21165.png', w: 82, h: 82 },
+		'card_ico_21165_3': { path: 'res/new/thumb/card_ico_21165_3.png', w: 82, h: 82 },
+		'card_ico_21166': { path: 'res/new/thumb/card_ico_21166.png', w: 82, h: 82 },
+		'card_ico_21166_3': { path: 'res/new/thumb/card_ico_21166_3.png', w: 82, h: 82 },
+		'card_ico_12360': { path: 'res/new/thumb/card_ico_12360.png', w: 82, h: 82 },
+		'card_ico_12360_3': { path: 'res/new/thumb/card_ico_12360_3.png', w: 82, h: 82 },
+		'card_ico_21167': { path: 'res/new/thumb/card_ico_21167.png', w: 82, h: 82 },
+		'card_ico_21167_3': { path: 'res/new/thumb/card_ico_21167_3.png', w: 82, h: 82 },
+		'card_ico_40774': { path: 'res/new/thumb/card_ico_40774.png', w: 82, h: 82 },
+		'card_ico_40774_3': { path: 'res/new/thumb/card_ico_40774_3.png', w: 82, h: 82 },
+		'card_ico_40775': { path: 'res/new/thumb/card_ico_40775.png', w: 82, h: 82 },
+		'card_ico_40775_3': { path: 'res/new/thumb/card_ico_40775_3.png', w: 82, h: 82 },
+		'card_ico_12361': { path: 'res/new/thumb/card_ico_12361.png', w: 82, h: 82 },
+		'card_ico_12361_3': { path: 'res/new/thumb/card_ico_12361_3.png', w: 82, h: 82 },
+		'card_ico_12362': { path: 'res/new/thumb/card_ico_12362.png', w: 82, h: 82 },
+		'card_ico_12362_3': { path: 'res/new/thumb/card_ico_12362_3.png', w: 82, h: 82 },
+		'card_ico_21168': { path: 'res/new/thumb/card_ico_21168.png', w: 82, h: 82 },
+		'card_ico_21168_3': { path: 'res/new/thumb/card_ico_21168_3.png', w: 82, h: 82 },
+		'card_ico_21169': { path: 'res/new/thumb/card_ico_21169.png', w: 82, h: 82 },
+		'card_ico_21169_3': { path: 'res/new/thumb/card_ico_21169_3.png', w: 82, h: 82 },
+		'card_ico_21170': { path: 'res/new/thumb/card_ico_21170.png', w: 82, h: 82 },
+		'card_ico_21170_3': { path: 'res/new/thumb/card_ico_21170_3.png', w: 82, h: 82 },
+		'card_ico_40776': { path: 'res/new/thumb/card_ico_40776.png', w: 82, h: 82 },
+		'card_ico_40776_3': { path: 'res/new/thumb/card_ico_40776_3.png', w: 82, h: 82 },
+		'card_ico_40777': { path: 'res/new/thumb/card_ico_40777.png', w: 82, h: 82 },
+		'card_ico_40777_3': { path: 'res/new/thumb/card_ico_40777_3.png', w: 82, h: 82 },
+		'card_ico_40778': { path: 'res/new/thumb/card_ico_40778.png', w: 82, h: 82 },
+		'card_ico_40778_3': { path: 'res/new/thumb/card_ico_40778_3.png', w: 82, h: 82 },
+		'card_ico_40779': { path: 'res/new/thumb/card_ico_40779.png', w: 82, h: 82 },
+		'card_ico_40779_3': { path: 'res/new/thumb/card_ico_40779_3.png', w: 82, h: 82 },
+		'card_ico_40780': { path: 'res/new/thumb/card_ico_40780.png', w: 82, h: 82 },
+		'card_ico_40780_3': { path: 'res/new/thumb/card_ico_40780_3.png', w: 82, h: 82 },
+		'card_ico_21171': { path: 'res/new/thumb/card_ico_21171.png', w: 82, h: 82 },
+		'card_ico_21171_3': { path: 'res/new/thumb/card_ico_21171_3.png', w: 82, h: 82 },
+		'card_ico_12363': { path: 'res/new/thumb/card_ico_12363.png', w: 82, h: 82 },
+		'card_ico_12363_3': { path: 'res/new/thumb/card_ico_12363_3.png', w: 82, h: 82 },
+		'card_ico_12364': { path: 'res/new/thumb/card_ico_12364.png', w: 82, h: 82 },
+		'card_ico_12364_3': { path: 'res/new/thumb/card_ico_12364_3.png', w: 82, h: 82 },
+		'card_ico_12365': { path: 'res/new/thumb/card_ico_12365.png', w: 82, h: 82 },
+		'card_ico_12365_3': { path: 'res/new/thumb/card_ico_12365_3.png', w: 82, h: 82 },
+
+
+
+
 		'card_ico_21151': { path: 'res/new/thumb/card_ico_21151.png', w: 82, h: 82 },
 		'card_ico_21151_3': { path: 'res/new/thumb/card_ico_21151_3.png', w: 82, h: 82 },
 		'card_ico_21152': { path: 'res/new/thumb/card_ico_21152.png', w: 82, h: 82 },
@@ -666,6 +826,29 @@
 
 		R.resolvePending(key);
 
+		var aliases = [];
+		if (/\.jpm$/.test(key)) aliases.push(key.replace(/\.jpm$/, '.jpg'));
+		else if (/\.jpg$/.test(key)) aliases.push(key.replace(/\.jpg$/, '.jpm'));
+		var baseKey = key.replace(/_3\.(jpm|jpg)$/, '.$1');
+		if (baseKey !== key) {
+			aliases.push(baseKey);
+			if (/\.jpm$/.test(baseKey)) aliases.push(baseKey.replace(/\.jpm$/, '.jpg'));
+			else if (/\.jpg$/.test(baseKey)) aliases.push(baseKey.replace(/\.jpg$/, '.jpm'));
+		}
+		var skinKey = key.replace(/\.(jpm|jpg)$/, '_3.$1');
+		if (skinKey !== key) {
+			aliases.push(skinKey);
+			if (/\.jpm$/.test(skinKey)) aliases.push(skinKey.replace(/\.jpm$/, '.jpg'));
+			else if (/\.jpg$/.test(skinKey)) aliases.push(skinKey.replace(/\.jpg$/, '.jpm'));
+		}
+		for (var ai = 0; ai < aliases.length; ai++) {
+			var ak = aliases[ai];
+			if (tex && !cc.textureCache.getTextureForKey(ak)) {
+				cc.textureCache.cacheImage(ak, tex);
+				R.resolvePending(ak);
+			}
+		}
+
 		/* In WebGL mode, once uploaded to GPU texture, release the 2D canvas backing store to free RAM on iOS */
 		if (cc._renderType === cc.game.RENDER_TYPE_WEBGL && element instanceof HTMLCanvasElement) {
 			element.width = 1;
@@ -794,7 +977,7 @@
 	 * ------------------------------------------------------------------ */
 
 	function versionedUrl(url) {
-		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261016v1792097500';
+		var v = (global.JDZC_CONFIG && global.JDZC_CONFIG.version) || '20261102v114500';
 		if (!url || typeof url !== 'string') return url;
 		return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
 	}
@@ -1046,7 +1229,11 @@
 			{ key: 'res/jpg/lottery_221001.jpg', colour: 'res/jpg/lottery_221001.jpg', mask: 'res/jpg/lottery_221001_mask.png' },
 			{ key: 'res/jpg/lottery_222001.jpg', colour: 'res/jpg/lottery_222001.jpg', mask: 'res/jpg/lottery_222001_mask.png' },
 			{ key: 'res/jpg/lottery_223001.jpg', colour: 'res/jpg/lottery_223001.jpg', mask: 'res/jpg/lottery_223001_mask.png' },
-			{ key: 'res/jpg/lottery_224001.jpg', colour: 'res/jpg/lottery_224001.jpg', mask: 'res/jpg/lottery_224001_mask.png' }
+			{ key: 'res/jpg/lottery_224001.jpg', colour: 'res/jpg/lottery_224001.jpg', mask: 'res/jpg/lottery_224001_mask.png' },
+			{ key: 'res/jpg/lottery_225001.jpg', colour: 'res/jpg/lottery_225001.jpg', mask: 'res/jpg/lottery_225001_mask.png' },
+			{ key: 'res/jpg/lottery_226001.jpg', colour: 'res/jpg/lottery_226001.jpg', mask: 'res/jpg/lottery_226001_mask.png' },
+			{ key: 'res/jpg/lottery_227001.jpg', colour: 'res/jpg/lottery_227001.jpg', mask: 'res/jpg/lottery_227001_mask.png' },
+			{ key: 'res/jpg/lottery_228001.jpg', colour: 'res/jpg/lottery_228001.jpg', mask: 'res/jpg/lottery_228001_mask.png' }
 		];
 		var p1 = residentJpgs.map(function (path) {
 			return R.loadTexture(path).catch(function () {});
@@ -1305,10 +1492,13 @@
 			            R.manifest.sizes[norm.replace(/^res\//, '')] ||
 			            R.manifest.sizes['res/' + path.replace(/^res\//, '')] ||
 			            R.manifest.sizes['res/' + norm.replace(/^res\//, '')];
-			if (found) return found;
+			if (found && Array.isArray(found) && typeof found[0] === 'number') return found;
 		}
 		if (/^\d+(_\d+)?\.(jpm|jpg)$/.test(path) || /thumb_(monster|magic|trap|rare)\/\d+(_\d+)?\.(jpm|jpg)$/.test(path)) {
 			return [256, 256];
+		}
+		if (/lottery_\d+\.(jpg|png)$/.test(path)) {
+			return [252, 530];
 		}
 		return null;
 	};
@@ -1397,15 +1587,17 @@
 			'res/new/buttons/red_240x78.png'
 		];
 		Object.keys(CUSTOM_ICON_REPLACEMENTS).forEach(function (k) {
-			var p = CUSTOM_ICON_REPLACEMENTS[k].path;
-			if (assets.indexOf(p) < 0) assets.push(p);
+			var entry = CUSTOM_ICON_REPLACEMENTS[k];
+			var p = (typeof entry === 'string') ? entry : (entry && entry.path);
+			if (p && typeof p === 'string' && assets.indexOf(p) < 0) assets.push(p);
 		});
 		var promises = assets.map(function (path) {
 			return new Promise(function (resolve) {
+				if (!path || typeof path !== 'string') return resolve(null);
 				var timer = setTimeout(function () { resolve(null); }, 15000);
 				cc.textureCache.addImage(versionedUrl(path), function (tex) {
 					clearTimeout(timer);
-					if (tex && !(tex instanceof Error)) {
+					if (tex && !(tex instanceof Error) && typeof path === 'string') {
 						cc.textureCache._textures[path] = tex;
 						cc.textureCache._textures[versionedUrl(path)] = tex;
 						var cleanP = path.replace(/^res\//, '');
@@ -1420,9 +1612,14 @@
 		return Promise.all(promises).then(function () {
 			Object.keys(CUSTOM_ICON_REPLACEMENTS).forEach(function (name) {
 				var info = CUSTOM_ICON_REPLACEMENTS[name];
-				var tex = cc.textureCache.getTextureForKey(info.path) || cc.textureCache.getTextureForKey(versionedUrl(info.path));
-				if (tex) {
-					var frame = new cc.SpriteFrame(tex, cc.rect(0, 0, info.w, info.h), false, cc.p(0, 0), cc.size(info.w, info.h));
+				if (!info) return;
+				var p = (typeof info === 'string') ? info : info.path;
+				if (!p || typeof p !== 'string') return;
+				var w = info.w || 82;
+				var h = info.h || 82;
+				var tex = cc.textureCache.getTextureForKey(p) || cc.textureCache.getTextureForKey(versionedUrl(p));
+				if (tex && !(tex instanceof Error)) {
+					var frame = new cc.SpriteFrame(tex, cc.rect(0, 0, w, h), false, cc.p(0, 0), cc.size(w, h));
 					frame._textureLoaded = (typeof tex.isLoaded === 'function') ? tex.isLoaded() : true;
 					cc.spriteFrameCache.addSpriteFrame(frame, name);
 					R.resolveFrame(name, frame);

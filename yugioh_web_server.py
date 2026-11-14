@@ -1,4 +1,5 @@
 import http.server
+import re
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 import socketserver
 import socket
@@ -516,9 +517,34 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
     is_tien_nghich = (222001 <= pkg_num <= 222050) or (pkg_num == 2)
     is_kmr = (223001 <= pkg_num <= 223050) or (pkg_num == 3)
     is_minecraft = (224001 <= pkg_num <= 224050) or (pkg_num == 4)
-    is_fairy_hero = is_tru_tien or is_tien_nghich or is_kmr or is_minecraft or (pkg_num in SERVER_FAIRY_HERO_CARDS_MAP)
+    is_sky_striker = (225001 <= pkg_num <= 225050) or (pkg_num == 5)
+    is_dragon_ball = (226001 <= pkg_num <= 226050) or (pkg_num == 6)
+    is_liqi = (227001 <= pkg_num <= 227050) or (pkg_num == 7)
+    is_labrynth = (228001 <= pkg_num <= 228050) or (pkg_num == 8)
+    is_fairy_hero = is_tru_tien or is_tien_nghich or is_kmr or is_minecraft or is_sky_striker or is_dragon_ball or is_liqi or is_labrynth or (pkg_num in SERVER_FAIRY_HERO_CARDS_MAP)
     if is_fairy_hero:
-        if is_minecraft or (pkg_num in (4, 224001, 224010, 224050)):
+        sr_pool = []
+        if is_dragon_ball or (pkg_num in (6, 226001, 226010, 226050)):
+            series_name = "7 Viên Bi Rồng"
+            gr_pool = [21166, 21171, 40779]
+            ur_pool = [12358, 12359, 12360, 12363, 12364, 12365, 21165, 21167, 21168, 21169, 21170, 40767, 40768, 40769, 40770, 40771, 40774, 40780]
+            sr_pool = [12361, 40775]
+        elif is_liqi or (pkg_num in (7, 227001, 227010, 227050)):
+            series_name = "Liên Quân"
+            gr_pool = [40781]
+            ur_pool = [12382, 12383, 12384, 12385, 12386, 12387, 12388, 40782, 21174, 21175, 30606]
+            sr_pool = []
+        elif is_labrynth or (pkg_num in (8, 228001, 228010, 228050)):
+            series_name = "Mê Cung Labrynth"
+            gr_pool = [12381]
+            ur_pool = [12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380, 21172, 21173, 30598, 30599, 30601, 30602, 30603, 30604, 30605]
+            sr_pool = []
+        elif is_sky_striker or (pkg_num in (5, 225001, 225010, 225050)):
+            series_name = "Thiên Không Hoàng"
+            gr_pool = [40766]
+            ur_pool = [12349, 12350, 12351, 12352, 12353, 12354, 12355, 12356, 21151, 21152, 21153, 21155, 21156, 21157, 21158, 21159, 21160, 21161, 21162, 21163, 21164, 40755, 40756, 40758, 40759, 40760, 40761, 40762, 40763, 40764, 40765]
+            sr_pool = [21154, 40757]
+        elif is_minecraft or (pkg_num in (4, 224001, 224010, 224050)):
             series_name = "Minecraft"
             gr_pool = [12339, 40753]
             ur_pool = [12337, 12338, 12340, 12341, 12342, 12343, 12344, 12345, 12346, 12347, 21148, 21149, 21150, 30596, 30597, 40747, 40748, 40749, 40750, 40751, 40752, 40754]
@@ -569,7 +595,10 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                         picked_cid = random.choice(ur_pool)
                         has_ur = True
                     else:
-                        if random.random() < 0.60:
+                        if sr_pool and random.random() < 0.20:
+                            target_quality = 'SR'
+                            picked_cid = random.choice(sr_pool)
+                        elif random.random() < 0.60:
                             target_quality = 'R'
                             picked_cid = random.choice(r_pool)
                         else:
@@ -584,7 +613,7 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     if cquality == 'GR':
                         curr_gr_pity = 0
                         char_name = user_acc.get('character_name', '') if user_acc else ''
-                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft"):
+                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft", "Thiên Không Hoàng", "7 Viên Bi Rồng", "Liên Quân", "Mê Cung Labrynth"):
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được {series_name} cấp GR [{cname}]!"
                         else:
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
@@ -638,7 +667,10 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                         ur_count_this_batch += 1
                         user_pity = 0.0
                     else:
-                        if random.random() < 0.60:
+                        if sr_pool and random.random() < 0.20:
+                            target_quality = 'SR'
+                            picked_cid = random.choice(sr_pool)
+                        elif random.random() < 0.60:
                             target_quality = 'R'
                             picked_cid = random.choice(r_pool)
                         else:
@@ -656,7 +688,7 @@ def execute_pack_lottery(pkg_num, total_cards, user_pity, req_pool, user_acc, br
                     if cquality == 'GR':
                         curr_gr_pity = 0
                         char_name = user_acc.get('character_name', '') if user_acc else ''
-                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft"):
+                        if series_name in ("Hiệp sĩ mặt nạ", "Minecraft", "Thiên Không Hoàng", "7 Viên Bi Rồng", "Liên Quân", "Mê Cung Labrynth"):
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được {series_name} cấp GR [{cname}]!"
                         else:
                             announcement = f"[THÔNG BÁO] Chúc mừng bài thủ [{char_name}] vừa khai mở được Thần Khí {series_name} cấp GR [{cname}]!"
@@ -1062,6 +1094,19 @@ def get_player_full_data(account_id):
             cur.execute("SELECT card_id, count FROM user_cards WHERE account_id = %s", (account_id,))
             cards = cur.fetchall()
             
+            # Ensure custom cards (Labrynth & Hand Traps) are always owned
+            CUSTOM_CARDS = [
+                30598, 30599, 30600, 30601,
+                12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380, 12381,
+                30602, 30603, 30604, 30605, 21172, 21173
+            ]
+            owned_ids = {c['card_id'] for c in cards}
+            missing_custom = [cid for cid in CUSTOM_CARDS if cid not in owned_ids]
+            if missing_custom:
+                for mcid in missing_custom:
+                    cur.execute("INSERT INTO user_cards (account_id, card_id, count) VALUES (%s, %s, 3) ON DUPLICATE KEY UPDATE count = GREATEST(count, 3)", (account_id, mcid))
+                    cards.append({'card_id': mcid, 'count': 3})
+            
             cur.execute("SELECT deck_slot, deck_name, cards, extra_cards, is_active FROM user_decks WHERE account_id = %s ORDER BY deck_slot", (account_id,))
             decks_raw = cur.fetchall()
             decks = []
@@ -1352,35 +1397,42 @@ def claim_player_mail(account_id, mail_id):
 
 
 def ensure_deck_cards(acc_id, raw_cards=None, raw_extra=None):
-    cards = []
-    extra = []
+    raw_main_list = []
+    raw_extra_list = []
     if isinstance(raw_cards, dict):
         try:
-            cards = [int(v) for k, v in sorted(raw_cards.items(), key=lambda x: int(x[0])) if int(v) > 0]
+            raw_main_list = [int(v) for k, v in sorted(raw_cards.items(), key=lambda x: int(x[0])) if int(v) > 0]
         except:
-            cards = [int(v) for v in raw_cards.values() if int(v) > 0]
+            raw_main_list = [int(v) for v in raw_cards.values() if int(v) > 0]
     elif isinstance(raw_cards, list):
         for c in raw_cards:
             try:
                 cid = int(c.get('info_id') if isinstance(c, dict) else c)
+                num = int(c.get('num', 1)) if isinstance(c, dict) else 1
                 if cid > 0:
-                    cards.append(cid)
+                    for _ in range(max(1, num)):
+                        raw_main_list.append(cid)
             except:
                 pass
 
     if isinstance(raw_extra, dict):
         try:
-            extra = [int(v) for k, v in sorted(raw_extra.items(), key=lambda x: int(x[0])) if int(v) > 0]
+            raw_extra_list = [int(v) for k, v in sorted(raw_extra.items(), key=lambda x: int(x[0])) if int(v) > 0]
         except:
-            extra = [int(v) for v in raw_extra.values() if int(v) > 0]
+            raw_extra_list = [int(v) for v in raw_extra.values() if int(v) > 0]
     elif isinstance(raw_extra, list):
         for c in raw_extra:
             try:
                 cid = int(c.get('info_id') if isinstance(c, dict) else c)
+                num = int(c.get('num', 1)) if isinstance(c, dict) else 1
                 if cid > 0:
-                    extra.append(cid)
+                    for _ in range(max(1, num)):
+                        raw_extra_list.append(cid)
             except:
                 pass
+
+    cards = [cid for cid in raw_main_list if 0 < cid < 40000]
+    extra = [cid for cid in raw_main_list if cid >= 40000] + [cid for cid in raw_extra_list if cid >= 40000]
 
     if len(cards) < 40 and acc_id:
         try:
@@ -1396,26 +1448,30 @@ def ensure_deck_cards(acc_id, raw_cards=None, raw_extra=None):
                     """, (acc_id, ct))
                     drow = cur.fetchone()
                     if drow and drow.get('cards'):
-                        db_cards = json.loads(drow['cards'])
-                        if db_cards and len(db_cards) >= 40:
-                            cards = [int(c) for c in db_cards]
-                        elif db_cards and len(db_cards) > len(cards):
-                            cards = [int(c) for c in db_cards]
-                        if not extra and drow.get('extra_cards'):
-                            extra = [int(c) for c in json.loads(drow['extra_cards'])]
+                        db_raw = [int(c) for c in json.loads(drow['cards']) if int(c) > 0]
+                        db_main = [c for c in db_raw if c < 40000]
+                        db_ext = [c for c in db_raw if c >= 40000]
+                        if len(db_main) > len(cards):
+                            cards = db_main
+                        if not extra:
+                            if drow.get('extra_cards'):
+                                extra = [int(c) for c in json.loads(drow['extra_cards']) if int(c) >= 40000]
+                            if not extra and db_ext:
+                                extra = db_ext
         except Exception as e:
             print(f"[ENSURE DECK DB ERR] {e}")
 
-    starter_pool = [
+    fallback_cids = [
         10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010,
-        10011, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019, 10020,
-        20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 30001, 30002,
-        30003, 30004, 30005, 10130, 10549, 10513, 11015, 11189, 11781, 12184
+        20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003
     ]
     idx = 0
     while len(cards) < 40:
-        cards.append(starter_pool[idx % len(starter_pool)])
+        cards.append(fallback_cids[idx % len(fallback_cids)])
         idx += 1
+
+    if not extra:
+        extra = [40001, 40002, 40008, 40022, 40025, 40039, 40159, 40207, 40259, 40386, 40399, 40534, 40588, 40605, 40672]
 
     return cards, extra
 
@@ -2002,6 +2058,32 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
         rel_path = clean_path.lstrip('/')
         full_path = os.path.normpath(os.path.join(WEB_DIR, rel_path))
 
+        if not (full_path.startswith(WEB_DIR) and os.path.isfile(full_path)):
+            if clean_path.startswith('/card_ico_'):
+                for sub in ['res/new/thumb', 'res']:
+                    cand = os.path.normpath(os.path.join(WEB_DIR, sub, rel_path))
+                    if os.path.isfile(cand):
+                        full_path = cand
+                        break
+            elif re.match(r'^/?(\d+(_3)?\.(jpg|png|jpm))$', rel_path):
+                filename = os.path.basename(rel_path)
+                card_num = filename.split('.')[0].replace('_3', '')
+                for sub in [
+                    'res',
+                    f'res/thumb_trap/{card_num}.lcres',
+                    f'res/thumb_trap/{card_num}_3.lcres',
+                    f'res/thumb_magic/{card_num}.lcres',
+                    f'res/thumb_magic/{card_num}_3.lcres',
+                    f'res/thumb_monster/{card_num}.lcres',
+                    f'res/thumb_monster/{card_num}_3.lcres',
+                    f'res/thumb_rare/{card_num}.lcres',
+                    f'res/thumb_rare/{card_num}_3.lcres',
+                ]:
+                    cand = os.path.normpath(os.path.join(WEB_DIR, sub, filename))
+                    if os.path.isfile(cand):
+                        full_path = cand
+                        break
+
         if full_path.startswith(WEB_DIR) and os.path.isfile(full_path):
             try:
                 st = os.stat(full_path)
@@ -2013,20 +2095,19 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
 
                 # Determine caching policy
                 is_versioned = ('?v=' in self.path or '&v=' in self.path)
-                is_nocache = (clean_path == '/index.html' or clean_path.endswith('.html'))
+                is_nocache = (clean_path == '/index.html' or clean_path == '/sw.js' or clean_path.endswith('.html') or clean_path.endswith('.js'))
                 is_audio = ext_lower in ('.mp3', '.wav', '.ogg') or clean_path.startswith('/res/audio/')
-                is_dynamic_bundle = clean_path in ('/lua_src.json', '/data_dumps.json', '/res_manifest.json') or clean_path.endswith('.plist') or clean_path.endswith('.lan')
+                is_dynamic_bundle = clean_path in ('/lua_src.json', '/data_dumps.json', '/res_manifest.json', '/lua_bundle.bin', '/data_bundle.bin') or clean_path.endswith('.plist') or clean_path.endswith('.lan')
                 is_static_res = (clean_path.startswith('/res/') or (ext_lower in IMMUTABLE_STATIC_EXTS)) and not is_dynamic_bundle and not is_audio
                 is_immutable = is_static_res and is_versioned
 
                 def apply_cache_headers():
-                    if is_nocache:
-                        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                    if '20261105' in self.path:
+                        self.send_header('Clear-Site-Data', '"cache"')
+                    if is_nocache or is_dynamic_bundle:
+                        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
                         self.send_header('Pragma', 'no-cache')
                         self.send_header('Expires', '0')
-                    elif is_dynamic_bundle:
-                        self.send_header('Cache-Control', 'no-cache, must-revalidate')
-                        self.send_header('Pragma', 'no-cache')
                     elif is_audio:
                         if is_versioned:
                             self.send_header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
@@ -2588,6 +2669,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     15: (12330, 7000, 3),
                     16: (12336, 50000, 3),
                     17: (40745, 20000, 3),
+                    24: (12367, 5000, 3),
                     59: (40209, 200000, 1),
                     60: (20005, 5000, 1),
                     61: (20051, 100000, 1),
@@ -2596,11 +2678,15 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     546: (12330, 7000, 3),
                     547: (12336, 50000, 3),
                     548: (40745, 20000, 3),
+                    559: (12367, 5000, 3),
                     583: (12330, 7000, 3),
                 }
+                is_diamond_product = False
                 if prod_id in special_fixed:
                     card_id, server_cost, server_cost_type = special_fixed[prod_id]
                     is_legit_item = True
+                    if shop_type == 'diamond' or prod_id in (546, 547, 548, 559, 583):
+                        is_diamond_product = True
                 elif card_id == 40209:
                     server_cost, server_cost_type, is_legit_item = 200000, 1, True
                 elif card_id == 20005:
@@ -2619,6 +2705,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     server_cost, server_cost_type, is_legit_item = 7000, 3, True
                 elif card_id == 12336:
                     server_cost, server_cost_type, is_legit_item = 50000, 3, True
+                    is_diamond_product = True
                 elif card_id == 40745:
                     server_cost, server_cost_type, is_legit_item = 20000, 3, True
                 elif card_id == 30592:
@@ -2627,13 +2714,18 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                     server_cost, server_cost_type, is_legit_item = 5000, 3, True
                 elif card_id == 40732:
                     server_cost, server_cost_type, is_legit_item = 5000, 3, True
+                elif card_id == 12367:
+                    server_cost, server_cost_type, is_legit_item = 5000, 3, True
                 elif prod_id > 0:
                     pool = ALL_SHOP_PRODUCTS.get(shop_type, {})
                     pinfo = pool.get(prod_id)
+                    matched_diamond = (shop_type == 'diamond' and pinfo is not None)
                     if not pinfo:
                         for st, sp in ALL_SHOP_PRODUCTS.items():
                             if prod_id in sp:
                                 pinfo = sp[prod_id]
+                                if st == 'diamond':
+                                    matched_diamond = True
                                 break
                     if pinfo:
                         cid = int(pinfo.get('cardId', 0) or pinfo.get('infoId', 0))
@@ -2644,6 +2736,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                             server_cost = c_cost
                             server_cost_type = c_type
                             is_legit_item = True
+                            if matched_diamond:
+                                is_diamond_product = True
 
                 if not is_legit_item and card_id in FIXED_DEPOT_PRICES:
                     f_cost = FIXED_DEPOT_PRICES[card_id]
@@ -2653,7 +2747,7 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                         is_legit_item = True
 
                 card_info = ALL_CARDS_MAP.get(card_id)
-                is_gr = (card_info and card_info.get('quality') == 'GR' and card_id != 12336)
+                is_gr = (card_info and card_info.get('quality') == 'GR' and card_id != 12336 and not is_diamond_product)
 
                 if not acc_id or card_id <= 0:
                     resp = {"code": 400, "msg": "Thông tin thẻ bài hoặc tài khoản không hợp lệ!"}
@@ -3989,6 +4083,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 "first": other_first,
                                 "is_real_player": True,
                                 "oppo_online": True,
+                                "my_cards": other_data['cards'],
+                                "my_extra_cards": other_data.get('extra_cards', []),
                                 "oppo": {
                                     "name": my_name,
                                     "level": my_level,
@@ -4011,6 +4107,8 @@ class WebAppHandler(http.server.SimpleHTTPRequestHandler):
                                 "first": not other_first,
                                 "is_real_player": True,
                                 "oppo_online": True,
+                                "my_cards": my_cards,
+                                "my_extra_cards": my_extra,
                                 "oppo": matched_oppo
                             }
                             p1_uid = str(other_id if other_first else acc_id)

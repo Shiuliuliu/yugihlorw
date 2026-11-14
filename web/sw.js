@@ -2,11 +2,11 @@
  * Provides instant offline caching and sub-millisecond local loading (Arcana architecture)
  */
 
-var CACHE_NAME = 'yugihlor-cache-20261028v154000';
+var CACHE_NAME = 'yugihlor-cache-20261115v034000';
 
 var STATIC_EXTENSIONS = [
-	'.bin', '.json', '.jpg', '.jpeg', '.png', '.jpm', '.sfb', '.lcres',
-	'.woff', '.woff2', '.ttf', '.fnt', '.plist', '.wav', '.mp3', '.ogg', '.lan', '.css', '.js'
+	'.jpg', '.jpeg', '.png', '.jpm', '.sfb', '.lcres',
+	'.woff', '.woff2', '.ttf', '.fnt', '.plist', '.wav', '.mp3', '.ogg', '.lan', '.css'
 ];
 
 self.addEventListener('install', function (event) {
@@ -18,7 +18,7 @@ self.addEventListener('activate', function (event) {
 		caches.keys().then(function (cacheNames) {
 			return Promise.all(
 				cacheNames.map(function (name) {
-					if (name !== CACHE_NAME && name.startsWith('yugihlor-cache-')) {
+					if (name !== CACHE_NAME) {
 						console.log('[SW] Deleting old cache:', name);
 						return caches.delete(name);
 					}
@@ -42,30 +42,57 @@ self.addEventListener('fetch', function (event) {
 		return;
 	}
 
-	// Determine if this is a static game asset
 	var pathname = url.pathname.toLowerCase();
+	var isBundle = pathname.endsWith('lua_bundle.bin') ||
+	               pathname.endsWith('data_bundle.bin') ||
+	               pathname.endsWith('lua_src.json') ||
+	               pathname.endsWith('data_dumps.json') ||
+	               pathname.endsWith('res_manifest.json') ||
+	               pathname.endsWith('.js') ||
+	               pathname.endsWith('.html') ||
+	               pathname === '/';
+
+	// Network-first for code/data bundles and scripts so APK & Web always stay 100% in sync
+	if (isBundle) {
+		event.respondWith(
+			fetch(req, { cache: 'no-store' }).then(function (networkResponse) {
+				if (networkResponse && networkResponse.status === 200) {
+					var clone = networkResponse.clone();
+					caches.open(CACHE_NAME).then(function (cache) {
+						cache.put(req, clone).catch(function () {});
+					});
+				}
+				return networkResponse;
+			}).catch(function () {
+				return caches.match(req);
+			})
+		);
+		return;
+	}
+
+	// Determine if this is a static game asset
 	var isStatic = STATIC_EXTENSIONS.some(function (ext) { return pathname.endsWith(ext); }) ||
-	               pathname.indexOf('/res/') >= 0 ||
-	               pathname.endsWith('lua_bundle.bin') ||
-	               pathname.endsWith('data_bundle.bin');
+	               pathname.indexOf('/res/') >= 0;
 
 	if (!isStatic) return;
 
 	event.respondWith(
-		caches.match(req).then(function (cached) {
-			if (cached) {
-				return cached;
-			}
-			return fetch(req).then(function (networkResponse) {
-				if (networkResponse && networkResponse.status === 200) {
-					var responseToCache = networkResponse.clone();
-					caches.open(CACHE_NAME).then(function (cache) {
-						cache.put(req, responseToCache);
-					});
+		caches.open(CACHE_NAME).then(function (cache) {
+			return cache.match(req).then(function (cached) {
+				if (cached) {
+					return cached;
 				}
-				return networkResponse;
-			}).catch(function (err) {
-				return cached || Promise.reject(err);
+				return fetch(req).then(function (networkResponse) {
+					if (networkResponse && networkResponse.status === 200) {
+						try {
+							var responseToCache = networkResponse.clone();
+							cache.put(req, responseToCache).catch(function () {});
+						} catch (e) {}
+					}
+					return networkResponse;
+				}).catch(function (err) {
+					return cached || Promise.reject(err);
+				});
 			});
 		})
 	);

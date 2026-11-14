@@ -405,7 +405,7 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 								4861,
 								4957,
 								4979
-							}) or var_3_1:hasSkillFast(7544) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7579) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7622) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7631) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7693) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7731) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7753) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(14743) and var_3_1._status == BattleData.CardStatus.hand then
+							}) or var_3_1:hasSkillFast(7544) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7579) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7622) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7631) and var_3_1._status == BattleData.CardStatus.hand or (var_3_1:hasSkillFast(20102) or var_3_1:hasSkillFast(20104) or var_3_1._infoId == 21169 or var_3_1._infoId == 21170) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7693) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7731) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(7753) and var_3_1._status == BattleData.CardStatus.hand or var_3_1:hasSkillFast(14743) and var_3_1._status == BattleData.CardStatus.hand then
 								var_3_3:showChoiceMerge(var_3_0, var_3_4)
 							elseif var_3_1:hasSkillFast(14733) and var_3_1._status == BattleData.CardStatus.hand then
 								local canMerge = (var_3_2._castedSkillCounts[14733] == nil or var_3_2._castedSkillCounts[14733] == 0) and (#var_3_2:getValidMergeResultInfoIdsByTriggerCard(var_3_1, 1) > 0)
@@ -433,7 +433,33 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 
 								if var_3_14 and var_3_15 and #var_3_15 > 0 then
 									var_3_3:showChoiceGrave(var_3_0, var_3_4, var_3_15, var_3_16)
-								elseif var_3_1:hasSkillFast(7655) or var_3_1:hasSkillFast(14752) or var_3_1:hasSkillFast(14757) or var_3_1:isInfoId(21145) or var_3_1:isInfoId(21146) or var_3_1:isInfoId(21147) or var_3_1:hasSkillFast(14772) then
+								elseif var_3_1:isInfoId(21165) or var_3_1:isInfoId(21166) or var_3_1:hasSkillFast(20086) or var_3_1:hasSkillFast(20087) then
+									var_3_3:showChoiceWish(var_3_0, var_3_4)
+								elseif var_3_1:isInfoId(21176) or var_3_1:hasSkillFast(20241) then
+									local cands = {}
+									for _, c in ipairs(var_3_2:getBattleCards("H")) do
+										if c ~= var_3_1 and (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare) and (c:isKeyword(309) or (c._info and c._info._keyword == 309)) and var_3_2:canSpecialSummon(c) then
+											table.insert(cands, c)
+										end
+									end
+									if #cands > 0 and var_3_2:getEmptyBoardPos() ~= nil and not var_3_2._isSummonDisabled and not var_3_2._isSpecialSummonDisabled then
+										var_3_3:showChoiceGrave(var_3_0, nil, cands, 1, 1 * BattleData.ChoiceId.stage_3, "pvz_sun")
+									else
+										var_3_3:sendEvent(PlayerUi.EventType.dialog_cannot_effect, var_3_1._type)
+									end
+								elseif var_3_1:isInfoId(21177) or var_3_1:hasSkillFast(20242) then
+									local cands = {}
+									for _, c in ipairs(var_3_2:getBattleCards("G")) do
+										if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare) and (c:isKeyword(309) or (c._info and c._info._keyword == 309)) and var_3_2:canSpecialSummon(c) then
+											table.insert(cands, c)
+										end
+									end
+									if #cands > 0 and var_3_2:getEmptyBoardPos() ~= nil and not var_3_2._isSummonDisabled and not var_3_2._isSpecialSummonDisabled then
+										var_3_3:showChoiceGrave(var_3_0, nil, cands, 1, 1 * BattleData.ChoiceId.stage_3, "pvz_carot")
+									else
+										var_3_3:sendEvent(PlayerUi.EventType.dialog_cannot_effect, var_3_1._type)
+									end
+								elseif var_3_1:hasSkillFast(7655) or var_3_1:hasSkillFast(14752) or var_3_1:hasSkillFast(14757) or var_3_1:isInfoId(21145) or var_3_1:isInfoId(21146) or var_3_1:isInfoId(21147) or var_3_1:hasSkillFast(14772) or var_3_1:isInfoId(21168) or var_3_1:hasSkillFast(20094) or var_3_1:isInfoId(21171) or var_3_1:hasSkillFast(20108) or var_3_1:isInfoId(21175) or var_3_1:hasSkillFast(20229) or var_3_1:isInfoId(21178) or var_3_1:hasSkillFast(20248) then
 									var_3_3:sendEvent(PlayerUi.EventType.send_use_card, {
 										_choice = 0,
 										_card = var_3_0._card
@@ -472,6 +498,8 @@ function var_0_0.onTouchEnded(arg_3_0, arg_3_1)
 
 							if var_3_17 and var_3_18 and #var_3_18 > 0 then
 								var_3_3:showChoiceGrave(var_3_0, var_3_4, var_3_18, var_3_19)
+							elseif var_3_1:isInfoId(21165) or var_3_1:isInfoId(21166) or var_3_1:hasSkillFast(20086) or var_3_1:hasSkillFast(20087) then
+								var_3_3:showChoiceWish(var_3_0, var_3_4)
 							elseif var_3_1:hasSkillFast(14758) or var_3_1:isInfoId(30595) then
 								var_3_3:sendEvent(PlayerUi.EventType.send_use_card, {
 									_choice = 0,
@@ -833,6 +861,8 @@ function var_0_0.showSelectTarget(arg_12_0, arg_12_1, arg_12_2, arg_12_3)
 
 				if var_14_1 and var_14_2 and #var_14_2 > 0 then
 					var_12_2:showChoiceGrave(arg_12_1, var_14_0, var_14_2, var_14_3)
+				elseif var_12_4:isInfoId(21165) or var_12_4:isInfoId(21166) or var_12_4:hasSkillFast(20086) or var_12_4:hasSkillFast(20087) then
+					var_12_2:showChoiceWish(arg_12_1, var_14_0)
 				elseif var_12_4:hasSkillFast(4796) then
 					var_12_2:showChoiceNumber(arg_12_1, var_14_0, 1, 12, 0)
 				else

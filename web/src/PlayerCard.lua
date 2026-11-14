@@ -179,6 +179,24 @@ function var_0_0.init(arg_4_0, arg_4_1)
 		print("@@@@@@@@ GUARD", var_4_20._id, var_4_20._level, var_4_20._guard and var_4_20._guard._infoId)
 	end
 
+	local customCardsList = {
+		30598, 30599, 30600, 30601,
+		12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380, 12381,
+		30602, 30603, 30604, 30605, 21172, 21173
+	}
+	for _, cid in ipairs(customCardsList) do
+		local ctype = Data.getType(cid)
+		if arg_4_0._cards[ctype] then
+			if (arg_4_0._cards[ctype][cid] or 0) <= 0 then
+				arg_4_0._cards[ctype][cid] = 3
+			end
+		end
+		if arg_4_0._levels[cid] == nil or arg_4_0._levels[cid] <= 0 then
+			arg_4_0._levels[cid] = 1
+		end
+		arg_4_0._unlocked[cid] = true
+	end
+
 	arg_4_0:initSystemRecommendTroops()
 end
 

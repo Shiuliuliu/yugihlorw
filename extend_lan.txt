@@ -57346,7 +57346,7 @@ Trong Mộ phe ta có từ 5 quái có từ khóa "minecraft" trở lên có th�
 Ender Dragon - Hồn Rồng Bất Diệt
 Khi lá bài này bị phá hủy, phe ta tăng LP bằng tổng tấn công quái thú trên sân đối phương.
 Command Block
-[Phép Thường]\nLấy 1 lá bài có từ khóa "minecraft" từ Mộ hoặc Bộ bài lên tay.
+[Phép Thường]\nLấy 1 lá bài có từ khóa "minecraft" từ Bộ bài lên tay.
 Command Block
 Command Block - Lệnh Triệu Hồi
 Lấy 1 lá bài có từ khóa "minecraft" từ Mộ hoặc Bộ bài lên tay.
@@ -57465,3 +57465,1016 @@ Trục Xuất Chiến Trường
 Kĩ năng chủ động: 1 lượt 1 lần, bỏ 1 chỉ thị xyz, chọn 1 bài trên sân đối phương đẩy về tay.
 Tro Tàn Xác Sống
 Khi lá bài này bị phá hủy, quái tộc "xác sống" trên sân ta nhận 12007 trong 1 lượt.
+Thiên Không Hoàng
+Gói Bài Thiên Không Hoàng
+Gói bài riêng của bộ Thiên Không Hoàng: 34 lá (quái, phép, Link). Mở gói để nhận bài của bộ.
+Thiên Không Hoàng - Raye
+Át chủ bài bóng tối: tìm quân, gọi Link, tái triển khai.
+Bộ bài Thiên Không Hoàng.
+Thiên Không Hoàng - Roze
+Át chủ bài ánh sáng: tự xuống sân, phế quái mạnh nhất.
+Thiên Không Hoàng - Aileron
+Cánh phụ trợ: mang quân đến tay, tăng sức cả đội.
+Thiên Không Hoàng - Cyanos
+Trụ tương lai: gọi Roze, tìm quân, giảm 1/2 sát thương từ mộ.
+Thiên Không Hoàng - Ciela
+Hiền giả nhân từ: hồi sinh đồng đội, tìm quân từ mộ.
+Thiên Không Hoàng - Akash
+Hiền giả uy lực: nghiền quái yếu hơn, đánh liên tiếp.
+Thiên Không Hoàng - Himmel
+Hiền giả trí tuệ: phá phép/bẫy, chắn sát thương từ mộ.
+Thiên Không Hoàng - H.A.M.P.
+Phẫu thuật: Hiến tế 1 quái thú đối phương và Triệu Hồi Đặc Biệt lá này lên sân đối phương khi điều khiển quái Thiên Không Hoàng.
+Thiên Không Hoàng - Engage
+Phép tìm quân của Thiên Không Hoàng.
+Thiên Không Hoàng - Area Zero
+Phép môi trường: tăng sức cả đội, tìm quân, hồi LP.
+Thiên Không Hoàng - Linkage
+Phép triệu hồi của Thiên Không Hoàng.
+Thiên Không Hoàng - Hercules Base
+Phép duy trì: căn cứ tiếp lực cho quái Link.
+Thiên Không Hoàng - Scissors Cross
+Phép hồi sinh của Thiên Không Hoàng.
+Thiên Không Hoàng - Multirole
+Phép thường: hi sinh 1 quái Thiên Không Hoàng trên sân, khóa toàn bộ bài trên tay đối phương trong lượt.
+Thiên Không Hoàng - Hornet Drones
+Phép tạo Token của Thiên Không Hoàng.
+Thiên Không Hoàng - Shark Cannon
+Phép khống chế mộ của Thiên Không Hoàng.
+Thiên Không Hoàng - Jamming Waves
+Phép phá bài phép/bẫy của Thiên Không Hoàng.
+Thiên Không Hoàng - Eagle Booster
+Phép bảo vệ của Thiên Không Hoàng: trừ 4000 LP phe ta để buff toàn sân.
+Thiên Không Hoàng - Widow Anchor
+Phép cướp quái của Thiên Không Hoàng.
+Thiên Không Hoàng - Afterburners
+Phép phá quái của Thiên Không Hoàng.
+Thiên Không Hoàng - Vector Blast
+Phép bào mòn bộ bài của Thiên Không Hoàng.
+Thiên Không Hoàng - Lemnisgate
+Phép tối thượng của Thiên Không Hoàng.
+Thiên Không Hoàng - Kagari
+Link: thu hồi phép, mạnh lên theo phép trong mộ.
+Thiên Không Hoàng - Shizuku
+Link: tìm phép, làm suy yếu quái đối phương.
+Thiên Không Hoàng - Hayate
+Link: Nhận "Tấn Công Trực Tiếp". Sau khi tấn công: chọn 1 lá bài Thiên Không Hoàng từ bộ bài vào mộ.
+Thiên Không Hoàng - Kaina
+Link: khóa đòn tấn công, dựng tường sinh mệnh (giảm LP còn 1000).
+Thiên Không Hoàng - Zeke
+Link: xóa sổ quái mạnh nhất, hấp thụ đồng đội.
+Thiên Không Hoàng - Camellia
+Link: nạp phép, rút bài, trả đòn khi bị hạ.
+Thiên Không Hoàng - Azalea
+Link: phá 1 lá khi lên sân, tiếp tục phá từ mộ.
+Thiên Không Hoàng - Azalea Temperance
+Link: trả quái địch về tay, thu hồi phép.
+Thiên Không Hoàng - Engage Zero
+Link hợp đồng: khóa mọi quái mạnh của địch, tìm quân.
+Thiên Không Hoàng - Amatsu
+Link nguyên mẫu: hi sinh đồng đội để quét sân địch.
+Thiên Không Hoàng - Zero
+Link song tử: tìm phép, tách thành Raye hoặc Roze.
+Thiên Không Hoàng - S.P.E.C.T.R.A.
+Link tối thượng: phá bài, diệt quái mạnh nhất.
+Thiên Không Hoàng - Token
+Token "Thiên Không Hoàng".
+Token của Đàn Ong Trinh Sát.
+Thiên Không Hoàng - Cánh Phụ
+Trang bị "Thiên Không Hoàng".
+Trang bị Cánh Phụ của Thiên Không Hoàng.
+Raye-Xuất Kích
+Khi được triệu hồi (1 lượt 1 lần): lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+Raye-Chuyển Giáp
+Chủ động: Mỗi lượt chỉ 1 lần. Hi sinh lá này, triệu hồi đặc biệt quái Link "Thiên Không Hoàng" có tấn công cao nhất từ bộ bài phụ.
+Raye-Tái Triển Khai
+Khi bị phá hủy (1 lượt 1 lần): triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ bộ bài.
+Roze-Tiếp Viện
+Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Khi sân phe ta không có quái hoặc có quái "Thiên Không Hoàng": triệu hồi đặc biệt lá này từ tay.
+Roze-Phong Tỏa
+Khi được triệu hồi: vô hiệu kỹ năng của quái đối phương có tấn công cao nhất và biến tấn công của nó thành 0 (bỏ qua "Tường Chắn Quái").
+Roze-Trở Lại
+Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Triệu hồi đặc biệt lá này từ mộ.
+Aileron-Tiếp Tế
+Aileron-Cánh Phụ
+Khi bài này có mặt: quái "Thiên Không Hoàng" khác phe ta tăng 400 tấn công.
+Cyanos-Gọi Roze
+Khi được triệu hồi (1 lượt 1 lần): triệu hồi đặc biệt 1 "Thiên Không Hoàng - Roze" từ bộ bài hoặc mộ.
+Cyanos-Di Sản
+Khi bị phá hủy (1 lượt 1 lần): lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+Cyanos-Thành Trống
+Khi lá này nằm trong mộ, khi phe ta sắp chịu sát thương vào LP: loại bỏ lá này khỏi mộ, giảm 1/2 sát thương nhận vào đến hết lượt này.
+Ciela-Giáng Lâm
+Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Khi phe ta có quái "Thiên Không Hoàng" trên sân: triệu hồi đặc biệt lá này từ tay.
+Ciela-Hồi Sinh
+Khi được triệu hồi (1 lượt 1 lần): triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ mộ.
+Ciela-Ân Huệ
+Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+Akash-Uy Lực
+Khi được triệu hồi: phá hủy quái đối phương mạnh nhất có tấn công thấp hơn lá này (bỏ qua "Tường Chắn Quái").
+Akash-Liên Kích
+Chủ động: Mỗi lượt chỉ 1 lần. Lá này tăng 500 tấn công và được tấn công thêm 1 lần.
+Akash-Truyền Lửa
+Khi bị phá hủy (1 lượt 1 lần): lấy 1 quái "Thiên Không Hoàng" khác từ mộ vào tay.
+Himmel-Giải Mã
+Khi được triệu hồi: phá hủy 1 bài phép hoặc bẫy trên sân đối phương (bỏ qua "Tường Chắn Quái").
+Himmel-Thông Tuệ
+Chủ động: Mỗi lượt chỉ 1 lần. Lấy 1 bài phép "Thiên Không Hoàng" từ mộ vào tay.
+Himmel-Kết Giới
+H.A.M.P.-Phẫu Thuật
+Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Gửi quái đối phương có tấn công cao nhất vào mộ, sau đó triệu hồi đặc biệt lá này từ tay (bỏ qua "Tường Chắn Quái").
+H.A.M.P.-Sát Thủ
+Khi được triệu hồi: lá này nhận "Vô Song" và "Đoạt Linh Hồn".
+H.A.M.P.-Phản Kích
+Khi bị phá hủy: phá hủy quái đối phương có tấn công cao nhất (bỏ qua "Tường Chắn Quái").
+Engage-Huy Động
+Khi kích hoạt (1 lượt 1 lần): lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay. Nếu mộ phe ta có từ 3 bài phép trở lên: rút thêm 1 lá.
+Engage-Tiếp Liệu
+Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, lấy 1 bài phép "Thiên Không Hoàng" từ bộ bài vào tay.
+Area Zero-Không Phận
+Khi bài này có mặt: quái "Thiên Không Hoàng" phe ta tăng 500 tấn công.
+Area Zero-Trinh Sát
+Chủ động: Mỗi lượt chỉ 1 lần. Lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+Area Zero-Tiếp Tế
+Chủ động: Mỗi lượt chỉ 1 lần. Phe ta hồi 1000 LP.
+Area Zero-Rút Lui
+Khi bị phá hủy: lấy 1 bài phép "Thiên Không Hoàng" khác từ mộ vào tay.
+Linkage-Liên Kết
+Khi kích hoạt: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ tay hoặc mộ.
+Linkage-Tái Liên Kết
+Hercules-Căn Cứ
+Khi bài này có mặt: quái Link "Thiên Không Hoàng" phe ta tăng 800 tấn công.
+Hercules-Tiếp Lực
+Chủ động: Mỗi lượt chỉ 1 lần. Quái "Thiên Không Hoàng" có tấn công cao nhất phe ta được tấn công thêm 1 lần.
+Hercules-Cứu Hộ
+Khi bị phá hủy: lấy 1 quái "Thiên Không Hoàng" từ mộ vào tay.
+Scissors Cross-Cắt Kéo
+Khi kích hoạt: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ mộ.
+Scissors Cross-Thu Quân
+Multirole-Chuyển Vận
+Multirole-Dự Phòng
+Hornet-Bầy Ong
+Khi kích hoạt: triệu hồi đặc biệt 2 Token "Thiên Không Hoàng" (1500 tấn công) lên sân phe ta.
+Hornet-Trinh Sát
+Shark Cannon-Pháo Cá Mập
+Khi kích hoạt: loại bỏ quái mạnh nhất trong mộ đối phương. Nếu mộ phe ta có từ 3 bài phép trở lên: triệu hồi đặc biệt quái đó lên sân phe ta thay vì loại bỏ. Sau đó rút 1 lá.
+Jamming-Sóng Nhiễu
+Khi kích hoạt: phá hủy 1 bài phép hoặc bẫy trên sân đối phương. Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm quái đối phương có tấn công cao nhất (bỏ qua "Tường Chắn Quái").
+Eagle Booster-Hộ Giáp
+Khi kích hoạt: mọi quái "Thiên Không Hoàng" phe ta tăng 500 tấn công và nhận "Tường Chắn Quái", "Tường Chắn Phép", "Tường Chắn Bẫy"; phe ta hồi 1000 LP. Nếu mộ phe ta có từ 3 bài phép trở lên: nhận thêm "Khiên Chắn Phá Hủy".
+Widow Anchor-Mỏ Neo
+Khi kích hoạt: vô hiệu kỹ năng của quái đối phương có tấn công cao nhất. Nếu mộ phe ta có từ 3 bài phép trở lên: lấy quái đó về sân phe ta (bỏ qua "Tường Chắn Quái").
+Afterburners-Đốt Sau
+Khi kích hoạt: phá hủy quái đối phương có tấn công cao nhất. Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm 1 bài phép hoặc bẫy trên sân đối phương (bỏ qua "Tường Chắn Quái").
+Vector Blast-Chớp Vector
+Khi kích hoạt: gửi 2 lá trên cùng bộ bài đối phương vào mộ. Nếu mộ phe ta có từ 3 bài phép trở lên: đưa quái đối phương có tấn công cao nhất về tay chủ (bỏ qua "Tường Chắn Quái").
+Lemnisgate-Vô Hạn
+Khi kích hoạt: đưa quái đối phương có tấn công cao nhất về tay chủ, sau đó rút 1 lá (bỏ qua "Tường Chắn Quái").
+Kagari-Hỏa Tuyến
+Khi được triệu hồi: lấy 1 bài phép "Thiên Không Hoàng" từ mộ vào tay.
+Kagari-Nhiệt Lượng
+Khi bài này có mặt: lá này tăng 100 tấn công cho mỗi bài phép trong mộ phe ta.
+Shizuku-Tĩnh Thủy
+Khi được triệu hồi (1 lượt 1 lần): lấy 1 bài phép "Thiên Không Hoàng" từ bộ bài vào tay.
+Shizuku-Băng Áp
+Khi bài này có mặt: quái đối phương giảm 100 tấn công cho mỗi bài phép trong mộ phe ta.
+Hayate-Mai Táng
+Khi được triệu hồi: gửi 1 bài phép "Thiên Không Hoàng" từ bộ bài vào mộ, sau đó rút 1 lá.
+Hayate-Đột Kích
+Chủ động: Mỗi lượt chỉ 1 lần. Gây 1500 sát thương trực tiếp lên thành đối phương.
+Kaina-Khóa Đòn
+Khi được triệu hồi: quái đối phương có tấn công cao nhất không thể tấn công (bỏ qua "Tường Chắn Quái").
+Kaina-Tiếp Viện
+Chủ động: Mỗi lượt chỉ 1 lần. Phe ta hồi 1500 LP và nhận "Tường Chắn Sinh Mệnh" đến khi bắt đầu lượt kế của phe ta.
+Zeke-Hư Không
+Khi được triệu hồi: loại bỏ quái đối phương có tấn công cao nhất ra khỏi trận (bỏ qua "Tường Chắn Quái").
+Zeke-Hấp Thụ
+Chủ động: Mỗi lượt chỉ 1 lần. Hi sinh 1 quái khác phe ta, lá này tăng 1000 tấn công.
+Camellia-Hoa Trà
+Camellia-Tàn Hoa
+Azalea-Đỗ Quyên
+Khi được triệu hồi: phá hủy 1 lá bài trên sân đối phương (ưu tiên quái có tấn công cao nhất) (bỏ qua "Tường Chắn Quái").
+Azalea-Hồi Hoa
+Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, phá hủy 1 bài phép hoặc bẫy trên sân đối phương (bỏ qua "Tường Chắn Quái").
+Azalea Temperance-Tiết Chế
+Khi được triệu hồi: đưa quái đối phương có tấn công cao nhất về tay chủ (bỏ qua "Tường Chắn Quái"), sau đó lấy 1 bài phép "Thiên Không Hoàng" từ mộ vào tay.
+Azalea Temperance-Tái Sinh
+Khi bị phá hủy: triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ mộ.
+Engage Zero-Hiệp Đồng
+Khi được triệu hồi: vô hiệu kỹ năng của mọi quái đối phương có tấn công từ 2500 trở lên (bỏ qua "Tường Chắn Quái").
+Engage Zero-Tuyệt Kỹ
+Amatsu-Nguyên Mẫu
+Khi được triệu hồi: phá hủy 1 lá bài trên sân đối phương và 1 quái "Thiên Không Hoàng" khác phe ta (bỏ qua "Tường Chắn Quái").
+Amatsu-Kế Thừa
+Zero-Song Tử
+Khi được triệu hồi: lấy 1 bài phép "Thiên Không Hoàng" từ bộ bài hoặc mộ vào tay.
+Zero-Phân Tách
+Chủ động: Mỗi lượt chỉ 1 lần. Hi sinh lá này, triệu hồi đặc biệt 1 "Thiên Không Hoàng - Raye" hoặc "Thiên Không Hoàng - Roze" từ bộ bài hoặc mộ (ưu tiên lá chưa có trên sân).
+S.P.E.C.T.R.A.-Quang Phổ
+Khi được triệu hồi: phá hủy 1 lá bài trên sân đối phương (ưu tiên quái có tấn công cao nhất, bỏ qua "Tường Chắn Quái"), sau đó lá này nhận "Vô Song".
+S.P.E.C.T.R.A.-Tiêu Diệt
+Chủ động: Mỗi lượt chỉ 1 lần. Phá hủy quái đối phương có tấn công cao nhất (bỏ qua "Tường Chắn Quái").
+Thiên Không Hoàng - Dạ Chiến (Raye)
+Thiên Không Hoàng - Hoàng Kim (Raye)
+Thiên Không Hoàng - Dạ Chiến (Roze)
+Thiên Không Hoàng - Hoàng Kim (Roze)
+Thiên Không Hoàng - Dạ Chiến (Aileron)
+Thiên Không Hoàng - Hoàng Kim (Aileron)
+Thiên Không Hoàng - Dạ Chiến (Cyanos)
+Thiên Không Hoàng - Hoàng Kim (Cyanos)
+Thiên Không Hoàng - Dạ Chiến (Ciela)
+Thiên Không Hoàng - Hoàng Kim (Ciela)
+Thiên Không Hoàng - Dạ Chiến (Akash)
+Thiên Không Hoàng - Hoàng Kim (Akash)
+Thiên Không Hoàng - Dạ Chiến (Himmel)
+Thiên Không Hoàng - Hoàng Kim (Himmel)
+Thiên Không Hoàng - Dạ Chiến (H.A.M.P.)
+Thiên Không Hoàng - Hoàng Kim (H.A.M.P.)
+Thiên Không Hoàng - Dạ Chiến (Engage)
+Thiên Không Hoàng - Hoàng Kim (Engage)
+Thiên Không Hoàng - Dạ Chiến (Area Zero)
+Thiên Không Hoàng - Hoàng Kim (Area Zero)
+Thiên Không Hoàng - Dạ Chiến (Linkage)
+Thiên Không Hoàng - Hoàng Kim (Linkage)
+Thiên Không Hoàng - Dạ Chiến (Hercules Base)
+Thiên Không Hoàng - Hoàng Kim (Hercules Base)
+Thiên Không Hoàng - Dạ Chiến (Scissors Cross)
+Thiên Không Hoàng - Hoàng Kim (Scissors Cross)
+Thiên Không Hoàng - Dạ Chiến (Multirole)
+Thiên Không Hoàng - Hoàng Kim (Multirole)
+Thiên Không Hoàng - Dạ Chiến (Hornet Drones)
+Thiên Không Hoàng - Hoàng Kim (Hornet Drones)
+Thiên Không Hoàng - Dạ Chiến (Shark Cannon)
+Thiên Không Hoàng - Hoàng Kim (Shark Cannon)
+Thiên Không Hoàng - Dạ Chiến (Jamming Waves)
+Thiên Không Hoàng - Hoàng Kim (Jamming Waves)
+Thiên Không Hoàng - Dạ Chiến (Eagle Booster)
+Thiên Không Hoàng - Hoàng Kim (Eagle Booster)
+Thiên Không Hoàng - Dạ Chiến (Widow Anchor)
+Thiên Không Hoàng - Hoàng Kim (Widow Anchor)
+Thiên Không Hoàng - Dạ Chiến (Afterburners)
+Thiên Không Hoàng - Hoàng Kim (Afterburners)
+Thiên Không Hoàng - Dạ Chiến (Vector Blast)
+Thiên Không Hoàng - Hoàng Kim (Vector Blast)
+Thiên Không Hoàng - Dạ Chiến (Lemnisgate)
+Thiên Không Hoàng - Hoàng Kim (Lemnisgate)
+Thiên Không Hoàng - Dạ Chiến (Kagari)
+Thiên Không Hoàng - Hoàng Kim (Kagari)
+Thiên Không Hoàng - Dạ Chiến (Shizuku)
+Thiên Không Hoàng - Hoàng Kim (Shizuku)
+Thiên Không Hoàng - Dạ Chiến (Hayate)
+Thiên Không Hoàng - Hoàng Kim (Hayate)
+Thiên Không Hoàng - Dạ Chiến (Kaina)
+Thiên Không Hoàng - Hoàng Kim (Kaina)
+Thiên Không Hoàng - Dạ Chiến (Zeke)
+Thiên Không Hoàng - Hoàng Kim (Zeke)
+Thiên Không Hoàng - Dạ Chiến (Camellia)
+Thiên Không Hoàng - Hoàng Kim (Camellia)
+Thiên Không Hoàng - Dạ Chiến (Azalea)
+Thiên Không Hoàng - Hoàng Kim (Azalea)
+Thiên Không Hoàng - Dạ Chiến (Azalea Temperance)
+Thiên Không Hoàng - Hoàng Kim (Azalea Temperance)
+Thiên Không Hoàng - Dạ Chiến (Engage Zero)
+Thiên Không Hoàng - Hoàng Kim (Engage Zero)
+Thiên Không Hoàng - Dạ Chiến (Amatsu)
+Thiên Không Hoàng - Hoàng Kim (Amatsu)
+Thiên Không Hoàng - Dạ Chiến (Zero)
+Thiên Không Hoàng - Hoàng Kim (Zero)
+Thiên Không Hoàng - Dạ Chiến (S.P.E.C.T.R.A.)
+Thiên Không Hoàng - Hoàng Kim (S.P.E.C.T.R.A.)
+Thiên Không Hoàng - Dạ Chiến (Token)
+Thiên Không Hoàng - Hoàng Kim (Token)
+Thiên Không Hoàng - Dạ Chiến (Cánh Phụ)
+Thiên Không Hoàng - Hoàng Kim (Cánh Phụ)
+Link-4 tối thượng: quét sân, thiêu đốt, bất khả xâm phạm.
+Khi kích hoạt (1 lượt 1 lần; điều kiện: trên sân phe ta không có quái): triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ Bộ Bài Thêm (Extra Deck) lên sân; sau khi kích hoạt bạn chỉ có thể triệu hồi quái "Thiên Không Hoàng" từ bộ bài thêm.
+Khi kích hoạt (1 lượt 1 lần; điều kiện: trên sân phe ta không có quái): triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ mộ, sau đó lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+Multirole-Xuất Kích
+Chủ động: Mỗi lượt chỉ 1 lần. Triệu hồi đặc biệt 1 quái "Thiên Không Hoàng" từ bộ bài.
+Khi kích hoạt (1 lượt 1 lần): triệu hồi đặc biệt 2 Token "Thiên Không Hoàng" (1500 tấn công) lên sân phe ta, sau đó lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay.
+Khi kích hoạt: phá hủy 1 bài phép hoặc bẫy trên sân đối phương. Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm quái đối phương có tấn công cao nhất (bỏ qua "Tường Chắn Quái"). Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt: vô hiệu kỹ năng của quái đối phương có tấn công cao nhất. Nếu mộ phe ta có từ 3 bài phép trở lên: lấy quái đó về sân phe ta (bỏ qua "Tường Chắn Quái"). Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt: phá hủy quái đối phương có tấn công cao nhất. Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm 1 bài phép hoặc bẫy trên sân đối phương (bỏ qua "Tường Chắn Quái"). Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt: đưa quái đối phương có tấn công cao nhất về tay chủ (bỏ qua "Tường Chắn Quái"), sau đó rút 1 lá (không có mục tiêu thì vẫn rút 1 lá).
+Khi được triệu hồi: phá hủy tối đa 2 lá bài trên sân đối phương (ưu tiên quái có tấn công cao nhất, bỏ qua "Tường Chắn Quái"), sau đó lá này nhận "Vô Song" và "Đoạt Linh Hồn".
+S.P.E.C.T.R.A.-Giáp Quang
+Khi được triệu hồi: lá này nhận "Tường Chắn Quái", "Tường Chắn Phép", "Tường Chắn Bẫy" và "Khiên Chắn Phá Hủy".
+Chủ động: Mỗi lượt chỉ 1 lần. Phá hủy quái đối phương có tấn công cao nhất, sau đó đối phương chịu sát thương bằng tấn công của quái đó (bỏ qua "Tường Chắn Quái").
+S.P.E.C.T.R.A.-Tàn Quang
+Khi bị phá hủy: triệu hồi đặc biệt 1 quái Link "Thiên Không Hoàng" có tấn công cao nhất từ bộ bài phụ.
+Khi kích hoạt: phá hủy 1 bài phép hoặc bẫy trên sân đối phương. Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm quái đối phương có tấn công cao nhất (bỏ qua "Tường Chắn Phép"). Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt: vô hiệu kỹ năng của quái đối phương có tấn công cao nhất. Nếu mộ phe ta có từ 3 bài phép trở lên: lấy quái đó về sân phe ta (bỏ qua "Tường Chắn Phép"). Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt: phá hủy quái đối phương có tấn công cao nhất. Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm 1 bài phép hoặc bẫy trên sân đối phương (bỏ qua "Tường Chắn Phép"). Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt: gửi 2 lá trên cùng bộ bài đối phương vào mộ. Nếu mộ phe ta có từ 3 bài phép trở lên: đưa quái đối phương có tấn công cao nhất về tay chủ (bỏ qua "Tường Chắn Phép").
+Khi kích hoạt: đưa quái đối phương có tấn công cao nhất về tay chủ (bỏ qua "Tường Chắn Phép"), sau đó rút 1 lá (không có mục tiêu thì vẫn rút 1 lá).
+Phép tìm quân của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép môi trường: tăng sức cả đội, tìm quân, hồi LP. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép triệu hồi của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép duy trì: căn cứ tiếp lực cho quái Link. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép hồi sinh của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép duy trì: nạp lại phép, tìm quân dự phòng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép tạo Token của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép khống chế mộ của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép phá bài phép/bẫy của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép bảo vệ và cường hóa của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép cướp quái của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép phá quái của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép bào mòn bộ bài của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Phép tối thượng của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 2 lá phép "Thiên Không Hoàng".
+Link: thu hồi phép, mạnh lên theo phép trong mộ. Nguyên liệu: 1 quái "Thiên Không Hoàng".
+Link: tìm phép, làm suy yếu quái đối phương. Nguyên liệu: 1 quái "Thiên Không Hoàng".
+Link: Nhận "Tấn Công Trực Tiếp". Sau khi quái thú này tấn công và còn tồn tại: chọn 1 lá bài "Thiên Không Hoàng" từ bộ bài đưa vào mộ. Sức tấn công 1500.
+Link: khóa đòn tấn công, dựng tường sinh mệnh. Nguyên liệu: 1 quái "Thiên Không Hoàng".
+Link: xóa sổ quái mạnh nhất, hấp thụ đồng đội. Sức tấn công 1500.
+Link: nạp phép, rút bài, trả đòn khi bị hạ. Nguyên liệu: 2 quái "Thiên Không Hoàng".
+Link: phá 1 lá khi lên sân, tiếp tục phá từ mộ. Nguyên liệu: 2 quái "Thiên Không Hoàng".
+Link: trả quái địch về tay, thu hồi phép. Nguyên liệu: 3 quái "Thiên Không Hoàng".
+Không thể dùng làm Nguyên liệu Link. Khi vào sân vô hiệu kỹ năng quái đối thủ có ATK >= 2500 trong lượt. Kỹ năng chủ động: nếu trong Mộ có Raye và Roze, phá hủy toàn bộ quái đối phương (xuyên khiên). Sức tấn công 1500.
+Link nguyên mẫu: hi sinh đồng đội để quét sân địch. Nguyên liệu: 1 quái "Thiên Không Hoàng".
+Không thể dùng làm Nguyên liệu Link. Link song tử: tìm phép, tách thành Raye hoặc Roze. Sức tấn công 2000.
+Link tối thượng: phá bài, diệt quái mạnh nhất. Sức tấn công 3000.
+Chủ động: Mỗi lượt chỉ 1 lần. Nếu mộ phe ta có từ 6 bài phép "Thiên Không Hoàng" trở lên: hi sinh lá này, triệu hồi đặc biệt quái Link "Thiên Không Hoàng" có tấn công cao nhất từ bộ bài phụ.
+Khi được triệu hồi: vô hiệu kỹ năng của quái đối phương có tấn công cao nhất và biến tấn công của nó thành 0 (xuyên "Khiên quái thú").
+Khi được triệu hồi: phá hủy quái đối phương mạnh nhất có tấn công thấp hơn lá này (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Khi được triệu hồi: phá hủy 1 bài phép hoặc bẫy trên sân đối phương (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Kỹ năng tay chủ động (1 lượt 1 lần): Nếu bạn điều khiển một quái thú "Thiên Không Hoàng", có thể Hiến tế 1 quái thú của đối phương và Triệu hồi Đặc biệt lá bài này lên sân đối phương (tính vào hiến tế, xuyên các loại khiên).
+Khi bị phá hủy: phá hủy quái đối phương có tấn công cao nhất.
+Khi kích hoạt (1 lượt 1 lần): phá hủy 1 bài phép hoặc bẫy trên sân đối phương (xuyên "Khiên ma thuật", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả"). Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm quái đối phương có tấn công cao nhất. Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt: mọi quái "Thiên Không Hoàng" phe ta tăng 500 tấn công và nhận "Khiên ma thuật", "Tường Chắn Bẫy"; phe ta bị trừ 4000 LP (bỏ khiên chiến đấu). Nếu mộ phe ta có từ 3 bài phép trở lên: nhận thêm "Khiên Chắn Phá Hủy".
+Khi kích hoạt (1 lượt 1 lần): vô hiệu kỹ năng của quái đối phương có tấn công cao nhất (xuyên "Khiên ma thuật"). Nếu mộ phe ta có từ 3 bài phép trở lên: lấy quái đó về sân phe ta. Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt (1 lượt 1 lần; điều kiện: đưa 1 lá bài "Thiên Không Hoàng" ngẫu nhiên từ tay vào mộ): phá hủy quái đối phương có tấn công cao nhất (không xuyên tường chắn). Nếu mộ phe ta có từ 3 bài phép trở lên: phá hủy thêm 1 bài phép hoặc bẫy trên sân đối phương. Nếu không có mục tiêu nào: rút 1 lá.
+Khi kích hoạt: gửi 2 lá trên cùng bộ bài đối phương vào mộ (không xuyên tường ma thuật). Nếu mộ phe ta có từ 3 bài phép trở lên: đưa quái đối phương có tấn công cao nhất về tay chủ.
+Khi kích hoạt (1 lượt 1 lần): đưa quái đối phương có tấn công cao nhất về tay chủ (xuyên "Khiên ma thuật"), sau đó rút 1 lá (không có mục tiêu thì vẫn rút 1 lá).
+Khi được triệu hồi: quái đối phương có tấn công cao nhất không thể tấn công (xuyên "Khiên quái thú").
+Chủ động: Mỗi trận chỉ 1 lần. Phe ta nhận thiệt hại sao cho giảm LP còn 1000 và nhận "Tường Chắn Sinh Mệnh" đến khi bắt đầu lượt kế của phe ta.
+Khi được triệu hồi: loại bỏ quái đối phương có tấn công cao nhất ra khỏi trận (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Khi bị phá hủy: phá hủy quái đối phương có tấn công cao nhất (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Khi được triệu hồi: phá hủy 1 lá bài trên sân đối phương (ưu tiên quái có tấn công cao nhất; xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ lá này khỏi mộ, phá hủy 1 bài phép hoặc bẫy trên sân đối phương (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Khi được triệu hồi: đưa quái đối phương có tấn công cao nhất về tay chủ (xuyên "Khiên quái thú"), sau đó lấy 1 bài phép "Thiên Không Hoàng" từ mộ vào tay.
+Khi được triệu hồi: vô hiệu kỹ năng của mọi quái đối phương có tấn công từ 2500 trở lên trong lượt quái thú này vừa vào sân (xuyên "Khiên quái thú").
+Khi được triệu hồi: phá hủy 1 lá bài trên sân đối phương và 1 quái "Thiên Không Hoàng" khác phe ta (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Khi được triệu hồi: phá hủy tối đa 2 lá bài trên sân đối phương (ưu tiên quái có tấn công cao nhất; xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Khi được triệu hồi: lá này nhận "Khiên ma thuật", "Tường Chắn Bẫy" và "Khiên Chắn Phá Hủy" (đã xóa Khiên chiến đấu).
+Chủ động: Mỗi lượt chỉ 1 lần. Phá hủy quái đối phương có tấn công cao nhất, sau đó đối phương chịu sát thương bằng tấn công của quái đó (xuyên "Khiên quái thú", "Khiên Chắn Phá Hủy", "Khiên Chắn Hiệu Quả").
+Khi bị phá hủy: triệu hồi đặc biệt 1 quái Link "Thiên Không Hoàng" khác "S.P.E.C.T.R.A." có tấn công cao nhất từ bộ bài phụ.
+Phép tìm quân của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Phép môi trường: tăng sức cả đội, tìm quân, hồi LP. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Phép triệu hồi của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Phép duy trì: căn cứ tiếp lực cho quái Link. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Phép hồi sinh của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+[Phép Thường] Khi kích hoạt (1 lượt 1 lần): đưa 1 quái "Thiên Không Hoàng" trên sân phe ta vào mộ; vô hiệu hóa toàn bộ bài trên tay đối phương (đối phương không thể kích hoạt hiệu quả bài trên tay) trong lượt này. Tác dụng và kích hoạt của lá bài này không thể bị ngăn chặn.
+Phép tạo Token của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Phép khống chế mộ của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Phép phá bài phép/bẫy của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Phép bảo vệ của Thiên Không Hoàng: trừ 4000 LP phe ta để buff toàn sân.
+Phép cướp quái của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Phép phá quái của Thiên Không Hoàng. Bỏ 1 bài Thiên Không Hoàng từ tay vào mộ để phá quái địch (không xuyên tường chắn).
+Phép bào mòn bộ bài của Thiên Không Hoàng (không xuyên tường ma thuật).
+Phép tối thượng của Thiên Không Hoàng. Mỗi lượt chỉ phát động tối đa 7 lá phép "Thiên Không Hoàng".
+Thiếu Nữ Ma Đạo - Full Art
+Lớp phủ Ultra Rare
+Lớp phủ Secret Rare
+Kỹ năng mộ chủ động (1 lượt 1 lần): Chọn 1 quái "Thiên Không Hoàng" trên tay đưa vào mộ, sau đó lấy 1 quái "Thiên Không Hoàng" từ bộ bài vào tay (loại bỏ lá này khỏi mộ).
+Kỹ năng: Nhận "Tấn Công Trực Tiếp". Sau khi quái thú này tấn công và còn tồn tại: chọn 1 lá bài "Thiên Không Hoàng" từ bộ bài đưa vào mộ.
+Kỹ năng chủ động tay/extra deck (1 lượt 1 lần): Nếu trong Mộ phe ta có cả <Raye> và <Roze> có thể kích hoạt: phá hủy tất cả quái thú trên sân đối phương (xuyên "Khiên quái thú", "Khiên chiến đấu").
+Goku - kid
+[Chiến Binh / Hiệu Ứng]
+Goku - kid
+Goku - kid - Triệu Hồi Bản Thể
+Kĩ năng chủ động (1 lượt 1 lần): Hi sinh bản thân lá bài này; triệu hồi đặc biệt 1 <Goku> từ bộ bài lên sân.
+Goku
+[Chiến Binh / Thường]\nChiến binh Saiyan huyền thoại mang trái tim thuần khiết bảo vệ Địa Cầu.
+Goku
+Goku - SSJ 1
+[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku> + 1 quái có từ khóa "7 viên ngọc rồng".
+Goku - SSJ 1
+Goku - SSJ 2
+[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku - SSJ 1> + 1 quái có từ khóa "7 viên ngọc rồng".
+Goku - SSJ 2
+Goku - SSJ 3
+[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku - SSJ 2> + 1 quái có từ khóa "7 viên ngọc rồng".
+Goku - SSJ 3
+Ý Chí Saiyan - SSJ 3
+Khi có mặt; tăng tấn công bằng số lượng quái thú mang từ khóa "7 viên ngọc rồng" trong mộ phe ta x300.
+Thần Tốc Liên Trảm
+Kĩ năng chủ động (1 lượt 1 lần): Trong lượt này, bản thân nhận được hiệu ứng "Liên Trảm" (có thể tấn công 2 lần).
+Goku - SSJ 4
+[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku> + 2 quái có từ khóa "7 viên ngọc rồng".
+Goku - SSJ 4
+Áp Lực Hoang Dã
+Khi lá bài này trên sân; toàn bộ quái thú của đối phương có ATK dưới 2000 khi lên sân sẽ bị mất hiệu quả quái thú (không thể kích hoạt hiệu quả).
+Goku - SSJ God
+[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku> + 3 quái có từ khóa "7 viên ngọc rồng".
+Goku - SSJ God
+Thần Cảnh Tuyệt Đối
+Việc triệu hồi dung hợp của lá này sẽ không bị vô hiệu. Đối thủ không thể kích hoạt hiệu ứng của nó chỉ trong lượt này. Những Quái Vật được Triệu Hồi Đặc Biệt chỉ ở lượt này sau đó chỉ có thể là những Quái Vật có từ khóa "7 viên ngọc rồng".
+Tìm Kiếm Thần Khí
+Kĩ năng chủ động (1 lượt 1 lần): Bỏ 1 quái thú có từ khóa "7 viên ngọc rồng" trên tay phe ta vào mộ; chọn và lấy 1 lá bài có từ khóa "7 viên ngọc rồng" từ bộ bài lên tay.
+Hồi Sinh Chiến Binh
+Kĩ năng chủ động (1 lượt 1 lần): Chọn tối đa 2 quái thú có từ khóa "7 viên ngọc rồng" từ mộ, triệu hồi đặc biệt lên sân trong thế thủ (quái được triệu hồi không thể thay đổi tư thế trong lượt này).
+Goku - SSJ Blue
+[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku - SSJ 3> + 1 quái có từ khóa "7 viên ngọc rồng".
+Goku - SSJ Blue
+Xóa Sổ Bộ Bài Phụ
+Khi lên sân: Loại bỏ khỏi trận đấu toàn bộ quái thú có ATK từ 3000 trở xuống trong bộ bài phụ đối phương.
+Sóng Thần Lam Sắc
+Khi lên sân: Loại bỏ khỏi trận đấu toàn bộ quái thú có ATK từ 2000 trở xuống trên sân và trên tay đối thủ.
+Goku ultra instinct
+[Chiến Binh / Dung Hợp / Hiệu Ứng / GR]\nNguyên liệu: <Goku - SSJ 1> + <Goku - SSJ 2> + <Goku - SSJ 3> + <Goku - SSJ God> + <Goku - SSJ Blue>.
+Goku ultra instinct
+Bản Năng Vô Cực - Hủy Diệt Toàn Diện
+Khi lên sân: Đưa tất cả bài trên tay, trên sân, trong bộ bài chính và bộ bài phụ của đối thủ vào mộ.
+Bản Năng Vô Cực - Phong Khóa Vực
+Khi lên sân: Phong tỏa toàn bộ 5 ô quái thú của đối phương, đối phương hoàn toàn không thể triệu hồi bất kỳ quái thú nào.
+Điều ước rồng thần trái đất
+[Bài Phép / Thường / UR]\n+ 1 lượt 1 lần, khi trên sân phe ta có quái thú "7 viên ngọc rồng": Hồi sinh 1 quái thú "7 viên ngọc rồng" từ mộ lên sân hoặc lấy tối đa 2 bài Phép/Bẫy có từ khóa "7 viên ngọc rồng" từ bộ bài lên tay.\n+ Chỉ trong lượt này, phe ta chỉ có thể triệu hồi đặc biệt quái thú có từ khóa "7 viên ngọc rồng".
+Điều ước rồng thần trái đất
+Điều Ước Trái Đất
+1 lượt 1 lần, khi trên sân có quái "7 viên ngọc rồng": Hồi sinh 1 quái thú "7 viên ngọc rồng" từ mộ lên sân hoặc lấy tối đa 2 bài Phép/Bẫy "7 viên ngọc rồng" từ bộ bài lên tay. Lượt này chỉ có thể triệu hồi đặc biệt quái "7 viên ngọc rồng".
+Điều ước rồng thần Namec
+[Bài Phép / Thường / GR / Giới hạn: 1 lá]\n+ 1 lượt 1 lần, khi trên sân phe ta có quái thú "7 viên ngọc rồng": Hồi sinh tối đa 3 quái thú "7 viên ngọc rồng" từ mộ lên sân hoặc lấy tối đa 3 bài Phép/Bẫy có từ khóa "7 viên ngọc rồng" từ bộ bài lên tay.\n+ Chỉ trong lượt này, phe ta chỉ có thể triệu hồi đặc biệt quái thú có từ khóa "7 viên ngọc rồng".
+Điều ước rồng thần Namec
+Điều Ước Rồng Thần Porunga
+1 lượt 1 lần, khi trên sân có quái "7 viên ngọc rồng": Hồi sinh tối đa 3 quái thú "7 viên ngọc rồng" từ mộ lên sân hoặc lấy tối đa 3 bài Phép/Bẫy "7 viên ngọc rồng" từ bộ bài lên tay. Lượt này chỉ có thể triệu hồi đặc biệt quái "7 viên ngọc rồng".
+dende
+[Quỷ / Hiệu Ứng / UR]
+dende
+Dende Xuất Hiện
+Kĩ năng chủ động tay: Trên sân phe ta không có quái hoặc có quái "7 viên ngọc rồng": Triệu hồi đặc biệt lên sân.
+Trị Liệu Thần Kỳ
+Kĩ năng chủ động (1 lượt 1 lần): Chọn 1 quái trong mộ phe ta có từ khóa "7 viên ngọc rồng" triệu hồi đặc biệt lên sân trong thế thủ (quái được triệu hồi bị khóa tư thế trong lượt này).
+Rada dò ngọc
+[Bài Phép / Thường / UR]\n+ 1 lượt 1 lần: Chọn đưa 1 lá bài có từ khóa "7 viên ngọc rồng" trên tay vào mộ; rút 2 lá bài.
+Rada dò ngọc
+Dò Tìm Ngọc Rồng
+1 lượt 1 lần: Chọn đưa 1 lá bài có từ khóa "7 viên ngọc rồng" trên tay vào mộ; rút 2 lá bài.
+Bà hạt mít
+[Phù Thủy / Hiệu Ứng / Link 1 / UR]\nNguyên liệu: 1 quái thú có từ khóa "7 viên ngọc rồng".
+Bà hạt mít
+Bói Toán Dẫn Lối
+Kĩ năng chủ động (1 lượt 1 lần): Chọn 1 quái thú có từ khóa "7 viên ngọc rồng" trong mộ phe ta triệu hồi đặc biệt lên sân và nhận được "Quy Trần".
+Ghost-Usher
+[Quỷ / Hiệu Ứng / Đồng Bộ / SR]\nNguyên liệu: 1 quái thú có từ khóa "7 viên ngọc rồng".
+Ghost-Usher
+Âm Hồn Triệu Tập
+Kĩ năng chủ động bộ bài thêm (1 lượt 3 lần): Loại bỏ 1 quái thú có từ khóa "7 viên ngọc rồng" trong mộ phe ta, triệu hồi đặc biệt bản thân lên sân.
+[Bài Phép / Thường / UR]\nTừ khóa: "7 viên ngọc rồng"\n+ 1 lượt 1 lần, khi trên tay: Quái thú có từ khóa "7 viên ngọc rồng" trên sân phe ta bị đối thủ phá hủy sẽ kích hoạt: Đưa lá bài này vào mộ, bỏ qua lần phá hủy đó.\n+ 1 lượt 1 lần: Nếu LP phe ta thấp hơn 8000 có thể dùng, hồi lại LP tương ứng với phần LP còn thiếu (hồi phục về 8000 LP).\n+ 1 lượt 1 lần, khi trên tay: Nếu LP phe ta giảm xuống dưới 4000 sẽ kích hoạt: Đưa lá bài này vào mộ, nhận 8000 LP.
+Đậu thần
+Bảo Hộ Tiên Đậu
+1 lượt 1 lần, khi trên tay: Quái thú có từ khóa "7 viên ngọc rồng" trên sân phe ta bị đối thủ phá hủy sẽ kích hoạt: Đưa lá bài này vào mộ, bỏ qua lần phá hủy đó. Nếu LP phe ta giảm xuống dưới 4000 sẽ kích hoạt: Đưa lá bài này vào mộ, nhận 8000 LP.
+Hồi Phục Sinh Lực
+1 lượt 1 lần: Nếu LP phe ta thấp hơn 8000, hồi phục lại LP tương ứng với phần LP còn thiếu (hồi phục về 8000 LP).
+Vegeta - SSJ Blue 2
+[Chiến Binh / Link 5 / Hiệu Ứng / GR]\nNguyên liệu: 5 quái thú có từ khóa "7 viên ngọc rồng".
+Hoàng Tử Thần Binh
+Kĩ năng chủ động bộ bài phụ: Khi đối phương có quái ATK >= 4000 và phe ta chưa hành động: Đưa cả tay vào mộ, triệu hồi đặc biệt lá bài này lên sân.
+Kiêu Hãnh Saiyan
+Nếu chỉ có duy nhất lá bài này trên sân phe ta, nhận 1000 ATK cho mỗi quái thú trên sân đối phương.
+Final Explosion
+Kĩ năng chủ động: Loại bỏ bản thân khỏi trận đấu, loại bỏ tất cả bài trên sân đối thủ (bỏ qua phòng hộ).
+Bản Lĩnh Bất Khuất
+Khi bị phá hủy trong chiến đấu: Triệu hồi đặc biệt 1 Token Vegeta (ATK 0 / DEF 2500) lên sân trong thế thủ.
+Gogeta - SSJ Blue
+[Chiến Binh / Dung Hợp / Hiệu Ứng / GR]\nNguyên liệu: <Goku> + <Vegeta - SSJ Blue 2>.
+Gogeta - SSJ Blue
+Bụi Phấn Phân Giải - Stardust Breaker
+Khi lá bài này tấn công và phá hủy quái thú, đối phương nhận 9000 điểm sát thương. Cuối lượt phe ta, lá bài này chịu hiệu ứng Quy Trần.
+Vegito - SSJ Blue
+[Chiến Binh / Dung Hợp / Hiệu Ứng / GR]\nNguyên liệu: <Goku - SSJ Blue> + <Vegeta - SSJ Blue 2>.
+Vegito - SSJ Blue
+Thanh Kiếm Linh Hồn - Spirit Sword
+Khi lá bài này tấn công và phá hủy quái thú, đối phương nhận 10000 điểm sát thương.
+Fusion dance
+[Bài Phép / Thường / UR]\nTừ khóa: "7 viên ngọc rồng"\n+ Mỗi lượt chỉ 1 lần. Chọn 1 Quái Dung Hợp có từ khóa "7 viên ngọc rồng" trong bộ bài thêm phe ta làm mục tiêu. Chọn bài trên tay/trên sân phe ta làm nguyên liệu dung hợp đưa vào mộ (Bỏ qua hiệu quả "Tường Chắn Phép"); Triệu Hồi Dung Hợp mục tiêu đã chọn.
+Fusion dance
+Vũ Điệu Hợp Thể
+Mỗi lượt chỉ 1 lần. Chọn 1 Quái Dung Hợp có từ khóa "7 viên ngọc rồng" trong bộ bài thêm làm mục tiêu. Chọn bài trên tay/sân làm nguyên liệu dung hợp đưa vào mộ (Bỏ qua "Tường Chắn Phép"); Triệu Hồi Dung Hợp mục tiêu.
+Bông tai porata
+[Bài Phép / Thường / UR]\nTừ khóa: "7 viên ngọc rồng"\n+ Mỗi lượt chỉ 1 lần. Chọn 1 Quái Dung Hợp có từ khóa "7 viên ngọc rồng" trong bộ bài thêm phe ta làm mục tiêu. Chọn bài trên tay/trên sân phe ta làm nguyên liệu dung hợp đưa vào mộ (Bỏ qua hiệu quả "Tường Chắn Phép"); Triệu Hồi Dung Hợp mục tiêu đã chọn.
+Bông tai porata
+Hợp Thể Potara
+Mỗi lượt chỉ 1 lần. Chọn 1 Quái Dung Hợp có từ khóa "7 viên ngọc rồng" trong bộ bài thêm làm mục tiêu. Chọn bài trên tay/sân làm nguyên liệu dung hợp đưa vào mộ (Bỏ qua "Tường Chắn Phép"); Triệu Hồi Dung Hợp mục tiêu.
+Black Goku
+[Thần / Hiệu Ứng / XYZ / Rank 8 / GR]\nNguyên liệu: 3 quái thú 8 sao có từ khóa "7 viên ngọc rồng".
+Black Goku
+Công Lý Đen Tối
+Khi kết thúc lượt phe ta, phe ta nhận 2000 điểm sát thương.
+Super Broly
+[Chiến Binh / Hiệu Ứng / XYZ / Rank 8 / UR]\nNguyên liệu: 3 quái thú 8 sao có từ khóa "7 viên ngọc rồng".
+Super Broly
+Cuồng Nộ Saiyan
+Khi tấn công: Bỏ 1 chỉ thị XYZ. Khi hết chỉ thị XYZ, bản thân bị khóa (không thể tấn công và thay đổi tư thế).
+Hủy Diệt Bộc Phát
+Khi tấn công và phá hủy quái thú: Đối phương nhận sát thương bằng 2 lần ATK ban đầu của quái thú bị tiêu diệt.
+Điều ước của rồng thần siêu cấp
+
+Điều ước của rồng thần siêu cấp
+Đại Đình Chiến Thần Cấp
+1 lượt 1 lần, khi trên sân có quái "7 viên ngọc rồng": Cả hai bên cùng rút 3 lá bài và nhận được "Tường Chắn Sinh Mệnh" cho đến hết lượt kế tiếp của mỗi bên.
+Nguyện Ước Tối Cao
+Kĩ năng chủ động mộ: Chọn tối đa 3 quái thú có từ khóa "7 viên ngọc rồng" trong mộ phe ta triệu hồi đặc biệt lên sân.
+Ngọc Rồng Thần Bí 57987
+Ngọc Rồng Thần Bí 57988
+Ngọc Rồng Thần Bí 57989
+Ngọc Rồng Thần Bí 57990
+Ngọc Rồng Thần Bí 57991
+Ngọc Rồng Thần Bí 57992
+Ngọc Rồng Thần Bí 57993
+Ngọc Rồng Thần Bí 57994
+Ngọc Rồng Thần Bí 57995
+Ngọc Rồng Thần Bí 57996
+Ngọc Rồng Thần Bí 57997
+Ngọc Rồng Thần Bí 57998
+Ngọc Rồng Thần Bí 57999
+Ngọc Rồng Thần Bí 58000
+Ngọc Rồng Thần Bí 58001
+Ngọc Rồng Thần Bí 58002
+Ngọc Rồng Thần Bí 58003
+Ngọc Rồng Thần Bí 58004
+Ngọc Rồng Thần Bí 58005
+Ngọc Rồng Thần Bí 58006
+Gohan Great Saiyaman
+[Chiến Binh / Hiệu Ứng / UR]
+Gohan Great Saiyaman
+Chiến Binh Công Lý Xuất Trận
+Khi trên sân phe ta có quái từ khóa "7 viên ngọc rồng", có thể triệu hồi đặc biệt lá bài này từ tay.
+Triệu Tập Đồng Đội
+Kĩ năng chủ động (1 lượt 1 lần): Chọn 1 quái từ khóa "7 viên ngọc rồng" trên tay phe ta, triệu hồi đặc biệt lên sân.
+Bulma
+[Phù Thủy / Hiệu Ứng / UR]
+Bulma
+Dò Tìm Ngọc Rồng
+1 lượt 1 lần, khi lên sân: Lấy 1 lá <Rada dò ngọc> từ bộ bài lên tay.
+Nghiên Cứu Di Vật
+Kĩ năng chủ động mộ (1 lượt 1 lần): Loại bỏ 2 lá bài phép/bẫy có từ khóa "7 viên ngọc rồng" trong mộ phe ta, rút 1 lá.
+Picolo
+[Chiến Binh / Hiệu Ứng / UR]
+Picolo
+Vận Khí Tụ Lực
+Kĩ năng chủ động (1 lượt 1 lần): Có thể kích hoạt khi chưa hành động: Tăng 1000 ATK, bản thân bị khóa trong lượt này.
+Tái Sinh Tái Chiến
+Kĩ năng chủ động mộ (1 lượt 1 lần): Triệu hồi đặc biệt bản thân từ mộ lên sân.
+Định hình phương hướng
+[Côn Trùng / Hiệu Ứng]\n+ Kĩ năng chủ động tay: Đưa lá này vào mộ, đối phương nhận 5000 LP, phe ta rút 1 lá.
+Định hình phương hướng
+Định Hình Phương Hướng
+Kĩ năng chủ động tay: Đưa lá này vào mộ, đối phương nhận 5000 LP, phe ta rút 1 lá.
+Puar
+[Thú / Hiệu Ứng / SR / 1 Sao]
+Puar
+Biến Hóa Viện Trợ
+Kĩ năng chủ động tay: Hi sinh bản thân từ trên tay, chọn triệu hồi đặc biệt 1 quái thú 4 sao trở xuống có từ khóa "7 viên ngọc rồng" từ bộ bài lên sân.
+Token Vegeta
+[Chiến Binh / Token / N]\nTừ khóa: "7 viên ngọc rồng"\nLá bài này được triệu hồi đặc biệt bởi hiệu ứng của <Vegeta - SSJ Blue 2>.
+Token Vegeta
+57891	[Bài Phép / Thường / UR]
+57896	[Bài Phép / Thường / GR / Giới hạn: 1 lá]
+57901	[Quỷ / Hiệu Ứng / UR]
+57908	[Bài Phép / Thường / UR]
+57913	[Phù Thủy / Hiệu Ứng / Link 1 / UR]\nNguyên liệu: 1 quái thú có từ khóa "7 viên ngọc rồng".
+57918	[Quỷ / Hiệu Ứng / Đồng Bộ / SR]\nNguyên liệu: 1 quái thú có từ khóa "7 viên ngọc rồng".
+57923	[Thú / Hiệu Ứng / SR / 1 Sao]
+57931	[Bài Phép / Thường / UR]
+57938	[Chiến Binh / Link 5 / Hiệu Ứng / GR]\nNguyên liệu: 5 quái thú có từ khóa "7 viên ngọc rồng".
+57949	[Chiến Binh / Hiệu Ứng / GR / 10 Sao]\nNguyên liệu: <Goku> + <Vegeta - SSJ Blue 2> qua bài phép <Fusion dance>.
+57954	[Chiến Binh / Hiệu Ứng / GR / 10 Sao]\nNguyên liệu: <Goku - SSJ Blue> + <Vegeta - SSJ Blue 2> qua bài phép <Bông tai porata>.
+57959	[Bài Phép / Thường / UR]
+57964	[Bài Phép / Thường / UR]
+57969	[Thần / Hiệu Ứng / XYZ / Rank 8 / GR]\nNguyên liệu: 3 quái thú 8 sao có từ khóa "7 viên ngọc rồng".
+57974	[Chiến Binh / Hiệu Ứng / XYZ / Rank 8 / UR]\nNguyên liệu: 3 quái thú 8 sao có từ khóa "7 viên ngọc rồng".
+57981	[Bài Phép / Thường / GR / Giới hạn: 1 lá]
+58008	[Chiến Binh / Hiệu Ứng / UR]
+58015	[Phù Thủy / Hiệu Ứng / UR]
+58022	[Chiến Binh / Hiệu Ứng / UR]
+Dimensional Barrier
+Dimensional Barrier
+
+Rào Chắn Chiều Không Gian
+1 lượt chỉ có thể dùng 1 lá. Chọn 1 trong 4 loại: Nghi thức, dung hợp, đồng bộ hoặc xyz. Trong suốt phần còn lại của lượt này, cả hai người chơi đều không thể Triệu hồi Đặc biệt quái vật thuộc loại đã chọn, đồng thời vô hiệu hóa hiệu ứng của tất cả quái vật thuộc loại đó khi chúng đang ở trên sân.
+Dominus Impulse
+Dominus Impulse
+
+Xung Lực Thống Trị
+1 lượt 1 lần. Khi lá bài này nằm trên tay và đối phương Triệu Hồi Đặc Biệt quái thú sẽ kích hoạt: Vô hiệu hóa hiệu ứng quái thú vừa triệu hồi (không khóa tư thế), nếu trong mộ phe ta có bài Bẫy thì phá hủy quái thú đó. Sau đó bạn không thể kích hoạt hiệu ứng của quái vật ÁNH SÁNG, ĐẤT và GIÓ trong phần còn lại của trận đấu này.
+Dominus Spark
+Dominus Spark
+
+Tia Lửa Thống Trị
+1 lượt 1 lần. Khi lá bài này nằm trên tay và đối thủ kích hoạt hiệu ứng quái vật trong tay hoặc Nghĩa địa, bạn có thể kích hoạt lá bài này từ tay: Loại bỏ ngẫu nhiên 1 quái trên sân đối thủ khỏi trò chơi. Sau đó nếu bạn không có Bẫy nào trong Nghĩa địa, đối thủ Triệu Hồi Đặc Biệt ngẫu nhiên 1 quái vật từ tay của họ lên sân. Nếu bạn đã kích hoạt lá bài này từ tay, bạn không thể kích hoạt hiệu ứng của quái vật hệ Đất, Nước, Lửa và Gió trong phần còn lại của trận đấu này.
+Trap Holic
+Trap Holic
+
+Nghiện Bẫy
+Chọn mục tiêu là 1 lá bài Phép/Bẫy bạn đang điều khiển: Phá hủy nó, và nếu làm vậy, chọn và đặt 1 lá bài Bẫy thông thường từ Bộ bài của bạn và thêm vào tay, ngoại trừ "Trap Holic". Nếu bạn có 3 hoặc hơn 3 lá bài bẫy trong mộ thì bạn chỉ có thể kích hoạt 1 lần 1 lượt.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hayate - Thứ nguyên vệ thần
+Nguyên liệu: 4 quái 8 sao.
+Hayate - Thứ nguyên vệ thần
+Thứ Nguyên Chúc Phúc
+Chủ động: Mỗi lượt chỉ 1 lần. Xóa 1 Chỉ Thị XYZ đang có; tăng LP đối phương thêm [1].
+Thứ Nguyên Kết Liễu
+Kích hoạt thắng ngay lập tức khi đối phương có trên [1] LP.
+Hồi Âm Thứ Nguyên
+Khi lá bài này vào mộ từ trên sân, phe ta nhận LP bằng số LP hiện tại của đối phương x2.
+Violet - Thứ nguyên vệ thần
+[Chiến Binh / Hiệu Ứng / UR]
+Violet - Thứ nguyên vệ thần
+Chiến Tuyến Thứ Nguyên
+Kỹ năng tay chủ động: 1 lượt 1 lần, khi trên sân phe ta có quái "liqi", triệu hồi đặc biệt lá bài lên sân.
+Tiếp Tế Thứ Nguyên
+Kỹ năng chủ động: 1 lượt 1 lần, lấy 1 lá bài phép/bẫy có từ khóa "liqi" từ bộ bài lên tay.
+Vệ thần chiến
+Vệ thần chiến
+Chiến Lực Liqi
+1 lượt 1 lần, tất cả quái "liqi" trên sân phe ta trở thành 8 sao.
+Triệu Tập Liqi
+Kỹ năng chủ động: 1 lượt 1 lần, chọn 1 quái có từ khóa "liqi" từ bộ bài lấy lên tay.
+Nạp quân huy
+[Bài Phép / Thường / UR]
+Từ khóa: "liqi"
+Chọn tối đa 2 quái thú có từ khóa "liqi" tay phe ta, đưa chúng vào mộ, sau đó phe ta rút bài bằng số quái đã chọn + 1.
+Nạp quân huy
+Chọn tối đa 2 quái thú có từ khóa "liqi" tay phe ta, đưa chúng vào mộ, sau đó phe ta rút bài bằng số quái đã chọn + 1.
+Elsu - Mafia
+[Chiến Binh / Hiệu Ứng / UR]
+Thuộc tính: Quang | 4 Sao
+Từ khóa: "liqi"
+ATK: 1800 | DEF: 200
+Elsu - Mafia
+Ẩn Thân Bắn Tỉa
+Khi trở thành mục tiêu tấn công, đưa lá bài này về lại tay sau đó phá hủy quái đối phương (xuyên qua 12002).
+Định Mệnh Mafia
+Airi - Thứ nguyên vệ thần
+[Chiến Binh / Hiệu Ứng / UR]\nThuộc tính: Quang | 8 Sao\nTừ khóa: "liqi"\nATK: 3000 | DEF: 2500
+Airi - Thứ nguyên vệ thần
+Thứ Nguyên Giáng Lâm
+Kĩ năng chủ động tay: Chọn hi sinh 2 quái có từ khóa "liqi" trên sân phe ta, triệu hồi đặc biệt lá bài này.
+Long Kiếm Liên Trảm
+Kĩ năng chủ động: 1 lượt 1 lần, nhận 1080 Liên Trảm.
+tel'annas - Thứ nguyên vệ thần
+[Chiến Binh / Hiệu Ứng / UR]\nThuộc tính: Quang | 4 Sao\nTừ khóa: "liqi"\nATK: 1700 | DEF: 100
+tel'annas - Thứ nguyên vệ thần
+Thần Tiễn Triệu Tập
+Kĩ năng chủ động: 1 lượt tối đa 3 lần, khi được triệu hồi lên sân, chọn 1 quái có từ khóa "liqi" 6 sao trở xuống từ trên tay triệu hồi đặc biệt lên sân.
+Tiếp Tế Tinh Linh
+Kĩ năng chủ động: 1 lượt 1 lần, chọn 1 bài trên tay đưa vào mộ, chọn lấy 1 quái 6 sao trở xuống từ bộ bài có từ khóa "liqi" lấy lên tay.
+Cộng Hưởng Sinh Mệnh
+Khi lên sân, tăng lp phe ta bằng số bài có từ khóa "liqi" trong mộ x100, đối phương cũng đồng thời nhận số lp tương ứng x2.
+Helen
+[Phù Thủy / Hiệu Ứng / UR]\nThuộc tính: Quang | 2 Sao\nTừ khóa: "liqi"\nATK: 0 | DEF: 1800
+Helen
+Khúc Ca Cứu Rỗi
+Kĩ năng chủ động tay: Khi phe ta có LP thấp hơn đối phương có thể kích hoạt: Triệu hồi Đặc biệt lá bài này lên sân.
+Thanh Âm Chữa Lành
+Khi lên sân, phe ta tăng 500 LP. Nếu đối phương có nhiều hơn phe ta 4000 LP, phe ta tăng thêm 500 LP nữa.
+Dolia
+[Thủy / Hiệu Ứng / UR]\nThuộc tính: Thủy | 3 Sao\nTừ khóa: "liqi"\nATK: 700 | DEF: 1000
+Dolia
+Khúc Ca Đại Dương
+Khi lá bài này nằm trong mộ, bắt đầu mỗi lượt phe ta, phe ta nhận 500 LP.
+Heino
+[Phù Thủy / Hiệu Ứng / UR]\nThuộc tính: Quang | 6 Sao\nTừ khóa: "liqi"\nATK: 2200 | DEF: 1800
+Heino
+Hồi Sinh Định Mệnh
+Kĩ năng chủ động mộ: 1 lượt 1 lần, triệu hồi đặc biệt bản thân lên sân trong thế thủ (không thể thay đổi tư thế trong lượt này).
+Heino x Dolia
+[Phù Thủy / Dung Hợp / Hiệu Ứng / UR]\nThuộc tính: Quang | 8 Sao\nTừ khóa: "liqi"\nATK: 2800 | DEF: 2600
+Heino x Dolia
+Phong Tỏa Không Gian
+Kĩ năng chủ động: Chỉ có thể kích hoạt 1 lần: Nếu phe ta chưa tấn công có thể kích hoạt: Phe ta và đối phương không thể tấn công trong 1 lượt.
+Ký Ức Thời Gian
+Kĩ năng chủ động mộ: Loại bỏ bản thân, phe ta rút 1 lá.
+
+
+
+
+Sun
+[Bài Phép / Thường / SR]\nTừ khóa: "pvz"\nKỹ năng: Chọn 1 quái thú có từ khóa "pvz" trên tay phe ta, triệu hồi đặc biệt lên sân.
+Cà rốt
+[Bài Phép / Thường / UR]\nTừ khóa: "pvz"\nKỹ năng: Chọn 1 quái thú có từ khóa "pvz" trong mộ phe ta, triệu hồi đặc biệt lên sân.
+Mìn khoai tây
+[Bài Bẫy / Thường / UR]\nTừ khóa: "pvz"\nKỹ năng: Khi đối phương triệu hồi quái sẽ kích hoạt, phá hủy quái đó (xuyên qua tường chắn quái 12008).
+Hướng dương
+[Cây Cối / Hiệu Ứng / SR]\nThuộc tính: Địa | 3 Sao\nTừ khóa: "pvz"\nATK: 0 | DEF: 1000\n- Khi lên sân: Lấy 1 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.\n- Nếu trên sân phe ta có quái thú có từ khóa "pvz" khác, đối phương không thể chọn lá bài này làm mục tiêu tấn công.
+Đậu 1
+[Cây Cối / Hiệu Ứng / UR]\nThuộc tính: Địa | 4 Sao\nTừ khóa: "pvz"\nATK: 1500 | DEF: 1500\n- Không thể triệu hồi thường.\n- Kĩ năng chủ động: Hi sinh bản thân và 1 quái nguyên liệu trên tay/sân để triệu hồi dung hợp quái tương ứng <Đậu 2>.
+Đậu 2
+[Cây Cối / Hiệu Ứng / Dung Hợp / UR]\nThuộc tính: Địa | 7 Sao\nTừ khóa: "pvz"\nATK: 3000 | DEF: 1500\nNguyên liệu: <Đậu 1> x2\n- Kĩ năng chủ động: 1 lượt 1 lần, lượt này giảm 1000 ATK, có thể tấn công 2 lần.
+Cải thìa
+[Cây Cối / Hiệu Ứng / UR]\nThuộc tính: Địa | 4 Sao\nTừ khóa: "pvz"\nATK: 2000 | DEF: 1500\n- Không thể triệu hồi thường.\n- 11001 Khiên Chiến Đấu\n- 1004 Đòn Ảo Ảnh
+Năng Lượng Mặt Trời
+Chọn 1 quái thú có từ khóa "pvz" trên tay phe ta, triệu hồi đặc biệt lên sân.
+Hồi Sinh Cà Rốt
+Chọn 1 quái thú có từ khóa "pvz" trong mộ phe ta, triệu hồi đặc biệt lên sân.
+Phục Kích Nổ
+Khi đối phương triệu hồi quái sẽ kích hoạt, phá hủy quái đó (xuyên qua tường chắn quái 12008).
+Hấp Thu Ánh Sáng
+Khi lên sân: Lấy 1 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.
+Tán Cây Bảo Vệ
+Nếu trên sân phe ta có quái thú có từ khóa "pvz" khác, đối phương không thể chọn lá bài này làm mục tiêu tấn công.
+Dung Hợp Đậu
+Kĩ năng chủ động: Hi sinh bản thân và 1 quái nguyên liệu trên tay/sân để triệu hồi dung hợp quái tương ứng <Đậu 2>.
+Liên Xạ Hai Phát
+Kĩ năng chủ động: 1 lượt 1 lần, lượt này giảm 1000 ATK, có thể tấn công 2 lần.
+Thuộc tính: Địa | 7 Sao
+Từ khóa: "pvz"
+ATK: 3000 | DEF: 1500
+Nguyên liệu: <Đậu 1> x2
+- Kĩ năng chủ động: 1 lượt 1 lần, lượt này giảm 1000 ATK, có thể tấn công 2 lần.
+Cải thìa
+[Cây Cối / Hiệu Ứng / UR]
+Thuộc tính: Địa | 4 Sao
+Từ khóa: "pvz"
+ATK: 2000 | DEF: 1500
+- Không thể triệu hồi thường.
+- 11001 Khiên Chiến Đấu
+- 1004 Đòn Ảo Ảnh
+Năng Lượng Mặt Trời
+Chọn 1 quái thú có từ khóa "pvz" trên tay phe ta, triệu hồi đặc biệt lên sân.
+Hồi Sinh Cà Rốt
+Chọn 1 quái thú có từ khóa "pvz" trong mộ phe ta, triệu hồi đặc biệt lên sân.
+Phục Kích Nổ
+Khi đối phương triệu hồi quái sẽ kích hoạt, phá hủy quái đó (xuyên qua tường chắn quái 12008).
+Hấp Thu Ánh Sáng
+Khi lên sân: Lấy 1 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.
+Tán Cây Bảo Vệ
+Nếu trên sân phe ta có quái thú có từ khóa "pvz" khác, đối phương không thể chọn lá bài này làm mục tiêu tấn công.
+Dung Hợp Đậu
+Chủ động: Hi sinh bản thân và 1 quái nguyên liệu trên tay/sân để triệu hồi dung hợp quái tương ứng <Đậu 2>.
+Liên Xạ Hai Phát
+Chủ động: 1 lượt 1 lần, lượt này giảm 1000 ATK, có thể tấn công 2 lần.
+Hoa vàng
+[Bài Phép / Thường / UR]\nTừ khóa: "pvz"\n- 1 lượt 1 lần, lấy tối đa 3 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.
+Thu Hoạch Mặt Trời
+1 lượt 1 lần, lấy tối đa 3 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.
+Hạt óc chó
+[Cây Cối / Hiệu Ứng / UR]\nThuộc tính: Địa | 5 Sao\nTừ khóa: "pvz"\nATK: 0 | DEF: 2400\n- Không thể triệu hồi thường.\n- Khi ở trên sân, quái có từ khóa "pvz" trên sân phe ta nhận 12008, 12009, 12010.\n- Khi lên sân, nhận Khiêu Khích.
+Tường Chắn Óc Chó
+Khi ở trên sân, tất cả quái có từ khóa "pvz" trên sân phe ta không bị ảnh hưởng bởi hiệu ứng Quái, Phép, Bẫy của đối phương (nhận 12008, 12009, 12010).
+Thuộc tính: Địa | 5 Sao
+Từ khóa: "pvz"
+ATK: 0 | DEF: 2400
+- Không thể triệu hồi thường.
+- Khi ở trên sân, quái có từ khóa "pvz" trên sân phe ta nhận 12008, 12009, 12010.
+- Khi lên sân, nhận Khiêu Khích.
+Tường Chắn Óc Chó
+Khi ở trên sân, quái có từ khóa "pvz" trên sân phe ta không bị ảnh hưởng bởi hiệu ứng Quái, Phép, Bẫy của đối phương (nhận 12008, 12009, 12010).

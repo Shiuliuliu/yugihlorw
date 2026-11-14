@@ -269,6 +269,7 @@ function var_0_0.resetWhenBattleStart(arg_1_0)
 	arg_1_0._winBy2237 = nil
 	arg_1_0._winBy3190 = nil
 	arg_1_0._winBy3798 = nil
+	arg_1_0._winByHayate = nil
 	arg_1_0._disableTrapBy4127 = nil
 	arg_1_0._magicTrapCastedCount = 0
 	arg_1_0._lockSpecialSummonDefPosture = nil
@@ -329,6 +330,10 @@ end
 
 function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._round = arg_2_0._round + 1
+	arg_2_0._markHandDisabledInRound = nil
+	if arg_2_0._opponent then
+		arg_2_0._opponent._markHandDisabledInRound = nil
+	end
 	arg_2_0._eventDone = false
 	arg_2_0._haloDone = false
 	arg_2_0._trapDone = false
@@ -416,10 +421,19 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 		var_2_10
 	})
 
-	if arg_2_0._round == 1 then
+	if arg_2_0._round == (arg_2_0._battleType == Data.BattleType.PVP_room and 2 or 1) then
 		local var_2_12 = arg_2_0:getBattleCardsBySkillFast("R", 13354)
 
 		B.appendTable(var_2_11, var_2_12)
+	end
+
+	-- Dolia (12387 / 20237): Khi o trong mo, bat dau moi luot phe ta, phe ta nhan 500 LP
+	for _, gc in ipairs(arg_2_0:getBattleCards("G")) do
+		if gc._infoId == 12387 or gc:hasSkillFast(20237) then
+			if arg_2_0._fortress then
+				arg_2_0:incHp(arg_2_0._fortress, 500, false, gc._id, 20237, Data.SkillMode.round_begin)
+			end
+		end
 	end
 
 	if arg_2_0._round == (arg_2_0._battleType == Data.BattleType.PVP_room and 2 or 1) then
@@ -802,6 +816,38 @@ function var_0_0.resetWhenRoundBegin(arg_2_0)
 	arg_2_0._opponent._castedSkillCounts[14732] = nil
 	arg_2_0._opponent._castedSkillCounts[14747] = nil
 	arg_2_0._castedSkillCounts[14747] = nil
+	arg_2_0._opponent._castedSkillCounts[20121] = nil
+	arg_2_0._castedSkillCounts[20121] = nil
+	arg_2_0._opponent._castedSkillCounts[20122] = nil
+	arg_2_0._castedSkillCounts[20122] = nil
+	arg_2_0._opponent._castedSkillCounts[20123] = nil
+	arg_2_0._castedSkillCounts[20123] = nil
+	arg_2_0._opponent._castedSkillCounts[20127] = nil
+	arg_2_0._castedSkillCounts[20127] = nil
+	arg_2_0._opponent._castedSkillCounts[20131] = nil
+	arg_2_0._castedSkillCounts[20131] = nil
+	for lab_sid = 20135, 20229 do
+		arg_2_0._castedSkillCounts[lab_sid] = nil
+		arg_2_0._opponent._castedSkillCounts[lab_sid] = nil
+	end
+	arg_2_0._onlyLabrynthSpecialTurn = nil
+	if arg_2_0._opponent then arg_2_0._opponent._onlyLabrynthSpecialTurn = nil end
+	arg_2_0._labrynthAllAttackLockedTurn = nil
+	if arg_2_0._opponent then arg_2_0._opponent._labrynthAllAttackLockedTurn = nil end
+	arg_2_0._roundDimBarrierType = nil
+	if arg_2_0._opponent then arg_2_0._opponent._roundDimBarrierType = nil end
+	arg_2_0._castedSkillCounts[20117] = nil
+	arg_2_0._castedSkillCounts[20118] = nil
+	arg_2_0._castedSkillCounts[20119] = nil
+	arg_2_0._castedSkillCounts[20092] = nil
+	if arg_2_0._opponent then arg_2_0._opponent._castedSkillCounts[20092] = nil end
+	arg_2_0._castedSkillCounts[20120] = nil
+	if arg_2_0._opponent then
+		arg_2_0._opponent._castedSkillCounts[20117] = nil
+		arg_2_0._opponent._castedSkillCounts[20118] = nil
+		arg_2_0._opponent._castedSkillCounts[20119] = nil
+		arg_2_0._opponent._castedSkillCounts[20120] = nil
+	end
 	arg_2_0._opponent._castedSkillCounts[14748] = nil
 	arg_2_0._castedSkillCounts[14748] = nil
 	arg_2_0._opponent._castedSkillCounts[14763] = nil
@@ -1354,6 +1400,21 @@ local function checkGodWin(player)
 	return godsFound[10270] and godsFound[10293] and godsFound[10763]
 end
 
+local function checkHayateWin(player)
+	if not player or not player._opponent or not player._opponent._fortress then return false end
+	local threshold = (Data._skillInfo[20220] and Data._skillInfo[20220]._val and Data._skillInfo[20220]._val[1]) or 20000
+	if player._opponent._fortress._hp <= threshold then return false end
+	local cards = player:getBattleCardsBySkillFast("B", 20220)
+	if cards and #cards > 0 then
+		for i = 1, #cards do
+			if B.isAlive(cards[i]) and cards[i]:canCastMonsterSkill() then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 function var_0_0.checkFinish(arg_13_0)
 	if arg_13_0._isClient and ClientData._isAutoTesting then
 		return false
@@ -1384,6 +1445,16 @@ function var_0_0.checkFinish(arg_13_0)
 	end
 	if arg_13_0._opponent and checkGodWin(arg_13_0._opponent) then
 		arg_13_0._opponent._winBy3798 = true
+		return true
+	end
+
+	-- Instant win check for Hayate - Thứ nguyên vệ thần (Skill 20220 / Opponent LP > 20000)
+	if checkHayateWin(arg_13_0) then
+		arg_13_0._winByHayate = true
+		return true
+	end
+	if arg_13_0._opponent and checkHayateWin(arg_13_0._opponent) then
+		arg_13_0._opponent._winByHayate = true
 		return true
 	end
 
@@ -1438,7 +1509,18 @@ function var_0_0.getIsLose(arg_15_0)
 		return true
 	end
 
-	if arg_15_0._macroStatus == BattleData.Status.round_begin and arg_15_0:getIsPileEmpty() and arg_15_0._battleType ~= Data.BattleType.teach then
+	local hasOppo40773 = false
+	if arg_15_0._opponent and arg_15_0._opponent._boardCards then
+		for i = 1, Data.MAX_CARD_COUNT_ON_BOARD do
+			local bc = arg_15_0._opponent._boardCards[i]
+			if bc and (bc._infoId == 40773 or (bc._info and bc._info._id == 40773) or bc:hasSkillFast(20084)) then
+				hasOppo40773 = true
+				break
+			end
+		end
+	end
+	if not arg_15_0._milledBy40773 and not hasOppo40773 and (arg_15_0._deckOut or (arg_15_0._macroStatus == BattleData.Status.round_begin and arg_15_0:getIsPileEmpty())) and arg_15_0._battleType ~= Data.BattleType.teach then
+		arg_15_0._deckOut = true
 		return true
 	end
 
@@ -1450,6 +1532,12 @@ function var_0_0.getIsLose(arg_15_0)
 
 	if checkGodWin(arg_15_0._opponent) then
 		arg_15_0._opponent._winBy3798 = true
+
+		return true
+	end
+
+	if checkHayateWin(arg_15_0._opponent) then
+		arg_15_0._opponent._winByHayate = true
 
 		return true
 	end
@@ -1483,7 +1571,7 @@ function var_0_0.getIsPileEmpty(arg_16_0)
 	if arg_16_0._round <= 0 or not arg_16_0._isInitialDealed then
 		return false
 	end
-	return #arg_16_0._pileCards == 0 and (arg_16_0._baseBattleType ~= Data.BattleType.base_PVE or not not arg_16_0._isAttacker) and (not arg_16_0._isClient or not ClientData._isTesting and not (P._guideID < 100))
+	return #arg_16_0._pileCards == 0 and (not arg_16_0._isClient or not ClientData._isTesting and not (P._guideID < 100))
 end
 
 function var_0_0.getIsRoundExceed(arg_17_0)
@@ -1756,9 +1844,9 @@ function var_0_0.finish(arg_24_0)
 		local selfFortressDead = (arg_24_0._fortress and arg_24_0._fortress._hp <= 0)
 		local oppoFortressDead = (arg_24_0._opponent and arg_24_0._opponent._fortress and arg_24_0._opponent._fortress._hp <= 0)
 
-		if arg_24_0._winBy3190 or arg_24_0._winBy3798 then
+		if arg_24_0._winBy3190 or arg_24_0._winBy3798 or arg_24_0._winByHayate then
 			var_24_0 = Data.BattleResult.win
-		elseif arg_24_0._opponent and (arg_24_0._opponent._winBy3190 or arg_24_0._opponent._winBy3798) then
+		elseif arg_24_0._opponent and (arg_24_0._opponent._winBy3190 or arg_24_0._opponent._winBy3798 or arg_24_0._opponent._winByHayate) then
 			var_24_0 = Data.BattleResult.lose
 		elseif not selfFortressDead and oppoFortressDead then
 			var_24_0 = Data.BattleResult.win
@@ -1780,7 +1868,7 @@ function var_0_0.finish(arg_24_0)
 			end
 		end
 
-		if (arg_24_0._isUseCardFinish or arg_24_0._opponent._isUseCardFinish) and not oppoFortressDead and not arg_24_0._winBy3190 and not arg_24_0._winBy3798 then
+		if (arg_24_0._isUseCardFinish or arg_24_0._opponent._isUseCardFinish) and not oppoFortressDead and not arg_24_0._winBy3190 and not arg_24_0._winBy3798 and not arg_24_0._winByHayate and not (arg_24_0._opponent and arg_24_0._opponent._winByHayate) then
 			var_24_0 = Data.BattleResult.illegal
 		end
 
@@ -1892,12 +1980,29 @@ end
 
 function var_0_0.roundBegin(arg_26_0)
 	if arg_26_0._macroStatus ~= BattleData.Status.round_begin then
+		arg_26_0._lockThienKhongHoangOnly = nil
 		arg_26_0._macroStatus = BattleData.Status.round_begin
 		arg_26_0._normalStatus = BattleData.Status.default
 		arg_26_0._fortressSkillDone = arg_26_0._round <= 0
 		arg_26_0._haloDone = false
 
 		arg_26_0:resetWhenRoundBegin()
+		if arg_26_0._opponent and arg_26_0._opponent._boardCards then
+			for i = 1, Data.MAX_CARD_COUNT_ON_BOARD do
+				local bc = arg_26_0._opponent._boardCards[i]
+				if bc and (bc._infoId == 40773 or (bc._info and bc._info._id == 40773) or bc:hasSkillFast(20085)) then
+					arg_26_0._isSummonDisabled = true
+					arg_26_0._isSpecialSummonDisabled = true
+					if arg_26_0._fortress then
+						arg_26_0._opponent:incNegativeStatus(arg_26_0._fortress, { BattleData.NegativeType.boardLock }, false, bc._id, 20085, Data.SkillMode.using)
+						for pos = 1, 5 do
+							arg_26_0._opponent:incNegativeValue(arg_26_0._fortress, BattleData.NegativeType.boardLock, pos, Data.AggregateType.table, bc._id, 20085, Data.SkillMode.using)
+						end
+					end
+					break
+				end
+			end
+		end
 
 		local var_26_0 = arg_26_0._isAttacker and arg_26_0 or arg_26_0._opponent
 		local var_26_1 = arg_26_0._isAttacker and arg_26_0._opponent or arg_26_0
@@ -2147,7 +2252,7 @@ function var_0_0.roundBegin(arg_26_0)
 			var_26_28
 		})
 
-		if arg_26_0._round == 1 then
+		if arg_26_0._round == (arg_26_0._battleType == Data.BattleType.PVP_room and 2 or 1) then
 			local var_26_30 = arg_26_0:getBattleCardsBySkillFast("R", 13354)
 
 			B.appendTable(var_26_29, var_26_30)
@@ -2246,6 +2351,14 @@ function var_0_0.deal(arg_27_0)
 			end
 		end
 
+		if not arg_27_0._isDealDisabled and not arg_27_0._milledBy40773 and arg_27_0._round > 0 and #arg_27_0._pileCards == 0 and (not arg_27_0._isClient or arg_27_0._battleType ~= Data.BattleType.teach) then
+			arg_27_0._deckOut = true
+			if arg_27_0:checkFinish() then
+				arg_27_0._stepStatus = BattleData.Status.before_account_finish
+				return arg_27_0:step()
+			end
+		end
+
 		if not arg_27_0._isDealDisabled and arg_27_0._round > 0 and #arg_27_0._pileCards > 0 and (not arg_27_0._isClient or arg_27_0._battleType ~= Data.BattleType.unittest and arg_27_0._battleType ~= Data.BattleType.teach or not arg_27_0._isAttacker or not (arg_27_0._round <= 1)) then
 			if arg_27_0._battleType == Data.BattleType.PVP_room and arg_27_0._round == 1 then
 				local var_27_4 = B.createCard(20236, 1)
@@ -2333,6 +2446,44 @@ function var_0_0.use(arg_28_0)
 		for iter_28_0 = 1, #var_28_0 do
 			var_28_0[iter_28_0]._actionIndex = 1
 			var_28_0[iter_28_0]._actionCount = 1
+		end
+
+		-- ELSU - MAFIA (12383 / Skill 20228): Bat dau luot doi thu (sau khi doi phuong rut bai)
+		if arg_28_0._opponent then
+			local oppo = arg_28_0._opponent
+			local turnId = (arg_28_0._round or 0) * 1000 + (oppo._round or 0)
+			if oppo._elsuTossTurn ~= turnId then
+				local elsuCards = oppo:getBattleCardsByInfoId("B", 12383)
+				if #elsuCards == 0 then
+					elsuCards = oppo:getBattleCardsBySkillFast("B", 20228)
+				end
+				if #elsuCards > 0 then
+					oppo._elsuTossTurn = turnId
+					local elsuCard = elsuCards[1]
+					local toss = B.throwCoin(elsuCard)
+					elsuCard._lastCount = toss
+					if toss == 1 then
+						-- Mat ngua: phe dich (arg_28_0) bo 1 la bai quai thu tren tay vao mo
+						local oppoMonsters = {}
+						for _, c in ipairs(arg_28_0:getBattleCards("H")) do
+							if c._type == Data.CardType.monster or c:isMonster() or c:isMonsterRare() then
+								table.insert(oppoMonsters, c)
+							end
+						end
+						if #oppoMonsters > 0 then
+							local discardTarget = oppoMonsters[math.random(#oppoMonsters)]
+							arg_28_0:setCardStatus(discardTarget, BattleData.CardStatus.grave, elsuCard._id, 20228, Data.SkillMode.oppo_round_begin, BattleData.CardStatusVal.h2g_normal)
+						end
+					else
+						-- Mat up: phe ta (oppo) bo 1 la bai ngau nhien tren tay vao mo
+						local myHand = oppo:getBattleCards("H")
+						if #myHand > 0 then
+							local myDiscard = myHand[math.random(#myHand)]
+							oppo:setCardStatus(myDiscard, BattleData.CardStatus.grave, elsuCard._id, 20228, Data.SkillMode.oppo_round_begin, BattleData.CardStatusVal.h2g_normal)
+						end
+					end
+				end
+			end
 		end
 
 		if not arg_28_0._isReviewing then
@@ -2711,7 +2862,27 @@ function var_0_0.roundEnd(arg_30_0)
 			arg_30_0._fortress._actionCount = 1
 
 			arg_30_0:decPositiveStatus(arg_30_0._fortress, BattleData.POSITIVE_CLEAR_WHEN_ROUND_END, false, arg_30_0._fortress._id, 0, Data.SkillMode.once)
-			arg_30_0:decNegativeStatus(arg_30_0._fortress, BattleData.NEGATIVE_CLEAR_WHEN_ROUND_END, false, arg_30_0._fortress._id, 0, Data.SkillMode.once)
+			local oppoGoku40773 = nil
+			if arg_30_0._opponent and arg_30_0._opponent._boardCards then
+				for i = 1, Data.MAX_CARD_COUNT_ON_BOARD do
+					local bc = arg_30_0._opponent._boardCards[i]
+					if bc and (bc._infoId == 40773 or (bc._info and bc._info._id == 40773) or bc:hasSkillFast(20085)) then
+						oppoGoku40773 = bc
+						break
+					end
+				end
+			end
+			if oppoGoku40773 then
+				local clearFList = {}
+				for _, negType in ipairs(BattleData.NEGATIVE_CLEAR_WHEN_ROUND_END) do
+					if negType ~= BattleData.NegativeType.boardLock then
+						table.insert(clearFList, negType)
+					end
+				end
+				arg_30_0:decNegativeStatus(arg_30_0._fortress, clearFList, false, arg_30_0._fortress._id, 0, Data.SkillMode.once)
+			else
+				arg_30_0:decNegativeStatus(arg_30_0._fortress, BattleData.NEGATIVE_CLEAR_WHEN_ROUND_END, false, arg_30_0._fortress._id, 0, Data.SkillMode.once)
+			end
 
 			local var_30_13 = arg_30_0:getBattleCardsBySkillFast("H", 9572)
 
@@ -2757,6 +2928,17 @@ function var_0_0.roundEnd(arg_30_0)
 			end
 			for _, c in ipairs(var_overload_cards) do
 				arg_30_0:changeCardStatus(c, BattleData.CardStatus.board, BattleData.CardStatus.leave)
+			end
+
+			-- Gogeta SSJ Blue (40777): Quy trần tự hủy khi kết thúc lượt
+			local var_gogeta_cards = {}
+			for _, c in ipairs(arg_30_0:getBoardCards()) do
+				if c._infoId == 40777 or (c._info and c._info._id == 40777) then
+					table.insert(var_gogeta_cards, c)
+				end
+			end
+			for _, c in ipairs(var_gogeta_cards) do
+				arg_30_0:changeCardStatus(c, BattleData.CardStatus.board, BattleData.CardStatus.grave, nil, nil, nil, BattleData.CardStatusVal.b2g_default)
 			end
 			local function clean_orphan_ttk(player)
 				if not player then return end
@@ -3077,6 +3259,21 @@ function var_0_0.afterAccountStatus(arg_33_0)
 
 				return arg_33_0:step()
 			elseif var_33_8 ~= BattleData.CardStatus.board and var_33_9 == BattleData.CardStatus.board and var_33_3._statusVal ~= BattleData.CardStatusVal.g2b_5096 or var_33_3._statusVal == BattleData.CardStatusVal.b2b_oppo_forever_using then
+				if var_33_3:isKeyword(308) or (var_33_3._info and var_33_3._info._keyword == 308) then
+					local pOwner = var_33_3._owner
+					if pOwner and (pOwner._roundWelcomeLabrynthDraw ~= pOwner._round) then
+						for _, gc in ipairs(B.mergeTable({ pOwner:getBattleCards("G"), pOwner:getBattleCards("L") })) do
+							if gc:isInfoId(30604) or gc._infoId == 30604 or gc:hasSkillFast(20203) then
+								pOwner._roundWelcomeLabrynthDraw = pOwner._round
+								local pCards = pOwner:filterCanChangeToHandCards(pOwner:getBattleCards("P"))
+								if #pCards > 0 then
+									pOwner:changeCardStatus(pCards[1], BattleData.CardStatus.pile, BattleData.CardStatus.hand, BattleData.CardStatusVal.p2h_draw, gc, 20203, 91)
+								end
+								break
+							end
+						end
+					end
+				end
 				arg_33_0._spellType = Data.SkillMode.using
 				arg_33_0._stepStatus = BattleData.Status.before_account_spell
 
@@ -3233,7 +3430,10 @@ function var_0_0.afterAccountStatus(arg_33_0)
 				return arg_33_0:step()
 			end
 		elseif var_33_3._type == Data.CardType.trap then
-			if var_33_8 == BattleData.CardStatus.cover and var_33_9 == BattleData.CardStatus.show or var_33_8 == BattleData.CardStatus.hand and (var_33_9 == BattleData.CardStatus.grave or var_33_9 == BattleData.CardStatus.leave) and var_33_3._statusVal == BattleData.CardStatusVal.h2g_trap then
+			if (var_33_8 == BattleData.CardStatus.cover and var_33_9 == BattleData.CardStatus.show)
+				or (var_33_8 == BattleData.CardStatus.hand and var_33_9 == BattleData.CardStatus.show)
+				or (var_33_8 == BattleData.CardStatus.grave and var_33_9 == BattleData.CardStatus.show)
+				or (var_33_8 == BattleData.CardStatus.hand and (var_33_9 == BattleData.CardStatus.grave or var_33_9 == BattleData.CardStatus.leave) and var_33_3._statusVal == BattleData.CardStatusVal.h2g_trap) then
 				var_33_3._owner._totalCastedTrapCount = var_33_3._owner._totalCastedTrapCount + 1
 				arg_33_0._spellType = Data.SkillMode.trap
 				arg_33_0._stepStatus = BattleData.Status.before_account_spell
@@ -3336,6 +3536,12 @@ function var_0_0.afterAccountStatus(arg_33_0)
 
 	if next(arg_33_0._eventToChange) ~= nil then
 		arg_33_0._stepStatus = BattleData.Status.before_account_event
+
+		return arg_33_0:step()
+	end
+
+	if next(arg_33_0._cardStatusToChange) ~= nil then
+		arg_33_0._stepStatus = BattleData.Status.before_account_status
 
 		return arg_33_0:step()
 	end
@@ -3605,6 +3811,9 @@ function var_0_0.waitObserveUseCard(arg_51_0)
 end
 
 function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
+	if arg_52_0._battleType == Data.BattleType.PVP_room and arg_52_0._round == 1 and arg_52_1 and not arg_52_1:isInfoId(20236) and arg_52_3 ~= BattleData.ChoiceId.drop then
+		return arg_52_0:tryUseCard()
+	end
 	arg_52_0._actionCard = arg_52_1
 
 	arg_52_0:resetActionCard()
@@ -3698,9 +3907,9 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.show)
 			end
 		elseif arg_52_1._type == Data.CardType.trap then
-			if arg_52_1._info._type == Data.MagicTrapType.once then
+			if arg_52_1._info._type == Data.MagicTrapType.once or (arg_52_1._infoId >= 30599 and arg_52_1._infoId <= 30605 and arg_52_1._infoId ~= 30603) then
 				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.grave, BattleData.CardStatusVal.h2g_trap)
-			elseif arg_52_1._info._type == Data.MagicTrapType.show or arg_52_1._infoId == 30596 or arg_52_1._infoId == 30597 then
+			elseif arg_52_1._info._type == Data.MagicTrapType.show or arg_52_1._infoId == 30596 or arg_52_1._infoId == 30597 or arg_52_1._infoId == 30603 then
 				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.show)
 			else
 				arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.hand, BattleData.CardStatus.cover)
@@ -3856,6 +4065,13 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 					arg_52_0._castedSkillCounts[14731] = (arg_52_0._castedSkillCounts[14731] or 0) + 1
 				end
 
+				if arg_52_1:hasSkillFast(20149) or arg_52_1._infoId == 12376 then
+					arg_52_0._castedSkillCounts[20149] = (arg_52_0._castedSkillCounts[20149] or 0) + 1
+					if arg_52_0.checkLabrynthGraveTriggers then
+						arg_52_0:checkLabrynthGraveTriggers(arg_52_1, 20149)
+					end
+				end
+
 				if arg_52_1:hasSkillFast(14741) or arg_52_1._infoId == 12331 then
 					local turnId = (arg_52_0._round or 0) * 1000 + (arg_52_0._opponent and arg_52_0._opponent._round or 0)
 					if arg_52_1._zioSummonTurn ~= turnId then
@@ -3866,6 +4082,19 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 						end
 					end
 				end
+
+				if arg_52_1:hasSkillFast(20112) or arg_52_1._infoId == 12364 or (arg_52_1._info and arg_52_1._info._id == 12364) then
+					local turnId = (arg_52_0._round or 0) * 1000 + (arg_52_0._opponent and arg_52_0._opponent._round or 0)
+					if arg_52_0._bulmaSearchTurn ~= turnId then
+						local radarCards = arg_52_0:getBattleCardsByInfoId("P", 21167)
+						if #radarCards > 0 and #arg_52_0._handCards < Data.MAX_CARD_COUNT_IN_HAND then
+							arg_52_0._bulmaSearchTurn = turnId
+							arg_52_0._castedSkillCounts[20112] = (arg_52_0._castedSkillCounts[20112] or 0) + 1
+							arg_52_0:changeCardStatus(radarCards[1], BattleData.CardStatus.pile, BattleData.CardStatus.hand)
+						end
+					end
+				end
+
 			else
 				if (not arg_52_0._isClient or not GuideManager.isGuideEnabled() and arg_52_0._playerType == BattleData.PlayerType.replay or lc.PLATFORM == cc.PLATFORM_OS_WINDOWS and arg_52_0._battleType == Data.BattleType.unittest) and (var_52_7 == 1 and not arg_52_0:canUseMonsterNormal(arg_52_1) or var_52_7 == 4 and not arg_52_0:canUseMonsterNormalToOppo(arg_52_1)) then
 					arg_52_0:battleLog("[BATTLE] <BYPASS CHEAT> canUseMonsterNormalToOppo")
@@ -4022,10 +4251,15 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 			var_52_4 = BattleData.Status.use
 		end
 	elseif arg_52_1._status == BattleData.CardStatus.cover then
-		if arg_52_1._info and (arg_52_1._info._type == Data.MagicTrapType.show or arg_52_1._infoId == 30596 or arg_52_1._infoId == 30597) then
+		if arg_52_1._info and (arg_52_1._info._type == Data.MagicTrapType.show or (arg_52_1._infoId >= 30596 and arg_52_1._infoId <= 30605)) then
 			arg_52_0:changeCardStatus(arg_52_1, BattleData.CardStatus.cover, BattleData.CardStatus.show)
 			arg_52_0._actionCard = arg_52_1
-			var_52_4 = BattleData.Status.use
+			if (arg_52_1._infoId >= 30598 and arg_52_1._infoId <= 30605 and arg_52_1._infoId ~= 30603) then
+				arg_52_0._spellType = Data.SkillMode.trap
+				var_52_4 = BattleData.Status.before_account_spell
+			else
+				var_52_4 = BattleData.Status.use
+			end
 		end
 	elseif arg_52_1._status == BattleData.CardStatus.show or arg_52_1._status == BattleData.CardStatus.field or arg_52_1._status == BattleData.CardStatus.grave or arg_52_1._status == BattleData.CardStatus.rare or arg_52_1._status == BattleData.CardStatus.leave then
 		local var_52_34 = arg_52_1._choice and math.floor(arg_52_1._choice / BattleData.ChoiceId.stage_3) % BattleData.ChoiceId.stage_size_3 or 0
@@ -4041,17 +4275,39 @@ function var_0_0.useCard(arg_52_0, arg_52_1, arg_52_2, arg_52_3, arg_52_4)
 				var_52_34 = arg_52_1:getSkillIndexById(14812) or 1
 			elseif arg_52_1:hasSkillFast(14819) or arg_52_1._infoId == 40750 then
 				var_52_34 = arg_52_1:getSkillIndexById(14819) or 2
+			elseif arg_52_1:hasSkillFast(14825) or arg_52_1._infoId == 40752 then
+				var_52_34 = arg_52_1:getSkillIndexById(14825) or 1
+			elseif arg_52_1:hasSkillFast(14831) or arg_52_1._infoId == 40754 then
+				var_52_34 = arg_52_1:getSkillIndexById(14831) or 4
+			elseif arg_52_1:hasSkillFast(20096) or arg_52_1._infoId == 40776 then
+				var_52_34 = arg_52_1:getSkillIndexById(20096) or 2
+			elseif arg_52_1:hasSkillFast(20092) or arg_52_1._infoId == 40775 then
+				var_52_34 = arg_52_1:getSkillIndexById(20092) or 1
+			elseif arg_52_1._status == BattleData.CardStatus.rare and (arg_52_1:hasSkillFast(13765) or arg_52_1._infoId == 40644) then
+				var_52_34 = arg_52_1:getSkillIndexById(13765) or 3
+			end
+		end
+
+		if var_52_34 == 0 and arg_52_1._skills then
+			for iter_s_idx, iter_s in ipairs(arg_52_1._skills) do
+				if B.skillHasMode(iter_s, Data.SkillMode.initiative_rare) or B.skillHasMode(iter_s, Data.SkillMode.initiative_grave) or B.skillHasMode(iter_s, Data.SkillMode.initiative_leave) then
+					var_52_34 = iter_s_idx
+					break
+				end
 			end
 		end
 
 		if var_52_34 > 0 then
 			arg_52_0._actionCard = arg_52_1
 
-			local var_52_35 = arg_52_1._skills[var_52_34]
+			local var_52_35 = arg_52_1._skills and arg_52_1._skills[var_52_34]
+			if not var_52_35 and arg_52_1._skills and #arg_52_1._skills > 0 then
+				var_52_35 = arg_52_1._skills[1]
+			end
 
-			if B.skillHasMode(var_52_35, Data.SkillMode.initiative_grave) then
+			if B.skillHasMode(var_52_35, Data.SkillMode.initiative_grave) or (var_52_35 and var_52_35._id == 14825) then
 				arg_52_0._spellType = Data.SkillMode.initiative_grave
-			elseif B.skillHasMode(var_52_35, Data.SkillMode.initiative_rare) then
+			elseif B.skillHasMode(var_52_35, Data.SkillMode.initiative_rare) or (var_52_35 and var_52_35._id == 20096) then
 				arg_52_0._spellType = Data.SkillMode.initiative_rare
 			elseif B.skillHasMode(var_52_35, Data.SkillMode.initiative_leave) then
 				arg_52_0._spellType = Data.SkillMode.initiative_leave
@@ -5265,6 +5521,15 @@ function var_0_0.accountTrap(arg_73_0)
 		arg_73_0:getBattleCards("C"),
 		arg_73_0._opponent:getBattleCards("C")
 	})
+	for _, p in ipairs({ arg_73_0, arg_73_0._opponent }) do
+		if p then
+			for _, c in ipairs(p:getBattleCards("H")) do
+				if c:hasSkills({ 20118 }) or c:hasSkills({ 20119 }) then
+					table.insert(var_73_0, c)
+				end
+			end
+		end
+	end
 
 	for iter_73_0 = 1, #var_73_0 do
 		local var_73_1 = var_73_0[iter_73_0]
@@ -5304,6 +5569,21 @@ function var_0_0.accountTrapWhenAttack(arg_74_0)
 		arg_74_0:getBattleCards("C"),
 		arg_74_0._opponent:getBattleCards("C")
 	})
+
+	for _, p in ipairs({ arg_74_0, arg_74_0._opponent }) do
+		if p then
+			for _, c in ipairs(p:getBattleCards("H")) do
+				if c:hasSkills({ 20194 }) and (p._castedSkillCounts[20194] or 0) == 0 then
+					table.insert(var_74_0, c)
+				end
+			end
+			for _, c in ipairs(p:getBattleCards("G")) do
+				if c:hasSkills({ 20196, 20201, 20205, 20209 }) then
+					table.insert(var_74_0, c)
+				end
+			end
+		end
+	end
 
 	for iter_74_0 = 1, #var_74_0 do
 		local var_74_1 = var_74_0[iter_74_0]

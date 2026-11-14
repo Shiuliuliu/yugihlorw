@@ -7348,7 +7348,7 @@ local function var_0_9()
 				is_watcher = false,
 				is_op_online = true,
 				copy_id = 0,
-				type = Battle_pb.PB_BATTLE_FRIEND,
+				type = var_232_5.roomCode and Battle_pb.PB_BATTLE_MATCH or Battle_pb.PB_BATTLE_FRIEND,
 				timestamp = math.floor(ClientData.getCurrentTime() * 1000),
 				is_attacker = arg_255_0.first == true,
 				player_troop = var_232_17(1, var_255_3, var_255_2, 8000),
@@ -7427,16 +7427,22 @@ local function var_0_9()
 						local isOppoSurrender = bUi._opponent and (bUi._opponent._isSurrender or bUi._opponent._isRetreat)
 						local isExodia = (bUi._player and bUi._player._winBy3190) or (bUi._opponent and bUi._opponent._winBy3190)
 						local isGodWin = (bUi._player and bUi._player._winBy3798) or (bUi._opponent and bUi._opponent._winBy3798)
-						local isDeckOut = (bUi._player and bUi._player._macroStatus == BattleData.Status.round_begin and bUi._player:getIsPileEmpty()) or (bUi._opponent and bUi._opponent._macroStatus == BattleData.Status.round_begin and bUi._opponent:getIsPileEmpty())
+						local isHayateWin = (bUi._player and bUi._player._winByHayate) or (bUi._opponent and bUi._opponent._winByHayate)
+						local isDeckOut = (bUi._player and (bUi._player._deckOut or bUi._player:getIsPileEmpty())) or (bUi._opponent and (bUi._opponent._deckOut or bUi._opponent:getIsPileEmpty()))
 
 						local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
 						if isOppoSurrender or (oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0)) then
 							myRes = Data.BattleResult.win
 						elseif isLocalSurrender or (playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0)) then
 							myRes = Data.BattleResult.lose
-						elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isDeckOut) then
+						elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isHayateWin or isDeckOut) then
 							print("[PVP END] Rejected premature peer loss: Player HP is " .. tostring(playerHp) .. ", Oppo HP is " .. tostring(oppoHp))
 							return
+						end
+						if isHayateWin and not bUi._hayateVideoPlayed then
+							bUi._hayateVideoPlayed = true
+							local api = jsbridge and jsbridge.object("jdzcApi")
+							if api and api.playSpecialVideo then api:playSpecialVideo("res/new/thumb/liqi/haya.mp4") end
 						end
 						bUi._forceResult = myRes
 						bUi:sendBattleEnd(false, myRes)
@@ -9221,14 +9227,20 @@ local function var_0_9()
 					local isSurrender = (arg_410_0._forceResult ~= nil) or (arg_410_0._player and (arg_410_0._player._isSurrender or arg_410_0._player._isRetreat)) or (arg_410_0._opponent and (arg_410_0._opponent._isSurrender or arg_410_0._opponent._isRetreat))
 					local isExodia = (arg_410_0._player and arg_410_0._player._winBy3190) or (arg_410_0._opponent and arg_410_0._opponent._winBy3190)
 					local isGodWin = (arg_410_0._player and arg_410_0._player._winBy3798) or (arg_410_0._opponent and arg_410_0._opponent._winBy3798)
-					local isDeckOut = (arg_410_0._player and arg_410_0._player._macroStatus == BattleData.Status.round_begin and arg_410_0._player:getIsPileEmpty()) or (arg_410_0._opponent and arg_410_0._opponent._macroStatus == BattleData.Status.round_begin and arg_410_0._opponent:getIsPileEmpty())
+					local isHayateWin = (arg_410_0._player and arg_410_0._player._winByHayate) or (arg_410_0._opponent and arg_410_0._opponent._winByHayate)
+					local isDeckOut = (arg_410_0._player and (arg_410_0._player._deckOut or arg_410_0._player:getIsPileEmpty())) or (arg_410_0._opponent and (arg_410_0._opponent._deckOut or arg_410_0._opponent:getIsPileEmpty()))
 					local isRoundExceed = (arg_410_0._player and arg_410_0._player:getIsRoundExceed()) or (arg_410_0._opponent and arg_410_0._opponent:getIsRoundExceed())
 
-					if not (isHpDead or isSurrender or isExodia or isGodWin or isDeckOut or isRoundExceed) then
+					if not (isHpDead or isSurrender or isExodia or isGodWin or isHayateWin or isDeckOut or isRoundExceed) then
 						print("[jdzc:sendBattleEnd] PREVENTED premature end! Player HP:", playerHp, "Oppo HP:", oppoHp)
 						arg_410_0._offlineResultShown = false
 						arg_410_0._isBattleEndSended = false
 						return
+					end
+					if isHayateWin and not arg_410_0._hayateVideoPlayed then
+						arg_410_0._hayateVideoPlayed = true
+						local api = jsbridge and jsbridge.object("jdzcApi")
+						if api and api.playSpecialVideo then api:playSpecialVideo("res/new/thumb/liqi/haya.mp4") end
 					end
 
 					arg_410_0._offlineResultShown = true

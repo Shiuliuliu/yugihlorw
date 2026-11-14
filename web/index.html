@@ -3,24 +3,58 @@
 <html>
 
 <head>
+	<script>
+		if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+			window.location.replace('https://' + window.location.host + window.location.pathname + window.location.search + window.location.hash);
+		}
+	</script>
 
 	<meta charset="utf-8">
 
-	<script>window.JDZC_CONFIG = { version: '20261028v154000' };</script>
+	<script>window.JDZC_CONFIG = { version: '20261114v165500' };
+	(function() {
+		try {
+			var curVer = '20261114v165500';
+			var prevVer = localStorage.getItem('yugihlor_app_ver');
+			if (prevVer !== curVer) {
+				localStorage.setItem('yugihlor_app_ver', curVer);
+				if ('caches' in window) {
+					caches.keys().then(function(names) {
+						for (var i = 0; i < names.length; i++) {
+							caches.delete(names[i]);
+						}
+					});
+				}
+				if ('serviceWorker' in navigator) {
+					navigator.serviceWorker.getRegistrations().then(function(regs) {
+						for (var i = 0; i < regs.length; i++) {
+							regs[i].unregister();
+						}
+					});
+				}
+			}
+		} catch (e) {}
+	})();
+	</script>
 
 	<title>Yugihlor - Trading "Nạp" Game</title>
 
-	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
 
-	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20261028v154000">
+	<link rel="icon" type="image/jpeg" href="res/avata.jpg?v=20261112v190000">
 
-	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20261028v154000">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20261112v190000">
 
-	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20261028v154000">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20261112v190000">
+	<link rel="manifest" href="manifest.json">
+	<meta name="apple-mobile-web-app-title" content="YugiHlor">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20261028v154000">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=20261112v190000">
 
-	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20261028v154000">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=20261112v190000">
 
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -28,7 +62,7 @@
 
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-	<link rel="preload" href="res/updater/HYB2GJM.TTF?v=20261028v154000" as="font" type="font/ttf" crossorigin>
+	<link rel="preload" href="res/updater/HYB2GJM.TTF?v=20261112v190000" as="font" type="font/ttf" crossorigin>
 
 	<meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -40,11 +74,11 @@
 
 			font-family: 'YuGiOhFont';
 
-			src: url('res/fonts/cafeta.woff?v=20261028v154000') format('woff'),
+			src: url('res/fonts/cafeta.woff?v=20261112v190000') format('woff'),
 
-			     url('res/fonts/cafeta.ttf?v=20261028v154000') format('truetype'),
+			     url('res/fonts/cafeta.ttf?v=20261112v190000') format('truetype'),
 
-			     url('res/updater/HYB2GJM.TTF?v=20261028v154000') format('truetype');
+			     url('res/updater/HYB2GJM.TTF?v=20261112v190000') format('truetype');
 
 			font-weight: normal;
 
@@ -58,11 +92,11 @@
 
 			font-family: 'YuGiOhFont';
 
-			src: url('res/fonts/cafeta.woff?v=20261028v154000') format('woff'),
+			src: url('res/fonts/cafeta.woff?v=20261112v190000') format('woff'),
 
-			     url('res/fonts/cafeta.ttf?v=20261028v154000') format('truetype'),
+			     url('res/fonts/cafeta.ttf?v=20261112v190000') format('truetype'),
 
-			     url('res/updater/HYB2GJM.TTF?v=20261028v154000') format('truetype');
+			     url('res/updater/HYB2GJM.TTF?v=20261112v190000') format('truetype');
 
 			font-weight: bold;
 
@@ -76,11 +110,11 @@
 
 			font-family: 'UTM Cafeta';
 
-			src: url('res/fonts/cafeta.woff?v=20261028v154000') format('woff'),
+			src: url('res/fonts/cafeta.woff?v=20261112v190000') format('woff'),
 
-			     url('res/fonts/cafeta.ttf?v=20261028v154000') format('truetype'),
+			     url('res/fonts/cafeta.ttf?v=20261112v190000') format('truetype'),
 
-			     url('res/updater/HYB2GJM.TTF?v=20261028v154000') format('truetype');
+			     url('res/updater/HYB2GJM.TTF?v=20261112v190000') format('truetype');
 
 			font-weight: normal;
 
@@ -94,11 +128,11 @@
 
 			font-family: 'UTM Cafeta';
 
-			src: url('res/fonts/cafeta.woff?v=20261028v154000') format('woff'),
+			src: url('res/fonts/cafeta.woff?v=20261112v190000') format('woff'),
 
-			     url('res/fonts/cafeta.ttf?v=20261028v154000') format('truetype'),
+			     url('res/fonts/cafeta.ttf?v=20261112v190000') format('truetype'),
 
-			     url('res/updater/HYB2GJM.TTF?v=20261028v154000') format('truetype');
+			     url('res/updater/HYB2GJM.TTF?v=20261112v190000') format('truetype');
 
 			font-weight: bold;
 
@@ -112,7 +146,7 @@
 
 			font-family: 'res/updater/HYB2GJM.TTF';
 
-			src: url('res/updater/HYB2GJM.TTF?v=20261028v154000') format('truetype');
+			src: url('res/updater/HYB2GJM.TTF?v=20261112v190000') format('truetype');
 
 			font-weight: normal;
 
@@ -135,7 +169,7 @@
 			-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 			font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Be Vietnam Pro', Arial, sans-serif;
 			touch-action: none; -webkit-touch-callout: none; }
-		#gameCanvas { display: block; touch-action: none; }
+		#gameCanvas { display: block; touch-action: none; image-rendering: -webkit-optimize-contrast; transform: translateZ(0); -webkit-transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 
 
 
@@ -160,93 +194,93 @@
 		/* ===== MODERN SLEEK GLASSMORPHIC LOADING OVERLAY ===== */
 		#bootOverlay {
 			position: fixed; inset: 0; z-index: 100;
-			display: flex; align-items: flex-end; justify-content: center;
+			display: flex; align-items: center; justify-content: center;
 			background:
-				url('res/updater/loading.jpg?v=20261028v154000') center center / cover no-repeat,
+				url('res/updater/loading.jpg?v=20261112v190000') center center / cover no-repeat,
 				#090f1d;
-			padding-bottom: clamp(24px, 5vh, 48px);
 		}
 
-		/* Modern dark vignette with smooth center radial gradient */
+		/* Atmospheric dark vignette with smooth center focus */
 		#bootOverlay::before {
 			content: '';
 			position: absolute;
 			inset: 0;
 			background:
-				radial-gradient(circle at 50% 60%, transparent 25%, rgba(6, 12, 24, 0.45) 60%, rgba(2, 6, 14, 0.88) 100%),
+				radial-gradient(circle at 50% 50%, transparent 30%, rgba(6, 12, 24, 0.45) 65%, rgba(2, 6, 14, 0.88) 100%),
 				linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 40%, rgba(2, 6, 14, 0.75) 100%);
 			pointer-events: none;
 		}
 
-		/* Sleek floating glassmorphic dock card */
+		/* Authentic In-Game Millennium Frame Box */
 		.boot-card {
 			position: relative; z-index: 1;
-			width: min(620px, 92vw);
-			background: rgba(12, 20, 36, 0.78);
-			backdrop-filter: blur(16px);
-			-webkit-backdrop-filter: blur(16px);
-			border: 1px solid rgba(255, 215, 0, 0.3);
-			border-radius: 16px;
-			box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 24px rgba(245, 197, 66, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-			padding: 20px 28px 16px 28px;
-			display: flex; flex-direction: column; gap: 12px;
+			width: min(640px, 92vw);
+			background: #252838;
+			border-style: solid;
+			border-width: 39px 42px 37px 44px;
+			border-image-source: url('res/new/ui/img_com_bg_21.png');
+			border-image-slice: 78 83 74 88 fill;
+			border-image-repeat: stretch;
+			box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9), 0 0 24px rgba(212, 175, 55, 0.25);
+			padding: 2px 18px 10px 18px;
 			box-sizing: border-box;
+			display: flex; flex-direction: column; gap: 10px;
 		}
 
+		/* Authentic In-Game Winged Header Crest */
 		.boot-brand {
 			text-align: center;
+			background: url('res/new/ui/img_form_title_bg_1.png') center center / contain no-repeat;
+			height: 52px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: -14px;
 		}
 
 		.boot-logo-title {
 			font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Be Vietnam Pro', 'Arial Black', sans-serif;
-			font-size: clamp(20px, 3.8vw, 30px);
+			font-size: 21px;
 			font-weight: 900;
 			letter-spacing: 4px;
 			text-transform: uppercase;
-			color: transparent;
-			background: linear-gradient(180deg, #ffffff 0%, #fff0a8 25%, #f5c542 55%, #c8860a 85%, #7a4600 100%);
-			-webkit-background-clip: text; background-clip: text;
-			filter: drop-shadow(0 2px 8px rgba(0,0,0,0.9)) drop-shadow(0 0 18px rgba(245, 197, 66, 0.55));
-			line-height: 1.1;
-		}
-
-		.boot-logo-sub {
-			font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Be Vietnam Pro', sans-serif;
-			font-size: clamp(10px, 1.8vw, 11.5px);
-			font-weight: 600;
-			letter-spacing: 3px;
-			color: rgba(225, 240, 255, 0.85);
-			margin-top: 3px;
-			text-shadow: 0 1px 4px rgba(0,0,0,0.9);
-			text-transform: uppercase;
+			color: #fff2b2;
+			text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 215, 0, 0.65);
+			line-height: 1;
 		}
 
 		.boot-progress-wrap {
-			display: flex; flex-direction: column; gap: 7px;
+			display: flex; flex-direction: column; gap: 8px;
 		}
 
 		.boot-info-row {
 			display: flex; justify-content: space-between; align-items: center;
+			padding: 0 2px;
 			font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Be Vietnam Pro', sans-serif;
 		}
 
 		.boot-status-box {
 			display: flex; align-items: center; gap: 8px;
-			color: #e0f0ff;
-			font-size: 12.5px;
+			color: #e2e8f0;
+			font-size: 13px;
 			font-weight: 500;
 			text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 			letter-spacing: 0.3px;
+			flex: 1;
+			word-break: break-word;
+			max-height: 140px;
+			overflow-y: auto;
 		}
 
 		.boot-spinner {
-			width: 12px; height: 12px;
-			border: 2px solid rgba(100, 200, 255, 0.25);
-			border-top-color: #38ef7d;
-			border-right-color: #ffd700;
+			width: 13px; height: 13px;
+			border: 2px solid rgba(255, 215, 0, 0.25);
+			border-top-color: #ffd700;
+			border-right-color: #38ef7d;
 			border-radius: 50%;
 			animation: bootSpin 0.75s linear infinite;
 			display: inline-block;
+			flex-shrink: 0;
 		}
 
 		@keyframes bootSpin {
@@ -255,45 +289,50 @@
 
 		.boot-bar-pct {
 			font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Be Vietnam Pro', monospace, sans-serif;
-			font-size: 13px;
+			font-size: 13.5px;
 			font-weight: 700;
 			color: #ffd700;
 			letter-spacing: 1px;
-			text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+			text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+			margin-left: 12px;
+			flex-shrink: 0;
 		}
 
+		/* Authentic In-Game Progress Groove */
 		.boot-bar-outer {
 			position: relative;
 			width: 100%;
-			height: 10px;
-			background: rgba(0, 5, 15, 0.85);
-			border-radius: 999px;
-			border: 1px solid rgba(245, 197, 66, 0.4);
-			box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 12px rgba(0, 0, 0, 0.6);
+			height: 24px;
+			border-style: solid;
+			border-width: 0 15px 0 13px;
+			border-image-source: url('res/new/ui/img_progress_bg.png');
+			border-image-slice: 0 15 0 13 fill;
+			border-image-repeat: stretch;
+			background-color: #101420;
+			padding: 2px 1px;
+			box-sizing: border-box;
 			overflow: hidden;
 		}
 
+		/* Authentic In-Game Golden Progress Fill */
 		.boot-bar-fill {
 			height: 100%;
 			width: 0%;
-			border-radius: 999px;
-			background: linear-gradient(90deg, #11998e, #38ef7d, #ffe259, #ffa751);
-			background-size: 200% 100%;
-			box-shadow: 0 0 12px rgba(56, 239, 125, 0.8), 0 0 20px rgba(255, 226, 89, 0.5);
-			transition: width 0.25s ease;
-			animation: barShimmer 1.8s linear infinite;
-		}
-
-		@keyframes barShimmer {
-			0%   { background-position: 100% 0; }
-			100% { background-position: -100% 0; }
+			border-style: solid;
+			border-width: 0 11px 0 13px;
+			border-image-source: url('res/new/ui/img_progress_fg.png');
+			border-image-slice: 0 11 0 13 fill;
+			border-image-repeat: stretch;
+			background-color: #f5c542;
+			box-shadow: 0 0 12px rgba(245, 197, 66, 0.7);
+			transition: width 0.25s ease-out;
 		}
 
 		.boot-legal-note {
 			font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Be Vietnam Pro', sans-serif;
 			font-size: 9.5px;
 			line-height: 1.35;
-			color: rgba(185, 205, 230, 0.65);
+			color: rgba(185, 205, 230, 0.6);
 			text-align: center;
 			border-top: 1px solid rgba(255, 255, 255, 0.08);
 			padding-top: 7px;
@@ -555,9 +594,9 @@
 			    "transitions", "motion-streak", "editbox"],
 
 		"jsList": [
-			"js/res.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261026v031000'),
-			"js/engine.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261026v031000'),
-			"js/net.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261026v031000')
+			"js/res.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261112v190000'),
+			"js/engine.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261112v190000'),
+			"js/net.js?v=" + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261112v190000')
 		]
 
 	};
@@ -590,7 +629,7 @@
 
 		},
 
-		version: '20261028v154000',
+		version: '20261114v165500',
 
 		wsHost: window.location.hostname || '127.0.0.1',
 
@@ -650,7 +689,7 @@
 
 		region: { id: 1, ip: window.location.hostname || '127.0.0.1', port: 9191, name: 'S1 - Yugihlor - Trading "Nạp" Game' },
 
-		version: '20261028v154000',
+		version: '20261114v165500',
 
 	}, window.JDZC_CONFIG || {});
 
@@ -1544,6 +1583,65 @@
 			return false;
 		};
 
+		window.jdzcApi.playSpecialVideo = function (videoSrc) {
+			try {
+				var old = document.getElementById('specialWinVideoOverlay');
+				if (old) return true;
+				var ver = (window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '';
+				var src = String(videoSrc || 'res/new/thumb/liqi/haya.mp4');
+				if (ver && src.indexOf('?') === -1) src += '?v=' + encodeURIComponent(ver);
+
+				var overlay = document.createElement('div');
+				overlay.id = 'specialWinVideoOverlay';
+				overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.94);display:flex;align-items:center;justify-content:center;';
+
+				var vid = document.createElement('video');
+				vid.src = src;
+				vid.playsInline = true;
+				vid.setAttribute('playsinline', '');
+				vid.setAttribute('webkit-playsinline', '');
+				vid.autoplay = true;
+				vid.controls = false;
+				vid.style.cssText = 'max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;';
+
+				var skipBtn = document.createElement('button');
+				skipBtn.textContent = 'Bỏ qua';
+				skipBtn.style.cssText = 'position:fixed;top:16px;right:16px;z-index:100001;padding:8px 16px;background:rgba(20,24,38,0.82);color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;';
+
+				var cleanup = function () {
+					try { vid.pause(); vid.removeAttribute('src'); vid.load(); } catch (e) {}
+					if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+				};
+				skipBtn.onclick = cleanup;
+				vid.onended = cleanup;
+				vid.onerror = cleanup;
+
+				overlay.appendChild(vid);
+				overlay.appendChild(skipBtn);
+				document.body.appendChild(overlay);
+
+				var p = vid.play();
+				if (p && typeof p.catch === 'function') {
+					p.catch(function () {
+						vid.muted = true;
+						vid.play().catch(function () {});
+						var unmuteBtn = document.createElement('button');
+						unmuteBtn.textContent = 'Bật âm thanh';
+						unmuteBtn.style.cssText = 'position:fixed;top:16px;right:112px;z-index:100001;padding:8px 14px;background:rgba(234,179,8,0.9);color:#111;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;';
+						unmuteBtn.onclick = function () {
+							vid.muted = false;
+							if (unmuteBtn.parentNode) unmuteBtn.parentNode.removeChild(unmuteBtn);
+						};
+						overlay.appendChild(unmuteBtn);
+					});
+				}
+				return true;
+			} catch (e) {
+				console.error('[jdzcApi] playSpecialVideo error:', e);
+				return false;
+			}
+		};
+
 	}
 
 
@@ -1704,6 +1802,8 @@
 
 		_reconnectAttempts: 0,
 
+		_pendingQueue: [],
+
 
 
 		connect: function () {
@@ -1773,6 +1873,8 @@
 			self._userLeft = false;
 
 			self._reconnectAttempts = 0;
+
+			self._pendingQueue = [];
 
 			if (self._reconnectTimer) {
 
@@ -1875,6 +1977,14 @@
 					is_watcher: self.isWatcher
 
 				});
+
+				while (self._pendingQueue && self._pendingQueue.length > 0) {
+
+					var pendingPkt = self._pendingQueue.shift();
+
+					self._sendPacket(pendingPkt);
+
+				}
 
 			};
 
@@ -2134,7 +2244,15 @@
 
 				if (pkt && pkt.t !== 'end' && !this._matchEnded) {
 
-					console.warn('[PVP JS] WS not open, cannot send packet');
+					console.warn('[PVP JS] WS not open, buffering packet:', pkt.t);
+
+					if (!this._pendingQueue) this._pendingQueue = [];
+
+					if (this._pendingQueue.length < 50) {
+
+						this._pendingQueue.push(pkt);
+
+					}
 
 				}
 
@@ -2346,13 +2464,14 @@
 
 	</script>
 
-	<script src="dist/lua51.js?v=20261028v154000"></script>
+	<script src="vendor/pako.min.js?v=20261112v190000"></script>
+	<script src="dist/lua51.js?v=20261112v190000"></script>
 
-	<script src="js/lua.js?v=20261028v154000"></script>
+	<script src="js/lua.js?v=20261112v190000"></script>
 
-	<script src="vendor/CCBoot.js?v=20261028v154000"></script>
+	<script src="vendor/CCBoot.js?v=20261112v190000"></script>
 
-	<script src="js/boot.js?v=20261028v154000"></script>
+	<script src="js/boot.js?v=20261112v190000"></script>
 
 
 
@@ -2360,7 +2479,7 @@
 		/* Register Service Worker for instant local caching (Arcana architecture) */
 		if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
 			window.addEventListener('load', function () {
-				var swUrl = 'sw.js?v=' + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261028v154000');
+				var swUrl = 'sw.js?v=' + ((window.JDZC_CONFIG && window.JDZC_CONFIG.version) || '20261112v190000');
 				navigator.serviceWorker.register(swUrl)
 					.then(function (reg) {
 						console.log('[SW] ServiceWorker active, scope:', reg.scope);

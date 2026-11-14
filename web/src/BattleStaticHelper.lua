@@ -1,10 +1,21 @@
 local var_0_0 = PlayerBattle
 
-function var_0_0.createCard(arg_1_0, arg_1_1)
-	if arg_1_0 == nil then
-		arg_1_0 = 0
+function var_0_0.createCard(arg_1_0, arg_1_1, arg_1_2)
+	local infoId = arg_1_0
+	local level = arg_1_1
+	local owner = arg_1_2
+
+	if type(arg_1_0) == "table" and (arg_1_0._playerType ~= nil or arg_1_0._boardCards ~= nil) then
+		owner = arg_1_0
+		infoId = arg_1_1
+		level = arg_1_2
 	end
-	local var_1_0 = BattleCard.new(arg_1_0, arg_1_1)
+
+	if infoId == nil then
+		infoId = 0
+	end
+
+	local var_1_0 = BattleCard.new(infoId, level, owner)
 
 	var_1_0:resetOnce()
 
@@ -87,6 +98,7 @@ function var_0_0.createSkill(arg_4_0, arg_4_1, arg_4_2)
 end
 
 function var_0_0.skillHasMode(arg_5_0, arg_5_1)
+	if not arg_5_0 or not arg_5_0._modes then return false end
 	for iter_5_0 = 1, #arg_5_0._modes do
 		if arg_5_0._modes[iter_5_0] == arg_5_1 then
 			return true
@@ -107,6 +119,7 @@ function var_0_0.skillHasMode(arg_5_0, arg_5_1)
 end
 
 function var_0_0.skillInfoHasMode(arg_6_0, arg_6_1)
+	if not arg_6_0 or not arg_6_0._modes then return false end
 	for iter_6_0 = 1, #arg_6_0._modes do
 		if arg_6_0._modes[iter_6_0] == arg_6_1 then
 			return true
@@ -127,6 +140,7 @@ function var_0_0.skillInfoHasMode(arg_6_0, arg_6_1)
 end
 
 function var_0_0.skillInfoHasRemoveMode(arg_7_0, arg_7_1)
+	if not arg_7_0 or not arg_7_0._removeMode then return false end
 	for iter_7_0 = 1, #arg_7_0._removeMode do
 		if arg_7_0._removeMode[iter_7_0] == arg_7_1 then
 			return true
@@ -137,7 +151,8 @@ function var_0_0.skillInfoHasRemoveMode(arg_7_0, arg_7_1)
 end
 
 function var_0_0.rareHasChoiceSkill(arg_8_0)
-	local var_8_0 = Data._rareInfo[arg_8_0]
+	local var_8_0 = Data._rareInfo and Data._rareInfo[arg_8_0]
+	if not var_8_0 or not var_8_0._skillId then return false end
 
 	for iter_8_0 = 1, #var_8_0._skillId do
 		local var_8_1 = var_8_0._skillId[iter_8_0]
@@ -146,11 +161,13 @@ function var_0_0.rareHasChoiceSkill(arg_8_0)
 			break
 		end
 
-		local var_8_2 = Data._skillInfo[var_8_1]
+		local var_8_2 = Data._skillInfo and Data._skillInfo[var_8_1]
 
-		for iter_8_1 = 1, #var_8_2._modes do
-			if var_8_2._modes[iter_8_1] == Data.SkillMode.choice then
-				return true, var_8_1
+		if var_8_2 and var_8_2._modes then
+			for iter_8_1 = 1, #var_8_2._modes do
+				if var_8_2._modes[iter_8_1] == Data.SkillMode.choice then
+					return true, var_8_1
+				end
 			end
 		end
 	end
@@ -3718,6 +3735,8 @@ function var_0_0.isValidMergeComponent(arg_260_0, arg_260_1, arg_260_2)
 			return arg_260_1:isKeyword(var_260_1) and arg_260_1:canMergeFrom()
 		elseif (arg_260_0 == 3906 and arg_260_2._infoId == 40662) or (arg_260_0 == 3902 and arg_260_2._infoId == 40739) then
 			return arg_260_1:isKeyword(arg_260_0 == 3902 and 302 or (var_260_1 - 900)) and arg_260_1:isMerge()
+		elseif (arg_260_0 == 3306 or var_260_1 == 306) and arg_260_2._infoId == 40779 then
+			return (arg_260_1:isKeyword(306) or (arg_260_1._info and arg_260_1._info._keyword == 306)) and arg_260_1:getStar() == 8
 		else
 			return arg_260_1:isKeyword(var_260_1)
 		end

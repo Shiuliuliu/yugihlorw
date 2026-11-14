@@ -309,18 +309,29 @@ function var_0_0.addCardList(arg_18_0, arg_18_1, arg_18_2)
 			end
 		end
 
-		ClientData.sendBuyDiamond(var_19_0._id)
-		P._playerCard:addCard(var_19_0._infoId, 1)
-		if var_19_0._priceType == 7339 or var_19_0._priceType == 7114 then
-			P:changeResource(Data.ResType.ingot, -var_19_0._price)
-		else
-			P:addResource(var_19_0._priceType, nil, -var_19_0._price)
-		end
-		require("RewardCardPanel").create(Str(STR.BUYSUCCESS), {
-			var_19_0
-		}):show()
-		lc.Audio.playAudio(AUDIO.E_CARD_GET)
-		var_18_3:refresh()
+		local buyItem = var_19_0
+		ClientData.sendBuyDiamond(buyItem._id, function(ok, res)
+			if not ok then
+				return
+			end
+			if not res or not res.count then
+				P._playerCard:addCard(buyItem._infoId, 1)
+			end
+			if not res or res.gem == nil then
+				if buyItem._priceType == 7339 or buyItem._priceType == 7114 then
+					P:changeResource(Data.ResType.ingot, -buyItem._price)
+				else
+					P:addResource(buyItem._priceType, nil, -buyItem._price)
+				end
+			end
+			require("RewardCardPanel").create(Str(STR.BUYSUCCESS), {
+				buyItem
+			}):show()
+			lc.Audio.playAudio(AUDIO.E_CARD_GET)
+			if var_18_3 and not tolua.isnull(var_18_3) then
+				var_18_3:refresh()
+			end
+		end)
 	end
 
 	local function var_18_5(arg_20_0)

@@ -329,7 +329,7 @@ function var_0_0.createCardItem(arg_15_0, arg_15_1, arg_15_2)
 		end
 		var_15_1 = require("CardThumbnail").create(arg_15_1._srcInfoId or arg_15_1._infoId, nil, skinId)
 
-		if (arg_15_0._mode == var_0_0.Mode.sync or arg_15_0._mode == var_0_0.Mode.xyz) and not arg_15_1:isXYZ() then
+		if (arg_15_0._mode == var_0_0.Mode.sync or arg_15_0._mode == var_0_0.Mode.xyz) and not arg_15_1:isXYZ() and not arg_15_1:isLink() and arg_15_1._infoId ~= 40776 then
 			var_15_1._frame._starArea:update(arg_15_1:getStar(), arg_15_1._infoId)
 		end
 	end

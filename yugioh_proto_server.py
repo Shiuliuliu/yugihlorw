@@ -402,11 +402,24 @@ def load_or_create_account(cid=None, user_id=None):
                     cur.execute("SELECT id FROM card_extra WHERE quality != 'GR' LIMIT 20")
                     e_ids = [r['id'] for r in cur.fetchall()]
                     
-                    starter_cards = [(acc_id, cid, 3) for cid in (m_ids + s_ids + t_ids + e_ids)]
+                    starter_cards = [(acc_id, cid, 3) for cid in set(m_ids + s_ids + t_ids + e_ids + [30598, 30599, 30600, 30601, 30602, 30603, 30604, 30605, 21172, 21173] + list(range(12371, 12382)))]
                     if starter_cards:
                         cur.executemany("INSERT IGNORE INTO user_cards (account_id, card_id, count) VALUES (%s, %s, %s)", starter_cards)
                         cur.execute("SELECT card_id, count FROM user_cards WHERE account_id = %s", (acc_id,))
                         cards = cur.fetchall()
+
+                # Ensure custom cards always exist for player
+                CUSTOM_CARDS = [
+                    30598, 30599, 30600, 30601,
+                    12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380, 12381,
+                    30602, 30603, 30604, 30605, 21172, 21173
+                ]
+                owned_ids = {c['card_id'] for c in cards}
+                missing_custom = [cid for cid in CUSTOM_CARDS if cid not in owned_ids]
+                if missing_custom:
+                    for mcid in missing_custom:
+                        cur.execute("INSERT INTO user_cards (account_id, card_id, count) VALUES (%s, %s, 3) ON DUPLICATE KEY UPDATE count = GREATEST(count, 3)", (acc_id, mcid))
+                        cards.append({'card_id': mcid, 'count': 3})
 
                 # Fetch decks
                 cur.execute("SELECT deck_slot, deck_name, cards, extra_cards, is_active FROM user_decks WHERE account_id = %s ORDER BY deck_slot", (acc_id,))

@@ -2578,6 +2578,26 @@ function var_0_0.initCard(arg_45_0, arg_45_1)
 		lc.addChildToCenter(arg_45_0._pFrame._image, arg_45_0._pBottomEffectArea, -1)
 	end
 
+	local isLinkCard = false
+	if arg_45_0._card then
+		if arg_45_0._card.isLink and arg_45_0._card:isLink() then
+			isLinkCard = true
+		elseif arg_45_0._card._link and arg_45_0._card._link[1] ~= 0 then
+			isLinkCard = true
+		elseif arg_45_0._card._info then
+			local info = arg_45_0._card._info
+			if (info._link and info._link[1] ~= 0) or (info._option and band(info._option, Data.MonsterOption.is_link) ~= 0) or info._id == 40776 then
+				isLinkCard = true
+			end
+		end
+	end
+	if arg_45_0._pFrame and arg_45_0._pFrame._starValue then
+		arg_45_0._pFrame._starValue:setVisible(not isLinkCard and arg_45_0._status == var_0_0.Status.fight and arg_45_0._pFrame._showInBattle == true)
+	end
+	if arg_45_0._pFrame and arg_45_0._pFrame._starIcon then
+		arg_45_0._pFrame._starIcon:setVisible(not isLinkCard and arg_45_0._status == var_0_0.Status.fight and arg_45_0._pFrame._showInBattle == true)
+	end
+
 	if arg_45_0._status == var_0_0.Status.back then
 		arg_45_0._pShadow = ClientView.createCardShadow(nil, var_0_0.Scale.normal, 0, 0)
 
@@ -2650,6 +2670,9 @@ function var_0_0.initNormal(arg_46_0)
 
 	arg_46_0._status = var_0_0.Status.normal
 
+	if arg_46_0._pFrame and arg_46_0._pFrame._starValue then arg_46_0._pFrame._starValue:setVisible(false) end
+	if arg_46_0._pFrame and arg_46_0._pFrame._starIcon then arg_46_0._pFrame._starIcon:setVisible(false) end
+
 	arg_46_0:removeCardActive()
 	arg_46_0:removeAllStatus()
 	arg_46_0:removeCardProp()
@@ -2679,6 +2702,8 @@ function var_0_0.initNormal(arg_46_0)
 	arg_46_0:initCard()
 	arg_46_0._pFrame:setVisible(true)
 	arg_46_0._pFrame:setStatus(true, false)
+	if arg_46_0._pFrame._starValue then arg_46_0._pFrame._starValue:setVisible(false) end
+	if arg_46_0._pFrame._starIcon then arg_46_0._pFrame._starIcon:setVisible(false) end
 	arg_46_0._pCardArea:setScale(CardSprite.Scale.normal)
 	arg_46_0:setRotation3D(arg_46_0._default._rotation)
 	arg_46_0:updateDefendPosture(false)
@@ -3561,14 +3586,55 @@ function var_0_0.updateAtkHp(arg_70_0)
 	local var_70_2 = arg_70_0._pFrame._starIcon
 	local var_70_3 = ClientData.formatNum(arg_70_0._card._atk, 99999)
 	local var_70_4 = ClientData.formatNum(arg_70_0._card._hp, 99999)
-	local var_70_5 = arg_70_0._card:getStar()
+	if (arg_70_0._card:hasSkillFast(20097) or arg_70_0._card._infoId == 40776) and arg_70_0._card._status == BattleData.CardStatus.board then
+		local owner = arg_70_0._card._owner
+		if owner and owner._opponent then
+			local myBoard = owner:getBoardCards()
+			local isSolo = (#myBoard == 1 and myBoard[1] == arg_70_0._card)
+			local oppBoard = owner._opponent:getBoardCards()
+			local bonus = isSolo and (#oppBoard * 1000) or 0
+			local oldBonus = arg_70_0._card._saiyanBonus or 0
+			if bonus ~= oldBonus then
+				arg_70_0._card._atk = (arg_70_0._card._atk or 4900) - oldBonus + bonus
+				arg_70_0._card._saiyanBonus = bonus
+			end
+		end
+	end
 
-	if var_70_5 == Data.XYZ_STAR then
-		var_70_1:setString(arg_70_0._card._info._star)
-		var_70_2:setSpriteFrame("card_quality3")
+	local var_70_5 = arg_70_0._card:getStar()
+	local isLinkMonster = false
+	if arg_70_0._card then
+		if arg_70_0._card.isLink and arg_70_0._card:isLink() then
+			isLinkMonster = true
+		elseif arg_70_0._card._link and arg_70_0._card._link[1] ~= 0 then
+			isLinkMonster = true
+		elseif arg_70_0._card._info then
+			local info = arg_70_0._card._info
+			if (info._link and info._link[1] ~= 0) or (info._option and band(info._option, Data.MonsterOption.is_link) ~= 0) or info._id == 40776 then
+				isLinkMonster = true
+			end
+		end
+	end
+	local isXyzMonster = not isLinkMonster and arg_70_0._card and arg_70_0._card.isXYZ and arg_70_0._card:isXYZ()
+
+	if isLinkMonster then
+		if var_70_1 then var_70_1:setVisible(false) end
+		if var_70_2 then var_70_2:setVisible(false) end
 	else
-		var_70_1:setString(var_70_5)
-		var_70_2:setSpriteFrame(arg_70_0._card:isAdjust() and "card_quality2" or "card_quality")
+		if var_70_1 then
+			var_70_1:setVisible(arg_70_0._status == var_0_0.Status.fight)
+		end
+		if var_70_2 then
+			var_70_2:setVisible(arg_70_0._status == var_0_0.Status.fight)
+		end
+
+		if isXyzMonster then
+			var_70_1:setString(arg_70_0._card._info and arg_70_0._card._info._star or var_70_5)
+			var_70_2:setSpriteFrame("card_quality3")
+		else
+			var_70_1:setString(var_70_5)
+			var_70_2:setSpriteFrame((arg_70_0._card.isAdjust and arg_70_0._card:isAdjust()) and "card_quality2" or "card_quality")
+		end
 	end
 
 	var_70_2:setPositionX((var_70_5 == Data.XYZ_STAR or var_70_5 < 10) and var_70_2._x or var_70_2._x - 30)
@@ -4460,7 +4526,7 @@ function var_0_0.createPropArea(arg_110_0)
 	lc.addChildToPos(var_110_1, var_110_5, cc.p(lc.x(var_110_2), 36))
 	var_110_5:setScale(0.8)
 
-	local var_110_6 = ClientView.createTTF(arg_110_0._card._info._keyword == 54744 and "Thiên Không Hoàng" or Str(STR.CARD_KEYWORD_BEGIN + arg_110_0._card._info._keyword), ClientView.FontSize.S1, ClientView.COLOR_TEXT_DARK)
+	local var_110_6 = ClientView.createTTF(arg_110_0._card._info._keyword == 54744 and "Thiên Không Hoàng" or arg_110_0._card._info._keyword == 306 and "7 viên ngọc rồng" or arg_110_0._card._info._keyword == 307 and "shin" or arg_110_0._card._info._keyword == 308 and "Labrynth" or Str(STR.CARD_KEYWORD_BEGIN + arg_110_0._card._info._keyword), ClientView.FontSize.S1, ClientView.COLOR_TEXT_DARK)
 
 	lc.addChildToPos(var_110_1, var_110_6, cc.p(lc.x(var_110_3), 36))
 	var_110_6:setScale(0.8)
@@ -4485,7 +4551,7 @@ function var_0_0.playToBoard(arg_111_0, arg_111_1)
 	elseif arg_111_0._card._sourceStatus == BattleData.CardStatus.hand then
 		var_111_0:replaceHandCards(arg_111_1, arg_111_0._card)
 
-		if arg_111_0._card:hasSkillFast(13190) or arg_111_0._card:hasSkillFast(13191) then
+		if arg_111_0._card:hasSkillFast(13190) or arg_111_0._card:hasSkillFast(13191) or arg_111_0._card._statusVal == BattleData.CardStatusVal.h2b_oppo_special or arg_111_0._card._statusVal == BattleData.CardStatusVal.h2b_oppo_normal or arg_111_0._card._statusVal == BattleData.CardStatusVal.h2b_oppo_special_def then
 			var_111_0._opponentUi:replaceHandCards(arg_111_1, arg_111_0._card)
 		end
 	end

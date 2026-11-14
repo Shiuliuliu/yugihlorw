@@ -71,6 +71,10 @@ end
 
 function var_0_0.onEnter(arg_4_0)
 	var_0_0.super.onEnter(arg_4_0)
+	arg_4_0:setVisible(true)
+	if arg_4_0._battleUiNormal then
+		arg_4_0._battleUiNormal:setVisible(true)
+	end
 
 	if arg_4_0._battleUi and arg_4_0._battleUi._isBattleFinished then
 		return

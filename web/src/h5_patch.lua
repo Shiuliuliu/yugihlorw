@@ -1,3 +1,17 @@
+
+function isMonsterCard(c)
+	if not c then return false end
+	if c.isMonster and c:isMonster() then return true end
+	if c.isMonsterRare and c:isMonsterRare() then return true end
+	local t = c._type or (c._info and c._info._type)
+	return t == Data.CardType.monster or t == Data.CardType.rare
+end
+
+function isLabrynthCard(c)
+	if not c then return false end
+	if c.isKeyword and c:isKeyword(308) then return true end
+	return (c._info and c._info._keyword == 308) or c._keyword == 308
+end
 -- h5_patch.lua -- the Lua-side adjustments the web client needs.
 --
 -- Everything here is applied through a `require` hook, so each patch lands
@@ -545,6 +559,9 @@ local function patchData()
 			end
 			if Data._rareInfo and Data._rareInfo[40731] then
 				Data._rareInfo[40731]._keyword = 303
+				Data._rareInfo[40731]._link = { 1, 2, 3, 4, 6 }
+				Data._rareInfo[40731]._linkCount = "#>=2"
+				Data._rareInfo[40731]._skillId = { 14727, 9032, 9504, 9505 }
 			end
 			if Data._skillInfo and not Data._skillInfo[14787] then
 				Data._skillInfo[14787] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57307, _effectVal = { 0 }, _id = 14787, _isIgnoreDefend = 1, _modes = { 1 }, _nameSid = 57306, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 1, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1000 } }
@@ -751,7 +768,425 @@ local function patchData()
 					_syncComponent = { { 0 }, { 0 } }
 				}
 			end
-			if Data._rareInfo and Data._rareInfo[40747] then
+			
+			-- Goku - kid (12358)
+			if Data._monsterInfo and not Data._monsterInfo[12358] then
+				Data._monsterInfo[12358] = {
+					_atk = { 800 },
+					_attackEffect = 2,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57843,
+					_category = 6,
+					_cost = 0,
+					_descSid = 57842,
+					_guideSid = 0,
+					_hp = { 500 },
+					_id = 12358,
+					_isHide = 0,
+					_joinResult = { 40767 },
+					_keyword = 306,
+					_maxCount = 3,
+					_nameSid = 57841,
+					_nature = 3,
+					_option = 2,
+					_originId = 0,
+					_packageId = { 13001, 13010, 13050 },
+					_picId = 0,
+					_py = "gokukid",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 20075 },
+					_skin = { 0 },
+					_star = 2,
+					_syncComponent = { { 0 } }
+				}
+			end
+			-- Goku (12359)
+			if Data._monsterInfo and not Data._monsterInfo[12359] then
+				Data._monsterInfo[12359] = {
+					_atk = { 2500 },
+					_attackEffect = 2,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57848,
+					_category = 6,
+					_cost = 0,
+					_descSid = 57847,
+					_guideSid = 0,
+					_hp = { 2400 },
+					_id = 12359,
+					_isHide = 0,
+					_joinResult = { 40767 },
+					_keyword = 306,
+					_maxCount = 3,
+					_nameSid = 57846,
+					_nature = 3,
+					_option = 1,
+					_originId = 0,
+					_packageId = { 13001, 13010, 13050 },
+					_picId = 0,
+					_py = "goku",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 0 },
+					_skin = { 0 },
+					_star = 7,
+					_syncComponent = { { 0 } }
+				}
+			end
+			-- Goku - SSJ 1 (40767)
+			if Data._rareInfo and not Data._rareInfo[40767] then
+				Data._rareInfo[40767] = {
+					_atk = { 2800 },
+					_attackEffect = 2,
+					_available = 1,
+					_bgId = 0,
+					_briefNameSid = 57851,
+					_category = 6,
+					_cost = 0,
+					_descSid = 57850,
+					_guideSid = 0,
+					_hp = { 2500 },
+					_id = 40767,
+					_isHide = 0,
+					_joinComponent = { 12359, 3306 },
+					_joinResult = { 0 },
+					_keyword = 306,
+					_link = { 0 },
+					_linkAllCandidates = "0.0",
+					_linkCandidate = "0.0",
+					_linkCount = "0.0",
+					_linkSelectedCandidates = "0.0",
+					_maxCount = 3,
+					_nameSid = 57849,
+					_nature = 3,
+					_option = 4,
+					_originId = 0,
+					_packageId = { 13001, 13010, 13050 },
+					_picId = 0,
+					_py = "gokussj1",
+					_quality = 4,
+					_recruitable = 1,
+					_skillId = { 13850, 2797 },
+					_skin = { 0 },
+					_star = 8,
+					_syncComponent = { { 0 } }
+				}
+			end
+			-- Skill 20075
+			
+			-- Goku - SSJ 2 (40768)
+			if Data._rareInfo and not Data._rareInfo[40768] then
+				Data._rareInfo[40768] = {
+					_atk = { 3000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57854, _category = 6, _cost = 0, _descSid = 57853, _guideSid = 0, _hp = { 2800 }, _id = 40768, _isHide = 0, _joinComponent = { 40767, 3306 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57852, _nature = 3, _option = 4, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "gokussj2", _quality = 4, _recruitable = 1, _skillId = { 13850, 2797, 6578, 1013 }, _skin = { 0 }, _star = 8, _syncComponent = { { 0 } }
+				}
+			end
+			-- Goku - SSJ 3 (40769)
+			if Data._rareInfo and not Data._rareInfo[40769] then
+				Data._rareInfo[40769] = {
+					_atk = { 3500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57857, _category = 6, _cost = 0, _descSid = 57856, _guideSid = 0, _hp = { 2800 }, _id = 40769, _isHide = 0, _joinComponent = { 40768, 3306 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57855, _nature = 3, _option = 4, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "gokussj3", _quality = 4, _recruitable = 1, _skillId = { 13850, 3043, 20076, 20077 }, _skin = { 0 }, _star = 8, _syncComponent = { { 0 } }
+				}
+			end
+			-- Goku - SSJ 4 (40770)
+			if Data._rareInfo and not Data._rareInfo[40770] then
+				Data._rareInfo[40770] = {
+					_atk = { 3500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57864, _category = 6, _cost = 0, _descSid = 57863, _guideSid = 0, _hp = { 2800 }, _id = 40770, _isHide = 0, _joinComponent = { 12359, 3306, 3306 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57862, _nature = 3, _option = 4, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "gokussj4", _quality = 4, _recruitable = 1, _skillId = { 13850, 3043, 20078 }, _skin = { 0 }, _star = 8, _syncComponent = { { 0 } }
+				}
+			end
+			-- Goku - SSJ God (40771)
+			if Data._rareInfo and not Data._rareInfo[40771] then
+				Data._rareInfo[40771] = {
+					_atk = { 4000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57869, _category = 6, _cost = 0, _descSid = 57868, _guideSid = 0, _hp = { 4000 }, _id = 40771, _isHide = 0, _joinComponent = { 12359, 3306, 3306, 3306 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57867, _nature = 3, _option = 4, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "gokussjgod", _quality = 4, _recruitable = 1, _skillId = { 13850, 3043, 20079, 20080, 20081 }, _skin = { 0 }, _star = 8, _syncComponent = { { 0 } }
+				}
+			end
+			-- Goku - SSJ Blue (40772)
+			if Data._rareInfo and not Data._rareInfo[40772] then
+				Data._rareInfo[40772] = {
+					_atk = { 4500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57878, _category = 6, _cost = 0, _descSid = 57877, _guideSid = 0, _hp = { 4500 }, _id = 40772, _isHide = 0, _joinComponent = { 40769, 3306 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57876, _nature = 3, _option = 4, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "gokussjblue", _quality = 4, _recruitable = 1, _skillId = { 13850, 3043, 20082, 20083 }, _skin = { 0 }, _star = 8, _syncComponent = { { 0 } }
+				}
+			end
+			-- Goku ultra instinct (40773)
+			if Data._rareInfo and not Data._rareInfo[40773] then
+				Data._rareInfo[40773] = {
+					_atk = { 5000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57885, _category = 6, _cost = 0, _descSid = 57884, _guideSid = 0, _hp = { 5000 }, _id = 40773, _isHide = 0, _joinComponent = { 40767, 40768, 40769, 40771, 40772 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57883, _nature = 3, _option = 4, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "gokuultrainstinct", _quality = 5, _recruitable = 1, _skillId = { 13850, 3043, 20084, 20085 }, _skin = { 0 }, _star = 10, _syncComponent = { { 0 } }
+				}
+			end
+			-- Skills 20076..20085
+			if Data._skillInfo then
+				Data._skillInfo[20076] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57859, _effectVal = { 76 }, _id = 20076, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 57858, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40769 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20077] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57861, _effectVal = { 77 }, _id = 20077, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57860, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40769 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20078] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57866, _effectVal = { 78 }, _id = 20078, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 57865, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40770 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20079] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57871, _effectVal = { 79 }, _id = 20079, _isIgnoreDefend = 0, _modes = { 8 }, _nameSid = 57870, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40771 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20080] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57873, _effectVal = { 80 }, _id = 20080, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57872, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40771 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20081] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57875, _effectVal = { 81 }, _id = 20081, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57874, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40771 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20082] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57880, _effectVal = { 82 }, _id = 20082, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 57879, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40772 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20083] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57882, _effectVal = { 83 }, _id = 20083, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 57881, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40772 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20084] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57887, _effectVal = { 84 }, _id = 20084, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 57886, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40773 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20085] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57889, _effectVal = { 85 }, _id = 20085, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 57888, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40773 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+
+			-- Dragon Ball Batch 3 Cards & Skills
+			-- 21165: Điều ước rồng thần trái đất
+			if Data._magicInfo and not Data._magicInfo[21165] then
+				Data._magicInfo[21165] = {
+					_available = 1, _briefNameSid = 57892, _descSid = 57891, _guideSid = 0, _id = 21165, _isHide = 0, _isSummon = 0, _keyword = 306, _maxCount = 3, _nameSid = 57890, _option = 1, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "dieuuocrongthantraidat", _quality = 4, _recruitable = 1, _skillId = { 20086 }, _targetType = 0, _type = 11
+				}
+			end
+			-- 21166: Điều ước rồng thần Namec
+			if Data._magicInfo and not Data._magicInfo[21166] then
+				Data._magicInfo[21166] = {
+					_available = 1, _briefNameSid = 57897, _descSid = 57896, _guideSid = 0, _id = 21166, _isHide = 0, _isSummon = 0, _keyword = 306, _maxCount = 1, _nameSid = 57895, _option = 1, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "dieuuocrongthannamec", _quality = 5, _recruitable = 1, _skillId = { 20087 }, _targetType = 0, _type = 11
+				}
+			end
+			-- 12360: dende
+			if Data._monsterInfo and not Data._monsterInfo[12360] then
+				Data._monsterInfo[12360] = {
+					_atk = { 500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57902, _category = 5, _cost = 0, _descSid = 57901, _guideSid = 0, _hp = { 1500 }, _id = 12360, _isHide = 0, _joinResult = { 0 }, _keyword = 306, _maxCount = 3, _nameSid = 57900, _nature = 3, _option = 2, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "dende", _quality = 4, _recruitable = 1, _skillId = { 20088, 20089 }, _skin = { 0 }, _star = 3
+				}
+			end
+			-- 21167: Rada dò ngọc
+			if Data._magicInfo and not Data._magicInfo[21167] then
+				Data._magicInfo[21167] = {
+					_available = 1, _briefNameSid = 57909, _descSid = 57908, _guideSid = 0, _id = 21167, _isHide = 0, _isSummon = 0, _keyword = 306, _maxCount = 3, _nameSid = 57907, _option = 1, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "radadongoc", _quality = 4, _recruitable = 1, _skillId = { 20090 }, _targetType = 0, _type = 11
+				}
+			end
+			-- 40774: Bà hạt mít
+			if Data._rareInfo and not Data._rareInfo[40774] then
+				Data._rareInfo[40774] = {
+					_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57914, _category = 7, _cost = 0, _descSid = 57913, _guideSid = 0, _hp = { 0 }, _id = 40774, _isHide = 0, _joinComponent = { 3306 }, _joinResult = { 0 }, _keyword = 306, _link = { 1 }, _linkAllCandidates = "0.0", _linkCandidate = "K==306", _linkCount = "#==1", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57912, _nature = 1, _option = 8194, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "bahatmit", _quality = 4, _recruitable = 1, _skillId = { 20091, 2002 }, _skin = { 0 }, _star = 1
+				}
+			end
+			-- 40775: Ghost-Usher
+			if Data._rareInfo and not Data._rareInfo[40775] then
+				Data._rareInfo[40775] = {
+					_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57919, _category = 5, _cost = 0, _descSid = 57918, _guideSid = 0, _hp = { 1200 }, _id = 40775, _isHide = 0, _joinComponent = { 3306 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57917, _nature = 2, _option = 514, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "ghostusher", _quality = 3, _recruitable = 1, _skillId = { 20092 }, _skin = { 0 }, _star = 2
+				}
+			end
+			-- Skills 20086..20092
+			if Data._skillInfo then
+				if not Data._skillInfo[20086] then
+					Data._skillInfo[20086] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57894, _effectVal = { 86 }, _id = 20086, _isIgnoreDefend = 0, _modes = { 61 }, _nameSid = 57893, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 21165 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				end
+				if not Data._skillInfo[20087] then
+					Data._skillInfo[20087] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57899, _effectVal = { 87 }, _id = 20087, _isIgnoreDefend = 0, _modes = { 61 }, _nameSid = 57898, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 21166 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				end
+				if not Data._skillInfo[20088] then
+					Data._skillInfo[20088] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57904, _effectVal = { 88 }, _id = 20088, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 57903, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12360 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				end
+				if not Data._skillInfo[20089] then
+					Data._skillInfo[20089] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57906, _effectVal = { 89 }, _id = 20089, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57905, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12360 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				end
+				if not Data._skillInfo[20090] then
+					Data._skillInfo[20090] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57911, _effectVal = { 90 }, _id = 20090, _isIgnoreDefend = 0, _modes = { 61 }, _nameSid = 57910, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 21167 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				end
+				if not Data._skillInfo[20091] then
+					Data._skillInfo[20091] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57916, _effectVal = { 91 }, _id = 20091, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57915, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40774 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				end
+								if not Data._skillInfo[20092] then
+					Data._skillInfo[20092] = { _against = { 0 }, _avoidP2B = 0, _count = 3, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57921, _effectVal = { 92 }, _id = 20092, _isIgnoreDefend = 0, _modes = { 33 }, _nameSid = 57920, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40775 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				end
+			end
+
+			-- Dragon Ball Batch 4, 5, 6 Cards & Skills + 12366
+			if Data._monsterInfo then
+				Data._monsterInfo[12361] = {
+					_atk = { 200 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58025, _category = 5, _cost = 0, _descSid = 58024, _guideSid = 0, _hp = { 500 }, _id = 12361, _isHide = 0, _joinResult = { 0 }, _keyword = 306, _maxCount = 3, _nameSid = 58023, _nature = 6, _option = 2, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "puar", _quality = 3, _recruitable = 1, _skillId = { 20093 }, _skin = { 0 }, _star = 1
+				}
+				Data._monsterInfo[12362] = {
+					_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58030, _category = 6, _cost = 0, _descSid = 58029, _guideSid = 0, _hp = { 2500 }, _id = 12362, _isHide = 0, _joinResult = { 0 }, _keyword = 306, _maxCount = 3, _nameSid = 58028, _nature = 3, _option = 262144, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "tokenvegeta", _quality = 1, _recruitable = 1, _skillId = { 0 }, _skin = { 0 }, _star = 1
+				}
+				Data._monsterInfo[12363] = {
+					_atk = { 2200 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57999, _category = 6, _cost = 0, _descSid = 57998, _guideSid = 0, _hp = { 1000 }, _id = 12363, _isHide = 0, _joinResult = { 0 }, _keyword = 306, _maxCount = 3, _nameSid = 57997, _nature = 3, _option = 2, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "gohangreatsaiyaman", _quality = 4, _recruitable = 1, _skillId = { 20110, 20111 }, _skin = { 0 }, _star = 6
+				}
+				Data._monsterInfo[12364] = {
+					_atk = { 100 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58006, _category = 2, _cost = 0, _descSid = 58005, _guideSid = 0, _hp = { 800 }, _id = 12364, _isHide = 0, _joinResult = { 0 }, _keyword = 306, _maxCount = 3, _nameSid = 58004, _nature = 1, _option = 2, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "bulma", _quality = 4, _recruitable = 1, _skillId = { 20112, 20113 }, _skin = { 0 }, _star = 2
+				}
+				Data._monsterInfo[12365] = {
+					_atk = { 2400 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58013, _category = 6, _cost = 0, _descSid = 58012, _guideSid = 0, _hp = { 2000 }, _id = 12365, _isHide = 0, _joinResult = { 0 }, _keyword = 306, _maxCount = 3, _nameSid = 58011, _nature = 3, _option = 2, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "picolo", _quality = 4, _recruitable = 1, _skillId = { 20114, 20115 }, _skin = { 0 }, _star = 7
+				}
+				Data._monsterInfo[12366] = {
+					_atk = { 500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58020, _category = 15, _cost = 0, _descSid = 58019, _guideSid = 0, _hp = { 500 }, _id = 12366, _isHide = 0, _joinResult = { 0 }, _keyword = 97, _maxCount = 3, _nameSid = 58018, _nature = 1, _option = 2, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "dinhhinhphuonghuong", _quality = 4, _recruitable = 1, _skillId = { 20116 }, _skin = { 0 }, _star = 5
+				}
+				Data._monsterInfo[12367] = {
+					_atk = { 200 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58072, _category = 6, _cost = 0, _descSid = 58071, _guideSid = 0, _hp = { 500 }, _id = 12367, _isHide = 0, _joinResult = { 0 }, _keyword = 307, _maxCount = 3, _nameSid = 58070, _nature = 5, _option = 130, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "shindiboi", _quality = 4, _recruitable = 1, _skillId = { 20121, 20122 }, _skin = { 0 }, _star = 2
+				}
+				Data._monsterInfo[12368] = {
+					_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58079, _category = 6, _cost = 0, _descSid = 58078, _guideSid = 0, _hp = { 100 }, _id = 12368, _isHide = 0, _joinResult = { 0 }, _keyword = 307, _maxCount = 3, _nameSid = 58077, _nature = 1, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "shinbuonngu", _quality = 4, _recruitable = 1, _skillId = { 20123, 20124, 20125, 20126 }, _skin = { 0 }, _star = 2
+				}
+				Data._monsterInfo[12369] = {
+					_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58090, _category = 6, _cost = 0, _descSid = 58089, _guideSid = 0, _hp = { 300 }, _id = 12369, _isHide = 0, _joinResult = { 0 }, _keyword = 307, _maxCount = 3, _nameSid = 58088, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "shinngaingung", _quality = 4, _recruitable = 1, _skillId = { 20127, 20128, 20129, 20130 }, _skin = { 0 }, _star = 2
+				}
+				Data._monsterInfo[12370] = {
+					_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58101, _category = 6, _cost = 0, _descSid = 58100, _guideSid = 0, _hp = { 500 }, _id = 12370, _isHide = 0, _joinResult = { 0 }, _keyword = 307, _maxCount = 3, _nameSid = 58099, _nature = 3, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "shinanva", _quality = 4, _recruitable = 1, _skillId = { 20131, 20132, 20133, 20134 }, _skin = { 0 }, _star = 2
+				}
+				Data._monsterInfo[12371] = {
+					_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58112, _category = 4, _cost = 0, _descSid = 58111, _guideSid = 0, _hp = { 0 }, _id = 12371, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58110, _nature = 2, _option = 130, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "labrynthcooclock", _quality = 4, _recruitable = 1, _skillId = { 20135, 20136 }, _skin = { 0 }, _star = 1, _syncComponent = { { 0 } }
+				}
+				Data._monsterInfo[12372] = {
+					_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58119, _category = 4, _cost = 0, _descSid = 58118, _guideSid = 0, _hp = { 2000 }, _id = 12372, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58117, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "labrynthstovietorbie", _quality = 4, _recruitable = 1, _skillId = { 20137, 20138, 20139 }, _skin = { 0 }, _star = 2
+				}
+				Data._monsterInfo[12373] = {
+					_atk = { 1500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58128, _category = 4, _cost = 0, _descSid = 58127, _guideSid = 0, _hp = { 0 }, _id = 12373, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58126, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "labrynthchandraglier", _quality = 4, _recruitable = 1, _skillId = { 20140, 20141, 20142 }, _skin = { 0 }, _star = 3
+				}
+				Data._monsterInfo[12374] = {
+					_atk = { 1600 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58137, _category = 4, _cost = 0, _descSid = 58136, _guideSid = 0, _hp = { 2100 }, _id = 12374, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58135, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "ariannathelabrynthservant", _quality = 4, _recruitable = 1, _skillId = { 20143, 20144, 20145 }, _skin = { 0 }, _star = 4
+				}
+				Data._monsterInfo[12375] = {
+					_atk = { 1800 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58146, _category = 4, _cost = 0, _descSid = 58145, _guideSid = 0, _hp = { 1100 }, _id = 12375, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58144, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "arianethelabrynthservant", _quality = 4, _recruitable = 1, _skillId = { 20146, 20147, 20148 }, _skin = { 0 }, _star = 4
+				}
+				Data._monsterInfo[12376] = {
+					_atk = { 2300 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58155, _category = 6, _cost = 0, _descSid = 58154, _guideSid = 0, _hp = { 1500 }, _id = 12376, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58153, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "labrynthknight", _quality = 4, _recruitable = 1, _skillId = { 20149, 20150, 20151, 20152, 20153, 20154 }, _skin = { 0 }, _star = 5
+				}
+				Data._monsterInfo[12377] = {
+					_atk = { 1500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58170, _category = 4, _cost = 0, _descSid = 58169, _guideSid = 0, _hp = { 2500 }, _id = 12377, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58168, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "ariasthelabrynthbutler", _quality = 4, _recruitable = 1, _skillId = { 20155, 20156, 20157, 20158 }, _skin = { 0 }, _star = 6
+				}
+				Data._monsterInfo[12378] = {
+					_atk = { 2000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58181, _category = 4, _cost = 0, _descSid = 58180, _guideSid = 0, _hp = { 2800 }, _id = 12378, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58179, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "labryntharchfiend", _quality = 4, _recruitable = 1, _skillId = { 20159, 20160, 20161, 20162, 20163, 20164, 20165 }, _skin = { 0 }, _star = 7
+				}
+				Data._monsterInfo[12379] = {
+					_atk = { 3000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58198, _category = 4, _cost = 0, _descSid = 58197, _guideSid = 0, _hp = { 2900 }, _id = 12379, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58196, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "ladylabrynthofthesilvercastle", _quality = 4, _recruitable = 1, _skillId = { 20166, 20167, 20168, 20169, 20170, 20171, 20172, 20173, 20174, 20175 }, _skin = { 0 }, _star = 8
+				}
+				Data._monsterInfo[12380] = {
+					_atk = { 2900 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58221, _category = 4, _cost = 0, _descSid = 58220, _guideSid = 0, _hp = { 1900 }, _id = 12380, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58219, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "lovelylabrynthofthesilvercastle", _quality = 4, _recruitable = 1, _skillId = { 20176, 20177, 20178, 20179, 20180, 20181, 20182, 20183, 20184 }, _skin = { 0 }, _star = 8
+				}
+				Data._monsterInfo[12381] = {
+					_atk = { 3500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58242, _category = 4, _cost = 0, _descSid = 58241, _guideSid = 0, _hp = { 3000 }, _id = 12381, _isHide = 0, _joinResult = { 0 }, _keyword = 308, _maxCount = 3, _nameSid = 58240, _nature = 2, _option = 2, _originId = 0, _packageId = { 0 }, _picId = 0, _py = "princesslabrynthofthesilvercastle", _quality = 5, _recruitable = 1, _skillId = { 20185, 20186, 20187, 20188, 20189, 20190, 20191, 20192, 20193 }, _skin = { 0 }, _star = 8
+				}
+			end
+			if Data._magicInfo then
+				Data._magicInfo[21168] = {
+					_available = 1, _briefNameSid = 57923, _descSid = 57922, _guideSid = 0, _id = 21168, _isHide = 0, _isSummon = 0, _keyword = 306, _maxCount = 3, _nameSid = 57923, _option = 1, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "dauthan", _quality = 4, _recruitable = 1, _skillId = { 20094, 20095 }, _targetType = 0, _type = 11
+				}
+				Data._magicInfo[21169] = {
+					_available = 1, _briefNameSid = 57950, _descSid = 57949, _guideSid = 0, _id = 21169, _isHide = 0, _isSummon = 0, _keyword = 306, _maxCount = 3, _nameSid = 57948, _option = 1, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "fusiondance", _quality = 4, _recruitable = 1, _skillId = { 20102 }, _targetType = 0, _type = 11
+				}
+				Data._magicInfo[21170] = {
+					_available = 1, _briefNameSid = 57955, _descSid = 57954, _guideSid = 0, _id = 21170, _isHide = 0, _isSummon = 0, _keyword = 306, _maxCount = 3, _nameSid = 57953, _option = 1, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "bongtaiporata", _quality = 4, _recruitable = 1, _skillId = { 20104 }, _targetType = 0, _type = 11
+				}
+				Data._magicInfo[21171] = {
+					_available = 1, _briefNameSid = 57972, _descSid = 0, _guideSid = 0, _id = 21171, _isHide = 0, _isSummon = 0, _keyword = 306, _maxCount = 1, _nameSid = 57970, _option = 1, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "rongthansieucap", _quality = 5, _recruitable = 1, _skillId = { 20108, 20109 }, _targetType = 0, _type = 11
+				}
+			end
+			if Data._rareInfo then
+				Data._rareInfo[40776] = {
+					_atk = { 4900 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57928, _category = 6, _cost = 0, _descSid = 57929, _guideSid = 0, _hp = { 0 }, _id = 40776, _isHide = 0, _joinComponent = { 3306 }, _joinResult = { 0 }, _keyword = 306, _link = { 1, 2, 3, 7, 8 }, _linkAllCandidates = "0.0", _linkCandidate = "K==306", _linkCount = "#>=1", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57928, _nature = 3, _option = 8194, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "vegetassjblue2", _quality = 5, _recruitable = 1, _skillId = { 3043, 20096, 20097, 20098, 20099 }, _skin = { 0 }, _star = 0, _syncComponent = { { 0 } }
+				}
+				Data._rareInfo[40777] = {
+					_atk = { 9000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57940, _category = 6, _cost = 0, _descSid = 57939, _guideSid = 0, _hp = { 9000 }, _id = 40777, _isHide = 0, _joinComponent = { 40776, 40772 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57938, _nature = 3, _option = 4, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "gogetassjblue", _quality = 5, _recruitable = 1, _skillId = { 2375, 20100 }, _skin = { 0 }, _star = 10, _syncComponent = { { 0 } }
+				}
+				Data._rareInfo[40778] = {
+					_atk = { 10000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57945, _category = 6, _cost = 0, _descSid = 57944, _guideSid = 0, _hp = { 10000 }, _id = 40778, _isHide = 0, _joinComponent = { 40776, 40772 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57943, _nature = 3, _option = 4, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "vegitossjblue", _quality = 5, _recruitable = 1, _skillId = { 2375, 20101 }, _skin = { 0 }, _star = 10, _syncComponent = { { 0 } }
+				}
+				Data._rareInfo[40779] = {
+					_atk = { 4000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57960, _category = 20, _cost = 0, _descSid = 57959, _guideSid = 0, _hp = { 4000 }, _id = 40779, _isHide = 0, _joinComponent = { 8, 8, 8 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57958, _nature = 7, _option = 1026, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "blackgoku", _quality = 5, _recruitable = 1, _skillId = { 6753, 12006, 3043, 20105 }, _skin = { 0 }, _star = 8, _syncComponent = { { 0 } }
+				}
+				Data._rareInfo[40780] = {
+					_atk = { 4000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 57965, _category = 6, _cost = 0, _descSid = 57964, _guideSid = 0, _hp = { 4000 }, _id = 40780, _isHide = 0, _joinComponent = { 8, 8, 8 }, _joinResult = { 0 }, _keyword = 306, _link = { 0 }, _linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0", _maxCount = 3, _nameSid = 57963, _nature = 3, _option = 1026, _originId = 0, _packageId = { 13001, 13010, 13050 }, _picId = 0, _py = "superbroly", _quality = 4, _recruitable = 1, _skillId = { 6753, 20106, 20107, 1003, 1004, 12008, 12009, 12010 }, _skin = { 0 }, _star = 8, _syncComponent = { { 0 } }
+				}
+			end
+			if Data._skillInfo then
+				Data._skillInfo[20093] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58027, _effectVal = { 93 }, _id = 20093, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58026, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12361 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20094] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57927, _effectVal = { 94 }, _id = 20094, _isIgnoreDefend = 0, _modes = { 61 }, _nameSid = 57926, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 21168 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20095] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57925, _effectVal = { 95 }, _id = 20095, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 57924, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 21168 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20096] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57931, _effectVal = { 96 }, _id = 20096, _isIgnoreDefend = 0, _modes = { 33 }, _nameSid = 57930, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40776 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20097] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57933, _effectVal = { 97 }, _id = 20097, _isIgnoreDefend = 0, _modes = { 1, 2, 7, 8, 9, 11, 16 }, _nameSid = 57932, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40776 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20098] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57935, _effectVal = { 98 }, _id = 20098, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57934, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40776 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20099] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57937, _effectVal = { 99 }, _id = 20099, _isIgnoreDefend = 0, _modes = { 3, 16, 17 }, _nameSid = 57936, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40776 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20100] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57942, _effectVal = { 100 }, _id = 20100, _isIgnoreDefend = 0, _modes = { 16, 42 }, _nameSid = 57941, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40777 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20101] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57947, _effectVal = { 101 }, _id = 20101, _isIgnoreDefend = 0, _modes = { 16 }, _nameSid = 57946, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40778 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20102] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57952, _effectVal = { 102 }, _id = 20102, _isIgnoreDefend = 8, _modes = { 61 }, _nameSid = 57951, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 1, _refCards = { 306 }, _refSkills = { 12009 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20104] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57957, _effectVal = { 104 }, _id = 20104, _isIgnoreDefend = 8, _modes = { 61 }, _nameSid = 57956, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 1, _refCards = { 306 }, _refSkills = { 12009 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20105] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57962, _effectVal = { 105 }, _id = 20105, _isIgnoreDefend = 0, _modes = { 42 }, _nameSid = 57961, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40779 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20106] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57967, _effectVal = { 106 }, _id = 20106, _isIgnoreDefend = 0, _modes = { 11 }, _nameSid = 57966, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40780 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20107] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57969, _effectVal = { 107 }, _id = 20107, _isIgnoreDefend = 0, _modes = { 16 }, _nameSid = 57968, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 40780 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20108] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57974, _effectVal = { 108 }, _id = 20108, _isIgnoreDefend = 0, _modes = { 61 }, _nameSid = 57973, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 21171 }, _refSkills = { 12005 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20109] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57976, _effectVal = { 109 }, _id = 20109, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 57975, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 21171 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20110] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58001, _effectVal = { 110 }, _id = 20110, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58000, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12363 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20111] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58003, _effectVal = { 111 }, _id = 20111, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58002, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12363 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20112] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58008, _effectVal = { 112 }, _id = 20112, _isIgnoreDefend = 0, _modes = { 2, 9 }, _nameSid = 58007, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12364 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20113] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58010, _effectVal = { 113 }, _id = 20113, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58009, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12364 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20114] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58015, _effectVal = { 114 }, _id = 20114, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58014, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12365 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20115] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58017, _effectVal = { 115 }, _id = 20115, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58016, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12365 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20116] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58022, _effectVal = { 116 }, _id = 20116, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58021, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12366 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20121] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58074, _effectVal = { 121 }, _id = 20121, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58073, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12367 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20122] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58076, _effectVal = { 122 }, _id = 20122, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58075, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 3, _refCards = { 12367 }, _refSkills = { 4013 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20123] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58081, _effectVal = { 123 }, _id = 20123, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58080, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12368 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20124] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58083, _effectVal = { 124 }, _id = 20124, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58082, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12368 }, _refSkills = { 13033 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20125] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58085, _effectVal = { 125 }, _id = 20125, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58084, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12368 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20126] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58087, _effectVal = { 126 }, _id = 20126, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58086, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12368 }, _refSkills = { 12008 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20127] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58092, _effectVal = { 127 }, _id = 20127, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58091, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12369 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20128] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58094, _effectVal = { 128 }, _id = 20128, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58093, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12369 }, _refSkills = { 2794 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20129] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58096, _effectVal = { 129 }, _id = 20129, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58095, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12369 }, _refSkills = { 12009 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20130] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58098, _effectVal = { 130 }, _id = 20130, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58097, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12369 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20131] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58103, _effectVal = { 131 }, _id = 20131, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58102, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12370 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20132] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58105, _effectVal = { 132 }, _id = 20132, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58104, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12370 }, _refSkills = { 2794 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20133] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58107, _effectVal = { 133 }, _id = 20133, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58106, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12370 }, _refSkills = { 12010 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20134] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58109, _effectVal = { 134 }, _id = 20134, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58108, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12370 }, _refSkills = { 12005 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20135] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58114, _effectVal = { 135 }, _id = 20135, _isIgnoreDefend = 0, _modes = { 34, 31 }, _nameSid = 58113, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12371 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20136] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58116, _effectVal = { 136 }, _id = 20136, _isIgnoreDefend = 0, _modes = { 91, 32 }, _nameSid = 58115, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12371 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20137] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58121, _effectVal = { 137 }, _id = 20137, _isIgnoreDefend = 0, _modes = { 34, 31 }, _nameSid = 58120, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12372 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20138] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58123, _effectVal = { 138 }, _id = 20138, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 58122, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12372 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20139] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58125, _effectVal = { 139 }, _id = 20139, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 58124, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12372 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20140] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58130, _effectVal = { 140 }, _id = 20140, _isIgnoreDefend = 0, _modes = { 34, 31 }, _nameSid = 58129, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12373 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20141] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58132, _effectVal = { 141 }, _id = 20141, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 58131, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12373 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20142] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58134, _effectVal = { 142 }, _id = 20142, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 58133, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12373 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20143] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58139, _effectVal = { 143 }, _id = 20143, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58138, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12374 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20144] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58141, _effectVal = { 144 }, _id = 20144, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58140, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12374 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20145] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58143, _effectVal = { 145 }, _id = 20145, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58142, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12374 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20146] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58148, _effectVal = { 146 }, _id = 20146, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58147, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12375 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20147] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58150, _effectVal = { 147 }, _id = 20147, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58149, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12374 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20148] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58152, _effectVal = { 148 }, _id = 20148, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58151, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12375 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20149] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58157, _effectVal = { 149 }, _id = 20149, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58156, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12376 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20150] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58159, _effectVal = { 150 }, _id = 20150, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58158, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12376 }, _refSkills = { 12009, 12010 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20151] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58161, _effectVal = { 151 }, _id = 20151, _isIgnoreDefend = 1, _modes = { 2 }, _nameSid = 58160, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12376 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20152] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58163, _effectVal = { 152 }, _id = 20152, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58162, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12376 }, _refSkills = { 1080 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20153] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58165, _effectVal = { 153 }, _id = 20153, _isIgnoreDefend = 0, _modes = { 11 }, _nameSid = 58164, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12376 }, _refSkills = { 1056 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20154] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58167, _effectVal = { 154 }, _id = 20154, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58166, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12376 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20155] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58172, _effectVal = { 155 }, _id = 20155, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58171, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12377 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20156] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58174, _effectVal = { 156 }, _id = 20156, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58173, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12377 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20157] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58176, _effectVal = { 157 }, _id = 20157, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 58175, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12377 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20158] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58178, _effectVal = { 158 }, _id = 20158, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58177, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12377 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20159] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58183, _effectVal = { 159 }, _id = 20159, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58182, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12378 }, _refSkills = { 12006 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20160] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58185, _effectVal = { 160 }, _id = 20160, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58184, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12378 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20161] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58187, _effectVal = { 161 }, _id = 20161, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58186, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12378 }, _refSkills = { 2794 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20162] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58189, _effectVal = { 162 }, _id = 20162, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58188, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12378 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20163] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58191, _effectVal = { 163 }, _id = 20163, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58190, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12378 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20164] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58193, _effectVal = { 164 }, _id = 20164, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58192, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12378 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20165] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58195, _effectVal = { 165 }, _id = 20165, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 58194, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12378 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20166] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58200, _effectVal = { 166 }, _id = 20166, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58199, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20167] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58202, _effectVal = { 167 }, _id = 20167, _isIgnoreDefend = 1, _modes = { 2 }, _nameSid = 58201, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20168] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58204, _effectVal = { 168 }, _id = 20168, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58203, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 12008 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20169] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58206, _effectVal = { 169 }, _id = 20169, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58205, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20170] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58208, _effectVal = { 170 }, _id = 20170, _isIgnoreDefend = 1, _modes = { 31 }, _nameSid = 58207, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20171] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58210, _effectVal = { 171 }, _id = 20171, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58209, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20172] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58212, _effectVal = { 172 }, _id = 20172, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58211, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20173] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58214, _effectVal = { 173 }, _id = 20173, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58213, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20174] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58216, _effectVal = { 174 }, _id = 20174, _isIgnoreDefend = 1, _modes = { 1 }, _nameSid = 58215, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20175] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58218, _effectVal = { 175 }, _id = 20175, _isIgnoreDefend = 0, _modes = { 35 }, _nameSid = 58217, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12379 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20176] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58223, _effectVal = { 176 }, _id = 20176, _isIgnoreDefend = 1, _modes = { 34 }, _nameSid = 58222, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20177] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58225, _effectVal = { 177 }, _id = 20177, _isIgnoreDefend = 1, _modes = { 2 }, _nameSid = 58224, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20178] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58227, _effectVal = { 178 }, _id = 20178, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58226, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 12008 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20179] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58229, _effectVal = { 179 }, _id = 20179, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58228, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20180] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58231, _effectVal = { 180 }, _id = 20180, _isIgnoreDefend = 1, _modes = { 1 }, _nameSid = 58230, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20181] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58233, _effectVal = { 181 }, _id = 20181, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58232, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20182] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58235, _effectVal = { 182 }, _id = 20182, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58234, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20183] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58237, _effectVal = { 183 }, _id = 20183, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58236, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20184] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58239, _effectVal = { 184 }, _id = 20184, _isIgnoreDefend = 0, _modes = { 35 }, _nameSid = 58238, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 12380 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20185] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58244, _effectVal = { 185 }, _id = 20185, _isIgnoreDefend = 0, _modes = { 34 }, _nameSid = 58243, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20186] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58246, _effectVal = { 186 }, _id = 20186, _isIgnoreDefend = 1, _modes = { 2 }, _nameSid = 58245, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20187] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58248, _effectVal = { 187 }, _id = 20187, _isIgnoreDefend = 0, _modes = { 1 }, _nameSid = 58247, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20188] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58250, _effectVal = { 188 }, _id = 20188, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 58249, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 12008, 12009, 12010 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20189] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58252, _effectVal = { 189 }, _id = 20189, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58251, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20190] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58254, _effectVal = { 190 }, _id = 20190, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 58253, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20191] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58256, _effectVal = { 191 }, _id = 20191, _isIgnoreDefend = 1, _modes = { 1 }, _nameSid = 58255, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20192] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58258, _effectVal = { 192 }, _id = 20192, _isIgnoreDefend = 0, _modes = { 3 }, _nameSid = 58257, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[20193] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 58260, _effectVal = { 193 }, _id = 20193, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 58259, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 12381 }, _refSkills = { 12008 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+			if Data._skillInfo and not Data._skillInfo[20075] then
+				Data._skillInfo[20075] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57845, _effectVal = { 75 }, _id = 20075, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57844, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 1, _refCards = { 12358 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+			end
+if Data._rareInfo and Data._rareInfo[40747] then
 				Data._rareInfo[40747]._quality = 3
 				Data._rareInfo[40747]._keyword = 304
 				Data._rareInfo[40747]._nameSid = 57324
@@ -1004,8 +1439,8 @@ local function patchData()
 				Data._rareInfo[40753]._atk = { 4500 }
 				Data._rareInfo[40753]._hp = { 4500 }
 			end
-			if Data._skillInfo and Data._skillInfo[14827] then
-				Data._skillInfo[14827]._isIgnoreDefend = 1
+			if Data._skillInfo then
+				Data._skillInfo[14827] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57456, _effectVal = { 0 }, _id = 14827, _isIgnoreDefend = 1, _modes = { 1 }, _nameSid = 57455, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 40753 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 			end
 			if Data._skillInfo and Data._skillInfo[14828] then
 				Data._skillInfo[14828]._isIgnoreDefend = 1
@@ -1594,6 +2029,403 @@ local function patchData()
 				Data._monsterInfo[12345]._skillId = { 14814, 6045, 14815 }
 			end
 
+			
+
+
+			-- Skills 20117..20120
+			if Data._skillInfo then
+				
+			-- Skills 20194..20218
+			if Data._skillInfo then
+				Data._skillInfo[20194] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58265, _effectVal = { 194 }, _targetType = 0, _id = 20194, _isIgnoreDefend = 0,
+					_modes = { 71, 34, 11 }, _nameSid = 58264, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20195] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58267, _effectVal = { 195 }, _targetType = 0, _id = 20195, _isIgnoreDefend = 0,
+					_modes = { 32 }, _nameSid = 58266, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20196] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58269, _effectVal = { 196 }, _targetType = 0, _id = 20196, _isIgnoreDefend = 0,
+					_modes = { 91, 32 }, _nameSid = 58268, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20197] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58274, _effectVal = { 197 }, _targetType = 0, _id = 20197, _isIgnoreDefend = 0,
+					_modes = { 71, 2 }, _nameSid = 58273, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20198] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58276, _effectVal = { 198 }, _targetType = 0, _id = 20198, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58275, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20199] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58278, _effectVal = { 199 }, _targetType = 0, _id = 20199, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58277, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20200] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58280, _effectVal = { 200 }, _targetType = 0, _id = 20200, _isIgnoreDefend = 0,
+					_modes = { 31, 91 }, _nameSid = 58279, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20201] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58282, _effectVal = { 201 }, _targetType = 0, _id = 20201, _isIgnoreDefend = 0,
+					_modes = { 91, 32 }, _nameSid = 58281, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20202] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58287, _effectVal = { 202 }, _targetType = 0, _id = 20202, _isIgnoreDefend = 0,
+					_modes = { 71 }, _nameSid = 58286, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20203] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58289, _effectVal = { 203 }, _targetType = 0, _id = 20203, _isIgnoreDefend = 0,
+					_modes = { 91 }, _nameSid = 58288, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20204] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58291, _effectVal = { 204 }, _targetType = 0, _id = 20204, _isIgnoreDefend = 0,
+					_modes = { 32, 35 }, _nameSid = 58290, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20205] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58293, _effectVal = { 205 }, _targetType = 0, _id = 20205, _isIgnoreDefend = 0,
+					_modes = { 91, 32 }, _nameSid = 58292, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20206] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58298, _effectVal = { 206 }, _targetType = 0, _id = 20206, _isIgnoreDefend = 0,
+					_modes = { 71 }, _nameSid = 58297, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20207] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58300, _effectVal = { 207 }, _targetType = 0, _id = 20207, _isIgnoreDefend = 0,
+					_modes = { 32 }, _nameSid = 58299, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20208] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58302, _effectVal = { 208 }, _targetType = 0, _id = 20208, _isIgnoreDefend = 0,
+					_modes = { 32, 35 }, _nameSid = 58301, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20209] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58304, _effectVal = { 209 }, _targetType = 0, _id = 20209, _isIgnoreDefend = 0,
+					_modes = { 91, 32 }, _nameSid = 58303, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20210] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58309, _effectVal = { 210 }, _targetType = 0, _id = 20210, _isIgnoreDefend = 0,
+					_modes = { 61 }, _nameSid = 58308, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20211] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58311, _effectVal = { 211 }, _targetType = 0, _id = 20211, _isIgnoreDefend = 0,
+					_modes = { 32 }, _nameSid = 58310, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20212] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58313, _effectVal = { 212 }, _targetType = 0, _id = 20212, _isIgnoreDefend = 0,
+					_modes = { 32, 35 }, _nameSid = 58312, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20213] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58318, _effectVal = { 213 }, _targetType = 0, _id = 20213, _isIgnoreDefend = 0,
+					_modes = { 61 }, _nameSid = 58317, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20214] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58320, _effectVal = { 214 }, _targetType = 0, _id = 20214, _isIgnoreDefend = 0,
+					_modes = { 1 }, _nameSid = 58319, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20215] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58322, _effectVal = { 215 }, _targetType = 0, _id = 20215, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58321, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20216] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58324, _effectVal = { 216 }, _targetType = 0, _id = 20216, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58323, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20217] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58326, _effectVal = { 217 }, _targetType = 0, _id = 20217, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58325, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20218] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58328, _effectVal = { 218 }, _targetType = 0, _id = 20218, _isIgnoreDefend = 0,
+					_modes = { 32, 35 }, _nameSid = 58327, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20219] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58333, _effectVal = { 0 }, _targetType = 0, _id = 20219, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58332, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 0 }, _priority = 0, _quality = 1, _refCards = { 0 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 3000 }
+				}
+				Data._skillInfo[20220] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58335, _effectVal = { 0 }, _targetType = 0, _id = 20220, _isIgnoreDefend = 0,
+					_modes = { 0 }, _nameSid = 58334, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 0 }, _priority = 0, _quality = 1, _refCards = { 0 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 20000 }
+				}
+				Data._skillInfo[20221] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58337, _effectVal = { 0 }, _targetType = 0, _id = 20221, _isIgnoreDefend = 0,
+					_modes = { 0 }, _nameSid = 58336, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 0 }, _priority = 0, _quality = 1, _refCards = { 0 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20222] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58342, _effectVal = { 0 }, _targetType = 0, _id = 20222, _isIgnoreDefend = 0,
+					_modes = { 34 }, _nameSid = 58341, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20223] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58344, _effectVal = { 0 }, _targetType = 0, _id = 20223, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58343, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20224] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58348, _effectVal = { 0 }, _targetType = 0, _id = 20224, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58347, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20225] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58350, _effectVal = { 0 }, _targetType = 0, _id = 20225, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58349, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20226] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58354, _effectVal = { 0 }, _targetType = 0, _id = 20226, _isIgnoreDefend = 0,
+					_modes = { 61 }, _nameSid = 58353, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 21174 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20227] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58359, _effectVal = { 0 }, _targetType = 0, _id = 20227, _isIgnoreDefend = 0,
+					_modes = { 13 }, _nameSid = 58358, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12383 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20228] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58361, _effectVal = { 0 }, _targetType = 0, _id = 20228, _isIgnoreDefend = 0,
+					_modes = { 2 }, _nameSid = 58360, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12383 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20229] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58365, _effectVal = { 0 }, _targetType = 0, _id = 20229, _isIgnoreDefend = 0,
+					_modes = { 61 }, _nameSid = 58364, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 21175 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20230] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58370, _effectVal = { 0 }, _targetType = 0, _id = 20230, _isIgnoreDefend = 0,
+					_modes = { 34 }, _nameSid = 58369, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12384 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20231] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58372, _effectVal = { 0 }, _targetType = 0, _id = 20231, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58371, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12384 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20232] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 3, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58377, _effectVal = { 0 }, _targetType = 0, _id = 20232, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58376, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12385 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20233] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58379, _effectVal = { 0 }, _targetType = 0, _id = 20233, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58378, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12385 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20234] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58381, _effectVal = { 0 }, _targetType = 0, _id = 20234, _isIgnoreDefend = 0,
+					_modes = { 2 }, _nameSid = 58380, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12385 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20235] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58386, _effectVal = { 0 }, _targetType = 0, _id = 20235, _isIgnoreDefend = 0,
+					_modes = { 34 }, _nameSid = 58385, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12386 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20236] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58388, _effectVal = { 0 }, _targetType = 0, _id = 20236, _isIgnoreDefend = 0,
+					_modes = { 2 }, _nameSid = 58387, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12386 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20237] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58393, _effectVal = { 0 }, _targetType = 0, _id = 20237, _isIgnoreDefend = 0,
+					_modes = { 41, 91 }, _nameSid = 58392, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12387 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20238] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58398, _effectVal = { 0 }, _targetType = 0, _id = 20238, _isIgnoreDefend = 0,
+					_modes = { 32 }, _nameSid = 58397, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12388 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20239] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58403, _effectVal = { 0 }, _targetType = 0, _id = 20239, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58402, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 40782 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20240] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58405, _effectVal = { 0 }, _targetType = 0, _id = 20240, _isIgnoreDefend = 0,
+					_modes = { 32 }, _nameSid = 58404, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 40782 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20250] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58477, _effectVal = { 0 }, _targetType = 0, _id = 20250, _isIgnoreDefend = 0,
+					_modes = { 34 }, _nameSid = 58476, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 12393 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20251] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58482, _effectVal = { 0 }, _targetType = 0, _id = 20251, _isIgnoreDefend = 0,
+					_modes = { 1 }, _nameSid = 58481, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 5, _refCards = { 303 },
+					_refSkills = { 3043, 12002, 12003, 12004 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20252] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58484, _effectVal = { 0 }, _targetType = 0, _id = 20252, _isIgnoreDefend = 0,
+					_modes = { 31 }, _nameSid = 58483, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 5, _refCards = { 12394 },
+					_refSkills = { 0 }, _removeMode = { 0 }, _val = { 0 }
+				}
+				Data._skillInfo[20253] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58486, _effectVal = { 0 }, _targetType = 0, _id = 20253, _isIgnoreDefend = 1,
+					_modes = { 136 }, _nameSid = 58485, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 0 }, _priority = 1, _quality = 5, _refCards = { 0 },
+					_refSkills = { 11002, 12002, 12008 }, _removeMode = { 0 }, _val = { 0 }
+				}
+			end
+
+				Data._skillInfo[20117] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58054, _effectVal = { 0 }, _targetType = 0, _id = 20117, _isIgnoreDefend = 0,
+					_modes = { 71 }, _nameSid = 58053, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20118] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58059, _effectVal = { 0 }, _targetType = 0, _id = 20118, _isIgnoreDefend = 0,
+					_modes = { 71, 34 }, _nameSid = 58058, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20119] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58064, _effectVal = { 0 }, _targetType = 0, _id = 20119, _isIgnoreDefend = 0,
+					_modes = { 71, 34 }, _nameSid = 58063, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+				Data._skillInfo[20120] = {
+					_against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 },
+					_descSid = 58069, _effectVal = { 0 }, _targetType = 0, _id = 20120, _isIgnoreDefend = 0,
+					_modes = { 71 }, _nameSid = 58068, _needExtraGem = 0, _needNoGem = 0,
+					_option = { 1 }, _priority = 0, _quality = 4, _refCards = { 0 },
+					_refSkills = { 0 }, _sourceStatus = 0, _target = 1, _val = { 0 }
+				}
+			end
+
 			-- Cua dia nguc (30597)
 			if Data._trapInfo and not Data._trapInfo[30597] then
 				Data._trapInfo[30597] = {
@@ -1638,7 +2470,7 @@ local function patchData()
 				Data._skillInfo[14810] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57391, _effectVal = { 0 }, _id = 14810, _isIgnoreDefend = 0, _modes = { 23, 24 }, _nameSid = 57390, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
 				Data._skillInfo[14811] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57393, _effectVal = { 0 }, _id = 14811, _isIgnoreDefend = 0, _modes = { 32 }, _nameSid = 57392, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14812] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57397, _effectVal = { 0 }, _id = 14812, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57396, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 5, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 1 } }
-				Data._skillInfo[14813] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57399, _effectVal = { 0 }, _id = 14813, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 57398, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 2002 }, _removeMode = { 0 }, _targetType = 0, _val = { 500 } }
+				Data._skillInfo[14813] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57399, _effectVal = { 0 }, _id = 14813, _isIgnoreDefend = 0, _modes = { 1, 2 }, _nameSid = 57398, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 2002 }, _removeMode = { 0 }, _targetType = 0, _val = { 500 } }
 				Data._skillInfo[14814] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57403, _effectVal = { 0 }, _id = 14814, _isIgnoreDefend = 0, _modes = { 34, 101, 104 }, _nameSid = 57402, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14815] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57405, _effectVal = { 0 }, _id = 14815, _isIgnoreDefend = 0, _modes = { 2 }, _nameSid = 57404, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 304 } }
 				Data._skillInfo[14816] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57410, _effectVal = { 0 }, _id = 14816, _isIgnoreDefend = 1, _modes = { 132, 134 }, _nameSid = 57409, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 1, _quality = 4, _refCards = { 0 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
@@ -1654,7 +2486,7 @@ local function patchData()
 				Data._skillInfo[14826] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57451, _effectVal = { 0 }, _id = 14826, _isIgnoreDefend = 0, _modes = { 91 }, _nameSid = 57450, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 4, _refCards = { 304 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 300 } }
 				Data._skillInfo[14830] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57463, _effectVal = { 0 }, _id = 14830, _isIgnoreDefend = 1, _modes = { 91 }, _nameSid = 57462, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 40754 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
 				Data._skillInfo[14831] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57465, _effectVal = { 0 }, _id = 14831, _isIgnoreDefend = 0, _modes = { 31 }, _nameSid = 57464, _needExtraGem = 0, _needNoGem = 0, _option = { 1 }, _priority = 0, _quality = 5, _refCards = { 40754 }, _refSkills = { 0 }, _removeMode = { 0 }, _targetType = 1, _val = { 0 } }
-				Data._skillInfo[14832] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57467, _effectVal = { 0 }, _id = 14832, _isIgnoreDefend = 0, _modes = { 22 }, _nameSid = 57466, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 40754 }, _refSkills = { 12007 }, _removeMode = { 0 }, _targetType = 0, _val = { 0 } }
+				Data._skillInfo[14832] = { _against = { 0 }, _avoidP2B = 0, _count = 1, _decrease = { 0, 0, 0, 0, 0 }, _descSid = 57467, _effectVal = { 0 }, _id = 14832, _isIgnoreDefend = 0, _modes = { 3 }, _nameSid = 57466, _needExtraGem = 0, _needNoGem = 0, _option = { 0 }, _priority = 0, _quality = 5, _refCards = { 40754 }, _refSkills = { 12007 }, _removeMode = { 42, 44 }, _targetType = 0, _val = { 0 } }
 			end
 
 			if Data._skillInfo and not Data._skillInfo[14793] then
@@ -1688,6 +2520,188 @@ local function patchData()
 			end
 
 
+		end
+
+		-- Ensure Custom Traps & Spells are always populated
+		if Data._trapInfo then
+			Data._trapInfo[30598] = {
+				_available = 1, _briefNameSid = 58051, _descSid = 0, _guideSid = 0,
+				_id = 30598, _isHide = 0, _isSummon = 0, _keyword = 0, _maxCount = 3,
+				_nameSid = 58050, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "dbarrier", _quality = 4, _recruitable = 1,
+				_skillId = { 20117 }, _targetType = 0, _type = 12
+			}
+			Data._trapInfo[30599] = {
+				_available = 1, _briefNameSid = 58056, _descSid = 0, _guideSid = 0,
+				_id = 30599, _isHide = 0, _isSummon = 0, _keyword = 0, _maxCount = 3,
+				_nameSid = 58055, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "dimpulse", _quality = 4, _recruitable = 1,
+				_skillId = { 20118 }, _targetType = 0, _type = 12
+			}
+			Data._trapInfo[30600] = {
+				_available = 1, _briefNameSid = 58061, _descSid = 0, _guideSid = 0,
+				_id = 30600, _isHide = 0, _isSummon = 0, _keyword = 0, _maxCount = 3,
+				_nameSid = 58060, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "dspark", _quality = 4, _recruitable = 1,
+				_skillId = { 20119 }, _targetType = 0, _type = 12
+			}
+			Data._trapInfo[30601] = {
+				_available = 1, _briefNameSid = 58066, _descSid = 0, _guideSid = 0,
+				_id = 30601, _isHide = 0, _isSummon = 0, _keyword = 0, _maxCount = 3,
+				_nameSid = 58065, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "trapholic", _quality = 4, _recruitable = 1,
+				_skillId = { 20120 }, _targetType = 0, _type = 12
+			}
+			Data._trapInfo[30602] = {
+				_available = 1, _briefNameSid = 58263, _descSid = 0, _guideSid = 0,
+				_id = 30602, _isHide = 0, _isSummon = 0, _keyword = 308, _maxCount = 3,
+				_nameSid = 58261, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "farewelcomelabrynth", _quality = 4, _recruitable = 1,
+				_skillId = { 20194, 20195, 20196 }, _targetType = 0, _type = 12
+			}
+			Data._trapInfo[30603] = {
+				_available = 1, _briefNameSid = 58272, _descSid = 0, _guideSid = 0,
+				_id = 30603, _isHide = 0, _isSummon = 0, _keyword = 308, _maxCount = 3,
+				_nameSid = 58270, _option = 2, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "labrynthbarrage", _quality = 4, _recruitable = 1,
+				_skillId = { 20197, 20198, 20199, 20200, 20201 }, _targetType = 0, _type = 13
+			}
+			Data._trapInfo[30604] = {
+				_available = 1, _briefNameSid = 58285, _descSid = 0, _guideSid = 0,
+				_id = 30604, _isHide = 0, _isSummon = 0, _keyword = 308, _maxCount = 3,
+				_nameSid = 58283, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "welcomelabrynth", _quality = 4, _recruitable = 1,
+				_skillId = { 20202, 20203, 20204, 20205 }, _targetType = 0, _type = 12
+			}
+			Data._trapInfo[30605] = {
+				_available = 1, _briefNameSid = 58296, _descSid = 0, _guideSid = 0,
+				_id = 30605, _isHide = 0, _isSummon = 0, _keyword = 308, _maxCount = 3,
+				_nameSid = 58294, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "bigwelcomelabrynth", _quality = 4, _recruitable = 1,
+				_skillId = { 20206, 20207, 20208, 20209 }, _targetType = 0, _type = 12
+			}
+			Data._trapInfo[30606] = {
+				_available = 1, _briefNameSid = 58346, _descSid = 0, _guideSid = 0,
+				_id = 30606, _isHide = 0, _isSummon = 0, _keyword = 303, _maxCount = 3,
+				_nameSid = 58345, _option = 2, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "vethanchien", _quality = 4, _recruitable = 1,
+				_skillId = { 20224, 20225 }, _targetType = 0, _type = 13
+			}
+		end
+		if Data._magicInfo then
+			Data._magicInfo[21171] = {
+				_available = 1, _briefNameSid = 57971, _descSid = 0, _guideSid = 0,
+				_id = 21171, _isHide = 0, _isSummon = 0, _keyword = 306, _maxCount = 3,
+				_nameSid = 57970, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "supershenron", _quality = 4, _recruitable = 1,
+				_skillId = { 20108, 20109 }, _targetType = 0, _type = 11
+			}
+			Data._magicInfo[21172] = {
+				_available = 1, _briefNameSid = 58307, _descSid = 0, _guideSid = 0,
+				_id = 21172, _isHide = 0, _isSummon = 0, _keyword = 308, _maxCount = 3,
+				_nameSid = 58305, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "labrynthsetup", _quality = 4, _recruitable = 1,
+				_skillId = { 20210, 20211, 20212 }, _targetType = 0, _type = 11
+			}
+			Data._magicInfo[21173] = {
+				_available = 1, _briefNameSid = 58316, _descSid = 0, _guideSid = 0,
+				_id = 21173, _isHide = 0, _isSummon = 0, _keyword = 308, _maxCount = 3,
+				_nameSid = 58314, _option = 4, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "labrynthlabyrinth", _quality = 4, _recruitable = 1,
+				_skillId = { 20213, 20214, 20215, 20216, 20217, 20218 }, _targetType = 0, _type = 13
+			}
+			Data._magicInfo[21174] = {
+				_available = 1, _briefNameSid = 58351, _descSid = 58352, _guideSid = 0,
+				_id = 21174, _isHide = 0, _isSummon = 0, _keyword = 303, _maxCount = 3,
+				_nameSid = 58351, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "napquanhuy", _quality = 4, _recruitable = 1,
+				_skillId = { 20226 }, _targetType = 0, _type = 11
+			}
+			Data._magicInfo[21175] = {
+				_available = 1, _briefNameSid = 58362, _descSid = 58363, _guideSid = 0,
+				_id = 21175, _isHide = 0, _isSummon = 0, _keyword = 303, _maxCount = 3,
+				_nameSid = 58362, _option = 1, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "huhucacnguoibatnatta", _quality = 4, _recruitable = 1,
+				_skillId = { 20229 }, _targetType = 0, _type = 11
+			}
+		end
+
+		if Data._rareInfo then
+			Data._rareInfo[40781] = {
+				_atk = { 3000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58331, _category = 6,
+				_cost = 0, _descSid = 58330, _guideSid = 0, _hp = { 1000 }, _id = 40781, _isHide = 0,
+				_joinComponent = { 8, 8, 8, 8 }, _joinResult = { 0 }, _keyword = 303, _link = { 0 },
+				_linkAllCandidates = "0.0", _linkCandidate = "0.0", _linkCount = "0.0", _linkSelectedCandidates = "0.0",
+				_maxCount = 3, _nameSid = 58329, _nature = 1, _option = 1026, _originId = 0, _packageId = { 0 },
+				_picId = 0, _py = "hayate", _quality = 5, _recruitable = 1,
+				_skillId = { 20219, 20220, 2797, 12006, 20221 }, _skin = { 0 }, _star = 8, _syncComponent = { { 0 } }
+			}
+		end
+
+		if Data._monsterInfo then
+			Data._monsterInfo[12382] = {
+				_atk = { 2000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58340, _category = 6,
+				_cost = 0, _descSid = 58339, _guideSid = 0, _hp = { 500 }, _id = 12382, _isHide = 0,
+				_joinResult = { 0 }, _keyword = 303, _maxCount = 3, _nameSid = 58338, _nature = 1, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "violet", _quality = 4, _recruitable = 1,
+				_skillId = { 20222, 20223 }, _skin = { 0 }, _star = 5
+			}
+			Data._monsterInfo[12383] = {
+				_atk = { 1800 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58357, _category = 6,
+				_cost = 0, _descSid = 58356, _guideSid = 0, _hp = { 200 }, _id = 12383, _isHide = 0,
+				_joinResult = { 0 }, _keyword = 303, _maxCount = 3, _nameSid = 58355, _nature = 1, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "elsumafia", _quality = 4, _recruitable = 1,
+				_skillId = { 20227, 20228 }, _skin = { 0 }, _star = 4
+			}
+			Data._monsterInfo[12384] = {
+				_atk = { 3000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58368, _category = 6,
+				_cost = 0, _descSid = 58367, _guideSid = 0, _hp = { 2500 }, _id = 12384, _isHide = 0,
+				_joinResult = { 0 }, _keyword = 303, _maxCount = 3, _nameSid = 58366, _nature = 1, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "airithunguyen", _quality = 4, _recruitable = 1,
+				_skillId = { 20230, 20231, 1010, 1008, 2797 }, _skin = { 0 }, _star = 8
+			}
+			Data._monsterInfo[12385] = {
+				_atk = { 1700 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58375, _category = 6,
+				_cost = 0, _descSid = 58374, _guideSid = 0, _hp = { 100 }, _id = 12385, _isHide = 0,
+				_joinResult = { 0 }, _keyword = 303, _maxCount = 3, _nameSid = 58373, _nature = 1, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "telannas", _quality = 4, _recruitable = 1,
+				_skillId = { 20232, 20233, 20234 }, _skin = { 0 }, _star = 4
+			}
+			Data._monsterInfo[12386] = {
+				_atk = { 0 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58384, _category = 1,
+				_cost = 0, _descSid = 58383, _guideSid = 0, _hp = { 1800 }, _id = 12386, _isHide = 0,
+				_joinResult = { 0 }, _keyword = 303, _maxCount = 3, _nameSid = 58382, _nature = 1, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "helen", _quality = 4, _recruitable = 1,
+				_skillId = { 20235, 20236 }, _skin = { 0 }, _star = 2
+			}
+			Data._monsterInfo[12387] = {
+				_atk = { 700 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58391, _category = 8,
+				_cost = 0, _descSid = 58390, _guideSid = 0, _hp = { 1000 }, _id = 12387, _isHide = 0,
+				_joinResult = { 40782 }, _keyword = 303, _maxCount = 3, _nameSid = 58389, _nature = 5, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "dolia", _quality = 4, _recruitable = 1,
+				_skillId = { 20237 }, _skin = { 0 }, _star = 3
+			}
+			Data._monsterInfo[12388] = {
+				_atk = { 2200 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58396, _category = 1,
+				_cost = 0, _descSid = 58395, _guideSid = 0, _hp = { 1800 }, _id = 12388, _isHide = 0,
+				_joinResult = { 40782 }, _keyword = 303, _maxCount = 3, _nameSid = 58394, _nature = 1, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "heino", _quality = 4, _recruitable = 1,
+				_skillId = { 20238 }, _skin = { 0 }, _star = 6
+			}
+			Data._monsterInfo[12393] = {
+				_atk = { 2500 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58475, _category = 1,
+				_cost = 0, _descSid = 58474, _guideSid = 0, _hp = { 1200 }, _id = 12393, _isHide = 0,
+				_joinResult = { 0 }, _keyword = 303, _maxCount = 3, _nameSid = 58473, _nature = 2, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "lauriel_tnvt", _quality = 4, _recruitable = 1,
+				_skillId = { 20250, 2797, 14675 }, _skin = { 0 }, _star = 7
+			}
+			Data._monsterInfo[12394] = {
+				_atk = { 4000 }, _attackEffect = 2, _available = 1, _bgId = 0, _briefNameSid = 58480, _category = 1,
+				_cost = 0, _descSid = 58479, _guideSid = 0, _hp = { 4000 }, _id = 12394, _isHide = 0,
+				_joinResult = { 0 }, _keyword = 303, _maxCount = 3, _nameSid = 58478, _nature = 1, _option = 2,
+				_originId = 0, _packageId = { 0 }, _picId = 0, _py = "lauriel_pmph", _quality = 5, _recruitable = 1,
+				_skillId = { 3131, 20251, 13779, 20252, 20253 }, _skin = { 0 }, _star = 10
+			}
 		end
 
 		current = nil
@@ -2404,8 +3418,12 @@ function patchClientData()
 
 					local repRes = (rd.result == 1 and Data.BattleResult.win) or (rd.result == 2 and Data.BattleResult.lose) or Data.BattleResult.draw
 
-					local isPlayerAttacker = (rd.is_attacker ~= nil) and (rd.is_attacker == true or rd.is_attacker == 1) or true
-					if rd.is_attacker == nil then
+					local isPlayerAttacker = true
+					if rd.is_attacker ~= nil then
+						isPlayerAttacker = (rd.is_attacker == true or rd.is_attacker == 1)
+					elseif rd.user_id and rd.attacker_id then
+						isPlayerAttacker = (tostring(rd.user_id) == tostring(rd.attacker_id))
+					else
 					local pCard = nil
 					for i = 1, #pData._usedCards do
 						local v = pData._usedCards[i]
@@ -4157,115 +5175,115 @@ function patchClientData()
 		else
 			pTroop = (P and P._playerCard and P._playerCard._troops and P._playerCard._troops[troopIndex or P._curTroopIndex or 1]) or {}
 		end
-		local playerCards = {}
-		local playerLevels = {}
-		local playerSkins = {}
-		local rawCardIds = {}
-		local totalPlayerCards = 0
-		local pList = (type(pTroop) == "table" and (pTroop._cards or pTroop)) or {}
-		for _, c in ipairs(pList) do
-			local cid = (type(c) == "table" and (c._infoId or c.info_id)) or c
-			local num = (type(c) == "table" and (c._num or c.num)) or 1
-			local lvl = (type(c) == "table" and (c._level or c.level)) or 1
-			if cid and tonumber(cid) then
-				cid = tonumber(cid)
-				num = math.max(1, tonumber(num) or 1)
-				lvl = tonumber(lvl) or 1
-				table.insert(playerCards, { info_id = cid, num = num })
-				table.insert(playerLevels, { info_id = cid, level = lvl })
-				table.insert(playerSkins, buildSkinEntryForCard(cid))
-				for _ = 1, num do
-					table.insert(rawCardIds, cid)
-					totalPlayerCards = totalPlayerCards + 1
-				end
-			end
-		end
+		local fallbackCids = { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003 }
+		local defaultExtra = { 40001, 40002, 40008, 40022, 40025, 40039, 40159, 40207, 40259, 40386, 40399, 40534, 40588, 40605, 40672 }
 
-		local fallbackCids = (Data._troopInfo and Data._troopInfo[1] and Data._troopInfo[1]._infoId) or { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003 }
-		while totalPlayerCards < 40 do
-			for _, cid in ipairs(fallbackCids) do
-				if totalPlayerCards >= 40 then break end
-				table.insert(playerCards, { info_id = cid, num = 1 })
-				table.insert(playerLevels, { info_id = cid, level = 1 })
-				table.insert(playerSkins, buildSkinEntryForCard(cid))
-				table.insert(rawCardIds, cid)
-				totalPlayerCards = totalPlayerCards + 1
-			end
-		end
-
-		if battleType == Battle_pb.PB_BATTLE_SURVIVAL or battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX then
-			local myChar = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX and P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._characterId) or (battleType == Battle_pb.PB_BATTLE_SURVIVAL and P and P._playerFindSurvival and P._playerFindSurvival._characterId) or 2
-			local charCards = (myChar and CHAR_CARDS_MAP[tonumber(myChar)]) or (myChar and CHAR_CARDS_MAP[tostring(myChar)])
-			if charCards then
-				for _, cid in ipairs(charCards) do
-					cid = tonumber(cid)
-					if cid and cid >= 40000 then
-						table.insert(playerCards, { info_id = cid, num = 1 })
-						table.insert(playerLevels, { info_id = cid, level = 1 })
-						table.insert(playerSkins, buildSkinEntryForCard(cid))
+		local function extractOrderedCardList(src)
+			local out = {}
+			if type(src) ~= "table" then return out end
+			if #src > 0 then
+				for _, c in ipairs(src) do
+					local cid = (type(c) == "table" and (c._infoId or c.info_id)) or c
+					local num = (type(c) == "table" and (c._num or c.num)) or 1
+					if cid and tonumber(cid) then
+						cid = tonumber(cid)
+						num = math.max(1, tonumber(num) or 1)
+						for _ = 1, num do
+							table.insert(out, cid)
+						end
 					end
 				end
-			end
-		end
-
-		local grade = (P and P._playerFindClash and P._playerFindClash._grade) or 1
-		local sceneType = 10 + math.max(1, math.min(6, tonumber(grade) or 1))
-
-		local function startWithOppo(oppoName, oppoLevel, oppoAvatar, oppoCardIds, seed, isRealHuman, matchId, isAttacker, isOppoOnline, oppoCrown, oppoTrophy)
-			local oppoCards = {}
-			local oppoLevels = {}
-			local oppoSkins = {}
-			local oppoCount = 0
-			local rawCardIds = oppoCardIds or {}
-			local function addOneOppoCid(cid)
-				if cid and tonumber(cid) then
-					cid = tonumber(cid)
-					table.insert(oppoCards, { info_id = cid, num = 1 })
-					table.insert(oppoLevels, { info_id = cid, level = 1 })
-					table.insert(oppoSkins, buildOppoSkinEntryForCard(cid))
-					oppoCount = oppoCount + 1
-				end
-			end
-			if type(rawCardIds) == "table" then
+			else
 				local numKeys = {}
-				for k in pairs(rawCardIds) do
+				for k in pairs(src) do
 					if tonumber(k) then table.insert(numKeys, tonumber(k)) end
 				end
-				if #numKeys > 0 then
-					table.sort(numKeys)
-					for _, k in ipairs(numKeys) do
-						addOneOppoCid(rawCardIds[k] or rawCardIds[tostring(k)])
-					end
-				else
-					for _, v in pairs(rawCardIds) do
-						addOneOppoCid(v)
-					end
-				end
-			end
-			while oppoCount < 40 do
-				for _, cid in ipairs(fallbackCids) do
-					if oppoCount >= 40 then break end
-					table.insert(oppoCards, { info_id = cid, num = 1 })
-					table.insert(oppoLevels, { info_id = cid, level = 1 })
-					table.insert(oppoSkins, buildOppoSkinEntryForCard(cid))
-					oppoCount = oppoCount + 1
-				end
-			end
-
-			if battleType == Battle_pb.PB_BATTLE_SURVIVAL or battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX then
-				local oppoCharId = math.floor((oppoAvatar or 201) / 100)
-				local oCharCards = (oppoCharId and CHAR_CARDS_MAP[tonumber(oppoCharId)]) or (oppoCharId and CHAR_CARDS_MAP[tostring(oppoCharId)])
-				if oCharCards then
-					for _, cid in ipairs(oCharCards) do
+				table.sort(numKeys)
+				for _, k in ipairs(numKeys) do
+					local c = src[k] or src[tostring(k)]
+					local cid = (type(c) == "table" and (c._infoId or c.info_id)) or c
+					local num = (type(c) == "table" and (c._num or c.num)) or 1
+					if cid and tonumber(cid) then
 						cid = tonumber(cid)
-						if cid and cid >= 40000 then
-							table.insert(oppoCards, { info_id = cid, num = 1 })
-							table.insert(oppoLevels, { info_id = cid, level = 1 })
-							table.insert(oppoSkins, buildOppoSkinEntryForCard(cid))
+						num = math.max(1, tonumber(num) or 1)
+						for _ = 1, num do
+							table.insert(out, cid)
 						end
 					end
 				end
 			end
+			return out
+		end
+
+		local function buildCanonicalPvpDeck(rawMain, rawExtra, isOppo, charCards)
+			local mainIds = {}
+			local extraIds = {}
+			for _, cid in ipairs(extractOrderedCardList(rawMain)) do
+				if cid < 40000 then
+					table.insert(mainIds, cid)
+				else
+					table.insert(extraIds, cid)
+				end
+			end
+			for _, cid in ipairs(extractOrderedCardList(rawExtra)) do
+				if cid >= 40000 then
+					table.insert(extraIds, cid)
+				end
+			end
+			while #mainIds < 40 do
+				for _, cid in ipairs(fallbackCids) do
+					if #mainIds >= 40 then break end
+					table.insert(mainIds, cid)
+				end
+			end
+			if #extraIds == 0 then
+				for _, cid in ipairs(defaultExtra) do
+					table.insert(extraIds, cid)
+				end
+			end
+			if type(charCards) == "table" then
+				for _, cid in ipairs(extractOrderedCardList(charCards)) do
+					if cid >= 40000 then
+						table.insert(extraIds, cid)
+					end
+				end
+			end
+			local cards, levels, skins = {}, {}, {}
+			local skinBuilder = isOppo and buildOppoSkinEntryForCard or buildSkinEntryForCard
+			for _, cid in ipairs(mainIds) do
+				table.insert(cards, { info_id = cid, num = 1 })
+				table.insert(levels, { info_id = cid, level = 1 })
+				table.insert(skins, skinBuilder(cid))
+			end
+			for _, cid in ipairs(extraIds) do
+				table.insert(cards, { info_id = cid, num = 1 })
+				table.insert(levels, { info_id = cid, level = 1 })
+				table.insert(skins, skinBuilder(cid))
+			end
+			return cards, levels, skins, mainIds, extraIds
+		end
+
+		local pList = (type(pTroop) == "table" and (pTroop._cards or pTroop)) or {}
+		local mySurvivalCharCards = nil
+		if battleType == Battle_pb.PB_BATTLE_SURVIVAL or battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX then
+			local myChar = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX and P and P._playerFindSurvivalEx and P._playerFindSurvivalEx._characterId) or (battleType == Battle_pb.PB_BATTLE_SURVIVAL and P and P._playerFindSurvival and P._playerFindSurvival._characterId) or 2
+			mySurvivalCharCards = (myChar and CHAR_CARDS_MAP[tonumber(myChar)]) or (myChar and CHAR_CARDS_MAP[tostring(myChar)])
+		end
+		local playerCards, playerLevels, playerSkins, rawCardIds, rawExtraCardIds = buildCanonicalPvpDeck(pList, nil, false, mySurvivalCharCards)
+
+		local grade = (P and P._playerFindClash and P._playerFindClash._grade) or 1
+		local sceneType = 10 + math.max(1, math.min(6, tonumber(grade) or 1))
+
+		local function startWithOppo(oppoName, oppoLevel, oppoAvatar, oppoCardIds, seed, isRealHuman, matchId, isAttacker, isOppoOnline, oppoCrown, oppoTrophy, oppoExtraCardIds, myServerCards, myServerExtraCards)
+			if myServerCards or myServerExtraCards then
+				playerCards, playerLevels, playerSkins = buildCanonicalPvpDeck(myServerCards or rawCardIds, myServerExtraCards or rawExtraCardIds, false, mySurvivalCharCards)
+			end
+			local oSurvivalCharCards = nil
+			if battleType == Battle_pb.PB_BATTLE_SURVIVAL or battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX then
+				local oppoCharId = math.floor((oppoAvatar or 201) / 100)
+				oSurvivalCharCards = (oppoCharId and CHAR_CARDS_MAP[tonumber(oppoCharId)]) or (oppoCharId and CHAR_CARDS_MAP[tostring(oppoCharId)])
+			end
+			local oppoCards, oppoLevels, oppoSkins = buildCanonicalPvpDeck(oppoCardIds, oppoExtraCardIds, true, oSurvivalCharCards)
 
 			local isBotMatch = (not isRealHuman) or (not isOppoOnline) or (matchId == nil) or (string.find(tostring(matchId), "bot_") ~= nil)
 			local isOnlinePvp = (isRealHuman == true and isOppoOnline == true and matchId ~= nil and not isBotMatch)
@@ -4412,15 +5430,24 @@ function patchClientData()
 							if bUi and type(bUi.oppoTryUseCard) == "function" then
 								handled = bUi:oppoTryUseCard()
 							end
-							if card_val == BattleData.UseCardId.round and not handled and bUi then
-								lc.performWithDelay(bUi, function()
-									if bUi and not bUi._isBattleFinished and bUi._opponent then
-										bUi._isWaitting = true
-										if not bUi:oppoTryUseCard() and type(bUi.forceOppoTurnEnd) == "function" then
-											bUi:forceOppoTurnEnd()
+							if not handled and bUi and not bUi._isBattleFinished and bUi._opponent then
+								if card_val == BattleData.UseCardId.round then
+									lc.performWithDelay(bUi, function()
+										if bUi and not bUi._isBattleFinished and bUi._opponent then
+											bUi._isWaitting = true
+											if not bUi:oppoTryUseCard() and type(bUi.forceOppoTurnEnd) == "function" then
+												bUi:forceOppoTurnEnd()
+											end
 										end
-									end
-								end, 0.3)
+									end, 0.3)
+								elseif not bUi._isAddingBoardCard then
+									lc.performWithDelay(bUi, function()
+										if bUi and not bUi._isBattleFinished and bUi._opponent and not bUi._isAddingBoardCard then
+											bUi._isWaitting = true
+											bUi:oppoTryUseCard()
+										end
+									end, 0.1)
+								end
 							end
 						end
 					end, function()
@@ -4446,16 +5473,22 @@ function patchClientData()
 							local isOppoSurrender = bUi._opponent and (bUi._opponent._isSurrender or bUi._opponent._isRetreat)
 							local isExodia = (bUi._player and bUi._player._winBy3190) or (bUi._opponent and bUi._opponent._winBy3190)
 							local isGodWin = (bUi._player and bUi._player._winBy3798) or (bUi._opponent and bUi._opponent._winBy3798)
-							local isDeckOut = (bUi._player and bUi._player._macroStatus == BattleData.Status.round_begin and bUi._player:getIsPileEmpty()) or (bUi._opponent and bUi._opponent._macroStatus == BattleData.Status.round_begin and bUi._opponent:getIsPileEmpty())
+							local isHayateWin = (bUi._player and bUi._player._winByHayate) or (bUi._opponent and bUi._opponent._winByHayate)
+							local isDeckOut = (bUi._player and (bUi._player._deckOut or bUi._player:getIsPileEmpty())) or (bUi._opponent and (bUi._opponent._deckOut or bUi._opponent:getIsPileEmpty()))
 
 							local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
 							if isOppoSurrender or (oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0)) then
 								myRes = Data.BattleResult.win
 							elseif isLocalSurrender or (playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0)) then
 								myRes = Data.BattleResult.lose
-							elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isDeckOut) then
+							elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isHayateWin or isDeckOut) then
 								print("[PVP END] Rejected premature peer loss: Player HP is " .. tostring(playerHp) .. ", Oppo HP is " .. tostring(oppoHp))
 								return
+							end
+							if isHayateWin and not bUi._hayateVideoPlayed then
+								bUi._hayateVideoPlayed = true
+								local api = jsbridge and jsbridge.object("jdzcApi")
+								if api and api.playSpecialVideo then api:playSpecialVideo("res/new/thumb/liqi/haya.mp4") end
 							end
 							bUi._forceResult = myRes
 							bUi:sendBattleEnd(false, myRes)
@@ -4504,7 +5537,7 @@ function patchClientData()
 				level = (P and P._level) or 50,
 				avatar = myAvatar,
 				cards = rawCardIds,
-				extra_cards = {},
+				extra_cards = rawExtraCardIds,
 				character_id = myChar,
 				gold_cup = tonumber((ClientData._account and ClientData._account.gold_cup) or 0) or 0,
 				silver_cup = tonumber((ClientData._account and ClientData._account.silver_cup) or 0) or 0,
@@ -4533,7 +5566,7 @@ function patchClientData()
 
 						if res.status == "matched" and res.oppo then
 							local oppo = res.oppo
-							startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, nil, oppo.trophy)
+							startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, nil, oppo.trophy, oppo.extra_cards, res.my_cards, res.my_extra_cards)
 							return
 						end
 
@@ -4565,7 +5598,7 @@ function patchClientData()
 										isFinished = true
 										if pollEntry then lc.Scheduler:unscheduleScriptEntry(pollEntry) end
 										local oppo = pRes.oppo
-										startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, pRes.seed, pRes.is_real_player, pRes.match_id, pRes.is_attacker, pRes.oppo_online, nil, oppo.trophy)
+										startWithOppo(oppo.name, oppo.level, oppo.avatar, oppo.cards, pRes.seed, pRes.is_real_player, pRes.match_id, pRes.is_attacker, pRes.oppo_online, nil, oppo.trophy, oppo.extra_cards, pRes.my_cards, pRes.my_extra_cards)
 									end
 								end
 							end)
@@ -4584,6 +5617,7 @@ function patchClientData()
 			level = (P and P._level) or 50,
 			avatar = myAvatar,
 			cards = rawCardIds,
+			extra_cards = rawExtraCardIds,
 			mode = offlineKind,
 			battle_type = battleType,
 			find_strong = (ClientData._findStrongOpponent == true)
@@ -4631,7 +5665,7 @@ function patchClientData()
 						elseif obc > 0 then oppoCrown = { _infoId = 7206, _num = obc }
 						end
 					end
-					startWithOppo(o.name, o.level, o.avatar, o.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, oppoCrown, o.trophy)
+					startWithOppo(o.name, o.level, o.avatar, o.cards, res.seed, res.is_real_player, res.match_id, res.is_attacker, res.oppo_online, oppoCrown, o.trophy, o.extra_cards, res.my_cards, res.my_extra_cards)
 				else
 					local isSurv = (battleType == Battle_pb.PB_BATTLE_SURVIVAL_EX or battleType == Battle_pb.PB_BATTLE_SURVIVAL)
 					local botChars = { 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
@@ -4749,9 +5783,9 @@ function patchClientData()
 
 
 	-- Complete Shop & Tavern functions for Web H5
-	local function doBuyShopCard(shopType, productId, count)
+	local function doBuyShopCard(shopType, productId, count, onDone)
 		count = count or 1
-		pcall(function()
+		local okCall = pcall(function()
 			local cardId = 0
 			local cost = 0
 			local costType = 1 -- 1 = gold, 3 = gem
@@ -4898,16 +5932,31 @@ function patchClientData()
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.ingot_dirty))
 							lc.Dispatcher:dispatchEvent(cc.EventCustom:new(Data.Event.card_dirty))
 						end
+						if type(onDone) == "function" then
+							onDone(true, res)
+						end
+					else
+						if ToastManager and ToastManager.push then
+							ToastManager.push((res and res.msg) or "Mua thất bại!")
+						end
+						if type(onDone) == "function" then
+							onDone(false, res)
+						end
 					end
 				end)
+			elseif type(onDone) == "function" then
+				onDone(false, nil)
 			end
 		end)
+		if not okCall and type(onDone) == "function" then
+			onDone(false, nil)
+		end
 		return true
 	end
 
-	ClientData.sendBuyDepot = function(id) return doBuyShopCard("depot", id, 1) end
-	ClientData.sendBuyRare = function(id) return doBuyShopCard("rare", id, 1) end
-	ClientData.sendBuyDiamond = function(id) return doBuyShopCard("diamond", id, 1) end
+	ClientData.sendBuyDepot = function(id, onDone) return doBuyShopCard("depot", id, 1, onDone) end
+	ClientData.sendBuyRare = function(id, onDone) return doBuyShopCard("rare", id, 1, onDone) end
+	ClientData.sendBuyDiamond = function(id, onDone) return doBuyShopCard("diamond", id, 1, onDone) end
 	ClientData.sendBuyUnion = function(id) return doBuyShopCard("union", id, 1) end
 	ClientData.sendBuyCollect = function(id) return doBuyShopCard("collect", id, 1) end
 	ClientData.sendBuyAncient = function(id) return doBuyShopCard("ancient", id, 1) end
@@ -5082,9 +6131,13 @@ function patchClientData()
 		[209001] = "Gói Mở Rộng: Extra Deck Tổng Hợp IV", [209010] = "Gói Mở Rộng: Extra Deck Tổng Hợp IV", [209050] = "Gói Mở Rộng: Extra Deck Tổng Hợp IV",
 		[210001] = "Gói Mở Rộng: Extra Deck Tổng Hợp V", [210010] = "Gói Mở Rộng: Extra Deck Tổng Hợp V", [210050] = "Gói Mở Rộng: Extra Deck Tổng Hợp V",
 		[221001] = "Gói bài Tru Tiên", [221010] = "Gói bài Tru Tiên", [221050] = "Gói bài Tru Tiên",
+		[225001] = "Gói bài Thiên Không Hoàng", [225010] = "Gói bài Thiên Không Hoàng", [225050] = "Gói bài Thiên Không Hoàng", [5] = "Gói bài Thiên Không Hoàng",
 		[222001] = "Gói bài Tiên Nghịch", [222010] = "Gói bài Tiên Nghịch", [222050] = "Gói bài Tiên Nghịch",
 		[223001] = "Gói bài Hiệp sĩ mặt nạ", [223010] = "Gói bài Hiệp sĩ mặt nạ", [223050] = "Gói bài Hiệp sĩ mặt nạ",
 		[224001] = "Gói bài Minecraft", [224010] = "Gói bài Minecraft", [224050] = "Gói bài Minecraft", [4] = "Gói bài Minecraft",
+		[226001] = "Gói bài 7 viên bi rồng", [226010] = "Gói bài 7 viên bi rồng", [226050] = "Gói bài 7 viên bi rồng", [6] = "Gói bài 7 viên bi rồng",
+		[227001] = "Gói bài Liên Quân", [227010] = "Gói bài Liên Quân", [227050] = "Gói bài Liên Quân", [7] = "Gói bài Liên Quân",
+		[228001] = "Gói bài Mê Cung Labrynth", [228010] = "Gói bài Mê Cung Labrynth", [228050] = "Gói bài Mê Cung Labrynth", [8] = "Gói bài Mê Cung Labrynth",
 	}
 	ClientData._packTitles = PACK_TITLES
 	ClientData.getPackTitle = function(boxId)
@@ -5221,6 +6274,10 @@ function patchClientData()
 		[222001] = "lottery_222001", [222010] = "lottery_222001", [222050] = "lottery_222001", [2] = "lottery_222001",
 		[223001] = "lottery_223001", [223010] = "lottery_223001", [223050] = "lottery_223001", [3] = "lottery_223001",
 		[224001] = "lottery_224001", [224010] = "lottery_224001", [224050] = "lottery_224001", [4] = "lottery_224001",
+		[225001] = "lottery_225001", [225010] = "lottery_225001", [225050] = "lottery_225001", [5] = "lottery_225001",
+		[226001] = "lottery_226001", [226010] = "lottery_226001", [226050] = "lottery_226001", [6] = "lottery_226001",
+		[227001] = "lottery_227001", [227010] = "lottery_227001", [227050] = "lottery_227001", [7] = "lottery_227001",
+		[228001] = "lottery_228001", [228010] = "lottery_228001", [228050] = "lottery_228001", [8] = "lottery_228001",
 	}
 	ClientData._packImages = PACK_IMAGES
 	ClientData.getPackImageName = function(boxId)
@@ -5612,6 +6669,138 @@ function patchClientData()
 			40747, 40748, 40749, 40750, 40751, 40752, 40754,
 			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
 			10001, 10004, 10006, 10018, 10020
+		},
+		[5] = {
+			40766,
+			12349, 12350, 12351, 12352, 12353, 12354, 12355, 12356,
+			21151, 21152, 21153, 21154, 21155, 21156, 21157, 21158, 21159, 21160, 21161, 21162, 21163, 21164,
+			40755, 40756, 40757, 40758, 40759, 40760, 40761, 40762, 40763, 40764, 40765,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[225001] = {
+			40766,
+			12349, 12350, 12351, 12352, 12353, 12354, 12355, 12356,
+			21151, 21152, 21153, 21154, 21155, 21156, 21157, 21158, 21159, 21160, 21161, 21162, 21163, 21164,
+			40755, 40756, 40757, 40758, 40759, 40760, 40761, 40762, 40763, 40764, 40765,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[225010] = {
+			40766,
+			12349, 12350, 12351, 12352, 12353, 12354, 12355, 12356,
+			21151, 21152, 21153, 21154, 21155, 21156, 21157, 21158, 21159, 21160, 21161, 21162, 21163, 21164,
+			40755, 40756, 40757, 40758, 40759, 40760, 40761, 40762, 40763, 40764, 40765,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[225050] = {
+			40766,
+			12349, 12350, 12351, 12352, 12353, 12354, 12355, 12356,
+			21151, 21152, 21153, 21154, 21155, 21156, 21157, 21158, 21159, 21160, 21161, 21162, 21163, 21164,
+			40755, 40756, 40757, 40758, 40759, 40760, 40761, 40762, 40763, 40764, 40765,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[6] = {
+			21166, 21171, 40779,
+			12358, 12359, 12360, 12363, 12364, 12365,
+			21165, 21167, 21168, 21169, 21170,
+			40767, 40768, 40769, 40770, 40771, 40774, 40780,
+			12361, 40775,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[226001] = {
+			21166, 21171, 40779,
+			12358, 12359, 12360, 12363, 12364, 12365,
+			21165, 21167, 21168, 21169, 21170,
+			40767, 40768, 40769, 40770, 40771, 40774, 40780,
+			12361, 40775,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[226010] = {
+			21166, 21171, 40779,
+			12358, 12359, 12360, 12363, 12364, 12365,
+			21165, 21167, 21168, 21169, 21170,
+			40767, 40768, 40769, 40770, 40771, 40774, 40780,
+			12361, 40775,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[226050] = {
+			21166, 21171, 40779,
+			12358, 12359, 12360, 12363, 12364, 12365,
+			21165, 21167, 21168, 21169, 21170,
+			40767, 40768, 40769, 40770, 40771, 40774, 40780,
+			12361, 40775,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[7] = {
+			40781,
+			12382, 12383, 12384, 12385, 12386, 12387, 12388, 40782,
+			21174, 21175,
+			30606,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[227001] = {
+			40781,
+			12382, 12383, 12384, 12385, 12386, 12387, 12388, 12393, 12394, 40782,
+			21174, 21175,
+			30606,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[227010] = {
+			40781,
+			12382, 12383, 12384, 12385, 12386, 12387, 12388, 12393, 12394, 40782,
+			21174, 21175,
+			30606,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[227050] = {
+			40781,
+			12382, 12383, 12384, 12385, 12386, 12387, 12388, 12393, 12394, 40782,
+			21174, 21175,
+			30606,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[8] = {
+			12381,
+			12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380,
+			21172, 21173,
+			30598, 30599, 30601, 30602, 30603, 30604, 30605,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[228001] = {
+			12381,
+			12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380,
+			21172, 21173,
+			30598, 30599, 30601, 30602, 30603, 30604, 30605,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[228010] = {
+			12381,
+			12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380,
+			21172, 21173,
+			30598, 30599, 30601, 30602, 30603, 30604, 30605,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
+		},
+		[228050] = {
+			12381,
+			12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380,
+			21172, 21173,
+			30598, 30599, 30601, 30602, 30603, 30604, 30605,
+			10034, 10036, 10037, 10041, 10049, 10055, 10077, 10083, 10088, 20004,
+			10001, 10004, 10006, 10018, 10020
 		}
 	}
 	ClientData._fairyHeroCardsMap = FAIRY_HERO_CARDS_MAP
@@ -5718,6 +6907,30 @@ function patchClientData()
 		registerPack(224050, mcList, 1001, 28500)
 		registerPack(4, mcList, 1001, 600)
 
+		local skList = (FAIRY_HERO_CARDS_MAP and FAIRY_HERO_CARDS_MAP[5]) or {}
+		registerPack(225001, skList, 1001, 600)
+		registerPack(225010, skList, 1001, 6000)
+		registerPack(225050, skList, 1001, 28500)
+		registerPack(5, skList, 1001, 600)
+
+		local dbList = (FAIRY_HERO_CARDS_MAP and FAIRY_HERO_CARDS_MAP[6]) or {}
+		registerPack(226001, dbList, 1001, 600)
+		registerPack(226010, dbList, 1001, 6000)
+		registerPack(226050, dbList, 1001, 28500)
+		registerPack(6, dbList, 1001, 600)
+
+		local liqiList = (FAIRY_HERO_CARDS_MAP and FAIRY_HERO_CARDS_MAP[7]) or {}
+		registerPack(227001, liqiList, 1001, 600)
+		registerPack(227010, liqiList, 1001, 6000)
+		registerPack(227050, liqiList, 1001, 28500)
+		registerPack(7, liqiList, 1001, 600)
+
+		local labList = (FAIRY_HERO_CARDS_MAP and FAIRY_HERO_CARDS_MAP[8]) or {}
+		registerPack(228001, labList, 1001, 600)
+		registerPack(228010, labList, 1001, 6000)
+		registerPack(228050, labList, 1001, 28500)
+		registerPack(8, labList, 1001, 600)
+
 		if rawget(_G, "Data") and Data._magicInfo and Data._magicInfo[21134] then
 			Data._magicInfo[21134]._keyword = 301
 		end
@@ -5811,6 +7024,64 @@ function patchClientData()
 			for _, cid in ipairs({ 40747, 40748, 40749, 40750, 40751, 40752, 40753, 40754 }) do
 				setPack(Data._rareInfo, cid, { 224001 })
 			end
+
+			for _, cid in ipairs({ 12314, 12315, 12316, 12317, 12318, 12319, 12320, 12321 }) do
+				setPack(Data._monsterInfo, cid, { 221001 })
+			end
+			for _, cid in ipairs({ 21135, 21136, 21137, 21138, 21139 }) do
+				setPack(Data._magicInfo, cid, { 221001 })
+			end
+			for _, cid in ipairs({ 30244, 30593 }) do
+				setPack(Data._trapInfo, cid, { 221001 })
+			end
+			setPack(Data._rareInfo, 40728, { 221001 })
+			if Data._trapInfo then
+				if Data._trapInfo[30592] then Data._trapInfo[30592]._nameSid = 56877; Data._trapInfo[30592]._descSid = 56878; Data._trapInfo[30592]._briefNameSid = 56879 end
+				if Data._trapInfo[30593] then Data._trapInfo[30593]._nameSid = 56960; Data._trapInfo[30593]._descSid = 56961; Data._trapInfo[30593]._briefNameSid = 56962 end
+			end
+
+			for _, cid in ipairs({ 12349, 12350, 12351, 12352, 12353, 12354, 12355, 12356 }) do
+				setPack(Data._monsterInfo, cid, { 225001 })
+			end
+			for _, cid in ipairs({ 21151, 21152, 21153, 21154, 21155, 21156, 21157, 21158, 21159, 21160, 21161, 21162, 21163, 21164 }) do
+				setPack(Data._magicInfo, cid, { 225001 })
+			end
+			for _, cid in ipairs({ 40755, 40756, 40757, 40758, 40759, 40760, 40761, 40762, 40763, 40764, 40765, 40766 }) do
+				setPack(Data._rareInfo, cid, { 225001 })
+			end
+
+			for _, cid in ipairs({ 12358, 12359, 12360, 12361, 12363, 12364, 12365 }) do
+				setPack(Data._monsterInfo, cid, { 226001 })
+			end
+			for _, cid in ipairs({ 21165, 21166, 21167, 21168, 21169, 21170, 21171 }) do
+				setPack(Data._magicInfo, cid, { 226001 })
+			end
+			for _, cid in ipairs({ 40767, 40768, 40769, 40770, 40771, 40774, 40775, 40779, 40780 }) do
+				setPack(Data._rareInfo, cid, { 226001 })
+			end
+
+			for _, cid in ipairs({ 12382, 12383, 12384, 12385, 12386, 12387, 12388 }) do
+				setPack(Data._monsterInfo, cid, { 227001 })
+			end
+			for _, cid in ipairs({ 21174, 21175 }) do
+				setPack(Data._magicInfo, cid, { 227001 })
+			end
+			for _, cid in ipairs({ 30606 }) do
+				setPack(Data._trapInfo, cid, { 227001 })
+			end
+			for _, cid in ipairs({ 40781, 40782 }) do
+				setPack(Data._rareInfo, cid, { 227001 })
+			end
+
+			for _, cid in ipairs({ 12371, 12372, 12373, 12374, 12375, 12376, 12377, 12378, 12379, 12380, 12381 }) do
+				setPack(Data._monsterInfo, cid, { 228001 })
+			end
+			for _, cid in ipairs({ 21172, 21173 }) do
+				setPack(Data._magicInfo, cid, { 228001 })
+			end
+			for _, cid in ipairs({ 30598, 30599, 30601, 30602, 30603, 30604, 30605 }) do
+				setPack(Data._trapInfo, cid, { 228001 })
+			end
 		end
 
 		if rawget(_G, "Data") and Data._productsExInfo then
@@ -5848,6 +7119,46 @@ function patchClientData()
 					_date = "20240101.0"
 				}
 			end
+			local dbShopCards = { 40772, 40773, 40776, 40777, 40778 }
+			for idx, cid in ipairs(dbShopCards) do
+				local pid = 18 + idx
+				Data._monthCard5ProductsInfo[pid] = {
+					_id = pid,
+					_cardId = cid,
+					_cost = 50000,
+					_resType = 3,
+					_date = "20240101.0"
+				}
+			end
+			Data._monthCard5ProductsInfo[24] = {
+				_id = 24,
+				_cardId = 12367,
+				_cost = 5000,
+				_resType = 3,
+				_date = "20240101.0"
+			}
+		end
+		if rawget(_G, "Data") and Data._diamondProductsInfo then
+			local dbShopCards = { 40772, 40773, 40776, 40777, 40778 }
+			for idx, cid in ipairs(dbShopCards) do
+				local pid = 553 + idx
+				Data._diamondProductsInfo[pid] = {
+					_id = pid,
+					_cardId = cid,
+					_cost = 50000,
+					_resType = 3,
+					_type = 0,
+					_date = "20240101.0"
+				}
+			end
+			Data._diamondProductsInfo[559] = {
+				_id = 559,
+				_cardId = 12367,
+				_cost = 5000,
+				_resType = 3,
+				_type = 0,
+				_date = "20240101.0"
+			}
 		end
 	end
 	ClientData.injectPacks = injectPacks
@@ -6297,6 +7608,77 @@ function patchClientData()
 	end
 
 	local CARD_NAME_OVERRIDES = {
+		-- PVZ (Plants vs Zombies) Cards & Skills
+		-- 1. Sun (21176 / 20241)
+		[58410] = "Sun",
+		[58411] = "[Bài Phép / Thường / SR]\nTừ khóa: \"pvz\"\nKỹ năng: Chọn 1 quái thú có từ khóa \"pvz\" trên tay phe ta, triệu hồi đặc biệt lên sân.",
+		[58424] = "Năng Lượng Mặt Trời",
+		[58425] = "Chọn 1 quái thú có từ khóa \"pvz\" trên tay phe ta, triệu hồi đặc biệt lên sân.",
+
+		-- 2. Cà rốt (21177 / 20242)
+		[58412] = "Cà rốt",
+		[58413] = "[Bài Phép / Thường / UR]\nTừ khóa: \"pvz\"\nKỹ năng: Chọn 1 quái thú có từ khóa \"pvz\" trong mộ phe ta, triệu hồi đặc biệt lên sân.",
+		[58426] = "Hồi Sinh Cà Rốt",
+		[58427] = "Chọn 1 quái thú có từ khóa \"pvz\" trong mộ phe ta, triệu hồi đặc biệt lên sân.",
+
+		-- 3. Mìn khoai tây (30607 / 20243)
+		[58414] = "Mìn khoai tây",
+		[58415] = "[Bài Bẫy / Thường / UR]\nTừ khóa: \"pvz\"\nKỹ năng: Khi đối phương triệu hồi quái sẽ kích hoạt, phá hủy quái đó (xuyên qua tường chắn quái 12008).",
+		[58428] = "Phục Kích Nổ",
+		[58429] = "Khi đối phương triệu hồi quái sẽ kích hoạt, phá hủy quái đó (xuyên qua tường chắn quái 12008).",
+
+		-- 4. Hướng dương (12389 / 20244, 20245)
+		[58416] = "Hướng dương",
+		[58417] = "[Cây Cối / Hiệu Ứng / SR]\nThuộc tính: Địa | 3 Sao\nTừ khóa: \"pvz\"\nATK: 0 | DEF: 1000\n- Khi lên sân: Lấy 1 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.\n- Nếu trên sân phe ta có quái thú có từ khóa \"pvz\" khác, đối phương không thể chọn lá bài này làm mục tiêu tấn công.",
+		[58430] = "Hấp Thu Ánh Sáng",
+		[58431] = "Khi lên sân: Lấy 1 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.",
+		[58432] = "Tán Cây Bảo Vệ",
+		[58433] = "Nếu trên sân phe ta có quái thú có từ khóa \"pvz\" khác, đối phương không thể chọn lá bài này làm mục tiêu tấn công.",
+
+		-- 5. Đậu 1 (12390 / 20246)
+		[58418] = "Đậu 1",
+		[58419] = "[Cây Cối / Hiệu Ứng / UR]\nThuộc tính: Địa | 4 Sao\nTừ khóa: \"pvz\"\nATK: 1500 | DEF: 1500\n- Không thể triệu hồi thường.\n- Kĩ năng chủ động: Hi sinh bản thân và 1 quái nguyên liệu trên tay/sân để triệu hồi dung hợp quái tương ứng <Đậu 2>.",
+		[58434] = "Dung Hợp Đậu",
+		[58435] = "Kĩ năng chủ động: Hi sinh bản thân và 1 quái nguyên liệu trên tay/sân để triệu hồi dung hợp quái tương ứng <Đậu 2>.",
+
+		-- 6. Đậu 2 (40783 / 20247)
+		[58420] = "Đậu 2",
+		[58421] = "[Cây Cối / Hiệu Ứng / Dung Hợp / UR]\nThuộc tính: Địa | 7 Sao\nTừ khóa: \"pvz\"\nATK: 3000 | DEF: 1500\nNguyên liệu: <Đậu 1> x2\n- Kĩ năng chủ động: 1 lượt 1 lần, lượt này giảm 1000 ATK, có thể tấn công 2 lần.",
+		[58436] = "Liên Xạ Hai Phát",
+		[58437] = "Kĩ năng chủ động: 1 lượt 1 lần, lượt này giảm 1000 ATK, có thể tấn công 2 lần.",
+
+		-- 7. Cải thìa (12391 / 11001, 1004)
+		[58422] = "Cải thìa",
+		[58423] = "[Cây Cối / Hiệu Ứng / UR]\nThuộc tính: Địa | 4 Sao\nTừ khóa: \"pvz\"\nATK: 2000 | DEF: 1500\n- Không thể triệu hồi thường.\n- 11001 Khiên Chiến Đấu\n- 1004 Đòn Ảo Ảnh",
+
+		-- 8. Hoa vàng (21178 / 20248)
+		[58465] = "Hoa vàng",
+		[58466] = "[Bài Phép / Thường / UR]\nTừ khóa: \"pvz\"\n- 1 lượt 1 lần, lấy tối đa 3 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.",
+		[58467] = "Thu Hoạch Mặt Trời",
+		[58468] = "1 lượt 1 lần, lấy tối đa 3 lá <Sun> từ bộ bài/mộ bài/mộ loại bỏ lên tay.",
+
+		-- 9. Hạt óc chó (12392 / 20249, 13779)
+		[58469] = "Hạt óc chó",
+		[58470] = "[Cây Cối / Hiệu Ứng / UR]\nThuộc tính: Địa | 5 Sao\nTừ khóa: \"pvz\"\nATK: 0 | DEF: 2400\n- Không thể triệu hồi thường.\n- Khi ở trên sân, quái có từ khóa \"pvz\" trên sân phe ta nhận 12008, 12009, 12010.\n- Khi lên sân, nhận Khiêu Khích.",
+		[58471] = "Tường Chắn Óc Chó",
+		[58472] = "Khi ở trên sân, tất cả quái có từ khóa \"pvz\" trên sân phe ta không bị ảnh hưởng bởi hiệu ứng Quái, Phép, Bẫy của đối phương (nhận 12008, 12009, 12010).",
+		-- Lauriel - Thứ nguyên vệ thần (12393)
+		[58473] = "Lauriel - Thứ nguyên vệ thần",
+		[58474] = "[Phù Thủy / Hiệu Ứng / UR]\nThuộc tính: Ám | 7 Sao\nTừ khóa: \"liqi\"\nATK: 2500 | DEF: 1200\n- Kĩ năng chủ động tay: Chọn 1 quái có từ khóa \"liqi\" từ bộ bài đưa vào mộ, triệu hồi đặc biệt lên sân.\n- Khi triệu hồi đặc biệt: Nhận Lá Chắn Năng Lượng (2797).\n- Thú Thần-Thần Uy Hộ Thể (14675): Khi trên sân phe ta còn quái khác, lá bài này không thể bị chọn làm mục tiêu.",
+		[58475] = "Lauriel - Thứ nguyên vệ thần",
+		[58476] = "Thứ Nguyên Triệu Hồi",
+		[58477] = "Kĩ năng chủ động tay: Chọn 1 quái có từ khóa \"liqi\" từ bộ bài đưa vào mộ, triệu hồi đặc biệt bản thân lên sân.",
+		-- Lauriel - Phức mộng phồn hoa (12394)
+		[58478] = "Lauriel - Phức mộng phồn hoa",
+		[58479] = "[Phù Thủy / Hiệu Ứng / GR]\nThuộc tính: Quang | 10 Sao\nTừ khóa: \"liqi\"\nATK: 4000 | DEF: 4000\n- Chuẩn Bị Giáng Lâm (3131): Cần 3 quái hiến tế để triệu hồi thường.\n- Hào quang: Khi ở trên sân, tất cả quái có từ khóa \"liqi\" nhận 3043 Nguyên Tố Tương Tác (Rào cản 12002, 12003, 12004).\n- Khiêu Khích (13779).\n- Kĩ năng chủ động: 1 lượt 1 lần, bỏ 1 lá bài phép/bẫy có từ khóa \"liqi\" từ tay vào mộ, phá hủy tất cả bài phép/bẫy trên sân đối phương.\n- Khu Vực Phức Mộng: Khi đối phương triệu hồi quái thế công lên sân, giảm 1 nửa ATK của quái đó trong 1 lượt (xuyên khiên & rào cản).",
+		[58480] = "Lauriel - Phức mộng phồn hoa",
+		[58481] = "Nguyên Tố Tương Tác",
+		[58482] = "Khi lá bài này ở trên sân, tất cả quái có từ khóa \"liqi\" nhận 3043 Nguyên Tố Tương Tác (Rào cản 12002, 12003, 12004).",
+		[58483] = "Thanh Tẩy Ma Pháp",
+		[58484] = "Kĩ năng chủ động: 1 lượt 1 lần, bỏ 1 lá bài phép/bẫy có từ khóa \"liqi\" từ tay vào mộ, phá hủy tất cả bài phép/bẫy trên sân đối phương.",
+		[58485] = "Khu Vực Phức Mộng",
+		[58486] = "Khi đối phương triệu hồi quái thú thế công lên sân, giảm 1 nửa ATK của quái đó trong 1 lượt.", 
+
 		-- TrickStar fixes: khong con xuyen qua khien/tuong chan quai
 		[52479] = "Ký năng mộ chủ động: Ký năng này và “TrickStar-Mandrake II” mỗi lượt chỉ được dùng 1 loại. Loại bỏ bản thân bài này; chọn và phá hủy 1 quái trên sân đối thủ.",
 		[52481] = "Ký năng mộ loại bỏ chủ động: Ký năng này và “TrickStar-Mandrake I” mỗi lượt chỉ được dùng 1 loại. Chọn 1 lá bài trên sân đối thủ; vô hiệu hóa hiệu quả bài đã chọn. Ký năng chỉ kích hoạt 1 lần.",
@@ -6729,7 +8111,7 @@ function patchClientData()
 		[36639] = "Có thể tấn công mỗi quái trên sân đối thủ 1 lần; không thể tấn công trực tiếp đối thủ.",
 		-- Phô Lô Ti Nô (40731) & Kỹ năng (14727, 14728)
 		[57090] = "Phô Lô Ti Nô",
-		[57091] = "[Chiến Binh / Link-2 / Hiệu Ứng]\n2 quái thú bất kì",
+		[57091] = "[Chiến Binh / Link-5 / Hiệu ứng]\n2-5 quái thú bất kỳ",
 		[57092] = "Phô Lô Ti Nô",
 		[57093] = "Vũ Điệu Lãng Hoa",
 		[57094] = "Khi lên sân: Nhận Tường Chắn Quái, Phép, Bẫy đặc biệt.",
@@ -6967,7 +8349,497 @@ function patchClientData()
 		[57316] = "1 lượt 1 lần, khi lá bài này trên sân, đối phương triệu hồi/triệu hồi đặc biệt quái tộc \"rồng\" sẽ kích hoạt, đưa quái đó vào mộ (Xuyên qua tường chắn quái), sau đó lượt này đối phương không thể triệu hồi/triệu hồi đặc biệt quái tộc \"rồng\".",
 		[57317] = "Kỵ Sĩ - Long Uy Tận Diệt",
 		[57318] = "Khi quái đối thủ rời sân trong lượt đối thủ: đối thủ không thể triệu hồi thông thường hoặc Triệu Hồi Đặc Biệt quái tộc \"rồng\" ở lượt này. Tất cả Quái Vật tộc \"rồng\" của đối thủ không thể tấn công . đưa tất cả quái tộc \"rồng\" trên tay đối phương vào mộ.",
+	
+		-- Dragon Ball Cards & Skills (57841 - 58030)
+		[57998] = "[Chiến Binh / Hiệu Ứng / UR]",
+		[58005] = "[Phù Thủy / Hiệu Ứng / UR]",
+		[58012] = "[Chiến Binh / Hiệu Ứng / UR]",
+		[57841] = "Goku - kid",
+		[57842] = "[Chiến Binh / Hiệu Ứng]",
+		[57843] = "Goku - kid",
+		[57844] = "Goku - kid - Triệu Hồi Bản Thể",
+		[57845] = "Kĩ năng chủ động (1 lượt 1 lần): Hi sinh bản thân lá bài này; triệu hồi đặc biệt 1 <Goku> từ bộ bài lên sân.",
+		[57846] = "Goku",
+		[57847] = "[Chiến Binh / Thường]\nChiến binh Saiyan huyền thoại mang trái tim thuần khiết bảo vệ Địa Cầu.",
+		[57848] = "Goku",
+		[57849] = "Goku - SSJ 1",
+		[57850] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku> + 1 quái có từ khóa \"7 viên ngọc rồng\".",
+		[57851] = "Goku - SSJ 1",
+		[57852] = "Goku - SSJ 2",
+		[57853] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku - SSJ 1> + 1 quái có từ khóa \"7 viên ngọc rồng\".",
+		[57854] = "Goku - SSJ 2",
+		[57855] = "Goku - SSJ 3",
+		[57856] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku - SSJ 2> + 1 quái có từ khóa \"7 viên ngọc rồng\".",
+		[57857] = "Goku - SSJ 3",
+		[57858] = "Ý Chí Saiyan - SSJ 3",
+		[57859] = "Khi có mặt; tăng tấn công bằng số lượng quái thú mang từ khóa \"7 viên ngọc rồng\" trong mộ phe ta x300.",
+		[57860] = "Thần Tốc Liên Trảm",
+		[57861] = "Kĩ năng chủ động (1 lượt 1 lần): Trong lượt này, bản thân nhận được hiệu ứng \"Liên Trảm\" (có thể tấn công 2 lần).",
+		[57862] = "Goku - SSJ 4",
+		[57863] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku> + 2 quái có từ khóa \"7 viên ngọc rồng\".",
+		[57864] = "Goku - SSJ 4",
+		[57865] = "Áp Lực Hoang Dã",
+		[57866] = "Khi lá bài này trên sân; toàn bộ quái thú của đối phương có ATK dưới 2000 khi lên sân sẽ bị mất hiệu quả quái thú (không thể kích hoạt hiệu quả).",
+		[57867] = "Goku - SSJ God",
+		[57868] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku> + 3 quái có từ khóa \"7 viên ngọc rồng\".",
+		[57869] = "Goku - SSJ God",
+		[57870] = "Thần Cảnh Tuyệt Đối",
+		[57871] = "Việc triệu hồi dung hợp của lá này sẽ không bị vô hiệu. Đối thủ không thể kích hoạt hiệu ứng của nó chỉ trong lượt này. Những Quái Vật được Triệu Hồi Đặc Biệt chỉ ở lượt này sau đó chỉ có thể là những Quái Vật có từ khóa \"7 viên ngọc rồng\".",
+		[57872] = "Tìm Kiếm Thần Khí",
+		[57873] = "Kĩ năng chủ động (1 lượt 1 lần): Bỏ 1 quái thú có từ khóa \"7 viên ngọc rồng\" trên tay phe ta vào mộ; chọn và lấy 1 lá bài có từ khóa \"7 viên ngọc rồng\" từ bộ bài lên tay.",
+		[57874] = "Hồi Sinh Chiến Binh",
+		[57875] = "Kĩ năng chủ động (1 lượt 1 lần): Chọn tối đa 2 quái thú có từ khóa \"7 viên ngọc rồng\" từ mộ, triệu hồi đặc biệt lên sân trong thế thủ (quái được triệu hồi không thể thay đổi tư thế trong lượt này).",
+		[57876] = "Goku - SSJ Blue",
+		[57877] = "[Chiến Binh / Dung Hợp / Hiệu Ứng]\nNguyên liệu: <Goku - SSJ 3> + 1 quái có từ khóa \"7 viên ngọc rồng\".",
+		[57878] = "Goku - SSJ Blue",
+		[57879] = "Xóa Sổ Bộ Bài Phụ",
+		[57880] = "Khi lên sân: Loại bỏ khỏi trận đấu toàn bộ quái thú có ATK từ 3000 trở xuống trong bộ bài phụ đối phương.",
+		[57881] = "Sóng Thần Lam Sắc",
+		[57882] = "Khi lên sân: Loại bỏ khỏi trận đấu toàn bộ quái thú có ATK từ 2000 trở xuống trên sân và trên tay đối thủ.",
+		[57883] = "Goku ultra instinct",
+		[57884] = "[Chiến Binh / Dung Hợp / Hiệu Ứng / GR]\nNguyên liệu: <Goku - SSJ 1> + <Goku - SSJ 2> + <Goku - SSJ 3> + <Goku - SSJ God> + <Goku - SSJ Blue>.",
+		[57885] = "Goku ultra instinct",
+		[57886] = "Bản Năng Vô Cực - Hủy Diệt Toàn Diện",
+		[57887] = "Khi lên sân: Đưa tất cả bài trên tay, trên sân, trong bộ bài chính và bộ bài phụ của đối thủ vào mộ.",
+		[57888] = "Bản Năng Vô Cực - Phong Khóa Vực",
+		[57889] = "Khi lên sân: Phong tỏa toàn bộ 5 ô quái thú của đối phương, đối phương hoàn toàn không thể triệu hồi bất kỳ quái thú nào.",
+		[57890] = "Điều ước rồng thần trái đất",
+		[57891] = "[Bài Phép / Thường / UR]\n+ 1 lượt 1 lần, khi trên sân phe ta có quái thú \"7 viên ngọc rồng\": Hồi sinh 1 quái thú \"7 viên ngọc rồng\" từ mộ lên sân hoặc lấy tối đa 2 bài Phép/Bẫy có từ khóa \"7 viên ngọc rồng\" từ bộ bài lên tay.\n+ Chỉ trong lượt này, phe ta chỉ có thể triệu hồi đặc biệt quái thú có từ khóa \"7 viên ngọc rồng\".",
+		[57892] = "Điều ước rồng thần trái đất",
+		[57893] = "Điều Ước Trái Đất",
+		[57894] = "1 lượt 1 lần, khi trên sân có quái \"7 viên ngọc rồng\": Hồi sinh 1 quái thú \"7 viên ngọc rồng\" từ mộ lên sân hoặc lấy tối đa 2 bài Phép/Bẫy \"7 viên ngọc rồng\" từ bộ bài lên tay. Lượt này chỉ có thể triệu hồi đặc biệt quái \"7 viên ngọc rồng\".",
+		[57895] = "Điều ước rồng thần Namec",
+		[57896] = "[Bài Phép / Thường / GR / Giới hạn: 1 lá]\n+ 1 lượt 1 lần, khi trên sân phe ta có quái thú \"7 viên ngọc rồng\": Hồi sinh tối đa 3 quái thú \"7 viên ngọc rồng\" từ mộ lên sân hoặc lấy tối đa 3 bài Phép/Bẫy có từ khóa \"7 viên ngọc rồng\" từ bộ bài lên tay.\n+ Chỉ trong lượt này, phe ta chỉ có thể triệu hồi đặc biệt quái thú có từ khóa \"7 viên ngọc rồng\".",
+		[57897] = "Điều ước rồng thần Namec",
+		[57898] = "Điều Ước Rồng Thần Porunga",
+		[57899] = "1 lượt 1 lần, khi trên sân có quái \"7 viên ngọc rồng\": Hồi sinh tối đa 3 quái thú \"7 viên ngọc rồng\" từ mộ lên sân hoặc lấy tối đa 3 bài Phép/Bẫy \"7 viên ngọc rồng\" từ bộ bài lên tay. Lượt này chỉ có thể triệu hồi đặc biệt quái \"7 viên ngọc rồng\".",
+		[57900] = "dende",
+				[57901] = "[Quỷ / Hiệu Ứng / UR]",
+		[57902] = "dende",
+		[57903] = "Dende Xuất Hiện",
+		[57904] = "Kĩ năng chủ động tay: Trên sân phe ta không có quái hoặc có quái \"7 viên ngọc rồng\": Triệu hồi đặc biệt lên sân.",
+		[57905] = "Trị Liệu Thần Kỳ",
+		[57906] = "Kĩ năng chủ động (1 lượt 1 lần): Chọn 1 quái trong mộ phe ta có từ khóa \"7 viên ngọc rồng\" triệu hồi đặc biệt lên sân trong thế thủ (quái được triệu hồi bị khóa tư thế trong lượt này).",
+		[57907] = "Rada dò ngọc",
+		[57908] = "[Bài Phép / Thường / UR]\n+ 1 lượt 1 lần: Chọn đưa 1 lá bài có từ khóa \"7 viên ngọc rồng\" trên tay vào mộ; rút 2 lá bài.",
+		[57909] = "Rada dò ngọc",
+		[57910] = "Dò Tìm Ngọc Rồng",
+		[57911] = "1 lượt 1 lần: Chọn đưa 1 lá bài có từ khóa \"7 viên ngọc rồng\" trên tay vào mộ; rút 2 lá bài.",
+		[57912] = "Bà hạt mít",
+		[57913] = "[Phù Thủy / Hiệu Ứng / Link 1 / UR]\nNguyên liệu: 1 quái thú có từ khóa \"7 viên ngọc rồng\".",
+		[57914] = "Bà hạt mít",
+		[57915] = "Bói Toán Dẫn Lối",
+		[57916] = "Kĩ năng chủ động (1 lượt 1 lần): Chọn 1 quái thú có từ khóa \"7 viên ngọc rồng\" trong mộ phe ta triệu hồi đặc biệt lên sân và nhận được \"Quy Trần\".",
+		[57917] = "Ghost-Usher",
+		[57918] = "[Quỷ / Hiệu Ứng / Đồng Bộ / SR]\nNguyên liệu: 1 quái thú có từ khóa \"7 viên ngọc rồng\".",
+		[57919] = "Ghost-Usher",
+		[57920] = "Âm Hồn Triệu Tập",
+		[57921] = "Kĩ năng chủ động bộ bài thêm (1 lượt 3 lần): Loại bỏ 1 quái thú có từ khóa \"7 viên ngọc rồng\" trong mộ phe ta, triệu hồi đặc biệt bản thân lên sân.",
+		[57922] = "[Bài Phép / Thường / UR]\nTừ khóa: \"7 viên ngọc rồng\"\n+ 1 lượt 1 lần, khi trên tay: Quái thú có từ khóa \"7 viên ngọc rồng\" trên sân phe ta bị đối thủ phá hủy sẽ kích hoạt: Đưa lá bài này vào mộ, bỏ qua lần phá hủy đó.\n+ 1 lượt 1 lần: Nếu LP phe ta thấp hơn 8000 có thể dùng, hồi lại LP tương ứng với phần LP còn thiếu (hồi phục về 8000 LP).\n+ 1 lượt 1 lần, khi trên tay: Nếu LP phe ta giảm xuống dưới 4000 sẽ kích hoạt: Đưa lá bài này vào mộ, nhận 8000 LP.",
+		[57923] = "Đậu thần",
+		[57924] = "Bảo Hộ Tiên Đậu",
+		[57925] = "1 lượt 1 lần, khi trên tay: Quái thú có từ khóa \"7 viên ngọc rồng\" trên sân phe ta bị đối thủ phá hủy sẽ kích hoạt: Đưa lá bài này vào mộ, bỏ qua lần phá hủy đó. Nếu LP phe ta giảm xuống dưới 4000 sẽ kích hoạt: Đưa lá bài này vào mộ, nhận 8000 LP.",
+		[57926] = "Hồi Phục Sinh Lực",
+		[57927] = "1 lượt 1 lần: Nếu LP phe ta thấp hơn 8000, hồi phục lại LP tương ứng với phần LP còn thiếu (hồi phục về 8000 LP).",
+		[57928] = "Vegeta - SSJ Blue 2",
+		[57929] = "[Chiến Binh / Link 5 / Hiệu Ứng / GR]\nNguyên liệu: 5 quái thú có từ khóa \"7 viên ngọc rồng\".",
+		[57930] = "Hoàng Tử Thần Binh",
+		[57931] = "Kĩ năng chủ động bộ bài phụ: Khi đối phương có quái ATK >= 4000 và phe ta chưa hành động: Đưa cả tay vào mộ, triệu hồi đặc biệt lá bài này lên sân.",
+		[57932] = "Kiêu Hãnh Saiyan",
+		[57933] = "Nếu chỉ có duy nhất lá bài này trên sân phe ta, nhận 1000 ATK cho mỗi quái thú trên sân đối phương.",
+		[57934] = "Final Explosion",
+		[57935] = "Kĩ năng chủ động: Loại bỏ bản thân khỏi trận đấu, loại bỏ tất cả bài trên sân đối thủ (bỏ qua phòng hộ).",
+		[57936] = "Bản Lĩnh Bất Khuất",
+		[57937] = "Khi bị phá hủy trong chiến đấu: Triệu hồi đặc biệt 1 Token Vegeta (ATK 0 / DEF 2500) lên sân trong thế thủ.",
+		[57938] = "Gogeta - SSJ Blue",
+		[57939] = "[Chiến Binh / Dung Hợp / Hiệu Ứng / GR]\nNguyên liệu: <Goku> + <Vegeta - SSJ Blue 2>.",
+		[57940] = "Gogeta - SSJ Blue",
+		[57941] = "Bụi Phấn Phân Giải - Stardust Breaker",
+		[57942] = "Khi lá bài này tấn công và phá hủy quái thú, đối phương nhận 9000 điểm sát thương. Cuối lượt phe ta, lá bài này chịu hiệu ứng Quy Trần.",
+		[57943] = "Vegito - SSJ Blue",
+		[57944] = "[Chiến Binh / Dung Hợp / Hiệu Ứng / GR]\nNguyên liệu: <Goku - SSJ Blue> + <Vegeta - SSJ Blue 2>.",
+		[57945] = "Vegito - SSJ Blue",
+		[57946] = "Thanh Kiếm Linh Hồn - Spirit Sword",
+		[57947] = "Khi lá bài này tấn công và phá hủy quái thú, đối phương nhận 10000 điểm sát thương.",
+		[57948] = "Fusion dance",
+		[57949] = "[Bài Phép / Thường / UR]\nTừ khóa: \"7 viên ngọc rồng\"\n+ Mỗi lượt chỉ 1 lần. Chọn 1 Quái Dung Hợp có từ khóa \"7 viên ngọc rồng\" trong bộ bài thêm phe ta làm mục tiêu. Chọn bài trên tay/trên sân phe ta làm nguyên liệu dung hợp đưa vào mộ (Bỏ qua hiệu quả \"Tường Chắn Phép\"); Triệu Hồi Dung Hợp mục tiêu đã chọn.",
+		[57950] = "Fusion dance",
+		[57951] = "Vũ Điệu Hợp Thể",
+		[57952] = "Mỗi lượt chỉ 1 lần. Chọn 1 Quái Dung Hợp có từ khóa \"7 viên ngọc rồng\" trong bộ bài thêm làm mục tiêu. Chọn bài trên tay/sân làm nguyên liệu dung hợp đưa vào mộ (Bỏ qua \"Tường Chắn Phép\"); Triệu Hồi Dung Hợp mục tiêu.",
+		[57953] = "Bông tai porata",
+		[57954] = "[Bài Phép / Thường / UR]\nTừ khóa: \"7 viên ngọc rồng\"\n+ Mỗi lượt chỉ 1 lần. Chọn 1 Quái Dung Hợp có từ khóa \"7 viên ngọc rồng\" trong bộ bài thêm phe ta làm mục tiêu. Chọn bài trên tay/trên sân phe ta làm nguyên liệu dung hợp đưa vào mộ (Bỏ qua hiệu quả \"Tường Chắn Phép\"); Triệu Hồi Dung Hợp mục tiêu đã chọn.",
+		[57955] = "Bông tai porata",
+		[57956] = "Hợp Thể Potara",
+		[57957] = "Mỗi lượt chỉ 1 lần. Chọn 1 Quái Dung Hợp có từ khóa \"7 viên ngọc rồng\" trong bộ bài thêm làm mục tiêu. Chọn bài trên tay/sân làm nguyên liệu dung hợp đưa vào mộ (Bỏ qua \"Tường Chắn Phép\"); Triệu Hồi Dung Hợp mục tiêu.",
+		[57958] = "Black Goku",
+		[57959] = "[Chiến Binh / Hiệu Ứng / XYZ / Rank 8 / UR]\nNguyên liệu: 3 quái thú 8 sao.",
+		[57960] = "Black Goku",
+		[57961] = "Công Lý Đen Tối",
+		[57962] = "Khi kết thúc lượt phe ta, phe ta nhận 2000 điểm sát thương.",
+		[57963] = "Super Broly",
+		[57964] = "[Chiến Binh / Hiệu Ứng / XYZ / Rank 8 / UR]\nNguyên liệu: 3 quái thú 8 sao có từ khóa \"7 viên ngọc rồng\".",
+		[57965] = "Super Broly",
+		[57966] = "Cuồng Nộ Saiyan",
+		[57967] = "Khi tấn công: Bỏ 1 chỉ thị XYZ. Khi hết chỉ thị XYZ, bản thân bị khóa (không thể tấn công và thay đổi tư thế).",
+		[57968] = "Hủy Diệt Bộc Phát",
+		[57969] = "Khi tấn công và phá hủy quái thú: Đối phương nhận sát thương bằng 2 lần ATK ban đầu của quái thú bị tiêu diệt.",
+		[57970] = "Điều ước của rồng thần siêu cấp",
+		[57971] = "",
+		[57972] = "Điều ước của rồng thần siêu cấp",
+		[57973] = "Đại Đình Chiến Thần Cấp",
+		[57974] = "1 lượt 1 lần, khi trên sân có quái \"7 viên ngọc rồng\": Cả hai bên cùng rút 3 lá bài và nhận được \"Tường Chắn Sinh Mệnh\" cho đến hết lượt kế tiếp của mỗi bên.",
+		[57975] = "Nguyện Ước Tối Cao",
+		[57976] = "Kĩ năng chủ động mộ: Chọn tối đa 3 quái thú có từ khóa \"7 viên ngọc rồng\" trong mộ phe ta triệu hồi đặc biệt lên sân.",
+		[58023] = "Puar",
+				[58024] = "[Thú / Hiệu Ứng / SR / 1 Sao]",
+		[58025] = "Puar",
+		[58026] = "Biến Hóa Viện Trợ",
+		[58027] = "Kĩ năng chủ động tay: Hi sinh bản thân từ trên tay, chọn triệu hồi đặc biệt 1 quái thú 4 sao trở xuống có từ khóa \"7 viên ngọc rồng\" từ bộ bài lên sân.",
+		[58028] = "Token Vegeta",
+		[58029] = "[Chiến Binh / Token / N]\nTừ khóa: \"7 viên ngọc rồng\"\nLá bài này được triệu hồi đặc biệt bởi hiệu ứng của <Vegeta - SSJ Blue 2>.",
+		[58030] = "Token Vegeta",
+		-- New Trap Cards (58050 - 58069)
+
+		-- Labrynth Batch 3 (58261 - 58328)
+		[58261] = "FAREWELCOME LABRYNTH",
+		[58262] = "",
+		[58263] = "FAREWELCOME LABRYNTH",
+		[58264] = "Phản Kích Tạm Biệt",
+		[58265] = "Khi trên tay, quái Labrynth trên sân và đối thủ tấn công: Đưa lá này vào mộ, hủy đòn đánh và gửi quái tấn công vào mộ.",
+		[58266] = "Truy Tìm Phép Bẫy",
+		[58267] = "Kỹ năng mộ chủ động: 1 lượt 1 lần, loại bỏ lá này để lấy 1 Phép/Bẫy Labrynth từ bộ bài vào tay.",
+		[58268] = "Mê Cung Tương Trợ / Trấn Áp",
+		[58269] = "Khi trong mộ, đối thủ tấn công: Loại bỏ lá này. Quái Labrynth tăng công = số Phép/Bẫy Labrynth trong mộ/loại bỏ x 200, hoặc khóa toàn bộ tấn công đối thủ.",
+		[58270] = "LABRYNTH BARRAGE",
+		[58271] = "",
+		[58272] = "LABRYNTH BARRAGE",
+		[58273] = "Liên Hoàn Cạm Bẫy",
+		[58274] = "Kích hoạt bài này và đưa vào khu Bẫy Phép.",
+		[58275] = "Triệu Tập Thủ Hộ",
+		[58276] = "Chủ động Ⅰ: 1 lượt 1 lần, triệu hồi đặc biệt 1 quái Labrynth 5 hoặc 7 sao từ bộ bài lên sân ở thế thủ (không đổi thế công lượt này).",
+		[58277] = "Bố Trí Mê Cung",
+		[58278] = "Chủ động Ⅱ: 1 lượt 1 lần, đặt bài phép môi trường Labrynth từ bộ bài vào khu Bẫy Phép.",
+		[58279] = "Hiến Tế Cầu Viện",
+		[58280] = "Khi trên sân, phe ta kích hoạt Bẫy: 1 lượt 1 lần, hi sinh lá này lấy 1 quái 8 sao Labrynth từ mộ/loại bỏ vào tay.",
+		[58281] = "Mê Cung Tương Trợ / Trấn Áp",
+		[58282] = "Khi trong mộ, đối thủ tấn công: Loại bỏ lá này. Quái Labrynth tăng công = số Phép/Bẫy Labrynth trong mộ/loại bỏ x 200, hoặc khóa toàn bộ tấn công đối thủ.",
+		[58283] = "WELCOME LABRYNTH",
+		[58284] = "",
+		[58285] = "WELCOME LABRYNTH",
+		[58286] = "Nghênh Đón Mê Cung",
+		[58287] = "1 lượt 1 lá: Triệu hồi đặc biệt 1 quái Labrynth từ tay/bộ bài; sau đó trong lượt này chỉ có thể Triệu Hồi Đặc Biệt quái Labrynth.",
+		[58288] = "Gia Tăng Tiếp Tế",
+		[58289] = "Khi trong mộ, khi triệu hồi quái Labrynth: Rút 1 lá bài (1 lần/vòng).",
+		[58290] = "Thu Hồi Cạm Bẫy",
+		[58291] = "Khi trong mộ/loại bỏ, khi quái Labrynth rời sân bởi bẫy phe ta: Đưa lá này trở lại tay (1 lượt 1 lần).",
+		[58292] = "Mê Cung Tương Trợ / Trấn Áp",
+		[58293] = "Khi trong mộ, đối thủ tấn công: Loại bỏ lá này. Quái Labrynth tăng công = số Phép/Bẫy Labrynth trong mộ/loại bỏ x 200, hoặc khóa toàn bộ tấn công đối thủ.",
+		[58294] = "BIG WELCOME LABRYNTH",
+		[58295] = "",
+		[58296] = "BIG WELCOME LABRYNTH",
+		[58297] = "Đại Nghênh Đón",
+		[58298] = "1 lượt 1 lá: Triệu hồi đặc biệt 1 quái Labrynth từ tay/bộ bài/mộ/loại bỏ lên sân; sau đó đưa 1 quái trên sân về tay.",
+		[58299] = "Đẩy Lùi Xâm Phạm",
+		[58300] = "Kỹ năng mộ chủ động: Khi có quái Labrynth trên sân, loại bỏ lá này để trả 1 lá trên sân đối thủ về tay (xuyên khiên/tường/rào chắn).",
+		[58301] = "Thu Hồi Tàn Tích",
+		[58302] = "Kỹ năng loại bỏ chủ động: 1 lượt 1 lần, thêm 1 lá Labrynth từ mộ vào tay.",
+		[58303] = "Mê Cung Tương Trợ / Trấn Áp",
+		[58304] = "Khi trong mộ, đối thủ tấn công: Loại bỏ lá này. Quái Labrynth tăng công = số Phép/Bẫy Labrynth trong mộ/loại bỏ x 200, hoặc khóa toàn bộ tấn công đối thủ.",
+		[58305] = "LABRYNTH SET-UP",
+		[58306] = "",
+		[58307] = "LABRYNTH SET-UP",
+		[58308] = "Thiết Lập Trận Đồ",
+		[58309] = "1 lượt 1 lá: Trộn tối đa 2 Phép/Bẫy Labrynth từ mộ/loại bỏ vào bộ bài; nếu có quái Labrynth, lấy bấy nhiêu Bẫy không phải Labrynth khác tên từ bộ bài lên tay.",
+		[58310] = "Tìm Kiếm Thuộc Hạ",
+		[58311] = "Kỹ năng mộ chủ động: 1 lượt 1 lần, loại bỏ lá này để lấy 1 quái Labrynth <= 4 sao từ bộ bài lên tay.",
+		[58312] = "Xáo Trộn Mộ Phần",
+		[58313] = "Kỹ năng loại bỏ chủ động: 1 lượt 1 lần, chọn 2 lá trong mộ đối thủ trộn vào bộ bài đối thủ.",
+		[58314] = "LABRYNTH LABYRINTH",
+		[58315] = "",
+		[58316] = "LABRYNTH LABYRINTH",
+		[58317] = "Lãnh Địa Mê Cung",
+		[58318] = "Kích hoạt và đặt vào khu Phép/Bẫy.",
+		[58319] = "Hộ Thần Mê Cung",
+		[58320] = "Khi có mặt: Quái Labrynth lên sân nhận Khiên Chắn Quái/Phép/Bẫy và tăng 300 tấn công.",
+		[58321] = "Hiệu Triệu Cạm Bẫy",
+		[58322] = "Chủ động: 1 lượt 1 lần khi kích hoạt bẫy thành công: Triệu hồi đặc biệt 1 quái Labrynth từ tay lên sân.",
+		[58323] = "Tiêu Diệt Xâm Lược",
+		[58324] = "Chủ động: 1 lượt 1 lần, chọn 1 lá trên sân đối thủ đưa vào mộ (bỏ qua Tường Chắn Phép).",
+		[58325] = "Thu Hồi Tàn Tích",
+		[58326] = "Chủ động: 1 lượt 1 lần, lấy 1 lá Phép/Bẫy Labrynth từ mộ/loại bỏ lên tay.",
+		[58327] = "Thao Túng Linh Hồn",
+		[58328] = "Kỹ năng loại bỏ chủ động: 1 lượt 1 lần, triệu hồi đặc biệt 1 quái (không phải Dung hợp) từ mộ/loại bỏ đối thủ về sân phe ta.",
+		-- Hayate - Thứ nguyên vệ thần (40781)
+		[58329] = "Hayate - Thứ nguyên vệ thần",
+		[58330] = "Nguyên liệu: 4 quái 8 sao.",
+		[58331] = "Hayate - Thứ nguyên vệ thần",
+		[58332] = "Thứ Nguyên Chúc Phúc",
+		[58333] = "Chủ động: Mỗi lượt chỉ 1 lần. Xóa 1 Chỉ Thị XYZ đang có; tăng LP đối phương thêm [1].",
+		[58334] = "Thứ Nguyên Kết Liễu",
+		[58335] = "Kích hoạt thắng ngay lập tức khi đối phương có trên [1] LP.",
+		[58336] = "Hồi Âm Thứ Nguyên",
+		[58337] = "Khi lá bài này vào mộ từ trên sân, phe ta nhận LP bằng số LP hiện tại của đối phương x2.",
+		-- Violet - Thứ nguyên vệ thần (12382)
+		[58338] = "Violet - Thứ nguyên vệ thần",
+		[58339] = "[Chiến Binh / Hiệu Ứng / UR]",
+		[58340] = "Violet - Thứ nguyên vệ thần",
+		[58341] = "Chiến Tuyến Thứ Nguyên",
+		[58342] = "Kỹ năng tay chủ động: 1 lượt 1 lần, khi trên sân phe ta có quái \"liqi\", triệu hồi đặc biệt lá bài lên sân.",
+		[58343] = "Tiếp Tế Thứ Nguyên",
+		[58344] = "Kỹ năng chủ động: 1 lượt 1 lần, lấy 1 lá bài phép/bẫy có từ khóa \"liqi\" từ bộ bài lên tay.",
+		-- Vệ thần chiến (30606)
+		[58345] = "Vệ thần chiến",
+		[58346] = "Vệ thần chiến",
+		[58347] = "Chiến Lực Liqi",
+		[58348] = "1 lượt 1 lần, tất cả quái \"liqi\" trên sân phe ta trở thành 8 sao.",
+		[58349] = "Triệu Tập Liqi",
+		[58350] = "Kỹ năng chủ động: 1 lượt 1 lần, chọn 1 quái có từ khóa \"liqi\" từ bộ bài lấy lên tay.",
+		-- Nạp quân huy (21174)
+		[58351] = "Nạp quân huy",
+		[58352] = "[Bài Phép / Thường / UR]\nTừ khóa: \"liqi\"\nChọn tối đa 2 quái thú có từ khóa \"liqi\" tay phe ta, đưa chúng vào mộ, sau đó phe ta rút bài bằng số quái đã chọn + 1.",
+		[58353] = "Nạp quân huy",
+		[58354] = "Chọn tối đa 2 quái thú có từ khóa \"liqi\" tay phe ta, đưa chúng vào mộ, sau đó phe ta rút bài bằng số quái đã chọn + 1.",
+		-- Elsu - Mafia (12383)
+		[58355] = "Elsu - Mafia",
+		[58356] = "[Chiến Binh / Hiệu Ứng / UR]\nThuộc tính: Quang | 4 Sao\nTừ khóa: \"liqi\"\nATK: 1800 | DEF: 200",
+		[58357] = "Elsu - Mafia",
+		[58358] = "Ẩn Thân Bắn Tỉa",
+		[58359] = "Khi trở thành mục tiêu tấn công, đưa lá bài này về lại tay sau đó phá hủy quái đối phương (xuyên qua 12002).",
+		[58360] = "Định Mệnh Mafia",
+		[58361] = "Bắt đầu lượt đối thủ (sau khi đối phương rút bài): 1 lượt 1 lần, tung 1 đồng xu, mặt ngửa: phe địch bỏ 1 lá bài quái thú trên tay vào mộ. Mặt úp: phe ta bỏ 1 lá bài ngẫu nhiên trên tay vào mộ.",
+		-- Hu hu các người bắt nạt ta (21175)
+		[58362] = "Hu hu các người bắt nạt ta",
+		[58363] = "[Bài Phép / Thường / UR]\nTừ khóa: \"liqi\"\nTriệu hồi đặc biệt 1 12336 từ mộ lên sân, tất cả 12336 trên sân phe ta nhận 5000 atk.",
+		[58364] = "Hu hu các người bắt nạt ta",
+		[58365] = "Triệu hồi đặc biệt 1 12336 từ mộ lên sân, tất cả 12336 trên sân phe ta nhận 5000 atk.",
+		-- Airi - Thứ nguyên vệ thần (12384)
+		[58366] = "Airi - Thứ nguyên vệ thần",
+		[58367] = "[Chiến Binh / Hiệu Ứng / UR]\nThuộc tính: Quang | 8 Sao\nTừ khóa: \"liqi\"\nATK: 3000 | DEF: 2500",
+		[58368] = "Airi - Thứ nguyên vệ thần",
+		[58369] = "Thứ Nguyên Giáng Lâm",
+		[58370] = "Kĩ năng chủ động tay: Chọn hi sinh 2 quái có từ khóa \"liqi\" trên sân phe ta, triệu hồi đặc biệt lá bài này.",
+		[58371] = "Long Kiếm Liên Trảm",
+		[58372] = "Kĩ năng chủ động: 1 lượt 1 lần, nhận 1080 Liên Trảm.",
+		-- tel'annas - Thứ nguyên vệ thần (12385)
+		[58373] = "tel'annas - Thứ nguyên vệ thần",
+		[58374] = "[Chiến Binh / Hiệu Ứng / UR]\nThuộc tính: Quang | 4 Sao\nTừ khóa: \"liqi\"\nATK: 1700 | DEF: 100",
+		[58375] = "tel'annas - Thứ nguyên vệ thần",
+		[58376] = "Thần Tiễn Triệu Tập",
+		[58377] = "Kĩ năng chủ động: 1 lượt tối đa 3 lần, khi được triệu hồi lên sân, chọn 1 quái có từ khóa \"liqi\" 6 sao trở xuống từ trên tay triệu hồi đặc biệt lên sân.",
+		[58378] = "Tiếp Tế Tinh Linh",
+		[58379] = "Kĩ năng chủ động: 1 lượt 1 lần, chọn 1 bài trên tay đưa vào mộ, chọn lấy 1 quái 6 sao trở xuống từ bộ bài có từ khóa \"liqi\" lấy lên tay.",
+		[58380] = "Cộng Hưởng Sinh Mệnh",
+		[58381] = "Khi lên sân, tăng lp phe ta bằng số bài có từ khóa \"liqi\" trong mộ x100, đối phương cũng đồng thời nhận số lp tương ứng x2.",
+		-- Helen (12386)
+		[58382] = "Helen",
+		[58383] = "[Phù Thủy / Hiệu Ứng / UR]\nThuộc tính: Quang | 2 Sao\nTừ khóa: \"liqi\"\nATK: 0 | DEF: 1800",
+		[58384] = "Helen",
+		[58385] = "Khúc Ca Cứu Rỗi",
+		[58386] = "Kĩ năng chủ động tay: Khi phe ta có LP thấp hơn đối phương có thể kích hoạt: Triệu hồi Đặc biệt lá bài này lên sân.",
+		[58387] = "Thanh Âm Chữa Lành",
+		[58388] = "Khi lên sân, phe ta tăng 500 LP. Nếu đối phương có nhiều hơn phe ta 4000 LP, phe ta tăng thêm 500 LP nữa.",
+		-- Dolia (12387)
+		[58389] = "Dolia",
+		[58390] = "[Thủy / Hiệu Ứng / UR]\nThuộc tính: Thủy | 3 Sao\nTừ khóa: \"liqi\"\nATK: 700 | DEF: 1000",
+		[58391] = "Dolia",
+		[58392] = "Khúc Ca Đại Dương",
+		[58393] = "Khi lá bài này nằm trong mộ, bắt đầu mỗi lượt phe ta, phe ta nhận 500 LP.",
+		-- Heino (12388)
+		[58394] = "Heino",
+		[58395] = "[Phù Thủy / Hiệu Ứng / UR]\nThuộc tính: Quang | 6 Sao\nTừ khóa: \"liqi\"\nATK: 2200 | DEF: 1800",
+		[58396] = "Heino",
+		[58397] = "Hồi Sinh Định Mệnh",
+		[58398] = "Kĩ năng chủ động mộ: 1 lượt 1 lần, triệu hồi đặc biệt bản thân lên sân trong thế thủ (không thể thay đổi tư thế trong lượt này).",
+		-- Heino x Dolia (40782)
+		[58399] = "Heino x Dolia",
+		[58400] = "[Phù Thủy / Dung Hợp / Hiệu Ứng / UR]\nThuộc tính: Quang | 8 Sao\nTừ khóa: \"liqi\"\nATK: 2800 | DEF: 2600",
+		[58401] = "Heino x Dolia",
+		[58402] = "Phong Tỏa Không Gian",
+		[58403] = "Kĩ năng chủ động: Chỉ có thể kích hoạt 1 lần: Nếu phe ta chưa tấn công có thể kích hoạt: Phe ta và đối phương không thể tấn công trong 1 lượt.",
+		[58404] = "Ký Ức Thời Gian",
+		[58405] = "Kĩ năng chủ động mộ: Loại bỏ bản thân, phe ta rút 1 lá.",
+		[58050] = "Dimensional Barrier",
+		[58051] = "Dimensional Barrier",
+		[58052] = "",
+		[58053] = "Rào Chắn Chiều Không Gian",
+		[58054] = "Khi quái đối thủ triệu hồi 1 trong 4 loại này: Nghi thức, Dung hợp, Đồng bộ hoặc XYZ sẽ kích hoạt. Trong phần còn lại của lượt này, cả hai người chơi không thể Triệu Hồi Đặc Biệt quái thú thuộc loại đã được kích hoạt, đồng thời vô hiệu hóa hiệu ứng của tất cả quái vật thuộc loại đó khi chúng đang ở trên sân.",
+		[58055] = "Dominus Impulse",
+		[58056] = "Dominus Impulse",
+		[58057] = "",
+		[58058] = "Xung Lực Thống Trị",
+		[58059] = "1 lượt 1 lần. Khi lá bài này nằm trên tay và đối phương Triệu Hồi Đặc Biệt quái vật lên sân: Vô hiệu hóa quái thú đó; nếu trong mộ có bài Bẫy thì phá hủy nó. Sau đó không thể kích hoạt hiệu ứng quái Ánh Sáng, Đất, Gió.",
+		[58060] = "Dominus Spark",
+		[58061] = "Dominus Spark",
+		[58062] = "",
+		[58063] = "Tia Lửa Thống Trị",
+		[58064] = "1 lượt 1 lần. Khi đối thủ kích hoạt hiệu ứng quái trên tay/mộ: Loại bỏ ngẫu nhiên 1 quái trên sân đối thủ; nếu mộ không có bẫy, đối thủ triệu hồi 1 quái từ tay. Khóa hiệu ứng quái Đất, Nước, Lửa, Gió.",
+		[58065] = "Trap Holic",
+		[58066] = "Trap Holic",
+		[58067] = "",
+		[58068] = "Nghiện Bẫy",
+		[58069] = "Chọn mục tiêu là 1 lá bài Phép/Bẫy phe ta đang điều khiển: Phá hủy nó; chọn lấy 1 bài Bẫy thông thường từ bộ bài lên tay (ngoại trừ Trap Holic). Nếu có >= 3 bẫy trong mộ: 1 lượt 1 lần.",
+		-- Shin đi bơi (12367)
+		[58070] = "Shin đi bơi",
+		[58071] = "[Chiến Binh / Hiệu Ứng / Điều Chỉnh / UR]",
+		[58072] = "Shin đi bơi",
+		[58073] = "Shin đi bơi",
+		[58074] = "Kĩ năng chủ động tay: 1 lượt 1 lần, triệu hồi đặc biệt bài này lên sân đối phương, phe ta và đối phương rút 1 lá.",
+		[58075] = "Nạp đạn",
+		[58076] = "Kĩ năng chủ động: 1 lượt 1 lần, bỏ tất cả bài trên Tay về Bộ Bài; xáo trộn và rút lại lượng bài tương ứng về Tay.",
+		[2239] = "Labrynth",
+		[58110] = "LABRYNTH COOCLOCK",
+		[58111] = "[Quỷ / Hiệu Ứng / Điều Chỉnh / UR]",
+		[58112] = "LABRYNTH COOCLOCK",
+		[58113] = "Báo Thức Mê Cung",
+		[58114] = "Kỹ năng tay chủ động. Mỗi lượt chỉ 1 lần. Khi trên sân phe ta có quái vật có từ khóa “Labrynth” Hi sinh bản thân bài này; lấy 1 bài Phép/Bẫy trên tay đối thủ vào bài trên tay phe ta.",
+		[58115] = "Đồng Hồ Hồi Quy",
+		[58116] = "Khi lá này nằm trong mộ: Mỗi lượt chỉ 1 lần. Khi phe ta kích hoạt hiệu ứng bài có từ khóa “Labrynth” sẽ kích hoạt; đưa bản thân lá này vào tay.",
+		[58117] = "LABRYNTH STOVIE TORBIE",
+		[58118] = "[Quỷ / Hiệu Ứng / UR]",
+		[58119] = "LABRYNTH STOVIE TORBIE",
+		[58120] = "Lò Sưởi Mê Cung",
+		[58121] = "Kỹ năng tay/sân chủ động. Mỗi lượt chỉ 1 lần. Hi sinh bản thân bài này;Chọn 1 lá bài trên tay phe ta đưa vào mộ. Sau đó lấy 1 lá bài Phép/Bẫy có từ khóa “Labrynth” từ bộ bài phe ta vào tay.",
+		[58122] = "Thiêu Rụi Chiến Lợi",
+		[58123] = "Mỗi lượt chỉ 1 lần. Khi bài này nằm trong mộ, khi đối thủ lấy bài vào tay, sẽ loại bỏ bản thân bài này và bài đối thủ vừa lấy được.",
+		[58124] = "Tro Tàn Trỗi Dậy",
+		[58125] = "Khi lá này nằm trong mộ: Mỗi lượt chỉ 1 lần. Khi phe ta kích hoạt hiệu ứng bài có từ khóa “Labrynth” sẽ kích hoạt; Triệu hồi đặc biệt lá này lên sân phe ta.",
+		[58126] = "LABRYNTH CHANDRAGLIER",
+		[58127] = "[Quỷ / Hiệu Ứng / UR]",
+		[58128] = "LABRYNTH CHANDRAGLIER",
+		[58129] = "Đèn Chùm Mê Cung",
+		[58130] = "Kỹ năng tay/sân chủ động. Mỗi lượt chỉ 1 lần. Hi sinh bản thân bài này;Chọn 1 lá bài trên tay phe ta đưa vào mộ. Sau đó lấy 1 lá bài Bẫy từ bộ bài phe ta vào tay.",
+		[58131] = "Ánh Nến Phản Phép",
+		[58132] = "Mỗi lượt chỉ 1 lần. Khi bài này nằm trong mộ, khi trong mộ phe ta có lá Bẫy từ khóa “Labrynth”, khi đối thủ dùng bài Phép sẽ kích hoạt. Loại bỏ bản thân bài này, vô hiệu hóa và phá hủy bài của đối thủ.",
+		[58133] = "Thắp Lại Ánh Đèn",
+		[58134] = "Khi lá này nằm trong mộ: Mỗi lượt chỉ 1 lần. Khi phe ta kích hoạt hiệu ứng bài có từ khóa “Labrynth” sẽ kích hoạt; đưa bản thân lá này vào tay.",
+		[58135] = "ARIANNA THE LABRYNTH SERVANT",
+		[58136] = "[Quỷ / Hiệu Ứng / UR]",
+		[58137] = "ARIANNA THE LABRYNTH SERVANT",
+		[58138] = "Hầu Gái Dẫn Lối",
+		[58139] = "Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Hi sinh bản thân lá này lấy 1 lá quái “Labrynth” 4 sao trở xuống từ bộ bài phe ta vào tay",
+		[58140] = "Tiếp Đón Mê Cung",
+		[58141] = "Chủ động: Mỗi lượt chỉ 1 lần. Lấy 1 bài có từ khóa \"Labrynth” từ bộ bài phe ta vào tay.",
+		[58142] = "Triệu Tập Hầu Gái",
+		[58143] = "Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Chọn và Triệu Hồi Đặc Biệt 1 quái 4 sao trở xuống, có từ khóa \"Labrynth” từ mộ phe ta.",
+		[58144] = "ARIANE THE LABRYNTH SERVANT",
+		[58145] = "[Quỷ / Hiệu Ứng / UR]",
+		[58146] = "ARIANE THE LABRYNTH SERVANT",
+		[58147] = "Bẫy Ngầm Hiện Thân",
+		[58148] = "Kỹ năng tay chủ động: mỗi lượt chỉ 1 lần. Hi sinh 1 lá bẫy trên tay phe ta; Triệu Hồi Đặc Biệt bản thân bài này từ trên tay.",
+		[58149] = "Triệu Tập Arianna",
+		[58150] = "Chủ động: Mỗi lượt chỉ 1 lần. Chọn và triệu hồi lá bài “ARIANNA THE LABRYNTH SERVANT” từ mộ hoặc bộ bài phe ta.",
+		[58151] = "Thu Hồi Mê Cung",
+		[58152] = "Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ 1 lá bài trong mộ phe ta, chọn và lấy 1 quái có từ khóa “Labrynth” trong mộ bài loại bỏ phe ta về bộ bài.",
+		[58153] = "LABRYNTH KNIGHT",
+		[58154] = "[Chiến Binh / Hiệu Ứng / UR]",
+		[58155] = "LABRYNTH KNIGHT",
+		[58156] = "Kỵ Sĩ Hộ Vệ",
+		[58157] = "Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Khi trên sân phe ta có quái 8 sao có từ khóa “Labrynth”; Triệu Hồi Đặc Biệt bản thân bài này từ trên tay.",
+		[58158] = "Khiên Chắn Mê Cung",
+		[58159] = "Khi có mặt; quái 8 sao có từ khóa “Labrynth” phe ta khi lên sân sẽ không bị ảnh hưởng bởi hiệu ứng bài Phép/Bẫy của đối thủ",
+		[58160] = "Chiến Ý Mê Cung",
+		[58161] = "Khi lên sân, bài này tăng tấn công bằng tổng số quái có từ khóa \"Labrynth” đang có mặt trong mộ mộ bài loại bỏ phe ta x300 (bỏ qua \"Tường Chấn Quái\").",
+		[58162] = "Song Kiếm Liên Trảm",
+		[58163] = "Chủ động: Bản thân chưa hành động có thể dùng. Chỉ lượt này; nhận được \"Liên Trảm\", sau khi kích hoạt, các quái vật khác ở phe ta không thể tấn công ngoại trừ Quái Vật 8 sao có từ khoá “Labrynth”.",
+		[58164] = "Uy Áp Kỵ Sĩ",
+		[58165] = "Khi tấn công, Quái Vật trên sân; tay hoặc mộ của đối thủ không thể kích hoạt hiệu ứng quái vật và đối thủ không thể kích hoạt hiệu ứng phép thuật hoặc bẫy trên sân.",
+		[58166] = "Thệ Ước Trung Thành",
+		[58167] = "Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Loại bỏ bản thân lá này, chọn và triệu hồi 1 Quái Vật 8 sao có từ khóa “Labrynth” trong mộ phe ta.",
+		[58168] = "ARIAS THE LABRYNTH BUTLER",
+		[58169] = "[Quỷ / Hiệu Ứng / UR]",
+		[58170] = "ARIAS THE LABRYNTH BUTLER",
+		[58171] = "Quản Gia Tiếp Đón",
+		[58172] = "Kỹ năng tay chủ động: mỗi lượt chỉ 1 lần. Hi sinh bản thân lá này; chọn và Triệu Hồi Đặc Biệt 1 lá quái vật có từ khóa “Labrynth” từ tay/bộ bài phe ta.",
+		[58173] = "Chuẩn Bị Cạm Bẫy",
+		[58174] = "Chủ động: mỗi lượt chỉ 1 lần. Hi sinh bản thân lá này; lấy 1 lá bài Phép/Bẫy có từ khóa “Labrynth” từ bộ bài phe ta vào tay .",
+		[58175] = "Quản Gia Tái Xuất",
+		[58176] = "Khi lá này nằm trong mộ. Mỗi lượt chỉ 1 lần. Khi phe ta hoặc đối thủ kích hoạt hiệu ứng Quái hoặc bài Bẫy; triệu hồi đặc biệt bản thân lá này lên sân phe ta.",
+		[58177] = "Thu Thập Mộ Phần",
+		[58178] = "Kỹ năng mộ chủ động:Mỗi lượt chỉ 1 lần. Hi sinh bản thân lá này. Chọn 1 lá trong mộ đối thủ đưa về mộ phe ta.",
+		[58179] = "LABRYNTH ARCHFIEND",
+		[58180] = "[Quỷ / Hiệu Ứng / UR]",
+		[58181] = "LABRYNTH ARCHFIEND",
+		[58182] = "Giáp Quỷ Bất Hoại",
+		[58183] = "Khi lên sân, nhận được \"Khiên Chắn Phá Hủy”.",
+		[58184] = "Tượng Đài Canh Gác",
+		[58185] = "Khi trên sân, lá bài này không thể tấn công.",
+		[58186] = "Tấm Khiên Mê Cung",
+		[58187] = "Khi có mặt, nếu trên sân phe ta có quái khác có từ khóa \"Labrynth\"; đối thủ chỉ có thể chọn lá bài này làm mục tiêu tấn công.",
+		[58188] = "Uy Lực Bẫy Ngầm",
+		[58189] = "Khi lá này nằm trên sân. Tăng tấn công và phòng thủ bằng tổng số lá Bẫy trong mộ/mộ bài loại bỏ phe ta×400.",
+		[58190] = "Ác Quỷ Phục Kích",
+		[58191] = "Kỹ năng tay chủ động: Khi lá này ở trên tay, khi phe ta kích hoạt bài Bẫy. Mỗi lượt chỉ 1 lần. Triệu hồi đặc biệt bản thân bài này từ trên tay.",
+		[58192] = "Truy Tìm Bẫy Mê Cung",
+		[58193] = "Chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy 1 lá bài Bẫy từ khóa “Labrynth” từ bộ bài phe ta vào tay.",
+		[58194] = "Hộ Mệnh Vực Thẳm",
+		[58195] = "Khi bài này nằm trong mộ, phe ta bị mất LP từ chiến đấu trực tiếp sẽ có thể dùng. Loại bỏ bản thân bài này, bỏ qua lần sát thương đó.",
+		[58196] = "LADY LABRYNTH OF THE SILVER CASTLE",
+		[58197] = "[Quỷ / Hiệu Ứng / UR]",
+		[58198] = "LADY LABRYNTH OF THE SILVER CASTLE",
+		[58199] = "Quý Cô Giá Lâm",
+		[58200] = "Kỹ năng tay chủ động: mỗi lượt chỉ 1 lần. Nếu một lá bài có từ khóa \"Labrynth\" hoặc một Lá bài Bẫy Thường được kích hoạt trong lượt này, ngoại trừ \"Lady Labrynth of the Silver Castle\" có thể kích hoạt; Triệu hồi Đặc biệt lá bài này từ trên tay.",
+		[58201] = "Quyền Uy Lâu Đài Bạc",
+		[58202] = "Khi bài này được Triệu Hồi Đặc Biệt, khi lên sân, bài này tăng tấn công bằng tổng số Bẫy có từ khóa “Labrynth” đang có mặt trong mộ mộ bài loại bỏ phe ta x300 (bỏ qua \"Tường Chắn Quái\").",
+		[58203] = "Hộ Giáp Bạch Ngân",
+		[58204] = "khi bài này lên sân, sẽ nhận được \"Tường Chắn Quái\".",
+		[58205] = "Bảo Hộ Cạm Bẫy",
+		[58206] = "Khi bài này trên sân, Khi bài Bẫy phe ta điều khiển bị ảnh hưởng bởi bài đối thủ, hiệu ứng sẽ bị bỏ qua.",
+		[58207] = "Phán Quyết Bạch Ngân",
+		[58208] = "Chủ động. Mỗi lượt chỉ 1 lần. Chọn tối đa 1 lá bài trên sân đối thủ và đưa vào mộ (bỏ qua \"Tường Chắn Quái\").",
+		[58209] = "Thiết Lập Mê Cung",
+		[58210] = "Chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy 1 lá Bẫy từ bộ bài phe ta vào tay.",
+		[58211] = "Hoàng Tộc Tương Trợ",
+		[58212] = "1 lần trong một vòng. Khi ở trên sân, khi phe của bạn triệu hồi một Quái Vật 8 sao có từ khóa “Labrynth” ngoại trừ “Lady Labrynth of the Silver Castle”, hãy rút một lá bài.",
+		[58213] = "Phong Ấn Ngoại Điện",
+		[58214] = "Kỹ năng kích hoạt: Chỉ một lần mỗi vòng, Khi phe ta kích hoạt bài Bẫy có thể kích hoạt. Chọn tối đa 2 quái vật từ bộ bài phụ của đối thủ và tạm thời trục xuất chúng cho đến hết lượt tiếp theo của đối thủ.",
+		[58215] = "Trừng Phạt Kẻ Xâm Nhập",
+		[58216] = "Mỗi lượt chỉ 1 lần. Khi đối thủ Triệu Hồi Đặc Biệt quái vật, phá hủy quái đối thủ vừa triệu hồi (bỏ qua \"Khiên Chắn Quái\").",
+		[58217] = "Di Sản Bạch Ngân",
+		[58218] = "Kỹ năng mộ loại bỏ chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy 1 lá Bẫy, có từ khóa “Labrynth” từ mộ/mộ bài loại bỏ phe ta vào tay. Kỹ năng chỉ kích hoạt 1 lần.",
+		[58219] = "LOVELY LABRYNTH OF THE SILVER CASTLE",
+		[58220] = "[Quỷ / Hiệu Ứng / UR]",
+		[58221] = "LOVELY LABRYNTH OF THE SILVER CASTLE",
+		[58222] = "Lời Mời Vào Mê Cung",
+		[58223] = "Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Chọn 1 bài quái trên sân đối thủ và 1 lá bẫy trên tay phe ta đưa vào mộ loại bỏ (bỏ qua “Tường Chắn Quái”). Sau đó triệu hồi Đặc biệt bài này lên sân.",
+		[58224] = "Quyền Uy Lâu Đài Bạc",
+		[58225] = "Khi bài này được Triệu Hồi Đặc Biệt, khi lên sân, bài này tăng tấn công bằng tổng số Bẫy có từ khóa “Labrynth” đang có mặt trong mộ mộ bài loại bỏ phe ta x300 (bỏ qua \"Tường Chắn Quái\").",
+		[58226] = "Hộ Giáp Bạch Ngân",
+		[58227] = "khi bài này lên sân, sẽ nhận được \"Tường Chắn Quái\".",
+		[58228] = "Bảo Hộ Cạm Bẫy",
+		[58229] = "Khi bài này trên sân, Khi bài Bẫy phe ta điều khiển bị ảnh hưởng bởi bài đối thủ, hiệu ứng sẽ bị bỏ qua.",
+		[58230] = "Chiếm Đoạt Linh Hồn",
+		[58231] = "Mỗi lượt chỉ 1 lần. Khi đối thủ Triệu Hồi Đặc Biệt quái vật, đưa quái đối thủ vừa triệu hồi vào mộ phe ta. (bỏ qua \"Khiên Chắn Quái\")",
+		[58232] = "Trục Xuất Bất Ngờ",
+		[58233] = "Mỗi lượt chỉ 1 lần. Khi Phe ta hoặc đối thủ dùng bài Bẫy sẽ kích hoạt. Trục xuất ngẫu nhiên 1 lá trên tay đối thủ.",
+		[58234] = "Tái Thiết Cạm Bẫy",
+		[58235] = "Chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy tối đa 2 lá Bẫy trong mộ phe ta vào tay.",
+		[58236] = "Thu Hồi Phép Bẫy",
+		[58237] = "Chủ động: mỗi lượt chỉ 1 lần. Chọn và lấy 1 lá Phép/Bẫy trong mộ loại bỏ phe ta vào tay.",
+		[58238] = "Triệu Tập Gia Nhân",
+		[58239] = "Kỹ năng mộ loại bỏ chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy 1 quái 4 sao trở xuống, có từ khóa “Labrynth” từ bộ bài vào tay. Kỹ năng chỉ kích hoạt 1 lần.",
+		[58240] = "PRINCESS LABRYNTH OF THE SILVER CASTLE",
+		[58241] = "[Quỷ / Hiệu Ứng / GR]",
+		[58242] = "PRINCESS LABRYNTH OF THE SILVER CASTLE",
+		[58243] = "Công Chúa Giá Lâm",
+		[58244] = "Kỹ năng tay chủ động: Mỗi lượt chỉ 1 lần. Triệu Hồi Đặc Biệt bài này từ bài trên tay.",
+		[58245] = "Quyền Uy Lâu Đài Bạc",
+		[58246] = "Khi bài này được Triệu Hồi Đặc Biệt, khi lên sân, bài này tăng tấn công bằng tổng số Bẫy có từ khóa “Labrynth” đang có mặt trong mộ mộ bài loại bỏ phe ta x300 (bỏ qua \"Tường Chắn Quái\").",
+		[58247] = "Bảo Hộ Cạm Bẫy",
+		[58248] = "Khi bài này trên sân, Khi bài Bẫy phe ta điều khiển bị ảnh hưởng bởi bài đối thủ, hiệu ứng sẽ bị bỏ qua.",
+		[58249] = "Bất Khả Xâm Phạm",
+		[58250] = "Khi vào: Nhận được \"Quái vật, Phép thuật, Bẫy Rào chắn”.",
+		[58251] = "Kho Tàng Cạm Bẫy",
+		[58252] = "Chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy 2 lá Bẫy từ bộ bài/mộ/mộ loại bỏ phe ta vào tay.",
+		[58253] = "Lệnh Triệu Tập Hoàng Gia",
+		[58254] = "Chủ động: Mỗi lượt chỉ 1 lần. Chọn và lấy 1 lá quái vật có từ khóa “Labrynth” từ bộ bài phe ta vào tay.",
+		[58255] = "Hủy Diệt Triệu Hồi Phụ",
+		[58256] = "Mỗi lượt chỉ 1 lần. Khi đối thủ Triệu Hồi Đặc Biệt Quái từ bộ bài phụ: phá hủy quái đối thủ vừa triệu hồi (bỏ qua \"Khiên Chắn Quái\").",
+		[58257] = "Lời Nguyền Bạch Ngân",
+		[58258] = "Khi rời sân trong lượt của đối thủ. Tất cả Quái Vật của đối thủ không thể tấn công và không thể sử dụng bài trên tay.",
+		[58259] = "Hồi Sinh Từ Vực Thẳm",
+		[58260] = "Kỹ năng mộ chủ động: Mỗi lượt chỉ 1 lần. Chọn và loại bỏ 2 lá trong mộ của đối thủ. Triệu hồi đặc biệt bản thân lá này lên sân. Nếu triệu hồi bằng cách lên sân chỉ nhận được “Tường Chắn Quái”.",
 	}
+
 	_G.CARD_NAME_OVERRIDES = CARD_NAME_OVERRIDES
 
 	-- Ensure Str and ClientData.str always unescape \n to actual newline and use Linh Thach terms
@@ -7009,9 +8881,7 @@ function patchClientData()
 		end
 	end
 
-
-
-		-- Ensure all PVE attack/challenge inputs have _offlineMode = true
+	-- Ensure all PVE attack/challenge inputs have _offlineMode = true
 	local _origGenInputFromResp = ClientData.genInputFromResp
 	ClientData.genInputFromResp = function(resp)
 		local function ensureHasField(tbl, visited)
@@ -7286,8 +9156,13 @@ ClientData.unloadLCRes = function(names)
 					local okShow, errShow = pcall(function()
 						local rp = require("RewardPanel")
 						local p = rp.create(rewardsList, rp.MODE_EXCHANGE)
-							p:show(ClientData.ZOrder.dialog or 70)
+						p._ignoreBlur = true
+						p:show(ClientData.ZOrder.dialog or 70)
 						p:setVisible(true)
+					end)
+					pcall(function()
+						local rewardMsg = res.msg or "Nhập mã quà tặng thành công!"
+						require("Dialog").showDialog(rewardMsg, nil, true)
 					end)
 					if not okShow then
 						print("[GIFT CODE] Error displaying RewardPanel:", tostring(errShow))
@@ -7840,7 +9715,7 @@ ClientData.unloadLCRes = function(names)
 				processChatMessage(m.id or 0, m.timestamp or os.time(), m.account_id or 1, m.name or "", m.level or 1, m.avatar or 201, contentVal, m.type or m.msg_type or 1, cardId, m.client_msg_id or "", crownId, crownNum, true, m.union_id or 0)
 			end
 			pcall(flushPendingChatQueue)
-			local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel
+			local cp = (ClientView and ClientView.getChatPanel and ClientView.getChatPanel()) or ClientData._chatPanel or _G._chatPanel
 			if cp and cp._isPop then
 				pcall(function() cp:resetList() end)
 			end
@@ -7848,10 +9723,17 @@ ClientData.unloadLCRes = function(names)
 	end
 	local function pollChatHistory()
 		pcall(flushPendingChatQueue)
-		if _G._isPollingChat then return end
 		local now = os.time()
-		if _G._lastChatPoll and (now - _G._lastChatPoll) < 8 then return end
+		if _G._isPollingChat then
+			if _G._chatPollStartTime and (now - _G._chatPollStartTime) > 10 then
+				_G._isPollingChat = false
+			else
+				return
+			end
+		end
+		if _G._lastChatPoll and (now - _G._lastChatPoll) < 5 then return end
 		_G._isPollingChat = true
+		_G._chatPollStartTime = now
 		_G._lastChatPoll = now
 
 		pcall(function()
@@ -8134,6 +10016,7 @@ ClientData.unloadLCRes = function(names)
 
 		local myAccId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
 		local myCards = {}
+		local myExtraCards = {}
 		local curTroopIndex = (P and P._curTroopIndex) or 1
 		local troop = P and P._playerCard and P._playerCard._troops and P._playerCard._troops[curTroopIndex]
 		local pList = (troop and (troop._cards or troop)) or {}
@@ -8141,8 +10024,13 @@ ClientData.unloadLCRes = function(names)
 			local cid = type(card) == "table" and (card._infoId or card.info_id) or card
 			local num = type(card) == "table" and (card._num or card.num or 1) or 1
 			if cid and tonumber(cid) then
+				cid = tonumber(cid)
 				for _ = 1, (tonumber(num) or 1) do
-					table.insert(myCards, tonumber(cid))
+					if cid < 40000 then
+						table.insert(myCards, cid)
+					else
+						table.insert(myExtraCards, cid)
+					end
 				end
 			end
 		end
@@ -8155,6 +10043,7 @@ ClientData.unloadLCRes = function(names)
 				level = (P and P._level) or 50,
 				avatar = (P and P._avatar) or 201,
 				cards = myCards,
+				extra_cards = myExtraCards,
 				room_type = roomType or Data.RoomType.normal,
 				match_hp = 8000
 			}, function(rawRes)
@@ -8162,8 +10051,14 @@ ClientData.unloadLCRes = function(names)
 				if ind2 and ind2.hide then ind2:hide() end
 				local res = (type(rawRes) == "string") and json.decode(rawRes) or rawRes
 				if res and res.code == 200 and res.room then
+					if P and P._playerRoom then
+						P._playerRoom:clear()
+					end
 					local roomMsg = buildRoomMsgFromData(res.room)
 					P._playerRoom:initMyRoom(roomMsg)
+					if lc._runningScene and lc._runningScene._sceneId ~= ClientData.SceneId.in_room then
+						lc.pushScene(require("InRoomScene").create())
+					end
 				else
 					ToastManager.push(res and res.msg or "Không thể tạo phòng!")
 				end
@@ -8178,6 +10073,7 @@ ClientData.unloadLCRes = function(names)
 
 		local myAccId = (ClientData._account and ClientData._account.id) or (P and P._id) or 1
 		local myCards = {}
+		local myExtraCards = {}
 		local curTroopIndex = (P and P._curTroopIndex) or 1
 		local troop = P and P._playerCard and P._playerCard._troops and P._playerCard._troops[curTroopIndex]
 		local pList = (troop and (troop._cards or troop)) or {}
@@ -8185,8 +10081,13 @@ ClientData.unloadLCRes = function(names)
 			local cid = type(card) == "table" and (card._infoId or card.info_id) or card
 			local num = type(card) == "table" and (card._num or card.num or 1) or 1
 			if cid and tonumber(cid) then
+				cid = tonumber(cid)
 				for _ = 1, (tonumber(num) or 1) do
-					table.insert(myCards, tonumber(cid))
+					if cid < 40000 then
+						table.insert(myCards, cid)
+					else
+						table.insert(myExtraCards, cid)
+					end
 				end
 			end
 		end
@@ -8199,7 +10100,8 @@ ClientData.unloadLCRes = function(names)
 				name = (P and P._name) or "Duelist",
 				level = (P and P._level) or 50,
 				avatar = (P and P._avatar) or 201,
-				cards = myCards
+				cards = myCards,
+				extra_cards = myExtraCards
 			}, function(rawRes)
 				local ind2 = ClientView.getActiveIndicator()
 				if ind2 and ind2.hide then ind2:hide() end
@@ -8289,52 +10191,83 @@ ClientData.unloadLCRes = function(names)
 		local matchId = serverRoom.match_id or ("m_room_" .. tostring(serverRoom.code))
 		local seed = tonumber(serverRoom.seed) or math.random(1, 65535)
 
-		local fallbackCids = (Data._troopInfo and Data._troopInfo[1] and Data._troopInfo[1]._infoId) or { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003 }
+		local fallbackCids = { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 20001, 20002, 20003, 20004, 20005, 30001, 30002, 30003 }
+		local defaultExtra = { 40001, 40002, 40008, 40022, 40025, 40039, 40159, 40207, 40259, 40386, 40399, 40534, 40588, 40605, 40672 }
 
-		local function buildCardsFromRaw(rawCards)
-			local cards, levels, skins = {}, {}, {}
-			local count = 0
-			local counts, order = {}, {}
-			local function addCid(cid)
-				cid = tonumber(cid)
-				if cid and cid > 0 then
-					if not counts[cid] then
-						counts[cid] = 0
-						table.insert(order, cid)
+		local function extractOrderedRoomIds(src)
+			local out = {}
+			if type(src) ~= "table" then return out end
+			if #src > 0 then
+				for _, c in ipairs(src) do
+					local cid = (type(c) == "table" and (c._infoId or c.info_id)) or c
+					local num = (type(c) == "table" and (c._num or c.num)) or 1
+					if cid and tonumber(cid) then
+						cid = tonumber(cid)
+						num = math.max(1, tonumber(num) or 1)
+						for _ = 1, num do
+							table.insert(out, cid)
+						end
 					end
-					counts[cid] = counts[cid] + 1
 				end
-			end
-			if type(rawCards) == "table" then
+			else
 				local numKeys = {}
-				for k in pairs(rawCards) do
+				for k in pairs(src) do
 					if tonumber(k) then table.insert(numKeys, tonumber(k)) end
 				end
-				if #numKeys > 0 then
-					table.sort(numKeys)
-					for _, k in ipairs(numKeys) do
-						addCid(rawCards[k] or rawCards[tostring(k)])
+				table.sort(numKeys)
+				for _, k in ipairs(numKeys) do
+					local c = src[k] or src[tostring(k)]
+					local cid = (type(c) == "table" and (c._infoId or c.info_id)) or c
+					local num = (type(c) == "table" and (c._num or c.num)) or 1
+					if cid and tonumber(cid) then
+						cid = tonumber(cid)
+						num = math.max(1, tonumber(num) or 1)
+						for _ = 1, num do
+							table.insert(out, cid)
+						end
 					end
+				end
+			end
+			return out
+		end
+
+		local function buildCardsFromRaw(rawCards, rawExtra, isOppo)
+			local mainIds = {}
+			local extraIds = {}
+			for _, cid in ipairs(extractOrderedRoomIds(rawCards)) do
+				if cid < 40000 then
+					table.insert(mainIds, cid)
 				else
-					for _, v in pairs(rawCards) do
-						addCid(v)
-					end
+					table.insert(extraIds, cid)
 				end
 			end
-			for _, cid in ipairs(order) do
-				table.insert(cards, { info_id = cid, num = counts[cid] })
-				table.insert(levels, { info_id = cid, level = 1 })
-				table.insert(skins, buildSkinEntryForCard(cid))
-				count = count + counts[cid]
+			for _, cid in ipairs(extractOrderedRoomIds(rawExtra)) do
+				if cid >= 40000 then
+					table.insert(extraIds, cid)
+				end
 			end
-			while count < 40 do
+			while #mainIds < 40 do
 				for _, cid in ipairs(fallbackCids) do
-					if count >= 40 then break end
-					table.insert(cards, { info_id = cid, num = 1 })
-					table.insert(levels, { info_id = cid, level = 1 })
-					table.insert(skins, buildSkinEntryForCard(cid))
-					count = count + 1
+					if #mainIds >= 40 then break end
+					table.insert(mainIds, cid)
 				end
+			end
+			if #extraIds == 0 then
+				for _, cid in ipairs(defaultExtra) do
+					table.insert(extraIds, cid)
+				end
+			end
+			local cards, levels, skins = {}, {}, {}
+			local skinBuilder = isOppo and buildOppoSkinEntryForCard or buildSkinEntryForCard
+			for _, cid in ipairs(mainIds) do
+				table.insert(cards, { info_id = cid, num = 1 })
+				table.insert(levels, { info_id = cid, level = 1 })
+				table.insert(skins, skinBuilder(cid))
+			end
+			for _, cid in ipairs(extraIds) do
+				table.insert(cards, { info_id = cid, num = 1 })
+				table.insert(levels, { info_id = cid, level = 1 })
+				table.insert(skins, skinBuilder(cid))
 			end
 			return cards, levels, skins
 		end
@@ -8364,43 +10297,19 @@ ClientData.unloadLCRes = function(names)
 		local myCrown, oppoCrown
 
 		if isWatcher then
-			playerCards, playerLevels, playerSkins = buildCardsFromRaw(pA.cards)
-			oppoCards, oppoLevels, oppoSkins = buildCardsFromRaw(pB.cards)
+			playerCards, playerLevels, playerSkins = buildCardsFromRaw(pA.cards, pA.extra_cards, false)
+			oppoCards, oppoLevels, oppoSkins = buildCardsFromRaw(pB.cards, pB.extra_cards, true)
 			myCrown = parseCrown(pA)
 			oppoCrown = parseCrown(pB)
 		else
-			playerCards = {}
-			playerLevels = {}
-			playerSkins = {}
-			local totalPlayerCards = 0
+			local meObj = (pA.id == myAccId) and pA or pB
 			local curTroopIndex = (P and P._curTroopIndex) or 1
 			local pTroop = (P and P._playerCard and P._playerCard._troops and P._playerCard._troops[curTroopIndex]) or {}
 			local pList = (type(pTroop) == "table" and (pTroop._cards or pTroop)) or {}
-			for _, card in ipairs(pList) do
-				local cid = type(card) == "table" and (card._infoId or card.info_id) or card
-				local num = type(card) == "table" and (card._num or card.num) or 1
-				local lvl = type(card) == "table" and ((card._level and card._level > 0) and card._level or 1) or 1
-				if cid and tonumber(cid) then
-					cid = tonumber(cid)
-					num = math.max(1, tonumber(num) or 1)
-					lvl = tonumber(lvl) or 1
-					table.insert(playerCards, { info_id = cid, num = num })
-					table.insert(playerLevels, { info_id = cid, level = lvl })
-					table.insert(playerSkins, buildSkinEntryForCard(cid))
-					totalPlayerCards = totalPlayerCards + num
-				end
-			end
-			while totalPlayerCards < 40 do
-				for _, cid in ipairs(fallbackCids) do
-					if totalPlayerCards >= 40 then break end
-					table.insert(playerCards, { info_id = cid, num = 1 })
-					table.insert(playerLevels, { info_id = cid, level = 1 })
-					table.insert(playerSkins, buildSkinEntryForCard(cid))
-					totalPlayerCards = totalPlayerCards + 1
-				end
-			end
-
-			oppoCards, oppoLevels, oppoSkins = buildCardsFromRaw(oppo.cards)
+			local meCards = (meObj and meObj.cards and #extractOrderedRoomIds(meObj.cards) > 0) and meObj.cards or pList
+			local meExtra = (meObj and meObj.extra_cards) or nil
+			playerCards, playerLevels, playerSkins = buildCardsFromRaw(meCards, meExtra, false)
+			oppoCards, oppoLevels, oppoSkins = buildCardsFromRaw(oppo.cards, oppo.extra_cards, true)
 			myCrown = parseCrown(P) or (ClientData and ClientData._account and parseCrown(ClientData._account))
 			oppoCrown = parseCrown(oppo)
 		end
@@ -8619,16 +10528,22 @@ ClientData.unloadLCRes = function(names)
 						local isOppoSurrender = bUi._opponent and (bUi._opponent._isSurrender or bUi._opponent._isRetreat)
 						local isExodia = (bUi._player and bUi._player._winBy3190) or (bUi._opponent and bUi._opponent._winBy3190)
 						local isGodWin = (bUi._player and bUi._player._winBy3798) or (bUi._opponent and bUi._opponent._winBy3798)
-						local isDeckOut = (bUi._player and bUi._player._macroStatus == BattleData.Status.round_begin and bUi._player:getIsPileEmpty()) or (bUi._opponent and bUi._opponent._macroStatus == BattleData.Status.round_begin and bUi._opponent:getIsPileEmpty())
+						local isHayateWin = (bUi._player and bUi._player._winByHayate) or (bUi._opponent and bUi._opponent._winByHayate)
+						local isDeckOut = (bUi._player and (bUi._player._deckOut or bUi._player:getIsPileEmpty())) or (bUi._opponent and (bUi._opponent._deckOut or bUi._opponent:getIsPileEmpty()))
 
 						local myRes = (tostring(peerResult) == "1" and Data.BattleResult.win or Data.BattleResult.lose)
 						if isOppoSurrender or (oppoHp and oppoHp <= 0 and (not playerHp or playerHp > 0)) then
 							myRes = Data.BattleResult.win
 						elseif isLocalSurrender or (playerHp and playerHp <= 0 and (not oppoHp or oppoHp > 0)) then
 							myRes = Data.BattleResult.lose
-						elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isDeckOut) then
+						elseif tostring(peerResult) == "2" and not (isLocalSurrender or (playerHp and playerHp <= 0) or isExodia or isGodWin or isHayateWin or isDeckOut) then
 							print("[PVP END] Rejected premature peer loss: Player HP is " .. tostring(playerHp) .. ", Oppo HP is " .. tostring(oppoHp))
 							return
+						end
+						if isHayateWin and not bUi._hayateVideoPlayed then
+							bUi._hayateVideoPlayed = true
+							local api = jsbridge and jsbridge.object("jdzcApi")
+							if api and api.playSpecialVideo then api:playSpecialVideo("res/new/thumb/liqi/haya.mp4") end
 						end
 						bUi._forceResult = myRes
 						bUi:sendBattleEnd(false, myRes)
@@ -9954,14 +11869,20 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 			local isSurrender = (self._isSurrender == true) or (self._player and (self._player._isSurrender or self._player._isRetreat)) or (self._opponent and (self._opponent._isSurrender or self._opponent._isRetreat))
 			local isExodia = (self._player and self._player._winBy3190) or (self._opponent and self._opponent._winBy3190)
 			local isGodWin = (self._player and self._player._winBy3798) or (self._opponent and self._opponent._winBy3798)
-			local isDeckOut = (self._player and self._player._macroStatus == BattleData.Status.round_begin and self._player:getIsPileEmpty()) or (self._opponent and self._opponent._macroStatus == BattleData.Status.round_begin and self._opponent:getIsPileEmpty())
+			local isHayateWin = (self._player and self._player._winByHayate) or (self._opponent and self._opponent._winByHayate)
+			local isDeckOut = (self._player and (self._player._deckOut or self._player:getIsPileEmpty())) or (self._opponent and (self._opponent._deckOut or self._opponent:getIsPileEmpty()))
 			local isRoundExceed = (self._player and self._player:getIsRoundExceed()) or (self._opponent and self._opponent:getIsRoundExceed())
 
-			if not (isHpDead or isSurrender or isExodia or isGodWin or isDeckOut or isRoundExceed) then
+			if not (isHpDead or isSurrender or isExodia or isGodWin or isHayateWin or isDeckOut or isRoundExceed) then
 				print("[h5_patch:sendBattleEnd] PREVENTED premature end! Player HP:", playerHp, "Oppo HP:", oppoHp)
 				self._offlineResultShown = false
 				self._isBattleEndSended = false
 				return
+			end
+			if isHayateWin and not self._hayateVideoPlayed then
+				self._hayateVideoPlayed = true
+				local api = jsbridge and jsbridge.object("jdzcApi")
+				if api and api.playSpecialVideo then api:playSpecialVideo("res/new/thumb/liqi/haya.mp4") end
 			end
 
 			local input = self._input
@@ -10405,6 +12326,11 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 					else
 						finalizeBattleEnd(1, 1000, ((P and P._playerFindClash and P._playerFindClash._trophy) or 800) + 1, (P and P._gold) or 1000)
 					end
+				elseif (levelId and levelId > 0) or isPveMatch then
+					-- Thua PVE (Phiêu lưu / Ải): 0 gold
+					local curT = (P and P._playerFindClash and P._playerFindClash._trophy) or 800
+					local dGold = (res == Data.BattleResult.win) and 1000 or 0
+					finalizeBattleEnd(0, dGold, curT, ((P and P._gold) or 0) + dGold)
 				elseif self._battleType == Data.BattleType.PVP_survival_ex or (input and input._offlineKind == "survival_ex") then
 					local sEx = P and P._playerFindSurvivalEx
 					local dGold = (res == Data.BattleResult.win) and 3000 or 500
@@ -10551,7 +12477,7 @@ local oldSendBattleEnd = BattleUi.sendBattleEnd
 					finalizeBattleEnd(0, 0, curT, (P and P._gold) or 0, Data.ResType.ingot, rewardGem)
 				else
 					-- Non-rank or fallback
-					local dGold = (res == Data.BattleResult.win) and 1000 or 200
+					local dGold = (res == Data.BattleResult.win) and 1000 or 0
 					local curT = (P and P._playerFindClash and P._playerFindClash._trophy) or 800
 					finalizeBattleEnd(0, dGold, curT, ((P and P._gold) or 0) + dGold)
 				end

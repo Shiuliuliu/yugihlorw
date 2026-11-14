@@ -344,7 +344,7 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 			1.6,
 			0.6
 		}
-	elseif var_1_0 == 1080 or var_1_0 == 1109 or var_1_0 == 1123 or var_1_0 == 1153 or var_1_0 == 3604 or var_1_0 == 4064 or var_1_0 == 4192 or var_1_0 == 4274 or var_1_0 == 4282 or var_1_0 == 4319 or var_1_0 == 4321 or var_1_0 == 4550 or var_1_0 == 4685 or var_1_0 == 4916 or var_1_0 == 5266 or var_1_0 == 5317 or var_1_0 == 5458 or var_1_0 == 5518 or var_1_0 == 7323 or var_1_0 == 7441 or var_1_0 == 7548 or var_1_0 == 7600 or var_1_0 == 6425 or var_1_0 == 6457 or var_1_0 == 6497 or var_1_0 == 6701 or var_1_0 == 6695 or var_1_0 == 6781 or var_1_0 == 6905 or var_1_0 == 6932 or var_1_0 == 2235 or var_1_0 == 2310 or var_1_0 == 2450 or var_1_0 == 2517 or var_1_0 == 2521 or var_1_0 == 2541 or var_1_0 == 2752 or var_1_0 == 2989 or var_1_0 == 9290 or var_1_0 == 9341 or var_1_0 == 9552 or var_1_0 == 9598 or var_1_0 == 9830 or var_1_0 == 9831 or var_1_0 == 9838 or var_1_0 == 9844 or var_1_0 == 9845 or var_1_0 == 9848 or var_1_0 == 9925 or var_1_0 == 13339 then
+	elseif var_1_0 == 1080 or var_1_0 == 1109 or var_1_0 == 1123 or var_1_0 == 1153 or var_1_0 == 3604 or var_1_0 == 4064 or var_1_0 == 4192 or var_1_0 == 4274 or var_1_0 == 4282 or var_1_0 == 4319 or var_1_0 == 4321 or var_1_0 == 4550 or var_1_0 == 4685 or var_1_0 == 4916 or var_1_0 == 5266 or var_1_0 == 5317 or var_1_0 == 5458 or var_1_0 == 5518 or var_1_0 == 7323 or var_1_0 == 7441 or var_1_0 == 7548 or var_1_0 == 7600 or var_1_0 == 6425 or var_1_0 == 6457 or var_1_0 == 6497 or var_1_0 == 6701 or var_1_0 == 6695 or var_1_0 == 6781 or var_1_0 == 6905 or var_1_0 == 6932 or var_1_0 == 2235 or var_1_0 == 2310 or var_1_0 == 2450 or var_1_0 == 2517 or var_1_0 == 2521 or var_1_0 == 2541 or var_1_0 == 2752 or var_1_0 == 2989 or var_1_0 == 9290 or var_1_0 == 9341 or var_1_0 == 9552 or var_1_0 == 9598 or var_1_0 == 9830 or var_1_0 == 9831 or var_1_0 == 9838 or var_1_0 == 9844 or var_1_0 == 9845 or var_1_0 == 9848 or var_1_0 == 9925 or var_1_0 == 13339 or var_1_0 == 20152 then
 		arg_1_0:updateBoardCardsActive()
 	elseif var_1_0 == 5449 or var_1_0 == 5534 or var_1_0 == 5633 or var_1_0 == 6669 or var_1_0 == 6693 or var_1_0 == 7712 or var_1_0 == 2350 or var_1_0 == 9093 or var_1_0 == 9545 or var_1_0 == 9546 or var_1_0 == 9547 or var_1_0 == 9929 then
 		arg_1_0._opponentUi:updateBoardCardsActive()
@@ -352,7 +352,7 @@ function var_0_0.castSkillAction(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4)
 		arg_1_1:updatePositiveStatus()
 	elseif var_1_0 == 11011 or var_1_0 == 12011 then
 		arg_1_0:playAction(arg_1_1, var_0_0.Action.avoid_attack, 0)
-	elseif var_1_0 == 13190 or var_1_0 == 13191 then
+	elseif var_1_0 == 13190 or var_1_0 == 13191 or var_1_0 == 20121 or var_1_0 == 20123 or var_1_0 == 20127 or var_1_0 == 20131 or var_1_0 == 20135 or var_1_0 == 20137 or var_1_0 == 20140 or var_1_0 == 20143 or var_1_0 == 20146 or var_1_0 == 20149 or var_1_0 == 20155 or var_1_0 == 20163 or var_1_0 == 20166 or var_1_0 == 20176 or var_1_0 == 20185 then
 		arg_1_0:replaceHandCards(0, arg_1_1._card)
 		arg_1_0._opponentUi:replaceHandCards(0, arg_1_1._card)
 	end
@@ -377,7 +377,16 @@ function var_0_0.efcFortressDieRemove(arg_13_0)
 end
 
 function var_0_0.efcFortressDie(arg_14_0)
-	if arg_14_0._player._opponent._winBy3190 then
+	if arg_14_0._player._opponent._winByHayate then
+		local bUi = arg_14_0._battleUi
+		if not bUi or not bUi._hayateVideoPlayed then
+			if bUi then bUi._hayateVideoPlayed = true end
+			local api = jsbridge and jsbridge.object("jdzcApi")
+			if api and api.playSpecialVideo then
+				api:playSpecialVideo("res/new/thumb/liqi/haya.mp4")
+			end
+		end
+	elseif arg_14_0._player._opponent._winBy3190 then
 		local var_14_0 = DragonBones.create("aikezuodiya")
 
 		lc.addChildToCenter(arg_14_0._scene, var_14_0, BattleUi.ZOrder.effect)

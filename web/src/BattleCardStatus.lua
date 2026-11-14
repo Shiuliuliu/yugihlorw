@@ -1,6 +1,10 @@
 local var_0_0 = PlayerBattle
 
 function var_0_0.changeCardStatus(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4, arg_1_5)
+	if (arg_1_1._type == Data.CardType.magic or arg_1_1._type == Data.CardType.trap) and arg_1_3 == BattleData.CardStatus.board then
+		arg_1_3 = BattleData.CardStatus.grave
+	end
+
 	if arg_1_1._type == Data.CardType.rare and arg_1_3 ~= BattleData.CardStatus.board and arg_1_3 ~= BattleData.CardStatus.grave and arg_1_3 ~= BattleData.CardStatus.leave then
 		arg_1_3 = BattleData.CardStatus.rare
 	end
@@ -100,6 +104,36 @@ function var_0_0.changeCardStatus(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4, a
 			end
 		end
 
+		-- LABRYNTH STOVIE TORBIE (12372 / 20138): Mỗi lượt chỉ 1 lần. Khi bài này nằm trong mộ, khi đối thủ lấy bài vào tay, sẽ loại bỏ bản thân bài này và bài đối thủ vừa lấy được.
+		if arg_1_3 == BattleData.CardStatus.hand and arg_1_2 ~= BattleData.CardStatus.hand then
+			local isDuelRound = (arg_1_0._round and arg_1_0._round > 0) and (arg_1_0._macroStatus ~= BattleData.Status.initial_deal) and (not arg_1_1.isStatusValDeal or not arg_1_1:isStatusValDeal())
+			if isDuelRound and oppo then
+				local turnId = (arg_1_0._round or 0) * 1000 + (oppo._round or 0)
+				if oppo._stovieBanishTurn ~= turnId and (oppo._castedSkillCounts[20138] or 0) == 0 then
+					local stovieCard = nil
+					for _, gc in ipairs(oppo:getBattleCards("G")) do
+						if (gc:isInfoId(12372) or gc._infoId == 12372 or gc:hasSkillFast(20138)) and gc._status == BattleData.CardStatus.grave and gc:canChangeToLeave() then
+							stovieCard = gc
+							break
+						end
+					end
+					if stovieCard then
+						oppo._stovieBanishTurn = turnId
+						oppo._castedSkillCounts[20138] = (oppo._castedSkillCounts[20138] or 0) + 1
+						oppo:changeCardStatus(stovieCard, BattleData.CardStatus.grave, BattleData.CardStatus.leave, BattleData.CardStatusVal.g2l_self, stovieCard, 20138, 91)
+						arg_1_3 = BattleData.CardStatus.leave
+						if arg_1_2 == BattleData.CardStatus.pile then
+							arg_1_4 = BattleData.CardStatusVal.p2l_show
+						end
+						if oppo.checkLabrynthGraveTriggers then
+							oppo:checkLabrynthGraveTriggers(stovieCard, 20138)
+						end
+						arg_1_0:battleLog("[BATTLE] Labrynth Stovie Torbie (12372) banished self from grave and banished opponent added card %d!", arg_1_1._infoId)
+					end
+				end
+			end
+		end
+
 		-- 3. Card 11959: Opponent draws Dragon -> discard 11959, banish drawn dragon
 		if arg_1_2 == BattleData.CardStatus.pile and arg_1_3 == BattleData.CardStatus.hand and isDragonMonsterCard(arg_1_1) then
 			local isDuelRound = (arg_1_0._round and arg_1_0._round > 0) and (arg_1_0._macroStatus ~= BattleData.Status.initial_deal) and (not arg_1_1.isStatusValDeal or not arg_1_1:isStatusValDeal())
@@ -144,6 +178,41 @@ function var_0_0.changeCardStatus(arg_1_0, arg_1_1, arg_1_2, arg_1_3, arg_1_4, a
 	local var_1_1 = arg_1_0:getActionPlayer()
 
 	table.insert(var_1_1._cardStatusToChange, var_1_0)
+
+	-- Shin - buồn ngủ (12368 / 20123): 1 lượt 1 lần, khi đối phương rút bài lên tay, triệu hồi đặc biệt lá bài này lên sân đối phương, đối phương rút 1 lá.
+	if arg_1_2 == BattleData.CardStatus.pile and arg_1_3 == BattleData.CardStatus.hand and not arg_1_0._recursingShinNgu and oppo and not oppo._isSkillDisabled then
+		local isDuelRound = (arg_1_0._round and arg_1_0._round > 0) and (arg_1_0._macroStatus ~= BattleData.Status.initial_deal)
+		if isDuelRound and not oppo._isSummonDisabled and not oppo._isSpecialSummonDisabled then
+			local turnId = (arg_1_0._round or 0) * 1000 + (oppo._round or 0)
+			if oppo._castedShinNguTurn ~= turnId and #arg_1_0:getBoardCards() < Data.MAX_CARD_COUNT_ON_BOARD then
+				local nguCard = getActiveHandTrap(oppo, 12368)
+				if nguCard and arg_1_0:getEmptyBoardPos(nguCard) ~= nil then
+					oppo._castedShinNguTurn = turnId
+					oppo._castedSkillCounts[20123] = 1
+					arg_1_0._recursingShinNgu = true
+					oppo:changeCardStatus(nguCard, BattleData.CardStatus.hand, BattleData.CardStatus.board, BattleData.CardStatusVal.h2b_oppo_special, nguCard)
+					for _, pCard in ipairs(arg_1_0._pileCards or {}) do
+						if pCard ~= arg_1_1 and pCard._status == BattleData.CardStatus.pile then
+							local alreadyQueued = false
+							local actP = arg_1_0:getActionPlayer()
+							for _, item in ipairs((actP and actP._cardStatusToChange) or {}) do
+								if item._card == pCard then
+									alreadyQueued = true
+									break
+								end
+							end
+							if not alreadyQueued then
+								arg_1_0:changeCardStatus(pCard, BattleData.CardStatus.pile, BattleData.CardStatus.hand, BattleData.CardStatusVal.p2h, nguCard)
+								break
+							end
+						end
+					end
+					arg_1_0._recursingShinNgu = false
+					arg_1_0:battleLog("[BATTLE] Shin - buon ngu (12368) triggered on opponent draw!")
+				end
+			end
+		end
+	end
 
 	if arg_1_1:isMonsterRare() and arg_1_2 == BattleData.CardStatus.board and arg_1_3 ~= BattleData.CardStatus.board then
 		local var_1_2 = {}
@@ -298,7 +367,7 @@ function var_0_0.removeCardFromBoard(arg_6_0, arg_6_1)
 	local var_6_0 = arg_6_1._statusVal == BattleData.CardStatusVal.b2b_oppo_once or arg_6_1._statusVal == BattleData.CardStatusVal.b2b_oppo_once_attack_frozen or arg_6_1._statusVal == BattleData.CardStatusVal.b2h_oppo_once
 	local var_6_1 = arg_6_1._statusVal == BattleData.CardStatusVal.b2b_oppo_once or arg_6_1._statusVal == BattleData.CardStatusVal.b2b_oppo_once_attack_frozen or arg_6_1._statusVal == BattleData.CardStatusVal.b2b_oppo_forever or arg_6_1._statusVal == BattleData.CardStatusVal.b2b_oppo_forever_attack_frozen or arg_6_1._statusVal == BattleData.CardStatusVal.b2b_oppo_forever_using
 
-	if var_6_1 or arg_6_1._statusVal == BattleData.CardStatusVal.b2h_oppo or arg_6_1._statusVal == BattleData.CardStatusVal.b2p_oppo or arg_6_1._statusVal == BattleData.CardStatusVal.b2h_oppo_once or arg_6_1._statusVal == BattleData.CardStatusVal.b2g_oppo_sacrifice or arg_6_1._statusVal == BattleData.CardStatusVal.x2g_oppo or arg_6_1._statusVal == BattleData.CardStatusVal.x2l_temp_oppo or arg_6_1._statusVal == BattleData.CardStatusVal.x2gl_oppo_cost then
+	if var_6_1 or arg_6_1._statusVal == BattleData.CardStatusVal.b2h_oppo or arg_6_1._statusVal == BattleData.CardStatusVal.b2p_oppo or arg_6_1._statusVal == BattleData.CardStatusVal.b2h_oppo_once or arg_6_1._statusVal == BattleData.CardStatusVal.b2g_oppo_sacrifice or arg_6_1._statusVal == BattleData.CardStatusVal.x2g_oppo or arg_6_1._statusVal == BattleData.CardStatusVal.x2l_temp_oppo or arg_6_1._statusVal == BattleData.CardStatusVal.x2gl_oppo_cost or (arg_6_1._originOwner ~= nil and arg_6_1._owner ~= arg_6_1._originOwner and (arg_6_1._destStatus == BattleData.CardStatus.grave or arg_6_1._destStatus == BattleData.CardStatus.leave or arg_6_1._destStatus == BattleData.CardStatus.hand or arg_6_1._destStatus == BattleData.CardStatus.pile or arg_6_1._destStatus == BattleData.CardStatus.rare)) then
 		arg_6_1._owner:removeCardToOppo(arg_6_1)
 	end
 
@@ -316,6 +385,30 @@ function var_0_0.removeCardFromBoard(arg_6_0, arg_6_1)
 
 	if arg_6_1._statusVal ~= BattleData.CardStatusVal.b2b_oppo_forever then
 		arg_6_1._mark13329 = nil
+	end
+
+	-- PRINCESS LABRYNTH (12381 / 20192): Khi bài này rời sân trong lượt của đối thủ; trong lượt này, quái vật đối thủ không thể tấn công và đối thủ không thể sử dụng bài trên tay.
+	if (arg_6_1:isInfoId(12381) or arg_6_1._infoId == 12381 or arg_6_1:hasSkillFast(20192)) then
+		local owner = arg_6_1._owner or (arg_6_1.getOriginOwner and arg_6_1:getOriginOwner())
+		local oppo = owner and owner._opponent
+		if oppo and oppo._macroStatus == BattleData.Status.use then
+			oppo._princessAttackLockedTurn = oppo._round
+			oppo._princessHandLockedTurn = oppo._round
+		elseif oppo and owner and owner._battle and owner._battle:getActivePlayer() == oppo then
+			oppo._princessAttackLockedTurn = oppo._round
+			oppo._princessHandLockedTurn = oppo._round
+		end
+	end
+
+	-- Hayate - Thứ nguyên vệ thần (40781 / 20221): Khi lá bài này vào mộ từ trên sân, phe ta nhận LP bằng số LP hiện tại của đối phương x2.
+	if (arg_6_1:isInfoId(40781) or arg_6_1._infoId == 40781 or arg_6_1:hasSkillFast(20221)) and arg_6_1._destStatus == BattleData.CardStatus.grave then
+		local owner = arg_6_1._originOwner or arg_6_1._owner or arg_6_0
+		local oppo = owner and owner._opponent
+		local oppoHp = (oppo and oppo._fortress and oppo._fortress._hp) or 0
+		local healVal = oppoHp * 2
+		if owner and owner._fortress and healVal > 0 then
+			owner:incHp(owner._fortress, healVal, false, arg_6_1._id, 20221, Data.SkillMode.bcs2gl)
+		end
 	end
 
 	if arg_6_1:isStatusValSacrifice() and arg_6_1:hasSkillFast(3206) then
@@ -336,6 +429,30 @@ function var_0_0.removeCardFromBoard(arg_6_0, arg_6_1)
 
 	if arg_6_1._infoId == 40729 or arg_6_1:hasSkillFast(14714) then
 		arg_6_1._trigger14714 = nil
+	end
+	arg_6_1._gokuUi20084Done = nil
+	arg_6_1._gokuBlue20082Done = nil
+	if arg_6_1._infoId == 40773 or (arg_6_1._info and arg_6_1._info._id == 40773) or arg_6_1:hasSkillFast(20085) then
+		local oppo = arg_6_0._opponent
+		if oppo then
+			local stillHas40773 = false
+			if arg_6_0._boardCards then
+				for i = 1, Data.MAX_CARD_COUNT_ON_BOARD do
+					local bc = arg_6_0._boardCards[i]
+					if bc and bc ~= arg_6_1 and (bc._infoId == 40773 or (bc._info and bc._info._id == 40773) or bc:hasSkillFast(20085)) then
+						stillHas40773 = true
+						break
+					end
+				end
+			end
+			if not stillHas40773 then
+				oppo._isSummonDisabled = false
+				oppo._isSpecialSummonDisabled = false
+				if oppo._fortress and oppo._fortress:hasBuff(false, BattleData.NegativeType.boardLock) then
+					oppo:decNegativeStatus(oppo._fortress, { BattleData.NegativeType.boardLock }, false, arg_6_1._id, 20085, Data.SkillMode.once)
+				end
+			end
+		end
 	end
 
 	arg_6_1._prevAtk = arg_6_1._atk
@@ -719,10 +836,15 @@ function var_0_0.addCardToHand(arg_14_0, arg_14_1)
 end
 
 function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
+	if arg_15_1._type == Data.CardType.magic or arg_15_1._type == Data.CardType.trap then
+		arg_15_0:addCardToGrave(arg_15_1)
+		return
+	end
+
 	if arg_15_1:isMonsterRare() then
 		local var_15_0
 
-		if arg_15_1._infoId == 40729 or arg_15_1._infoId == 40731 then
+		if arg_15_1._infoId == 40729 or arg_15_1._infoId == 40731 or arg_15_1._infoId == 40776 or (arg_15_1._saved and arg_15_1._saved._bypassLink) then
 			var_15_0 = arg_15_1._saved._pos and (arg_15_0:isLinkPosEmpty(arg_15_1._saved._pos) or arg_15_0:isBoardPosEmpty(arg_15_1._saved._pos)) and arg_15_1._saved._pos or (arg_15_0:getEmptyLinkPos(arg_15_1) or arg_15_0:getEmptyBoardPos(arg_15_1))
 		elseif arg_15_1:isStatusValLinkSummon() then
 			var_15_0 = arg_15_1._saved._pos and arg_15_0:isLinkPosEmpty(arg_15_1._saved._pos) and arg_15_1._saved._pos or arg_15_0:getEmptyLinkPos(arg_15_1)
@@ -748,6 +870,8 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 
 		if var_15_0 ~= nil then
 			if arg_15_0._boardCards[var_15_0] ~= nil and arg_15_0._boardCards[var_15_0] ~= arg_15_1 then
+				local oldC = arg_15_0._boardCards[var_15_0]
+				arg_15_0:changeCardStatus(oldC, BattleData.CardStatus.board, BattleData.CardStatus.grave, BattleData.CardStatusVal.b2g_sacrifice, arg_15_1)
 				arg_15_0._boardCards[var_15_0] = nil
 			end
 			arg_15_0._boardCards[var_15_0] = arg_15_1
@@ -764,7 +888,71 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 				arg_15_1._monsterTarget = arg_15_1._saved._monsterTarget
 			end
 
-			if arg_15_0._isAttacker and arg_15_0._round == (arg_15_0._battleType == Data.BattleType.PVP_room and 2 or 1) and arg_15_0._battleType ~= Data.BattleType.unittest and arg_15_0._battleType ~= Data.BattleType.teach or arg_15_1._statusVal == BattleData.CardStatusVal.r2b_compose_ex or arg_15_1._statusVal == BattleData.CardStatusVal.g2b_decompose or arg_15_1._statusVal == BattleData.CardStatusVal.r2b_sync_attack_frozen or arg_15_1._statusVal == BattleData.CardStatusVal.r2b_xyz_attack_frozen then
+			-- Labrynth Special Summon ATK Boost (20167, 20177, 20186): ATK += ("Labrynth" Traps in GL) * 300
+			local isSpSummon1 = (B and B.isSpecialSummon and B.isSpecialSummon(arg_15_1)) or (arg_15_1.isStatusValSpecialSummon and arg_15_1:isStatusValSpecialSummon()) or ((arg_15_1:isMonster() or arg_15_1:isMonsterRare()) and not (arg_15_1.isStatusValNormalSummon and arg_15_1:isStatusValNormalSummon()) and not (arg_15_1.isStatusValNotSummon and arg_15_1:isStatusValNotSummon()))
+			if (arg_15_1._infoId == 12379 or arg_15_1._infoId == 12380 or arg_15_1._infoId == 12381) and (isSpSummon1 or arg_15_1._statusVal == BattleData.CardStatusVal.h2b_normal or arg_15_1._statusVal == BattleData.CardStatusVal.p2b_normal or arg_15_1._statusVal == BattleData.CardStatusVal.g2b_normal or arg_15_1._statusVal == BattleData.CardStatusVal.l2b_normal) then
+				local trapCount = 0
+				for _, c in ipairs(arg_15_0:getBattleCards("G")) do
+					if (c:isTrap() or c._type == Data.CardType.trap) and (c:isKeyword(308) or (c._info and c._info._keyword == 308)) then
+						trapCount = trapCount + 1
+					end
+				end
+				for _, c in ipairs(arg_15_0:getBattleCards("L")) do
+					if (c:isTrap() or c._type == Data.CardType.trap) and (c:isKeyword(308) or (c._info and c._info._keyword == 308)) then
+						trapCount = trapCount + 1
+					end
+				end
+				local atkBonus = trapCount * 300
+				if atkBonus > 0 then
+					arg_15_1._atk = arg_15_1._atk + atkBonus
+					if arg_15_1._maxAtk then
+						arg_15_1._maxAtk = arg_15_1._maxAtk + atkBonus
+					end
+				end
+			end
+
+			-- LADY LABRYNTH (12379 / 20172): Draw 1 when 8★ Labrynth monster (except Lady) summoned
+			if (arg_15_1:isKeyword(308) or (arg_15_1._info and arg_15_1._info._keyword == 308)) and arg_15_1:getStar() == 8 and arg_15_1._infoId ~= 12379 then
+				if (arg_15_0._castedSkillCounts[20172] or 0) == 0 and #arg_15_0:getBattleCardsByInfoId("B", 12379) > 0 then
+					arg_15_0._castedSkillCounts[20172] = 1
+					arg_15_0:drawCards(1)
+				end
+			end
+
+			-- Hướng dương (12389 / 20244): Khi lên sân: lấy 1 lá <Sun> (21176) từ bộ bài / mộ bài / mộ loại bỏ lên tay
+			if arg_15_1._infoId == 12389 or arg_15_1:isInfoId(12389) or arg_15_1:hasSkillFast(20244) then
+				local sunCard = nil
+				for _, c in ipairs(arg_15_0:filterCanChangeToHandCards(arg_15_0:getBattleCards("P"))) do
+					if c._infoId == 21176 or (c.isInfoId and c:isInfoId(21176)) then
+						sunCard = c
+						break
+					end
+				end
+				if not sunCard then
+					for _, c in ipairs(arg_15_0:filterCanChangeToHandCards(arg_15_0:getBattleCards("G"))) do
+						if c._infoId == 21176 or (c.isInfoId and c:isInfoId(21176)) then
+							sunCard = c
+							break
+						end
+					end
+				end
+				if not sunCard then
+					for _, c in ipairs(arg_15_0:filterCanChangeToHandCards(arg_15_0:getBattleCards("L"))) do
+						if c._infoId == 21176 or (c.isInfoId and c:isInfoId(21176)) then
+							sunCard = c
+							break
+						end
+					end
+				end
+				if sunCard then
+					local srcVal = (sunCard._status == BattleData.CardStatus.pile) and BattleData.CardStatusVal.p2h_draw
+						or ((sunCard._status == BattleData.CardStatus.grave) and BattleData.CardStatusVal.g2h_normal
+						or BattleData.CardStatusVal.l2h_normal)
+					arg_15_0:setCardStatus(sunCard, BattleData.CardStatus.hand, arg_15_1._id, 20244, Data.SkillMode.once, srcVal)
+				end
+			end
+
+			if (arg_15_0._battleType == Data.BattleType.PVP_room and arg_15_0._round == 1) or (arg_15_0._isAttacker and arg_15_0._round == (arg_15_0._battleType == Data.BattleType.PVP_room and 2 or 1) and arg_15_0._battleType ~= Data.BattleType.unittest and arg_15_0._battleType ~= Data.BattleType.teach) or arg_15_1._statusVal == BattleData.CardStatusVal.r2b_compose_ex or arg_15_1._statusVal == BattleData.CardStatusVal.g2b_decompose or arg_15_1._statusVal == BattleData.CardStatusVal.r2b_sync_attack_frozen or arg_15_1._statusVal == BattleData.CardStatusVal.r2b_xyz_attack_frozen then
 				arg_15_1._canAttack = false
 			else
 				arg_15_1._canAttack = true
@@ -866,6 +1054,26 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 					end
 				end
 			end
+
+				-- Opponent Special Summon triggers (20174, 20180, 20191)
+				local isSpSummon2 = (B and B.isSpecialSummon and B.isSpecialSummon(arg_15_1)) or (arg_15_1.isStatusValSpecialSummon and arg_15_1:isStatusValSpecialSummon()) or ((arg_15_1:isMonster() or arg_15_1:isMonsterRare()) and not (arg_15_1.isStatusValNormalSummon and arg_15_1:isStatusValNormalSummon()) and not (arg_15_1.isStatusValNotSummon and arg_15_1:isStatusValNotSummon()))
+				if (isSpSummon2 or arg_15_1._destStatusVal == BattleData.CardStatusVal.h2b_normal or arg_15_1._destStatusVal == BattleData.CardStatusVal.p2b_normal or arg_15_1._destStatusVal == BattleData.CardStatusVal.g2b_normal or arg_15_1._destStatusVal == BattleData.CardStatusVal.l2b_normal) then
+					local labOppo = arg_15_0._opponent
+					if labOppo and (labOppo._castedSkillCounts[20174] or 0) == 0 and #labOppo:getBattleCardsByInfoId("B", 12379) > 0 then
+						labOppo._castedSkillCounts[20174] = 1
+						arg_15_0:setCardStatus(arg_15_1, BattleData.CardStatus.grave, 12379, 20174, Data.SkillMode.once, BattleData.CardStatusVal.b2g_destroy)
+					elseif labOppo and (labOppo._castedSkillCounts[20180] or 0) == 0 and #labOppo:getBattleCardsByInfoId("B", 12380) > 0 then
+						labOppo._castedSkillCounts[20180] = 1
+						arg_15_0:changeCardStatus(arg_15_1, arg_15_1._status, BattleData.CardStatus.grave, BattleData.CardStatusVal.x2g_oppo, 12380, 20180, Data.SkillMode.once)
+					end
+
+					if labOppo and (labOppo._castedSkillCounts[20191] or 0) == 0 and #labOppo:getBattleCardsByInfoId("B", 12381) > 0 then
+						if arg_15_1:isMonsterRare() or arg_15_1._status == BattleData.CardStatus.rare or arg_15_1._destStatusVal == BattleData.CardStatusVal.z2b_normal or arg_15_1._statusVal == BattleData.CardStatusVal.z2b_normal or arg_15_1:isStatusValLinkSummon() then
+							labOppo._castedSkillCounts[20191] = 1
+							arg_15_0:setCardStatus(arg_15_1, BattleData.CardStatus.grave, 12381, 20191, Data.SkillMode.once, BattleData.CardStatusVal.b2g_destroy)
+						end
+					end
+				end
 
 			if arg_15_1._infoId == 12324 or arg_15_1:hasSkillFast(14700) then
 				local cur_lp = math.max(0, (arg_15_0._fortress and arg_15_0._fortress._hp) or arg_15_0._hp or 8000)
@@ -1200,7 +1408,7 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 			end
 
 			if not arg_15_1:isStatusValNotSummon() then
-				local var_15_9 = arg_15_1._statusVal == BattleData.CardStatusVal.h2b_oppo_normal and arg_15_0._opponent or arg_15_0
+				local var_15_9 = (arg_15_1._statusVal == BattleData.CardStatusVal.h2b_oppo_normal or arg_15_1._statusVal == BattleData.CardStatusVal.h2b_oppo_special) and arg_15_0._opponent or arg_15_0
 
 				var_15_9._isSummoned = true
 				var_15_9._summonedMonsterStar[#var_15_9._summonedMonsterStar + 1] = arg_15_1:getStar()
@@ -1324,6 +1532,61 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 		lc.clearTable(arg_15_1._saved)
 	end
 
+	-- Labrynth Labyrinth (21173 / 20214): Khi co mat: Quai Labrynth len san nhan Khien Chan Quai/Phep/Bay va tang 300 tan cong
+	if (arg_15_1:isKeyword(308) or (arg_15_1._info and arg_15_1._info._keyword == 308)) then
+		local var_owner = arg_15_1._owner or arg_15_0
+		local hasLab21173 = false
+		if var_owner then
+			if var_owner._fieldCard and (var_owner._fieldCard:isInfoId(21173) or var_owner._fieldCard._infoId == 21173 or var_owner._fieldCard:hasSkillFast(20214)) then
+				hasLab21173 = true
+			end
+			if not hasLab21173 and var_owner._magicCards then
+				for _, mc in ipairs(var_owner._magicCards) do
+					if mc and (mc:isInfoId(21173) or mc._infoId == 21173 or mc:hasSkillFast(20214)) then
+						hasLab21173 = true
+						break
+					end
+				end
+			end
+			if not hasLab21173 and var_owner.getBattleCards then
+				for _, sc in ipairs(var_owner:getBattleCards("C")) do
+					if sc and (sc:isInfoId(21173) or sc._infoId == 21173 or sc:hasSkillFast(20214)) then
+						hasLab21173 = true
+						break
+					end
+				end
+				if not hasLab21173 then
+					for _, sc in ipairs(var_owner:getBattleCards("S")) do
+						if sc and (sc:isInfoId(21173) or sc._infoId == 21173 or sc:hasSkillFast(20214)) then
+							hasLab21173 = true
+							break
+						end
+					end
+				end
+			end
+		end
+
+		if hasLab21173 then
+			-- Tang 300 ATK
+			arg_15_1._atk = (arg_15_1._atk or arg_15_1._maxAtk or 0) + 300
+			arg_15_1._maxAtk = (arg_15_1._maxAtk or 0) + 300
+			arg_15_0:incPositiveStatus(arg_15_1, { BattleData.PositiveType.extraAtk }, false, 21173, 20214, Data.SkillMode.using)
+			arg_15_0:incPositiveValue(arg_15_1, BattleData.PositiveType.extraAtk, 300, Data.AggregateType.sum, 21173, 20214, Data.SkillMode.using)
+
+			-- Nhan Khien Chan Quai / Phep / Bay
+			arg_15_0:incPositiveStatus(arg_15_1, {
+				BattleData.PositiveType.shieldMonster,
+				BattleData.PositiveType.shieldMagic,
+				BattleData.PositiveType.shieldTrap
+			}, true, 21173, 20214, Data.SkillMode.using)
+			if arg_15_1._positiveStatus then
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldMonster] = true
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldMagic] = true
+				arg_15_1._positiveStatus[BattleData.PositiveType.shieldTrap] = true
+			end
+		end
+	end
+
 	if arg_15_1:isInfoId(40748) or arg_15_1._infoId == 40748 or B.isWitherOnField(arg_15_0) then
 		if arg_15_0.updateWitherDebuff then
 			arg_15_0:updateWitherDebuff()
@@ -1383,21 +1646,28 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 		end
 	end
 
+	-- Piglin Rider (40754 / 13779) / Hat oc cho (12392): Nhan hieu ung Khieu khich (irony) khi len san
+	if arg_15_1._infoId == 40754 or arg_15_1._infoId == 12392 or arg_15_1:hasSkillFast(13779) then
+		arg_15_0:incPositiveStatus(arg_15_1, { BattleData.PositiveType.irony }, true, arg_15_1._id, 13779, Data.SkillMode.using)
+		arg_15_0:incPositiveValue(arg_15_1, BattleData.PositiveType.irony, 0, Data.AggregateType.max, arg_15_1._id, 13779, Data.SkillMode.using)
+	end
+
 	-- Warden (12345 / 14814): 1 luot 1 lan, khi doi phuong trieu hoi quai lan 3 trong luot, Warden tren tay kich hoat: dac biet len san, day quai vua trieu hoi ve tay
-	if not arg_15_1:isStatusValNotSummon() and (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster or arg_15_1._type == Data.CardType.rare) then
-		local turnId = (arg_15_0._round or 0) * 1000 + (arg_15_0._opponent and arg_15_0._opponent._round or 0)
+	if not arg_15_1:isStatusValNotSummon() and not arg_15_1._summonedByWarden14814 and (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster or arg_15_1._type == Data.CardType.rare) then
+		local actP = arg_15_0:getActionPlayer() or arg_15_0
+		local turnId = (actP._round or 0) * 1000 + (actP._opponent and actP._opponent._round or 0)
 		if arg_15_0._turnSummonRoundId ~= turnId then
 			arg_15_0._turnSummonRoundId = turnId
 			arg_15_0._turnSummonCount = 0
 		end
 		arg_15_0._turnSummonCount = (arg_15_0._turnSummonCount or 0) + 1
 
-		if arg_15_0._turnSummonCount == 3 and arg_15_1._status == BattleData.CardStatus.board then
+		if arg_15_0._turnSummonCount >= 3 then
 			local oppo = arg_15_0._opponent
 			if oppo and oppo._wardenHandTriggerTurn ~= turnId and not oppo._isSummonDisabled and not oppo._isSpecialSummonDisabled then
 				local wardenCard = nil
 				for _, c in ipairs(oppo._handCards) do
-					if (c:isInfoId(12345) or c._infoId == 12345) and oppo:canSpecialSummon(c) then
+					if (c:isInfoId(12345) or c._infoId == 12345) and c:canCastMonsterSkill() then
 						wardenCard = c
 						break
 					end
@@ -1407,30 +1677,90 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 					if emptyPos ~= nil then
 						oppo._wardenHandTriggerTurn = turnId
 						wardenCard._saved._pos = emptyPos
+						wardenCard._summonedByWarden14814 = true
 						oppo:changeCardStatus(wardenCard, BattleData.CardStatus.hand, BattleData.CardStatus.board, BattleData.CardStatusVal.h2b_special, wardenCard)
-						oppo:account()
 
-						if arg_15_1._status == BattleData.CardStatus.board then
-							local destStatus = (arg_15_1._type == Data.CardType.rare or (arg_15_1:isMonsterRare() and arg_15_1._sourceStatus == BattleData.CardStatus.rare)) and BattleData.CardStatus.rare or BattleData.CardStatus.hand
+						if arg_15_1._status == BattleData.CardStatus.board or arg_15_1._pos ~= nil then
+							local destStatus = (arg_15_1._type == Data.CardType.rare or arg_15_1._sourceStatus == BattleData.CardStatus.rare) and BattleData.CardStatus.rare or BattleData.CardStatus.hand
 							local sVal = (arg_15_1._owner ~= arg_15_1._originOwner) and BattleData.CardStatusVal.b2h_oppo or nil
 							arg_15_0:changeCardStatus(arg_15_1, BattleData.CardStatus.board, destStatus, sVal, wardenCard)
-							arg_15_0:account()
 						end
 					end
 				end
 			end
 		end
 	end
+	arg_15_1._summonedByWarden14814 = nil
+
+	-- Shin - Ăn vạ (12370 / 20132): khi lá bài này trên sân, phe ta nhận 2000 LP
+	if arg_15_1:isInfoId(12370) or arg_15_1._infoId == 12370 then
+		local boardOwner = arg_15_1._owner or arg_15_0
+		if boardOwner and boardOwner._fortress then
+			boardOwner:incHp(boardOwner._fortress, 2000, false, arg_15_1._id, 20132, Data.SkillMode.using)
+		end
+	end
+
+	-- LABRYNTH KNIGHT (12376 / 20151): Khi lên sân, tăng ATK bằng tổng số quái "Labrynth" trong mộ và mộ bài loại bỏ phe ta x300
+	if arg_15_1:isInfoId(12376) or arg_15_1._infoId == 12376 or arg_15_1:hasSkillFast(20151) then
+		local boardOwner = arg_15_1._owner or arg_15_0
+		if boardOwner then
+			local labCount = 0
+			for _, c in ipairs(boardOwner:getBattleCards("GL")) do
+				if (c:isMonster() or c:isMonsterRare() or c._type == Data.CardType.monster or c._type == Data.CardType.rare) and (c:isKeyword(308) or (c._info and c._info._keyword == 308)) then
+					labCount = labCount + 1
+				end
+			end
+			if labCount > 0 then
+				boardOwner:incAtk(arg_15_1, labCount * 300, false, arg_15_1._id, 20151, Data.SkillMode.entering)
+			end
+		end
+	end
+
+	-- LABRYNTH KNIGHT (12376 / 20150): Khi có mặt, quái 8 sao có từ khóa "Labrynth" phe ta khi lên sân không bị ảnh hưởng bởi Phép/Bẫy đối thủ
+	if (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster or arg_15_1._type == Data.CardType.rare) and (arg_15_1:isKeyword(308) or (arg_15_1._info and arg_15_1._info._keyword == 308)) and arg_15_1:getStar() == 8 then
+		local boardOwner = arg_15_1._owner or arg_15_0
+		if boardOwner and #boardOwner:getBattleCardsByInfoId("B", 12376) > 0 then
+			arg_15_1._labKnightShieldProtected = true
+			boardOwner:incPositiveStatus(arg_15_1, { BattleData.PositiveType.extraSkill }, false, arg_15_1._id, 20150, Data.SkillMode.entering)
+			boardOwner:incPositiveValue(arg_15_1, BattleData.PositiveType.extraSkill, 65536 + 12009, Data.AggregateType.table, arg_15_1._id, 20150, Data.SkillMode.entering)
+			boardOwner:incPositiveValue(arg_15_1, BattleData.PositiveType.extraSkill, 65536 + 12010, Data.AggregateType.table, arg_15_1._id, 20150, Data.SkillMode.entering)
+		end
+	end
+
+	-- Shin - Ngại ngùng (12369 / 20127): 1 lượt 1 lần, khi đối phương triệu hồi quái lên sân, đẩy lá bài đối phương vừa triệu hồi lên sân về tay, triệu hồi đặc biệt lá bài này lên sân đối phương.
+	if not arg_15_1:isStatusValNotSummon() and (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster or arg_15_1._type == Data.CardType.rare) and arg_15_1._statusVal ~= BattleData.CardStatusVal.h2b_oppo_special and not (arg_15_1:isKeyword(307) or (arg_15_1._info and arg_15_1._info._keyword == 307)) then
+		local turnId = (arg_15_0._round or 0) * 1000 + (arg_15_0._opponent and arg_15_0._opponent._round or 0)
+		local oppo = arg_15_0._opponent
+		if oppo and oppo._castedShinNgaiNgungTurn ~= turnId and not oppo._isSummonDisabled and not oppo._isSpecialSummonDisabled then
+			local ngaiCard = nil
+			for _, c in ipairs(oppo._handCards or {}) do
+				if (c:isInfoId(12369) or c._infoId == 12369) and c._status == BattleData.CardStatus.hand then
+					ngaiCard = c
+					break
+				end
+			end
+			if ngaiCard and (arg_15_1._status == BattleData.CardStatus.board or arg_15_1._pos ~= nil) then
+				oppo._castedShinNgaiNgungTurn = turnId
+				oppo._castedSkillCounts[20127] = 1
+				local destStatus = (arg_15_1._type == Data.CardType.rare or (arg_15_1:isMonsterRare() and arg_15_1._sourceStatus == BattleData.CardStatus.rare)) and BattleData.CardStatus.rare or BattleData.CardStatus.hand
+				local sVal = (arg_15_1._owner ~= arg_15_1._originOwner) and BattleData.CardStatusVal.b2h_oppo or nil
+				arg_15_0:changeCardStatus(arg_15_1, BattleData.CardStatus.board, destStatus, sVal, ngaiCard)
+				oppo:changeCardStatus(ngaiCard, BattleData.CardStatus.hand, BattleData.CardStatus.board, BattleData.CardStatusVal.h2b_oppo_special, ngaiCard)
+				arg_15_0:battleLog("[BATTLE] Shin - Ngai ngung (12369) bounced summoned monster %d and summoned to opponent board!", arg_15_1._infoId)
+			end
+		end
+	end
 
 	-- Piglin Rider (40754 / 14830): 1 luot 1 lan, doi phuong trieu hoi dac biet quai se kich hoat, bo 1 chi thi xyz, day quai doi phuong ve lai bo bai.
 	if not arg_15_1:isStatusValNotSummon() and not arg_15_1:isStatusValNormalSummon() and (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster or arg_15_1._type == Data.CardType.rare) then
-		local turnId = (arg_15_0._round or 0) * 1000 + (arg_15_0._opponent and arg_15_0._opponent._round or 0)
+		local actP = arg_15_0:getActionPlayer() or arg_15_0
+		local turnId = (actP._round or 0) * 1000 + (actP._opponent and actP._opponent._round or 0)
 		local oppo = arg_15_0._opponent
 		if oppo then
 			for _, piglin in ipairs(oppo:getBoardCards()) do
 				if (piglin:isInfoId(40754) or piglin:hasSkillFast(14830)) and piglin:canCastMonsterSkill() and piglin._piglinRiderTriggerTurn ~= turnId then
 					local marks = (piglin:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) + (piglin:getBuffValue(true, BattleData.PositiveType.godMark) or 0)
-					if marks >= 1 and arg_15_1._status == BattleData.CardStatus.board then
+					if marks >= 1 and (arg_15_1._status == BattleData.CardStatus.board or arg_15_1._pos ~= nil) then
 						piglin._piglinRiderTriggerTurn = turnId
 						oppo._castedSkillCounts[14830] = 1
 						if (piglin:getBuffValue(true, BattleData.PositiveType.xyzMark) or 0) >= 1 then
@@ -1441,17 +1771,326 @@ function var_0_0.addCardToBoard(arg_15_0, arg_15_1)
 							piglin:accountBuffValue(true, BattleData.PositiveType.godMark)
 						end
 						
-						local targetDest = (arg_15_1._type == Data.CardType.rare or arg_15_1:isMonsterRare() or arg_15_1._sourceStatus == BattleData.CardStatus.rare) and BattleData.CardStatus.rare or BattleData.CardStatus.pile
+						local targetDest = (arg_15_1._type == Data.CardType.rare or arg_15_1._sourceStatus == BattleData.CardStatus.rare) and BattleData.CardStatus.rare or BattleData.CardStatus.pile
 						local sVal = (arg_15_1._owner ~= arg_15_1._originOwner) and BattleData.CardStatusVal.b2p_oppo or nil
 						arg_15_0:changeCardStatus(arg_15_1, BattleData.CardStatus.board, targetDest, sVal, piglin)
-						arg_15_0:account()
-						oppo:account()
 						break
 					end
 				end
 			end
 		end
 	end
+
+	-- Dimensional Barrier (30598 / 20117): Khi quái đối thủ triệu hồi 1 trong 4 loại này: Nghi thức, Dung hợp, Đồng bộ hoặc XYZ sẽ kích hoạt.
+	-- Trong phần còn lại của lượt này, cả hai người chơi không thể Triệu Hồi Đặc Biệt quái thú thuộc loại đã được kích hoạt, đồng thời vô hiệu hóa hiệu ứng của tất cả quái vật thuộc loại đó khi chúng đang ở trên sân.
+	if not arg_15_1:isStatusValNotSummon() and (arg_15_1:isMonster() or arg_15_1:isMonsterRare() or arg_15_1._type == Data.CardType.monster or arg_15_1._type == Data.CardType.rare) then
+		local isCeremony = arg_15_1:isCeremonyMonster() or (arg_15_1._info and (arg_15_1._info._option == 7 or arg_15_1._info._category == 7)) or (arg_15_1.hasMonsterOption and arg_15_1:hasMonsterOption(Data.MonsterOption.is_ceremony))
+		local isMerge = arg_15_1:isMerge() or (arg_15_1._info and (arg_15_1._info._option == 6 or arg_15_1._info._category == 6)) or (arg_15_1.hasMonsterOption and arg_15_1:hasMonsterOption(Data.MonsterOption.is_merge))
+		local isSync = arg_15_1:isSync() or (arg_15_1._info and (arg_15_1._info._option == 5 or arg_15_1._info._category == 5)) or (arg_15_1.hasMonsterOption and arg_15_1:hasMonsterOption(Data.MonsterOption.is_sync))
+		local isXYZ = arg_15_1:isXYZ() or (arg_15_1._info and (arg_15_1._info._option == 8 or arg_15_1._info._category == 8)) or (arg_15_1.hasMonsterOption and arg_15_1:hasMonsterOption(Data.MonsterOption.is_xyz))
+
+		local monType = nil
+		local monTypeName = ""
+		if isCeremony then
+			monType = 1
+			monTypeName = "Nghi Thức"
+		elseif isMerge then
+			monType = 2
+			monTypeName = "Dung Hợp"
+		elseif isSync then
+			monType = 3
+			monTypeName = "Đồng Bộ"
+		elseif isXYZ then
+			monType = 4
+			monTypeName = "XYZ"
+		end
+
+		local monOwner = arg_15_1._owner or arg_15_0
+		local oppo = monOwner and monOwner._opponent
+
+		-- Neu Dimensional Barrier da duoc kich hoat truoc do trong luot nay, lap tuc dong bang quai moi vao san neu cung loai
+		if monType and monOwner and monOwner._roundDimBarrierType == monType then
+			monOwner:incNegativeStatus(arg_15_1, { BattleData.NegativeType.boardMonsterSkillFrozen }, false, 30598, 20117, Data.SkillMode.using)
+		end
+
+		if monType and oppo and not oppo._isTrapSkillDisabled and not oppo._isMagicTrapDisabled then
+			local actP = arg_15_0:getActionPlayer() or arg_15_0
+			local turnId = (actP._round or 0) * 1000 + (actP._opponent and actP._opponent._round or 0)
+			if oppo._dbarrierTriggerTurn ~= turnId and (oppo._castedSkillCounts[20117] or 0) == 0 then
+				local dBarrierCard = nil
+				for _, c in ipairs(oppo:getBattleCards("CS")) do
+					if (c:isInfoId(30598) or c._infoId == 30598 or c:hasSkillFast(20117)) and (c._status == BattleData.CardStatus.cover or c._status == BattleData.CardStatus.magic or c._status == BattleData.CardStatus.trap) then
+						dBarrierCard = c
+						break
+					end
+				end
+				-- Dimensional Barrier (30598): Chi kich hoat tu the bai UP tren san (cover), khong kich hoat tu tay!
+
+				if dBarrierCard then
+					oppo._dbarrierTriggerTurn = turnId
+					oppo._castedSkillCounts[20117] = 1
+					oppo._roundDimBarrierType = monType
+					monOwner._roundDimBarrierType = monType
+
+					local prevStatus = dBarrierCard._status
+					local sVal = (prevStatus == BattleData.CardStatus.hand) and BattleData.CardStatusVal.h2gl_normal or BattleData.CardStatusVal.x2gl_cost
+					oppo:changeCardStatus(dBarrierCard, prevStatus, BattleData.CardStatus.grave, sVal, dBarrierCard)
+					oppo:account()
+
+					monOwner:incNegativeStatus(arg_15_1, { BattleData.NegativeType.boardMonsterSkillFrozen }, false, 30598, 20117, Data.SkillMode.using)
+
+					for _, p in ipairs({ monOwner, oppo }) do
+						if p then
+							for _, m in ipairs(p:getBoardCards()) do
+								local match = (monType == 1 and (m:isCeremonyMonster() or (m.isCeremony and m:isCeremony()) or (m._info and (m._info._option == 7 or m._info._category == 7)) or (m.hasMonsterOption and m:hasMonsterOption(Data.MonsterOption.is_ceremony))))
+									or (monType == 2 and (m:isMerge() or (m._info and (m._info._option == 6 or m._info._category == 6)) or (m.hasMonsterOption and m:hasMonsterOption(Data.MonsterOption.is_merge))))
+									or (monType == 3 and (m:isSync() or (m._info and (m._info._option == 5 or m._info._category == 5)) or (m.hasMonsterOption and m:hasMonsterOption(Data.MonsterOption.is_sync))))
+									or (monType == 4 and (m:isXYZ() or (m._info and (m._info._option == 8 or m._info._category == 8)) or (m.hasMonsterOption and m:hasMonsterOption(Data.MonsterOption.is_xyz))))
+								if match then
+									p:incNegativeStatus(m, { BattleData.NegativeType.boardMonsterSkillFrozen }, false, 30598, 20117, Data.SkillMode.using)
+								end
+							end
+							p:account()
+						end
+					end
+					arg_15_0:battleLog("[BATTLE] Dimensional Barrier (30598) kich hoat khi doi phuong trieu hoi quai %s! Vo hieu hoa toan bo quai %s va cam Trieu Hoi Dac Biet trong luot nay.", monTypeName, monTypeName)
+				end
+			end
+		end
+	end
+
+	-- Goku Ultra Instinct (40773 / 20084, 20085): Khi len san
+	local isGokuUI = (arg_15_1._infoId == 40773 or (arg_15_1._info and arg_15_1._info._id == 40773) or arg_15_1:hasSkillFast(20084))
+	if isGokuUI and arg_15_1._status == BattleData.CardStatus.board and not arg_15_1._gokuUi20084Done then
+		arg_15_1._gokuUi20084Done = true
+		local pOwner = arg_15_1._owner or arg_15_0
+		local oppo = pOwner and pOwner._opponent
+		if oppo then
+			oppo._milledBy40773 = true
+			local movedPileRare = {}
+			-- 20084: Dua tat ca bai tren tay, tren san, bo bai chinh va bo bai phu cua doi thu vao mo
+			if oppo._pileCards then
+				while #oppo._pileCards > 0 do
+					local c = table.remove(oppo._pileCards, 1)
+					if c.saveAndReset then pcall(function() c:saveAndReset() end) end
+					c._status = BattleData.CardStatus.grave
+					c._statusVal = BattleData.CardStatusVal.p2g_drop
+					oppo:addCardToGrave(c)
+					table.insert(movedPileRare, c)
+				end
+			end
+			if oppo._rareCards then
+				while #oppo._rareCards > 0 do
+					local c = table.remove(oppo._rareCards, 1)
+					if c.saveAndReset then pcall(function() c:saveAndReset() end) end
+					c._status = BattleData.CardStatus.grave
+					c._statusVal = BattleData.CardStatusVal.p2g_drop
+					oppo:addCardToGrave(c)
+					table.insert(movedPileRare, c)
+				end
+			end
+
+			-- Sync client UI sprites for directly moved pile/rare cards so grave triggers never nil-crash
+			if oppo._isClient and #movedPileRare > 0 then
+				pcall(function()
+					local bUi = B._currentBattleUi or (lc and lc._runningScene and lc._runningScene._battleUi)
+					local oppoUi = bUi and (bUi._player == oppo and bUi._playerUi or (bUi._opponent == oppo and bUi._opponentUi or nil))
+					if oppoUi then
+						for _, c in ipairs(movedPileRare) do
+							local spr = oppoUi:getCardSprite(c) or oppoUi:createCardSprite(c, false)
+							if spr then
+								if oppoUi._pRareCards then
+									for ri = #oppoUi._pRareCards, 1, -1 do
+										if oppoUi._pRareCards[ri] == spr then
+											table.remove(oppoUi._pRareCards, ri)
+										end
+									end
+								end
+								if c._status == BattleData.CardStatus.grave and oppoUi.addGraveCard then
+									oppoUi:addGraveCard(spr)
+								else
+									spr:setVisible(false)
+								end
+							end
+						end
+						if oppoUi.updateRareArea then oppoUi:updateRareArea() end
+						if oppoUi.updateGraveArea then oppoUi:updateGraveArea() end
+						if oppoUi.sendEvent and PlayerUi and PlayerUi.EventType then
+							oppoUi:sendEvent(PlayerUi.EventType.update_card_pile_count)
+						end
+					end
+				end)
+			end
+
+			local targets = {}
+			if oppo._boardCards then
+				for i = 1, Data.MAX_CARD_COUNT_ON_BOARD do
+					local c = oppo._boardCards[i]
+					if c and c ~= arg_15_1 and c._status == BattleData.CardStatus.board then
+						table.insert(targets, c)
+					end
+				end
+			end
+			if oppo._coverCards then
+				for i = 1, #oppo._coverCards do
+					local c = oppo._coverCards[i]
+					if c then table.insert(targets, c) end
+				end
+			end
+			if oppo._showCards then
+				for i = 1, #oppo._showCards do
+					local c = oppo._showCards[i]
+					if c then table.insert(targets, c) end
+				end
+			end
+			if oppo._fieldCard then
+				table.insert(targets, oppo._fieldCard)
+			end
+			if oppo._handCards then
+				for i = 1, #oppo._handCards do
+					local c = oppo._handCards[i]
+					if c then table.insert(targets, c) end
+				end
+			end
+
+			for _, c in ipairs(targets) do
+				pcall(function()
+					if c.removeShieldInType then
+						c:removeShieldInType(BattleData.ShieldType.shieldMonster)
+						c:removeShieldInType(BattleData.ShieldType.shieldAll)
+						c:removeShieldInType(BattleData.ShieldType.shieldMagic)
+						c:removeShieldInType(BattleData.ShieldType.shieldTrap)
+					end
+					if c.removeUnderSkillsById then
+						c:removeUnderSkillsById(12008)
+						c:removeUnderSkillsById(12009)
+						c:removeUnderSkillsById(12010)
+						c:removeUnderSkillsById(12006)
+						c:removeUnderSkillsById(3043)
+					end
+				end)
+				oppo:changeCardStatus(c, c._status, BattleData.CardStatus.grave, BattleData.CardStatusVal.b2g_oppo_sacrifice, nil)
+			end
+
+			-- 20085: Phong toa toan bo 5 o quai thu cua doi phuong (truoc khi account de xu ly _underSkills dong bo)
+			if oppo._fortress then
+				pOwner:incNegativeStatus(oppo._fortress, {
+					BattleData.NegativeType.boardLock
+				}, false, arg_15_1._id, 20085, Data.SkillMode.using)
+				for pos = 1, 5 do
+					pOwner:incNegativeValue(oppo._fortress, BattleData.NegativeType.boardLock, pos, Data.AggregateType.table, arg_15_1._id, 20085, Data.SkillMode.using)
+				end
+			end
+			oppo._isSummonDisabled = true
+			oppo._isSpecialSummonDisabled = true
+
+			oppo:account()
+			pOwner:account()
+
+			if oppo._isClient then
+				pcall(function()
+					local bUi = B._currentBattleUi or (lc and lc._runningScene and lc._runningScene._battleUi)
+					local oppoUi = bUi and (bUi._player == oppo and bUi._playerUi or (bUi._opponent == oppo and bUi._opponentUi or nil))
+					if oppoUi and oppoUi.updateBoardLocks then
+						oppoUi:updateBoardLocks()
+					end
+				end)
+			end
+		end
+	end
+
+	-- Goku SSJ Blue (40772 / 20082, 20083): Khi len san
+	local isGokuBlue = (arg_15_1._infoId == 40772 or (arg_15_1._info and arg_15_1._info._id == 40772) or arg_15_1:hasSkillFast(20082))
+	if isGokuBlue and arg_15_1._status == BattleData.CardStatus.board and not arg_15_1._gokuBlue20082Done then
+		arg_15_1._gokuBlue20082Done = true
+		local pOwner = arg_15_1._owner or arg_15_0
+		local oppo = pOwner and pOwner._opponent
+		if oppo then
+			local function getCardAtkVal(c)
+				if not c then return 0 end
+				if c.getAtk then
+					local v = c:getAtk()
+					if type(v) == "number" then return v end
+				end
+				if type(c._atk) == "number" then return c._atk end
+				if type(c._atk) == "table" and type(c._atk[1]) == "number" then return c._atk[1] end
+				if c._info and c._info._atk then
+					if type(c._info._atk) == "number" then return c._info._atk end
+					if type(c._info._atk) == "table" and type(c._info._atk[1]) == "number" then return c._info._atk[1] end
+				end
+				return 0
+			end
+
+			-- 20082: Loai bo quai ATK <= 3000 trong bo bai phu doi phuong
+			local removedRare = {}
+			if oppo._rareCards then
+				local newRare = {}
+				for _, c in ipairs(oppo._rareCards) do
+					if getCardAtkVal(c) <= 3000 then
+						if c.saveAndReset then pcall(function() c:saveAndReset() end) end
+						c._status = BattleData.CardStatus.leave
+						oppo:addCardToLeave(c)
+						table.insert(removedRare, c)
+					else
+						table.insert(newRare, c)
+					end
+				end
+				oppo._rareCards = newRare
+			end
+			if oppo._isClient and #removedRare > 0 then
+				pcall(function()
+					local bUi = B._currentBattleUi or (lc and lc._runningScene and lc._runningScene._battleUi)
+					local oppoUi = bUi and (bUi._player == oppo and bUi._playerUi or (bUi._opponent == oppo and bUi._opponentUi or nil))
+					if oppoUi then
+						for _, c in ipairs(removedRare) do
+							local spr = oppoUi:getCardSprite(c) or oppoUi:createCardSprite(c, false)
+							if spr then
+								if oppoUi._pRareCards then
+									for ri = #oppoUi._pRareCards, 1, -1 do
+										if oppoUi._pRareCards[ri] == spr then
+											table.remove(oppoUi._pRareCards, ri)
+										end
+									end
+								end
+								spr:setVisible(false)
+							end
+						end
+						if oppoUi.updateRareArea then oppoUi:updateRareArea() end
+					end
+				end)
+			end
+
+			-- 20083: Loai bo quai ATK <= 2000 tren san va tren tay doi thu
+			if oppo._boardCards then
+				for i = 1, Data.MAX_CARD_COUNT_ON_BOARD do
+					local c = oppo._boardCards[i]
+					if c and c ~= arg_15_1 and (c:isMonster() or c:isMonsterRare()) then
+						if getCardAtkVal(c) <= 2000 then
+							pcall(function()
+								if c.removeShieldInType then
+									c:removeShieldInType(BattleData.ShieldType.shieldMonster)
+									c:removeShieldInType(BattleData.ShieldType.shieldAll)
+								end
+							end)
+							oppo:changeCardStatus(c, BattleData.CardStatus.board, BattleData.CardStatus.leave, nil, nil)
+						end
+					end
+				end
+			end
+			if oppo._handCards then
+				local handList = {}
+				for _, c in ipairs(oppo._handCards) do table.insert(handList, c) end
+				for _, c in ipairs(handList) do
+					if (c:isMonster() or c:isMonsterRare()) and getCardAtkVal(c) <= 2000 then
+						oppo:changeCardStatus(c, BattleData.CardStatus.hand, BattleData.CardStatus.leave, nil, nil)
+					end
+				end
+			end
+			oppo:account()
+			pOwner:account()
+		end
+	end
+
 end
 
 function var_0_0.addCardToGrave(arg_16_0, arg_16_1)

@@ -278,6 +278,38 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		return
 	end
 
+	-- Safety: Magic/Trap cards can NEVER enter monster board
+	if (arg_7_1._type == Data.CardType.magic or arg_7_1._type == Data.CardType.trap) and arg_7_2 == BattleData.CardStatus.board then
+		arg_7_2 = BattleData.CardStatus.grave
+	end
+
+	-- Labrynth Trap Protection (20169, 20179, 20187): Khi Lady (12379), Lovely (12380), Princess (12381) trên sân, bài Bẫy phe ta điều khiển bị ảnh hưởng bởi bài đối thủ sẽ bị bỏ qua.
+	if (arg_7_1:isTrap() or arg_7_1._type == Data.CardType.trap) and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local tOwner = arg_7_1._owner
+		if tOwner and (tOwner:hasBattleCardsByInfoId("B", 12379) or tOwner:hasBattleCardsByInfoId("B", 12380) or tOwner:hasBattleCardsByInfoId("B", 12381)) then
+			local casterCard = arg_7_3 and arg_7_0:getCardById(arg_7_3)
+			if casterCard and casterCard._owner == tOwner._opponent then
+				return
+			end
+		end
+	end
+
+	-- Bulma (12364): Khi vào sân (triệu hồi/hồi sinh), tự động lấy 1 lá Rada dò ngọc (21167) từ bộ bài lên tay
+	if (arg_7_1._infoId == 12364 or (arg_7_1._info and arg_7_1._info._id == 12364) or arg_7_1:hasSkillFast(20112)) and arg_7_2 == BattleData.CardStatus.board then
+		local pOwner = arg_7_1._owner or arg_7_0
+		if pOwner then
+			local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+			if pOwner._bulmaSearchTurn ~= turnId then
+				local radarCards = pOwner:getBattleCardsByInfoId("P", 21167)
+				if #radarCards > 0 and #pOwner._handCards < Data.MAX_CARD_COUNT_IN_HAND then
+					pOwner._bulmaSearchTurn = turnId
+					pOwner._castedSkillCounts[20112] = (pOwner._castedSkillCounts[20112] or 0) + 1
+					pOwner:setCardStatus(radarCards[1], BattleData.CardStatus.hand, arg_7_1._id, 20112, Data.SkillMode.using)
+				end
+			end
+		end
+	end
+
 	-- Xuyên qua tường chắn quái cho KMR-Zio-Ghost (14769 & 14770) va Kiem si diet rong tap su (14784)
 	if arg_7_4 == 14769 or arg_7_4 == 14770 or arg_7_4 == 14784 then
 		table.insert(arg_7_1._underSkills, {
@@ -315,6 +347,36 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 					if totemCard._status == BattleData.CardStatus.cover then
 						owner:setCardStatus(totemCard, BattleData.CardStatus.show, totemCard._id, 14801, Data.SkillMode.using, BattleData.CardStatusVal.c2s_attack)
 					end
+					if arg_7_1._hp and arg_7_1._hp <= 0 then
+						arg_7_1._hp = 1
+					end
+					return
+				end
+			end
+		end
+	end
+
+	-- Đậu thần (21168 / 20095): 1 lượt 1 lần, khi trên tay: Quái thú có từ khóa "7 viên ngọc rồng" trên sân phe ta bị đối thủ phá hủy sẽ kích hoạt: Đưa lá bài này vào mộ, bỏ qua lần phá hủy đó.
+	if (arg_7_1:isKeyword(306) or (arg_7_1._info and arg_7_1._info._keyword == 306)) and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
+		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost
+			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost
+			or arg_7_6 == BattleData.CardStatusVal.h2l_temp
+			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
+		if not isCostOrSac then
+			local owner = arg_7_1._owner
+			if owner then
+				local turnId = (owner._round or 0) * 1000 + (owner._opponent and owner._opponent._round or 0)
+				local handBeans = owner:getBattleCardsByInfoId("H", 21168)
+				if #handBeans > 0 and owner._dauthanBoardProtectTurn ~= turnId then
+					owner._dauthanBoardProtectTurn = turnId
+					local beanCard = handBeans[1]
+					owner:setCardStatus(beanCard, BattleData.CardStatus.grave, beanCard._id, 20095, Data.SkillMode.initiative_hand, BattleData.CardStatusVal.h2g_cost)
 					if arg_7_1._hp and arg_7_1._hp <= 0 then
 						arg_7_1._hp = 1
 					end
@@ -413,31 +475,7 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 		end
 	end
 
-	-- Piglin Rider (40754 / 14832): khi la bai nay bi pha huy, quai toc xac song tren san ta nhan 12007 trong 1 luot
-	if (arg_7_1:isInfoId(40754) or arg_7_1:hasSkillFast(14832)) and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
-		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
-			or arg_7_6 == BattleData.CardStatusVal.b2g_sacrifice 
-			or arg_7_6 == BattleData.CardStatusVal.b2g_oppo_sacrifice 
-			or arg_7_6 == BattleData.CardStatusVal.b2g_sync_sacrifice 
-			or arg_7_6 == BattleData.CardStatusVal.b2g_link_sacrifice 
-			or arg_7_6 == BattleData.CardStatusVal.b2g_summon_sacrifice 
-			or arg_7_6 == BattleData.CardStatusVal.x2gl_cost 
-			or arg_7_6 == BattleData.CardStatusVal.x2gl_oppo_cost 
-			or arg_7_6 == BattleData.CardStatusVal.h2l_temp 
-			or arg_7_6 == BattleData.CardStatusVal.x2l_temp_oppo)
-		if not isCostOrSac then
-			local owner = arg_7_1._owner
-			if owner then
-				local turnId = (owner._round or 0) * 1000 + (owner._opponent and owner._opponent._round or 0)
-				for _, ally in ipairs(owner:getBoardCards()) do
-					if ally ~= arg_7_1 and (ally:isMonster() or ally:isMonsterRare() or ally._type == Data.CardType.monster) and (ally:isCategory(17) or (ally._info and ally._info._category == 17) or ally._category == 17) then
-						ally._shield12007Turn = turnId
-						owner:incShield(ally, { 12007 }, false, false, arg_7_1._id, 12007, Data.SkillMode.using)
-					end
-				end
-			end
-		end
-	end
+	-- Piglin Rider (40754 / 14832): bcs2gl shield 12007 handled in BattleSkill:castMonsterSpellSkill
 
 	if (arg_7_1:hasSkillFast(14690) or arg_7_1:isInfoId(12321)) and arg_7_1:canCastMonsterSkill() and arg_7_1._status == BattleData.CardStatus.board and (arg_7_2 == BattleData.CardStatus.grave or arg_7_2 == BattleData.CardStatus.leave) then
 		local isCostOrSac = (arg_7_6 == BattleData.CardStatusVal.sacrifice 
@@ -588,22 +626,10 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 	end
 
 	if arg_7_6 == BattleData.CardStatusVal.r2b_sync or arg_7_6 == BattleData.CardStatusVal.r2b_sync_attack_frozen then
-		arg_7_1._mark6387 = nil
-
-		if arg_7_1:hasSkills({
-			6421,
-			6729,
-			9173,
-			14123
-		}) or arg_7_1:isInfoId(40732) then
-			arg_7_1._mark6387 = true
-			local turnId = (arg_7_0._round or 0) * 1000 + (arg_7_0._opponent and arg_7_0._opponent._round or 0)
-			arg_7_1._syncSummonTurn = turnId
-			arg_7_1._summonBySync = true
-			if arg_7_0._opponent then
-				arg_7_0._opponent._isSkillDisabled = true
-			end
-		end
+		arg_7_1._mark6387 = true
+		arg_7_1._summonBySync = true
+		local turnId = (arg_7_0._round or 0) * 1000 + (arg_7_0._opponent and arg_7_0._opponent._round or 0)
+		arg_7_1._syncSummonTurn = turnId
 	elseif arg_7_6 == BattleData.CardStatusVal.r2b_compose then
 		arg_7_1._mark6387 = nil
 
@@ -640,6 +666,53 @@ function var_0_0.setCardStatus(arg_7_0, arg_7_1, arg_7_2, arg_7_3, arg_7_4, arg_
 			end
 		end
 	end
+
+	-- Steve 40753 / 14827: 1 turn 1 time, destroy opponent extra deck monster when summoned to board
+	if arg_7_2 == BattleData.CardStatus.board and arg_7_1:isMonster() then
+		local pOwner = arg_7_1._owner or arg_7_0
+		local opp = pOwner and pOwner._opponent
+		if opp then
+			local turnId = (pOwner._round or 0) * 1000 + (opp._round or 0)
+			local isExtra = arg_7_1:isMonsterRare() or arg_7_1:isSync() or arg_7_1:isXYZ() or arg_7_1:isLink() or arg_7_1:isMerge() or (arg_7_1._info and arg_7_1._info._id and arg_7_1._info._id >= 40000)
+			if isExtra then
+				for _, sdCard in ipairs(opp:getBoardCards()) do
+					if sdCard and (sdCard._infoId == 40753 or sdCard:hasSkillFast(14827)) and not sdCard._owner._isMonsterSkillDisabled then
+						if sdCard._steveDestroyTurn ~= turnId then
+							sdCard._steveDestroyTurn = turnId
+							pcall(function()
+								if arg_7_1.removeShieldInType then
+									arg_7_1:removeShieldInType(BattleData.ShieldType.shieldMonster)
+									arg_7_1:removeShieldInType(BattleData.ShieldType.shieldAll)
+								end
+								if arg_7_1.removeUnderSkillsById then
+									arg_7_1:removeUnderSkillsById(12008)
+									arg_7_1:removeUnderSkillsById(12009)
+									arg_7_1:removeUnderSkillsById(12010)
+									arg_7_1:removeUnderSkillsById(12006)
+									arg_7_1:removeUnderSkillsById(3043)
+								end
+							end)
+							arg_7_2 = BattleData.CardStatus.grave
+							arg_7_6 = BattleData.CardStatusVal.b2g_destroy
+							arg_7_4 = 14827
+							break
+						end
+					end
+				end
+			end
+		end
+	end
+
+	-- Sky Striker lock guard: only summon 54744 monsters
+	if arg_7_2 == BattleData.CardStatus.board and arg_7_1:isMonster() then
+		local pOwner = arg_7_1._owner or arg_7_0
+		local turnId = (pOwner._round or 0) * 1000 + (pOwner._opponent and pOwner._opponent._round or 0)
+		if pOwner._lockThienKhongHoangOnly == turnId and not (arg_7_1:isKeyword(54744) or (arg_7_1._info and arg_7_1._info._keyword == 54744)) then
+			return
+		end
+	end
+
+	-- Shin (12368, 12369, 12370): Hand triggers & LP grant handled in BattleCardStatus.lua; Special summon >=2000 ATK lock handled in BattleHelper:canSpecialSummon
 
 	table.insert(arg_7_1._underSkills, {
 		_cid = arg_7_3,
@@ -766,6 +839,30 @@ function var_0_0.addDamage(arg_9_0, arg_9_1, arg_9_2, arg_9_3, arg_9_4, arg_9_5)
 	if arg_9_1._type == Data.CardType.fortress and arg_9_2 > 0 then
 		local p_owner = arg_9_1._owner
 		if p_owner then
+			-- Đậu thần (21168 / 20095): 1 lượt 1 lần, khi trên tay: Nếu LP phe ta giảm xuống dưới 4000 sẽ kích hoạt: Đưa lá bài này vào mộ, nhận 8000 LP.
+			local curHp = (p_owner._fortress and p_owner._fortress._hp) or 8000
+			if (curHp - arg_9_2 < 4000 or curHp < 4000) then
+				local turnId = (p_owner._round or 0) * 1000 + (p_owner._opponent and p_owner._opponent._round or 0)
+				local handBeans = p_owner:getBattleCardsByInfoId("H", 21168)
+				if #handBeans > 0 and p_owner._dauthanLpProtectTurn ~= turnId then
+					p_owner._dauthanLpProtectTurn = turnId
+					local beanCard = handBeans[1]
+					arg_9_0:setCardStatus(beanCard, BattleData.CardStatus.grave, beanCard._id, 20095, Data.SkillMode.initiative_hand, BattleData.CardStatusVal.h2g_cost)
+					arg_9_0:incHp(p_owner._fortress, 8000, false, beanCard._id, 20095, Data.SkillMode.initiative_hand)
+				end
+			end
+			-- LABRYNTH ARCHFIEND (12378 / 20165): Khi bài này nằm trong mộ, phe ta bị mất LP từ chiến đấu trực tiếp sẽ có thể dùng. Loại bỏ bản thân bài này, bỏ qua lần sát thương đó.
+			if (arg_9_5 == Data.SkillMode.before_attack or arg_9_4 == Data.ATTACKING_SKILL_ID or arg_9_5 == Data.SkillMode.attack) then
+				local graveArchfiends = p_owner:getBattleCardsByInfoId("G", 12378)
+				if #graveArchfiends > 0 then
+					local afCard = graveArchfiends[1]
+					if afCard:canChangeToLeave() then
+						arg_9_0:setCardStatus(afCard, BattleData.CardStatus.leave, afCard._id, 20165, Data.SkillMode.grave, BattleData.CardStatusVal.g2l_normal)
+						return
+					end
+				end
+			end
+
 			local var_trap_cover = p_owner:getBattleCardsByInfoId("C", 30592)
 			if #var_trap_cover > 0 then
 				local trap_card = var_trap_cover[1]
@@ -801,6 +898,22 @@ function var_0_0.addDamage(arg_9_0, arg_9_1, arg_9_2, arg_9_3, arg_9_4, arg_9_5)
 					return
 				end
 			end
+
+			-- Cong dia nguc (30597 / 14813): quai xac song phe ta co tin nguong (2002), phao dai ko chiu sat thuong chien dau
+			if (arg_9_4 == Data.ATTACKING_SKILL_ID or arg_9_5 == Data.SkillMode.under_attack_damage or arg_9_5 == Data.SkillMode.before_attack) then
+				local actionCard = arg_9_0:getActionCard()
+				local targetCard = (actionCard and actionCard._atkTargets and actionCard._atkTargets[1])
+				local involvedCard = (actionCard and actionCard._owner == p_owner and actionCard) or (targetCard and targetCard._owner == p_owner and targetCard)
+				if involvedCard and (involvedCard:isCategory(17) or (involvedCard._info and involvedCard._info._category == 17)) then
+					local sCards = p_owner:getBattleCardsByInfoId("S", 30597)
+					local bCards = p_owner:getBattleCardsByInfoId("B", 30597)
+					local fCards = p_owner:getBattleCardsByInfoId("F", 30597)
+					local cCards = p_owner:getBattleCardsByInfoId("C", 30597)
+					if #sCards > 0 or #bCards > 0 or #fCards > 0 or #cCards > 0 then
+						return
+					end
+				end
+			end
 		end
 	end
 
@@ -826,6 +939,14 @@ function var_0_0.addDamage(arg_9_0, arg_9_1, arg_9_2, arg_9_3, arg_9_4, arg_9_5)
 end
 
 function var_0_0.incAtk(arg_10_0, arg_10_1, arg_10_2, arg_10_3, arg_10_4, arg_10_5, arg_10_6)
+	if type(arg_10_2) == "boolean" and type(arg_10_3) == "number" then
+		local tmp = arg_10_2
+		arg_10_2 = arg_10_3
+		arg_10_3 = tmp
+	end
+	if type(arg_10_2) ~= "number" then
+		arg_10_2 = tonumber(arg_10_2) or 0
+	end
 	if arg_10_2 > 0 then
 		local cardOwner = arg_10_1._owner
 		if cardOwner and cardOwner._opponent then
@@ -918,6 +1039,14 @@ function var_0_0.incAtkCount(arg_13_0, arg_13_1, arg_13_2, arg_13_3, arg_13_4, a
 end
 
 function var_0_0.incHp(arg_14_0, arg_14_1, arg_14_2, arg_14_3, arg_14_4, arg_14_5, arg_14_6, arg_14_7)
+	if type(arg_14_2) == "boolean" and type(arg_14_3) == "number" then
+		local tmp = arg_14_2
+		arg_14_2 = arg_14_3
+		arg_14_3 = tmp
+	end
+	if type(arg_14_2) ~= "number" then
+		arg_14_2 = tonumber(arg_14_2) or 0
+	end
 	if arg_14_2 < 0 and (arg_14_1:isInfoId(40728) or arg_14_1:hasSkillFast(14691)) and arg_14_1:canCastMonsterSkill() then
 		local caster = arg_14_0:getCardById(arg_14_4)
 		if caster and caster._owner ~= arg_14_1._owner then
@@ -1940,17 +2069,39 @@ function var_0_0.accountTarget(arg_38_0, arg_38_1)
 			end
 		end
 
-		-- Cua dia nguc (30597 / 14813): Khi tren san, quai xac song phe ta nhan 500 atk
-		if cardOwner and arg_38_1._status == BattleData.CardStatus.board and (arg_38_1:isMonster() or arg_38_1:isMonsterRare() or arg_38_1._type == Data.CardType.monster) then
-			local isUndead = arg_38_1:isCategory(17) or (arg_38_1._info and arg_38_1._info._category == 17)
-			if isUndead then
-				local sCards = cardOwner:getBattleCardsByInfoId("S", 30597)
-				local bCards = cardOwner:getBattleCardsByInfoId("B", 30597)
-				if #sCards > 0 or #bCards > 0 then
-					arg_38_1._atk = arg_38_1._atk + 500
+		-- LABRYNTH ARCHFIEND (12378 / 20162): Tăng tấn công và phòng thủ bằng tổng số lá Bẫy trong mộ/mộ bài loại bỏ phe ta × 400.
+		if (arg_38_1._infoId == 12378 or arg_38_1:hasSkillFast(20162)) and arg_38_1._status == BattleData.CardStatus.board then
+			local owner = arg_38_1._owner or arg_38_0
+			local trapCount = 0
+			if owner then
+				for _, c in ipairs(owner:getBattleCards("G")) do
+					if c:isTrap() or c._type == Data.CardType.trap then trapCount = trapCount + 1 end
+				end
+				for _, c in ipairs(owner:getBattleCards("L")) do
+					if c:isTrap() or c._type == Data.CardType.trap then trapCount = trapCount + 1 end
+				end
+			end
+			local bonus = trapCount * 400
+			local baseAtk = (arg_38_1._info and (type(arg_38_1._info._atk) == "table" and (arg_38_1._info._atk[arg_38_1._level] or arg_38_1._info._atk[1]) or arg_38_1._info._atk)) or 2000
+			local baseHp = (arg_38_1._info and (type(arg_38_1._info._hp) == "table" and (arg_38_1._info._hp[arg_38_1._level] or arg_38_1._info._hp[1]) or arg_38_1._info._hp)) or 2800
+			arg_38_1._maxAtk = baseAtk + bonus
+			arg_38_1._atk = math.max(0, baseAtk + bonus + var_38_5)
+			arg_38_1._maxHp = baseHp + bonus
+			arg_38_1._hp = math.max(1, baseHp + bonus + var_38_3)
+
+			local oppo = owner and owner._opponent
+			if oppo and oppo._dragonDebuffVal and oppo._dragonDebuffVal > 0 then
+				arg_38_1._atk = math.max(0, arg_38_1._atk - oppo._dragonDebuffVal)
+			end
+			if B.isWitherOnField(owner) then
+				local isUndead = arg_38_1:isCategory(17) or (arg_38_1._info and arg_38_1._info._category == 17)
+				if not isUndead then
+					arg_38_1._atk = math.floor(arg_38_1._atk / 2)
 				end
 			end
 		end
+
+		-- Cua dia nguc (30597 / 14813): Halo +500 ATK & Tin Nguong (2002) handled in BattleSkill:castTrapSkill2
 
 		-- Soi mac giap (40750 / 14820): Khi tren san, tat ca Soi mac giap nhan 500 atk
 		if cardOwner and arg_38_1._status == BattleData.CardStatus.board and (arg_38_1._infoId == 40750 or (arg_38_1.isInfoId and arg_38_1:isInfoId(40750))) then
@@ -2190,14 +2341,18 @@ function var_0_0.genAttackTarget(arg_40_0, arg_40_1)
 		return
 	end
 
-	if arg_40_1._positiveStatus[BattleData.PositiveType.betray] and #selfAliveBoardCards > 0 then
-		local var_40_6 = arg_40_0:randomOne(selfAliveBoardCards)
+	if arg_40_1._positiveStatus[BattleData.PositiveType.betray] then
+		local selfAliveBoardCards = arg_40_0:getBattleCards("B", Data.CARD_MAX_LEVEL, arg_40_1)
 
-		arg_40_1._atkTargets = {
-			var_40_6
-		}
+		if #selfAliveBoardCards > 0 then
+			local var_40_6 = arg_40_0:randomOne(selfAliveBoardCards)
 
-		return
+			arg_40_1._atkTargets = {
+				var_40_6
+			}
+
+			return
+		end
 	end
 
 	for iter_40_1 = 1, #var_40_0 do

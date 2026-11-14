@@ -127,7 +127,8 @@ function var_0_0.onLogEvent(arg_11_0, arg_11_1)
 	var_11_0:hide()
 
 	if arg_11_1._event == var_0_1.Event.log_item_dirty then
-		P._nextShareBattle = ClientData.getCurrentTime() + Data._globalInfo._battleShareCD * 60
+		local shareCD = (Data._globalInfo and Data._globalInfo._battleShareCD) or 5
+		P._nextShareBattle = ClientData.getCurrentTime() + shareCD * 60
 
 		ToastManager.push(Str(STR.SHARE_SUCCESS))
 	elseif arg_11_1._event == var_0_1.Event.log_already_shared then
