@@ -185,21 +185,23 @@
 		ctx.drawImage(mask, 0, 0, w, h);
 		var alpha = ctx.getImageData(0, 0, w, h);
 
-		var d = out.data, a = alpha.data;
-		for (var i = 0, n = d.length; i < n; i += 4) {
-			var alphaVal = a[i];
+		var out32 = new Uint32Array(out.data.buffer);
+		var alpha32 = new Uint32Array(alpha.data.buffer);
+		for (var i = 0, n = out32.length; i < n; i++) {
+			var alphaVal = alpha32[i] & 0xFF;
 			if (alphaVal === 255) {
-				d[i + 3] = 255;
+				out32[i] |= 0xFF000000;
 				continue;
 			}
 			if (alphaVal === 0) {
-				d[i] = d[i + 1] = d[i + 2] = d[i + 3] = 0;
+				out32[i] = 0;
 				continue;
 			}
-			d[i] = ((d[i] * alphaVal) / 255) | 0;
-			d[i + 1] = ((d[i + 1] * alphaVal) / 255) | 0;
-			d[i + 2] = ((d[i + 2] * alphaVal) / 255) | 0;
-			d[i + 3] = alphaVal;
+			var pix = out32[i];
+			var r = (((pix & 0xFF) * alphaVal) / 255) | 0;
+			var g = ((((pix >> 8) & 0xFF) * alphaVal) / 255) | 0;
+			var b = ((((pix >> 16) & 0xFF) * alphaVal) / 255) | 0;
+			out32[i] = r | (g << 8) | (b << 16) | (alphaVal << 24);
 		}
 
 		ctx.putImageData(out, 0, 0);

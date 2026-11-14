@@ -2519,10 +2519,8 @@ cc.game = /** @lends cc.game# */{
 
         callback = function () {
             if (!self._paused) {
-                director.mainLoop();
-                if(self._intervalId)
-                    window.cancelAnimationFrame(self._intervalId);
                 self._intervalId = window.requestAnimFrame(callback);
+                director.mainLoop();
             }
         };
 
@@ -2643,9 +2641,13 @@ cc.game = /** @lends cc.game# */{
             this._renderContext = cc._renderContext = cc.webglContext
              = cc.create3DContext(localCanvas, {
                 'stencil': true,
-                'preserveDrawingBuffer': true,
-                'antialias': !cc.sys.isMobile,
-                'alpha': false
+                'preserveDrawingBuffer': false,
+                'antialias': true,
+                'alpha': false,
+                'depth': true,
+                'powerPreference': 'high-performance',
+                'desynchronized': false,
+                'failIfMajorPerformanceCaveat': false
             });
         }
         // WebGL context created successfully

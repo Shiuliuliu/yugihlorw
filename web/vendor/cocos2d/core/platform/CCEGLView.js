@@ -214,8 +214,12 @@ cc.EGLView = cc.Class.extend(/** @lends cc.view# */{
         if (view._resizeCallback) {
             view._resizeCallback.call();
         }
+        var height = view._originalDesignResolutionSize.height || 768;
         var width = view._originalDesignResolutionSize.width;
-        var height = view._originalDesignResolutionSize.height;
+        if (view._frameSize.height > 0 && view._frameSize.width > 0) {
+            width = Math.round(height * view._frameSize.width / view._frameSize.height);
+            view._originalDesignResolutionSize.width = width;
+        }
         if (width > 0) {
             view.setDesignResolutionSize(width, height, view._resolutionPolicy);
         }
@@ -937,7 +941,8 @@ cc.ContainerStrategy = cc.Class.extend(/** @lends cc.ContainerStrategy# */{
         // Setup pixel ratio for retina display
         var devicePixelRatio = view._devicePixelRatio = 1;
         if (view.isRetinaEnabled()) {
-            devicePixelRatio = view._devicePixelRatio = Math.min(2, window.devicePixelRatio || 1);
+            var dpr = window.devicePixelRatio || 1;
+            devicePixelRatio = view._devicePixelRatio = Math.min(2.5, Math.max(1, dpr));
         }
         // Setup canvas
         locCanvas.width = Math.round(w * devicePixelRatio);
