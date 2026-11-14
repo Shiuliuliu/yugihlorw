@@ -496,6 +496,9 @@ cc._tmp.WebGLTexture2D = function () {
             if(premultiplied)
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
 
+            var pixelsWide = self._htmlElementObj.width;
+            var pixelsHigh = self._htmlElementObj.height;
+
             self._pixelsWide = self._contentSize.width = pixelsWide;
             self._pixelsHigh = self._contentSize.height = pixelsHigh;
             self._pixelFormat = cc.Texture2D.PIXEL_FORMAT_RGBA8888;

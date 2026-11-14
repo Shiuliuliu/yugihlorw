@@ -52,14 +52,14 @@
 
         this._syncStatus(parentCmd);
 
-        var children = node._children, len = children.length, i = 0;
+        var children = node._children, len = children ? children.length : 0, i = 0;
         if (len > 0) {
             node.sortAllChildren();
             // Draw children with localZOrder < 0 FIRST (so background sits BEHIND the scale9 frame)
             for (i = 0; i < len; i++) {
                 var child = children[i];
                 if (child && child._localZOrder < 0) {
-                    child._renderCmd.visit(this);
+                    if (child._renderCmd) child._renderCmd.visit(this);
                 } else {
                     break;
                 }
@@ -69,7 +69,7 @@
         // Draw scale9 slices (the frame itself)
         if(node._scale9Enabled) {
             var locRenderers = node._renderers;
-            var rendererLen = locRenderers.length;
+            var rendererLen = locRenderers ? locRenderers.length : 0;
             for(var j=0; j < rendererLen; j++) {
                 var locRenderer = locRenderers[j];
                 if(locRenderer) {
@@ -89,7 +89,8 @@
         // Draw children with localZOrder >= 0 AFTER the frame
         if (len > 0) {
             for (; i < len; i++) {
-                if (children[i]) children[i]._renderCmd.visit(this);
+                var ch = children[i];
+                if (ch && ch._renderCmd) ch._renderCmd.visit(this);
             }
         }
 

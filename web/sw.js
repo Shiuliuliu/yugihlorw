@@ -2,7 +2,7 @@
  * Provides instant offline caching and sub-millisecond local loading (Arcana architecture)
  */
 
-var CACHE_NAME = 'yugihlor-cache-20261115v045000';
+var CACHE_NAME = 'yugihlor-cache-20261115v050500';
 
 var STATIC_EXTENSIONS = [
 	'.jpg', '.jpeg', '.png', '.jpm', '.sfb', '.lcres',
