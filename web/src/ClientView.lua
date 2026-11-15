@@ -2035,21 +2035,28 @@ function var_0_0.createTouchSpriteWithShader(arg_57_0, arg_57_1)
 end
 
 local AVAILABLE_BTN_SIZES = {
-	{60, 50}, {60, 60}, {80, 40}, {80, 60}, {82, 60},
-	{100, 40}, {100, 60}, {100, 78}, {110, 44}, {110, 60}, {110, 78},
-	{120, 40}, {120, 60}, {120, 70}, {120, 78},
-	{140, 44}, {140, 60}, {140, 70}, {140, 78}, {146, 70},
-	{150, 60}, {150, 78}, {152, 78}, {160, 60}, {160, 78}, {170, 78},
-	{180, 50}, {180, 56}, {180, 60}, {180, 70}, {180, 78},
-	{200, 60}, {200, 78}, {210, 60}, {210, 78},
-	{220, 60}, {220, 70}, {220, 78}, {240, 78},
+	{60, 50}, {60, 60}, {80, 40}, {80, 48}, {80, 50}, {80, 60}, {82, 60},
+	{90, 40}, {90, 50}, {90, 60},
+	{100, 36}, {100, 40}, {100, 60}, {100, 78},
+	{110, 44}, {110, 60}, {110, 78},
+	{120, 40}, {120, 46}, {120, 60}, {120, 70}, {120, 78},
+	{132, 46}, {132, 48},
+	{140, 44}, {140, 48}, {140, 60}, {140, 70}, {140, 78}, {146, 70},
+	{150, 60}, {150, 78}, {152, 78},
+	{160, 48}, {160, 60}, {160, 78}, {170, 78},
+	{180, 40}, {180, 46}, {180, 50}, {180, 56}, {180, 60}, {180, 70}, {180, 78},
+	{190, 48}, {190, 60},
+	{200, 60}, {200, 78},
+	{210, 46}, {210, 48}, {210, 60}, {210, 78},
+	{220, 60}, {220, 70}, {220, 78},
+	{230, 46}, {230, 48}, {240, 78},
 	{250, 56}, {250, 60}, {250, 78}, {260, 60}, {260, 64}, {260, 78}, {300, 78}
 }
 
 local function getCustomButtonFile(btnName, targetW, targetH)
 	if not btnName or type(btnName) ~= "string" then return nil end
 	local isConfirm = (btnName == "img_btn_1" or btnName == "img_btn_1_s")
-	local isCancel = (btnName == "img_btn_2" or btnName == "img_btn_2_s")
+	local isCancel = (btnName == "img_btn_2" or btnName == "img_btn_2_s" or btnName == "img_btn_4")
 	local isRed = (btnName == "img_btn_3" or btnName == "img_btn_3_s")
 	if not isConfirm and not isCancel and not isRed then return nil end
 
@@ -2235,16 +2242,21 @@ function var_0_0.createScale9ShaderButton(arg_69_0, arg_69_1, arg_69_2, arg_69_3
 		local var_69_0 = var_0_0.createShaderButton(customFile, arg_69_1)
 		var_69_0:setScale9Enabled(false)
 		var_69_0:setContentSize(w, h)
+		var_69_0._btnTargetW = w
+		var_69_0._btnTargetH = h
 
-		local origLoad = var_69_0.loadTextureNormal
 		function var_69_0.loadTextureNormal(self, texName, texType)
-			local newFile = getCustomButtonFile(texName, w, h)
+			local tw = self._btnTargetW or w
+			local th = self._btnTargetH or h
+			local newFile = getCustomButtonFile(texName, tw, th)
 			if newFile then
 				self:setScale9Enabled(false)
-				origLoad(self, newFile, ccui.TextureResType.localType)
+				self:loadTexture(newFile, ccui.TextureResType.localType)
+				self:setContentSize(tw, th)
 				return
 			end
-			origLoad(self, texName, texType)
+			self:loadTexture(texName, texType or ccui.TextureResType.plistType)
+			self:setContentSize(tw, th)
 		end
 
 		return var_69_0

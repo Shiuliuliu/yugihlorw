@@ -2485,44 +2485,132 @@
 		return button;
 	};
 
+	var CUSTOM_BTN_FRAMES = {
+		'img_btn_1': 'confirm',
+		'img_btn_1_s': 'confirm',
+		'img_btn_2': 'cancel',
+		'img_btn_2_s': 'cancel',
+		'img_btn_4': 'cancel',
+		'img_btn_3': 'red',
+		'img_btn_3_s': 'red'
+	};
+
+	var AVAILABLE_BTN_SIZES_JS = [
+		[60, 50], [60, 60], [80, 40], [80, 48], [80, 50], [80, 60], [82, 60],
+		[90, 40], [90, 50], [90, 60],
+		[100, 36], [100, 40], [100, 60], [100, 78],
+		[110, 44], [110, 60], [110, 78],
+		[120, 40], [120, 46], [120, 60], [120, 70], [120, 78],
+		[132, 46], [132, 48],
+		[140, 44], [140, 48], [140, 60], [140, 70], [140, 78], [146, 70],
+		[150, 60], [150, 78], [152, 78],
+		[160, 48], [160, 60], [160, 78], [170, 78],
+		[180, 40], [180, 46], [180, 50], [180, 56], [180, 60], [180, 70], [180, 78],
+		[190, 48], [190, 60],
+		[200, 60], [200, 78],
+		[210, 46], [210, 48], [210, 60], [210, 78],
+		[220, 60], [220, 70], [220, 78],
+		[230, 46], [230, 48], [240, 78],
+		[250, 56], [250, 60], [250, 78], [260, 60], [260, 64], [260, 78], [300, 78]
+	];
+
+	function getCustomButtonPath(kind, isSmall, currentW, currentH) {
+		var w = Math.round(Number(currentW) || (isSmall ? 120 : 180));
+		var h = Math.round(Number(currentH) || (isSmall ? 60 : 78));
+		if (w < 30) w = isSmall ? 120 : 180;
+		if (h < 20) h = isSmall ? 60 : 78;
+
+		var bestW = isSmall ? 120 : 180, bestH = isSmall ? 60 : 78, minDiff = 999999;
+		for (var i = 0; i < AVAILABLE_BTN_SIZES_JS.length; i++) {
+			var sz = AVAILABLE_BTN_SIZES_JS[i];
+			var dw = Math.abs(sz[0] - w);
+			var dh = Math.abs(sz[1] - h);
+			var diff = dw * 2 + dh * 3;
+			if (diff < minDiff) {
+				minDiff = diff;
+				bestW = sz[0];
+				bestH = sz[1];
+			}
+		}
+		return 'res/new/buttons/' + kind + '_' + bestW + 'x' + bestH + '.png';
+	}
+
 	var baseButtonLoadTextureNormal = ccui.Button.prototype.loadTextureNormal;
 	ccui.Button.prototype.loadTextureNormal = function (normal, texType) {
-		baseButtonLoadTextureNormal.apply(this, arguments);
+		if (normal && typeof normal === 'string') {
+			var btnKind = CUSTOM_BTN_FRAMES[normal];
+			if (btnKind) {
+				var isSmall = (normal.indexOf('_s') !== -1);
+				this.__customBtnKind = btnKind;
+				this.__customBtnIsSmall = isSmall;
+				var curW = this._customSize ? this._customSize.width : (this._contentSize ? this._contentSize.width : 0);
+				var curH = this._customSize ? this._customSize.height : (this._contentSize ? this._contentSize.height : 0);
+				normal = getCustomButtonPath(btnKind, isSmall, curW, curH);
+				texType = ccui.Widget.LOCAL_TEXTURE;
+				if (this._scale9Enabled) {
+					this.setScale9Enabled(false);
+				}
+			}
+		}
+
+		baseButtonLoadTextureNormal.call(this, normal, texType);
+
 		texType = (texType === undefined) ? ccui.Widget.LOCAL_TEXTURE : texType;
 		if (texType === ccui.Widget.LOCAL_TEXTURE && normal && typeof normal === 'string') {
 			var button = this;
 			var clean = normal.split('?')[0];
-			var tex = cc.textureCache.getTextureForKey(clean) || cc.textureCache.getTextureForKey(normal);
-			if (tex && tex.isLoaded && tex.isLoaded()) {
+			var applyTex = function (tex) {
+				if (!tex || !button._buttonNormalRenderer) return;
 				button._normalTextureSize = cc.size(tex.width, tex.height);
 				var nr = button._buttonNormalRenderer;
-				if (nr) {
-					if (nr.setTexture) nr.setTexture(tex);
-					if (nr.setTextureRect) nr.setTextureRect(cc.rect(0, 0, tex.width, tex.height));
-				}
+				if (nr.setTexture) nr.setTexture(tex);
+				if (nr.setTextureRect) nr.setTextureRect(cc.rect(0, 0, tex.width, tex.height));
 				button._normalTextureAdaptDirty = true;
 				if (button._scale9Enabled) {
 					if (nr && nr.setPreferredSize) nr.setPreferredSize(button._contentSize);
 				} else if (button._onSizeChanged) {
 					button._onSizeChanged();
 				}
+			};
+
+			var tex = cc.textureCache.getTextureForKey(clean) || cc.textureCache.getTextureForKey(normal);
+			if (tex && tex.isLoaded && tex.isLoaded()) {
+				applyTex(tex);
 			} else {
-				cc.textureCache.addImage(normal, function (loadedTex) {
-					if (!loadedTex || !button._buttonNormalRenderer) return;
-					button._normalTextureSize = cc.size(loadedTex.width, loadedTex.height);
-					var nr = button._buttonNormalRenderer;
-					if (nr.setTexture) nr.setTexture(loadedTex);
-					if (nr.setTextureRect) nr.setTextureRect(cc.rect(0, 0, loadedTex.width, loadedTex.height));
-					button._normalTextureAdaptDirty = true;
-					if (button._scale9Enabled) {
-						if (nr.setPreferredSize) nr.setPreferredSize(button._contentSize);
-					} else if (button._onSizeChanged) {
-						button._onSizeChanged();
-					}
-				});
+				cc.textureCache.addImage(normal, applyTex);
 			}
 		}
 	};
+
+	var baseButtonSetContentSize = ccui.Button.prototype.setContentSize;
+	ccui.Button.prototype.setContentSize = function (size, height) {
+		baseButtonSetContentSize.apply(this, arguments);
+		if (this.__customBtnKind) {
+			var curW = this._customSize ? this._customSize.width : (this._contentSize ? this._contentSize.width : 0);
+			var curH = this._customSize ? this._customSize.height : (this._contentSize ? this._contentSize.height : 0);
+			var targetPath = getCustomButtonPath(this.__customBtnKind, this.__customBtnIsSmall, curW, curH);
+			if (this._normalFileName !== targetPath) {
+				this.loadTextureNormal(targetPath, ccui.Widget.LOCAL_TEXTURE);
+			}
+		}
+	};
+
+	if (ccui.Scale9Sprite && ccui.Scale9Sprite.prototype) {
+		var baseScale9InitWithSpriteFrameName = ccui.Scale9Sprite.prototype.initWithSpriteFrameName;
+		ccui.Scale9Sprite.prototype.initWithSpriteFrameName = function (spriteFrameName, capInsets) {
+			if (spriteFrameName && typeof spriteFrameName === 'string') {
+				var kind = CUSTOM_BTN_FRAMES[spriteFrameName];
+				if (kind) {
+					var isSmall = (spriteFrameName.indexOf('_s') !== -1);
+					var curW = this._preferredSize ? this._preferredSize.width : 0;
+					var curH = this._preferredSize ? this._preferredSize.height : 0;
+					var file = getCustomButtonPath(kind, isSmall, curW, curH);
+					return this.initWithFile(file);
+				}
+			}
+			return baseScale9InitWithSpriteFrameName.apply(this, arguments);
+		};
+	}
 
 	/* ------------------------------------------------------------------ *
 	 * cc.DragonBonesNode -- the fork's skeletal animations
