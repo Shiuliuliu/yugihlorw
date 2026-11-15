@@ -2592,10 +2592,14 @@
 
 	var baseButtonSetContentSize = ccui.Button.prototype.setContentSize;
 	ccui.Button.prototype.setContentSize = function (size, height) {
-		baseButtonSetContentSize.apply(this, arguments);
+		if (size === undefined || size === null) return;
+		if (typeof size === 'number') {
+			size = cc.size(size, height || 0);
+		}
+		baseButtonSetContentSize.call(this, size);
 		if (this.__customBtnKind) {
-			var curW = this._customSize ? this._customSize.width : (this._contentSize ? this._contentSize.width : 0);
-			var curH = this._customSize ? this._customSize.height : (this._contentSize ? this._contentSize.height : 0);
+			var curW = this._customSize ? this._customSize.width : (this._contentSize ? this._contentSize.width : (size ? size.width : 0));
+			var curH = this._customSize ? this._customSize.height : (this._contentSize ? this._contentSize.height : (size ? size.height : 0));
 			var targetPath = getCustomButtonPath(this.__customBtnKind, this.__customBtnIsSmall, curW, curH);
 			if (this._normalFileName !== targetPath) {
 				this.loadTextureNormal(targetPath, ccui.Widget.LOCAL_TEXTURE);
@@ -2603,25 +2607,27 @@
 		}
 	};
 
-	if (ccui.Scale9Sprite && ccui.Scale9Sprite.prototype) {
-		var baseScale9InitWithSpriteFrameName = ccui.Scale9Sprite.prototype.initWithSpriteFrameName;
-		ccui.Scale9Sprite.prototype.initWithSpriteFrameName = function (spriteFrameName, capInsets) {
-			if (spriteFrameName && typeof spriteFrameName === 'string') {
-				if (spriteFrameName === 'img_com_bg_23' || spriteFrameName === 'img_com_bg_23_r') {
-					return this.initWithFile('res/new/bg.png', cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744));
+	(function () {
+		if (ccui.Scale9Sprite && ccui.Scale9Sprite.prototype) {
+			var customBtnScale9Init = ccui.Scale9Sprite.prototype.initWithSpriteFrameName;
+			ccui.Scale9Sprite.prototype.initWithSpriteFrameName = function (spriteFrameName, capInsets) {
+				if (spriteFrameName && typeof spriteFrameName === 'string') {
+					if (spriteFrameName === 'img_com_bg_23' || spriteFrameName === 'img_com_bg_23_r') {
+						return this.initWithFile('res/new/bg.png', cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744));
+					}
+					var kind = CUSTOM_BTN_FRAMES[spriteFrameName];
+					if (kind) {
+						var isSmall = (spriteFrameName.indexOf('_s') !== -1);
+						var curW = this._preferredSize ? this._preferredSize.width : 0;
+						var curH = this._preferredSize ? this._preferredSize.height : 0;
+						var file = getCustomButtonPath(kind, isSmall, curW, curH);
+						return this.initWithFile(file);
+					}
 				}
-				var kind = CUSTOM_BTN_FRAMES[spriteFrameName];
-				if (kind) {
-					var isSmall = (spriteFrameName.indexOf('_s') !== -1);
-					var curW = this._preferredSize ? this._preferredSize.width : 0;
-					var curH = this._preferredSize ? this._preferredSize.height : 0;
-					var file = getCustomButtonPath(kind, isSmall, curW, curH);
-					return this.initWithFile(file);
-				}
-			}
-			return baseScale9InitWithSpriteFrameName.apply(this, arguments);
-		};
-	}
+				return customBtnScale9Init.apply(this, arguments);
+			};
+		}
+	})();
 
 	/* ------------------------------------------------------------------ *
 	 * cc.DragonBonesNode -- the fork's skeletal animations
@@ -4590,17 +4596,17 @@
 		 * transparent button, which is what an initiative button that happens
 		 * to open before `general.lcres` landed looks like. Hold it and re-run
 		 * the real init when the frame arrives. */
-		var baseScale9InitWithSpriteFrameName = ccui.Scale9Sprite.prototype.initWithSpriteFrameName;
+		var awaitFrameScale9InitWithSpriteFrameName = ccui.Scale9Sprite.prototype.initWithSpriteFrameName;
 		ccui.Scale9Sprite.prototype.initWithSpriteFrameName = function (frameName, capInsets) {
 			stampScale9(this, frameName, capInsets);
 			if (!frameName || !isBlankFrame(lookupFrame(frameName))) {
-				return baseScale9InitWithSpriteFrameName.apply(this, arguments);
+				return awaitFrameScale9InitWithSpriteFrameName.apply(this, arguments);
 			}
 
 			var node = this;
 			res.awaitFrame(frameName, function (frame) {
 				if (!frame) return;
-				baseScale9InitWithSpriteFrameName.call(node, frameName, capInsets);
+				awaitFrameScale9InitWithSpriteFrameName.call(node, frameName, capInsets);
 				restoreScale9Size(node);
 				if (node.dispatchEvent) node.dispatchEvent("load");
 				adoptLateSize(node);

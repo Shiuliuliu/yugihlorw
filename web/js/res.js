@@ -1548,6 +1548,13 @@
 			            R.manifest.sizes['res/' + norm.replace(/^res\//, '')];
 			if (found && Array.isArray(found) && typeof found[0] === 'number') return found;
 		}
+		if (path === 'res/new/bg.png' || path === 'new/bg.png') {
+			return [1024, 1024];
+		}
+		var mBtn = path.match(/(?:res\/)?new\/buttons\/[a-z]+_(\d+)x(\d+)\.png/);
+		if (mBtn) {
+			return [parseInt(mBtn[1], 10), parseInt(mBtn[2], 10)];
+		}
 		if (/^\d+(_\d+)?\.(jpm|jpg)$/.test(path) || /thumb_(monster|magic|trap|rare)\/\d+(_\d+)?\.(jpm|jpg)$/.test(path)) {
 			return [256, 256];
 		}

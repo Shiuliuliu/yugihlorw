@@ -2255,17 +2255,18 @@ function var_0_0.createScale9ShaderButton(arg_69_0, arg_69_1, arg_69_2, arg_69_3
 			var_69_0._btnTargetW = w
 			var_69_0._btnTargetH = h
 
+			local origLoadTextureNormal = var_69_0.loadTextureNormal
 			function var_69_0.loadTextureNormal(self, texName, texType)
 				local tw = self._btnTargetW or w
 				local th = self._btnTargetH or h
 				local newFile = getCustomButtonFile(texName, tw, th)
 				if newFile then
 					self:setScale9Enabled(false)
-					self:loadTexture(newFile, ccui.TextureResType.localType)
+					origLoadTextureNormal(self, newFile, ccui.TextureResType.localType)
 					self:setContentSize(tw, th)
 					return
 				end
-				self:loadTexture(texName, texType or ccui.TextureResType.plistType)
+				origLoadTextureNormal(self, texName, texType or ccui.TextureResType.plistType)
 				self:setContentSize(tw, th)
 			end
 
