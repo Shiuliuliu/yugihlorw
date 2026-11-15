@@ -2,7 +2,8 @@
  * Provides instant offline caching and sub-millisecond local loading (Arcana architecture)
  */
 
-var CACHE_NAME = 'yugihlor-cache-20261115v153500';
+var CACHE_NAME = 'yugihlor-cache-20261115v161000';
+var VENDOR_CACHE = 'yugihlor-vendor-cache-v1';
 
 var STATIC_EXTENSIONS = [
 	'.jpg', '.jpeg', '.png', '.jpm', '.sfb', '.lcres',
@@ -18,7 +19,7 @@ self.addEventListener('activate', function (event) {
 		caches.keys().then(function (cacheNames) {
 			return Promise.all(
 				cacheNames.map(function (name) {
-					if (name !== CACHE_NAME) {
+					if (name !== CACHE_NAME && name !== VENDOR_CACHE) {
 						console.log('[SW] Deleting old cache:', name);
 						return caches.delete(name);
 					}
@@ -29,6 +30,29 @@ self.addEventListener('activate', function (event) {
 		})
 	);
 });
+
+function fetchWithRetry(req, retries) {
+	return fetch(req).then(function (resp) {
+		if (resp && resp.ok) return resp;
+		if (retries > 0 && (!resp || resp.status >= 500)) {
+			return new Promise(function (resolve) {
+				setTimeout(resolve, 300);
+			}).then(function () {
+				return fetchWithRetry(req, retries - 1);
+			});
+		}
+		return resp;
+	}).catch(function (err) {
+		if (retries > 0) {
+			return new Promise(function (resolve) {
+				setTimeout(resolve, 300);
+			}).then(function () {
+				return fetchWithRetry(req, retries - 1);
+			});
+		}
+		return Promise.reject(err);
+	});
+}
 
 self.addEventListener('fetch', function (event) {
 	var req = event.request;
@@ -43,23 +67,50 @@ self.addEventListener('fetch', function (event) {
 	}
 
 	var pathname = url.pathname.toLowerCase();
-	var isBundle = pathname.endsWith('lua_bundle.bin') ||
-	               pathname.endsWith('data_bundle.bin') ||
-	               pathname.endsWith('lua_src.json') ||
-	               pathname.endsWith('data_dumps.json') ||
-	               pathname.endsWith('res_manifest.json') ||
-	               pathname.endsWith('.js') ||
-	               pathname.endsWith('.html') ||
-	               pathname === '/';
 
-	// Network-first for code/data bundles and scripts so APK & Web always stay 100% in sync
-	if (isBundle) {
+	// 1. Vendor scripts (/vendor/...): Cocos2d engine framework never changes across updates.
+	// Cache-First with retry ensures 0ms load and complete immunity to 502 Bad Gateway.
+	if (pathname.indexOf('/vendor/') >= 0) {
+		event.respondWith(
+			caches.open(VENDOR_CACHE).then(function (cache) {
+				return cache.match(req).then(function (cached) {
+					if (cached) return cached;
+					return fetchWithRetry(req, 2).then(function (netRes) {
+						if (netRes && netRes.ok) {
+							try { cache.put(req, netRes.clone()); } catch (e) {}
+						}
+						return netRes;
+					});
+				});
+			})
+		);
+		return;
+	}
+
+	var isDynamicBundle = pathname.endsWith('lua_bundle.bin') ||
+	                      pathname.endsWith('data_bundle.bin') ||
+	                      pathname.endsWith('lua_src.json') ||
+	                      pathname.endsWith('data_dumps.json') ||
+	                      pathname.endsWith('res_manifest.json') ||
+	                      pathname.endsWith('.js') ||
+	                      pathname.endsWith('.html') ||
+	                      pathname === '/';
+
+	// 2. Code/data bundles and app scripts: Network-first with automatic fallback to cache on 5xx/error.
+	if (isDynamicBundle) {
 		event.respondWith(
 			fetch(req, { cache: 'no-store' }).then(function (networkResponse) {
-				if (networkResponse && networkResponse.status === 200) {
+				if (networkResponse && networkResponse.ok) {
 					var clone = networkResponse.clone();
 					caches.open(CACHE_NAME).then(function (cache) {
 						cache.put(req, clone).catch(function () {});
+					});
+					return networkResponse;
+				}
+				// If server returned 5xx / 502 / network glitch, fallback to cached copy so game boots cleanly
+				if (!networkResponse || networkResponse.status >= 500) {
+					return caches.match(req).then(function (cached) {
+						return cached || networkResponse;
 					});
 				}
 				return networkResponse;
@@ -70,7 +121,7 @@ self.addEventListener('fetch', function (event) {
 		return;
 	}
 
-	// Determine if this is a static game asset
+	// 3. Static game assets (images, audio, fonts, lcres, etc.): Cache-First
 	var isStatic = STATIC_EXTENSIONS.some(function (ext) { return pathname.endsWith(ext); }) ||
 	               pathname.indexOf('/res/') >= 0;
 
@@ -83,7 +134,7 @@ self.addEventListener('fetch', function (event) {
 					return cached;
 				}
 				return fetch(req).then(function (networkResponse) {
-					if (networkResponse && networkResponse.status === 200) {
+					if (networkResponse && networkResponse.ok) {
 						try {
 							var responseToCache = networkResponse.clone();
 							cache.put(req, responseToCache).catch(function () {});

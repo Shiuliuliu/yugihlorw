@@ -1867,6 +1867,8 @@ def format_union_full_data(union_id, account_id=None):
 
 
 class WebAppHandler(http.server.SimpleHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=WEB_DIR, **kwargs)
     
@@ -6562,8 +6564,9 @@ def main():
 
 
     class FastThreadingHTTPServer(ThreadingHTTPServer):
-        request_queue_size = 256
+        request_queue_size = 512
         daemon_threads = True
+        allow_reuse_address = True
 
     print(f"[GATEWAY] WebSocket /ws requests will proxy to Dedicated Battle Server (Port {WS_PORT}).")
     scheduler_thread = threading.Thread(target=daily_scheduler_loop, daemon=True)

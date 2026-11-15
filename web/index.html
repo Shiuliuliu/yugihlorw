@@ -11,31 +11,7 @@
 
 	<meta charset="utf-8">
 
-	<script>window.JDZC_CONFIG = { version: '20261115v153500' };
-	(function() {
-		try {
-			var curVer = '20261115v153500';
-			var prevVer = localStorage.getItem('yugihlor_app_ver');
-			if (prevVer !== curVer) {
-				localStorage.setItem('yugihlor_app_ver', curVer);
-				if ('caches' in window) {
-					caches.keys().then(function(names) {
-						for (var i = 0; i < names.length; i++) {
-							caches.delete(names[i]);
-						}
-					});
-				}
-				if ('serviceWorker' in navigator) {
-					navigator.serviceWorker.getRegistrations().then(function(regs) {
-						for (var i = 0; i < regs.length; i++) {
-							regs[i].unregister();
-						}
-					});
-				}
-			}
-		} catch (e) {}
-	})();
-	</script>
+	<script>window.JDZC_CONFIG = { version: '20261115v161000' };</script>
 
 	<title>Yugihlor - Trading "Nạp" Game</title>
 
