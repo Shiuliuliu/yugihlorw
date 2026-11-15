@@ -639,17 +639,7 @@ function var_0_0.onApplicationEvent(arg_26_0)
 		return true
 	elseif var_26_0 == "USER_LOGOUT" then
 		print("#### " .. var_26_0)
-		lc._runningScene:runAction(cc.CallFunc:create(function()
-			ClientView.getActiveIndicator():hide()
-
-			local var_27_0 = lc._runningScene
-
-			if var_27_0._sceneId == ClientData.SceneId.city then
-				var_27_0:clearCity()
-			end
-
-			var_0_0.switchToUpdateScene()
-		end))
+		var_0_0.userLogout()
 
 		return true
 	elseif var_26_0 == "PAY_FAILED" then
@@ -1518,75 +1508,66 @@ function var_0_0.disconnect(arg_63_0)
 	end
 end
 
-function var_0_0.switchToUpdateScene()
-	var_0_0.disconnect(false)
-	lc.App:switchToUpdateScene()
+function var_0_0.userLogout()
+	print("[AUTH] ClientData.userLogout: logging out and switching to RegionScene")
+	ClientView.getActiveIndicator():hide()
 
-	var_0_0.switchSchedulerID = lc.Scheduler:scheduleScriptFunc(function(arg_65_0)
-		require("CardThumbnail").releasePool()
-		lc.Pool.clear("IconWidget")
-		lc.App:unloadRes("extend.lan")
-		TextureManager.clear()
-
-		for iter_65_0, iter_65_1 in ipairs(var_0_0._evtListeners) do
-			lc.Dispatcher:removeEventListener(iter_65_1)
-		end
-
-		var_0_0._evtListeners = {}
-
-		var_0_0.unloadCityUnionRes()
-		var_0_0.unloadBattleRes()
-		ClientData.unloadLCRes({
-			"cards_back.jpm",
-			"cards_back.png.sfb"
-		})
-		ClientData.unloadLCRes({
-			"cards_back2.jpm",
-			"cards_back2.png.sfb"
-		})
-		ClientData.unloadLCRes({
-			"cards_back3.jpm",
-			"cards_back3.png.sfb"
-		})
-		ClientData.unloadLCRes({
-			"cards_back4.jpm",
-			"cards_back4.png.sfb"
-		})
-		ClientData.unloadLCRes({
-			"props.jpm",
-			"props.png.sfb"
-		})
-		ClientData.unloadLCRes({
-			"general.jpm",
-			"general.png.sfb"
-		})
-		ClientData.unloadLCRes({
-			"avatar.jpm",
-			"avatar.png.sfb"
-		})
-
-		for iter_65_2 = 1, ClientData.CARDS_IMG_COUNT do
-			local var_65_0 = "cards_img_" .. iter_65_2
-
-			ClientData.unloadLCRes({
-				var_65_0 .. ".jpm",
-				var_65_0 .. ".png.sfb"
-			})
-		end
-
-		lc.FrameCache:removeSpriteFrames()
-		lc.TextureCache:removeAllTextures()
-		lc.Director:purgeCachedData()
-		lc.Scheduler:unscheduleScriptEntry(var_0_0.switchSchedulerID)
-	end, 0, false)
-end
-
-function var_0_0.switchToRegionScene()
 	var_0_0.disconnect(false)
 
 	var_0_0._regions = {}
-
+	var_0_0._userRegion = {}
+	var_0_0._account = nil
+	var_0_0._loginMode = nil
+	var_0_0._isWorking = false
 	var_0_0.saveUserRegion()
+
+	var_0_0._player = require("Player").new()
+	P = var_0_0._player
+
+	local curScene = lc._runningScene
+	if curScene then
+		if curScene._sceneId == var_0_0.SceneId.city and curScene.clearCity then
+			curScene:clearCity()
+		end
+		ClientView.removeResourceFromParent()
+		ClientView.removeMenuFromParent()
+		ClientView.removeChatPanelFromParent()
+	end
+
+	GuideManager.stopGuide()
+	GuideManager.releaseLayer()
+	NoticeManager.hideAll()
+	lc.Audio.stopMusic()
+
+	lc.replaceScene(require("RegionScene").create())
+end
+
+function var_0_0.switchToUpdateScene()
+	var_0_0.userLogout()
+end
+
+function var_0_0.switchToRegionScene()
+	ClientView.getActiveIndicator():hide()
+	var_0_0.disconnect(false)
+
+	var_0_0._regions = {}
+	var_0_0.saveUserRegion()
+
+	local curScene = lc._runningScene
+	if curScene then
+		if curScene._sceneId == var_0_0.SceneId.city and curScene.clearCity then
+			curScene:clearCity()
+		end
+		ClientView.removeResourceFromParent()
+		ClientView.removeMenuFromParent()
+		ClientView.removeChatPanelFromParent()
+	end
+
+	GuideManager.stopGuide()
+	GuideManager.releaseLayer()
+	NoticeManager.hideAll()
+	lc.Audio.stopMusic()
+
 	lc.replaceScene(require("RegionScene").create())
 end
 

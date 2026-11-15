@@ -540,20 +540,15 @@ function var_0_0.onHelp(arg_40_0)
 end
 
 function var_0_0.onChangeRegion(arg_41_0)
+	arg_41_0:hide()
 	ClientData.switchToRegionScene()
 end
 
 function var_0_0.onChangeUser(arg_42_0)
-	if lc.App:getChannelName() == "APPSTORE" then
-		require("Dialog").showDialog(Str(STR.CHANGE_USER_IN_GAMECENTER), function()
-			return
-		end)
-	else
-		ClientData._regions = {}
-		ClientData.saveUserRegion()
-		lc.App:userLogout()
-		ClientView.getActiveIndicator():show(Str(STR.WAITING))
-	end
+	require("Dialog").showDialog("Bạn có chắc chắn muốn đăng xuất tài khoản hiện tại?", function()
+		arg_42_0:hide()
+		ClientData.userLogout()
+	end)
 end
 
 function var_0_0.onSwitchMusic(arg_45_0, arg_45_1)

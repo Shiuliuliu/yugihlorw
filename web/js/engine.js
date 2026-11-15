@@ -136,11 +136,25 @@
 		getAppRateUrl: function () { return ''; },
 		getDisplayPrice: function () { return ''; },
 		pay: function () { cc.log('[app] pay is not available on the web'); },
-		userLogout: function () {},
+		userLogout: function () {
+			cc.log('[app] userLogout called');
+			if (window.lc && window.lc.Dispatcher) {
+				var evt = new cc.EventCustom("event_application");
+				evt.setUserString("USER_LOGOUT");
+				window.lc.Dispatcher.dispatchEvent(evt);
+			}
+		},
 		bindAlias: function () {},
 		addNotification: function () {},
 		submitExtendData: function () {},
-		switchToUpdateScene: function () {},
+		switchToUpdateScene: function () {
+			cc.log('[app] switchToUpdateScene called');
+			if (window.lc && window.lc.Dispatcher) {
+				var evt = new cc.EventCustom("event_application");
+				evt.setUserString("USER_LOGOUT");
+				window.lc.Dispatcher.dispatchEvent(evt);
+			}
+		},
 		wxShare: function () {},
 		facebookLogin: function () {},
 		facebookLike: function () {},

@@ -259,7 +259,7 @@ function var_0_1.init(arg_2_0)
 
 	var_2_13:setColor(cc.c3b(12, 15, 30))
 	var_2_13:setTouchEnabled(false)
-	var_2_13:setContentSize(hintBgSize)
+	var_2_13:setContentSize(cc.size(460, 62))
 	lc.addChildToPos(var_2_11, var_2_13, cc.p(lc.w(arg_2_0) / 2, lc.y(var_2_12)))
 
 	arg_2_0._btnChange = var_2_13
@@ -620,7 +620,9 @@ end
 function var_0_1.onExit(arg_11_0)
 	var_0_1.super.onExit(arg_11_0)
 	arg_11_0:unscheduleLoading()
-	lc.Dispatcher:removeEventListener(arg_11_0._listener)
+	if arg_11_0._listener then
+		lc.Dispatcher:removeEventListener(arg_11_0._listener)
+	end
 end
 
 function var_0_1.onCleanup(arg_12_0)

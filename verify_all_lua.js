@@ -7,6 +7,10 @@ async function testFiles() {
     console.log("LuaVM initialized successfully!");
     
     const files = [
+        'D:/yugitauapk/web/src/LordForm.lua',
+        'D:/yugitauapk/web/src/BattleHelpForm.lua',
+        'D:/yugitauapk/web/src/ClientData.lua',
+        'D:/yugitauapk/web/src/RegionScene.lua',
         'D:/yugitauapk/web/src/h5_patch.lua',
         'D:/yugitauapk/web/src/BattleSkill.lua',
         'D:/yugitauapk/web/src/BattleStep.lua',

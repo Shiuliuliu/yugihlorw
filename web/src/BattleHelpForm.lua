@@ -202,12 +202,8 @@ function var_0_0.refresh(arg_7_0)
 		local var_7_6 = ClientView.createScale9ShaderButton("img_btn_1", function(arg_8_0)
 			require("Dialog").showDialog(Str(STR.CONFIRM_CLOSE_ACCOUNT), function()
 				ClientData.sendBanLogin()
-
-				ClientData._regions = {}
-
-				ClientData.saveUserRegion()
-				lc.App:userLogout()
-				ClientView.getActiveIndicator():show(Str(STR.WAITING))
+				arg_7_0:hide()
+				ClientData.userLogout()
 			end, nil, nil, function()
 				lc.App:openURL("http://sh.smbbgo.com/mzsm/090921252395.html")
 			end)
