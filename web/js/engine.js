@@ -525,6 +525,8 @@
 		 * .lcres is an entry of a container, which the manifest lists
 		 * under the container rather than as a file of its own. */
 		if (isPath && url.indexOf('.lcres/') < 0 &&
+		    url.indexOf('res/new/') !== 0 &&
+		    url.indexOf('new/') !== 0 &&
 		    !res.exists(url.replace(res.base, 'res/'))) {
 			if (cb) cb.call(target, null);
 			return null;
@@ -2479,9 +2481,14 @@
 	 * artwork */
 	ccui.ShaderButton.create = function (image, texType) {
 		var button = new ccui.ShaderButton();
-		if (image)
-			button.loadTextureNormal(image,
-				texType === undefined ? ccui.Widget.LOCAL_TEXTURE : texType);
+		if (image) {
+			try {
+				button.loadTextureNormal(image,
+					texType === undefined ? ccui.Widget.LOCAL_TEXTURE : texType);
+			} catch (e) {
+				console.warn('ShaderButton create loadTextureNormal error:', e);
+			}
+		}
 		return button;
 	};
 
@@ -2535,28 +2542,6 @@
 		return 'res/new/buttons/' + kind + '_' + bestW + 'x' + bestH + '.png';
 	}
 
-	if (cc.Sprite && cc.Sprite.prototype) {
-		var baseSpriteInitWithFile = cc.Sprite.prototype.initWithFile;
-		cc.Sprite.prototype.initWithFile = function (filename, rect) {
-			if (!filename) return false;
-			var tex = cc.textureCache.getTextureForKey(filename);
-			if (!tex || !tex._contentSize) {
-				var self = this;
-				tex = cc.textureCache.addImage(filename, function (loadedTex) {
-					if (!loadedTex || !self.initWithTexture) return;
-					var sz = loadedTex.getContentSize ? loadedTex.getContentSize() : loadedTex._contentSize;
-					var w = sz ? sz.width : (loadedTex.width || 0);
-					var h = sz ? sz.height : (loadedTex.height || 0);
-					self.initWithTexture(loadedTex, rect || cc.rect(0, 0, w, h));
-				});
-				var cw = (tex && tex._contentSize) ? tex._contentSize.width : 0;
-				var ch = (tex && tex._contentSize) ? tex._contentSize.height : 0;
-				var r = rect || cc.rect(0, 0, cw, ch);
-				return this.initWithTexture(tex, r);
-			}
-			return baseSpriteInitWithFile.apply(this, arguments);
-		};
-	}
 
 	var baseButtonLoadTextureNormal = ccui.Button.prototype.loadTextureNormal;
 	ccui.Button.prototype.loadTextureNormal = function (normal, texType) {

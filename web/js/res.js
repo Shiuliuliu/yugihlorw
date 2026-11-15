@@ -1498,7 +1498,10 @@
 
 	R.exists = function (path) {
 		if (!path) return false;
-		if (typeof path === 'string') path = path.split('?')[0];
+		if (typeof path === 'string') {
+			path = path.split('?')[0];
+			if (path.indexOf('res/new/') === 0 || path.indexOf('new/') === 0) return true;
+		}
 		if (CUSTOM_ICON_REPLACEMENTS && CUSTOM_ICON_REPLACEMENTS[path]) return true;
 		if (!R.manifest) return false;
 		if (!R.filesSet && R.manifest.files) {

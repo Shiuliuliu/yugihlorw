@@ -632,18 +632,19 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
      * @return {Boolean} true if the sprite is initialized properly, false otherwise.
      */
     initWithFile:function (filename, rect) {
-        cc.assert(filename, cc._LogInfos.Sprite_initWithFile);
+        if (!filename) return false;
 
         var tex = cc.textureCache.getTextureForKey(filename);
         if (!tex) {
             tex = cc.textureCache.addImage(filename);
-            var cw = (tex && tex._contentSize) ? tex._contentSize.width : 0;
-            var ch = (tex && tex._contentSize) ? tex._contentSize.height : 0;
+            if (!tex || typeof tex.isLoaded !== 'function') return false;
+            var cw = (tex && tex._contentSize) ? tex._contentSize.width : (tex.width || 0);
+            var ch = (tex && tex._contentSize) ? tex._contentSize.height : (tex.height || 0);
             var r = rect || cc.rect(0, 0, cw, ch);
             return this.initWithTexture(tex, r);
         } else {
             if (!rect) {
-                var size = tex.getContentSize();
+                var size = (tex.getContentSize ? tex.getContentSize() : tex._contentSize) || {width: tex.width || 0, height: tex.height || 0};
                 rect = cc.rect(0, 0, size.width, size.height);
             }
             return this.initWithTexture(tex, rect);
@@ -663,6 +664,10 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
      */
     initWithTexture: function (texture, rect, rotated, counterclockwise) {
         var _t = this;
+        if (!texture || typeof texture.isLoaded !== 'function') {
+            _t._textureLoaded = false;
+            return false;
+        }
         cc.assert(arguments.length !== 0, cc._LogInfos.CCSpriteBatchNode_initWithTexture);
 
         rotated = rotated || false;

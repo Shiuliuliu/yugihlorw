@@ -2096,6 +2096,12 @@ function var_0_0.createShaderButton(arg_59_0, arg_59_1, arg_59_2, arg_59_3)
 	local var_59_0 = arg_59_0 == "img_blank"
 	local var_59_1 = string.find(arg_59_0, "%.")
 	local var_59_2 = ccui.ShaderButton:create(arg_59_0, var_59_1 and ccui.TextureResType.localType or ccui.TextureResType.plistType)
+	if not var_59_2 then
+		var_59_2 = ccui.ShaderButton:create()
+	end
+	if not var_59_2 then
+		var_59_2 = ccui.Button:create()
+	end
 
 	if var_59_0 then
 		var_59_2:setScale9Enabled(true)
@@ -2240,26 +2246,31 @@ function var_0_0.createScale9ShaderButton(arg_69_0, arg_69_1, arg_69_2, arg_69_3
 	local customFile, bw, bh = getCustomButtonFile(arg_69_0, w, h)
 	if customFile then
 		local var_69_0 = var_0_0.createShaderButton(customFile, arg_69_1)
-		var_69_0:setScale9Enabled(false)
-		var_69_0:setContentSize(w, h)
-		var_69_0._btnTargetW = w
-		var_69_0._btnTargetH = h
-
-		function var_69_0.loadTextureNormal(self, texName, texType)
-			local tw = self._btnTargetW or w
-			local th = self._btnTargetH or h
-			local newFile = getCustomButtonFile(texName, tw, th)
-			if newFile then
-				self:setScale9Enabled(false)
-				self:loadTexture(newFile, ccui.TextureResType.localType)
-				self:setContentSize(tw, th)
-				return
-			end
-			self:loadTexture(texName, texType or ccui.TextureResType.plistType)
-			self:setContentSize(tw, th)
+		if not var_69_0 then
+			var_69_0 = var_0_0.createShaderButton(arg_69_0, arg_69_1)
 		end
+		if var_69_0 then
+			var_69_0:setScale9Enabled(false)
+			var_69_0:setContentSize(w, h)
+			var_69_0._btnTargetW = w
+			var_69_0._btnTargetH = h
 
-		return var_69_0
+			function var_69_0.loadTextureNormal(self, texName, texType)
+				local tw = self._btnTargetW or w
+				local th = self._btnTargetH or h
+				local newFile = getCustomButtonFile(texName, tw, th)
+				if newFile then
+					self:setScale9Enabled(false)
+					self:loadTexture(newFile, ccui.TextureResType.localType)
+					self:setContentSize(tw, th)
+					return
+				end
+				self:loadTexture(texName, texType or ccui.TextureResType.plistType)
+				self:setContentSize(tw, th)
+			end
+
+			return var_69_0
+		end
 	end
 
 	local var_69_0 = var_0_0.createShaderButton(arg_69_0, arg_69_1)
