@@ -1,7 +1,12 @@
 local var_0_0 = {}
-local var_0_1 = 400
+local var_0_1 = (JDZC_IS_IOS or JDZC_IS_MOBILE) and 80 or 300
 
 function var_0_0.init()
+	if JDZC_IS_IOS or JDZC_IS_MOBILE then
+		var_0_1 = 80
+	else
+		var_0_1 = 300
+	end
 	var_0_0._textures = {}
 	var_0_0._count = 0
 	var_0_0._tick = 0

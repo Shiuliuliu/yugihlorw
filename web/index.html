@@ -11,7 +11,7 @@
 
 	<meta charset="utf-8">
 
-	<script>window.JDZC_CONFIG = { version: '20261116v050000' };</script>
+	<script>window.JDZC_CONFIG = { version: '20261116v055500' };</script>
 
 	<title>Yugihlor - Trading "Nạp" Game</title>
 
@@ -1518,6 +1518,10 @@
 			try {
 				localStorage.setItem('game_fps_limit', String(fps));
 			} catch (e) {}
+			var isIOS = (typeof navigator !== 'undefined') && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+			if (isIOS && (fps === 0 || fps > 60)) {
+				fps = 60; /* Cap on iOS to prevent WebGL thermal throttling and Jetsam memory crash */
+			}
 			if (window.cc && cc.game) {
 				cc.game._targetFps = fps;
 				if (typeof cc.game.setFrameRate === 'function') {
@@ -1536,12 +1540,13 @@
 		};
 
 		window.jdzcApi.setGraphicQuality = function (quality) {
-			quality = parseInt(quality, 10) || 3;
+			quality = parseInt(quality, 10) || 2;
 			try {
 				localStorage.setItem('game_graphic_quality', String(quality));
 			} catch (e) {}
-			var map = { 1: 1.0, 2: 1.5, 3: 2.0 };
-			var targetDpr = map[quality] !== undefined ? map[quality] : 2.0;
+			var isIOS = (typeof navigator !== 'undefined') && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+			var map = { 1: 1.0, 2: 1.5, 3: (isIOS ? 1.5 : 2.0) };
+			var targetDpr = map[quality] !== undefined ? map[quality] : (isIOS ? 1.5 : 2.0);
 			if (window.cc && cc.view) {
 				cc.view._customDpr = targetDpr;
 				if (typeof cc.view._resizeEvent === 'function') {
@@ -1558,7 +1563,8 @@
 				var v = localStorage.getItem('game_graphic_quality');
 				if (v !== null) return parseInt(v, 10);
 			} catch (e) {}
-			return 3;
+			var isIOS = (typeof navigator !== 'undefined') && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+			return isIOS ? 2 : 3;
 		};
 
 		window.jdzcApi.toggleDisplayFps = function (show) {

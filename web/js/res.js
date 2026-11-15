@@ -1211,8 +1211,25 @@
 	};
 
 	R.unloadContainer = function (name) {
-		/* Resident in memory (Arcana architecture): never evict to ensure instant zero-latency scene transitions and no re-fetching */
-		return;
+		if (!name) return;
+		var path = typeof name === 'string' ? (name.indexOf('res/') === 0 ? name : 'res/' + name) : '';
+		if (path && !/\.lcres$/i.test(path)) path = path + '.lcres';
+		if (R.isResident(path) || R.isResident(name)) {
+			return;
+		}
+		if (isIOS || (typeof cc !== 'undefined' && cc.sys && cc.sys.isMobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+			delete R.loaded[path];
+			delete R.loaded[name];
+			var entries = R.entriesOf(path) || R.entriesOf(name);
+			if (entries && Array.isArray(entries)) {
+				entries.forEach(function (entry) {
+					delete R.containerOf[entry];
+					if (window.cc && cc.textureCache && typeof cc.textureCache.removeTextureForKey === 'function') {
+						cc.textureCache.removeTextureForKey(entry);
+					}
+				});
+			}
+		}
 	};
 
 	/* Preload resident background images & pack covers before entering game */
@@ -1364,6 +1381,10 @@
 
 	/* Background preloader for card thumbnails while player is playing (Arcana architecture) */
 	R.startBackgroundPreloader = function () {
+		if (isIOS || (typeof cc !== 'undefined' && cc.sys && cc.sys.isMobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+			console.log('[res] Background preloader skipped on mobile/iOS to prevent Jetsam memory crash');
+			return;
+		}
 		if (R._bgPreloaderStarted) return;
 		R._bgPreloaderStarted = true;
 		var thumbs = (R.manifest && R.manifest.thumbs) ? R.manifest.thumbs : null;

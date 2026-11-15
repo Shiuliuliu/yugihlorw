@@ -57,7 +57,7 @@
 			if (global.jdzcPreloadCommonBattleEffects) {
 				setTimeout(global.jdzcPreloadCommonBattleEffects, 2000);
 			}
-			if (global.jdzcRes && global.jdzcRes.startBackgroundPreloader) {
+			if (!isIOS && global.jdzcRes && global.jdzcRes.startBackgroundPreloader) {
 				global.jdzcRes.startBackgroundPreloader();
 			}
 		},
@@ -363,6 +363,11 @@
 
 	cc.game.onStart = function () {
 		if (global.jdzcFreeUploadedCanvases) global.jdzcFreeUploadedCanvases();
+		if (global.jdzcApi && global.jdzcApi.getGraphicQuality) {
+			var q = global.jdzcApi.getGraphicQuality();
+			var map = { 1: 1.0, 2: 1.5, 3: (isIOS ? 1.5 : 2.0) };
+			cc.view._customDpr = map[q] !== undefined ? map[q] : (isIOS ? 1.5 : 2.0);
+		}
 		cc.view.adjustViewPort(true);
 		cc.view.enableRetina(true);
 		/* Match the native Director: a fixed logical height with the width
@@ -374,6 +379,36 @@
 		/* what fixed-height actually handed us, rather than the aspect guessed
 		 * from window.inner* above -- they agree, but only one is the truth */
 		DESIGN_W = Math.round(cc.view.getVisibleSize().width);
+
+		/* Prevent crash on webgl context lost */
+		var canvas = document.getElementById('gameCanvas');
+		if (canvas) {
+			canvas.addEventListener('webglcontextlost', function (e) {
+				console.warn('[WebGL] Context lost. Preventing default to allow recovery.');
+				e.preventDefault();
+			}, false);
+		}
+
+		/* iOS / Mobile memory watchdog: flush textures and garbage collect regularly */
+		if (isIOS || (typeof cc !== 'undefined' && cc.sys && cc.sys.isMobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+			document.addEventListener('visibilitychange', function () {
+				if (document.hidden) {
+					console.log('[Mobile memory] App hidden, collecting garbage and trimming textures');
+					if (global.jdzcLua && global.jdzcLua.run) {
+						try { global.jdzcLua.run('collectgarbage("collect"); if TextureManager and TextureManager.trim then TextureManager.trim(20) end'); } catch (e) {}
+					}
+					if (cc.textureCache && cc.textureCache.removeUnusedTextures) {
+						try { cc.textureCache.removeUnusedTextures(); } catch (e) {}
+					}
+				}
+			});
+
+			setInterval(function () {
+				if (global.jdzcLua && global.jdzcLua.run) {
+					try { global.jdzcLua.run('collectgarbage("step", 300); if TextureManager and TextureManager.trim then TextureManager.trim(50) end'); } catch (e) {}
+				}
+			}, 15000);
+		}
 
 		/* Entering fullscreen and rotating both change the frame, and mobile
 		 * browsers report the old one for a beat -- so re-run the resize once

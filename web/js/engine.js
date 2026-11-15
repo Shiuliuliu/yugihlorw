@@ -465,6 +465,10 @@
 				if (container) delete res.loaded[container];
 			}
 		}
+		var tex = cc.textureCache.getTextureForKey(key);
+		if (tex && typeof tex.releaseTexture === 'function') {
+			try { tex.releaseTexture(); } catch (e) {}
+		}
 		return baseRemoveTextureForKey(key);
 	};
 

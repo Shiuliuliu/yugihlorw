@@ -940,9 +940,13 @@ cc.ContainerStrategy = cc.Class.extend(/** @lends cc.ContainerStrategy# */{
         locContainer.style.height = locCanvas.style.height = h + 'px';
         // Setup pixel ratio for retina display
         var devicePixelRatio = view._devicePixelRatio = 1;
-        if (view.isRetinaEnabled()) {
+        if (view._customDpr !== undefined && view._customDpr > 0) {
+            devicePixelRatio = view._devicePixelRatio = view._customDpr;
+        } else if (view.isRetinaEnabled()) {
             var dpr = window.devicePixelRatio || 1;
-            devicePixelRatio = view._devicePixelRatio = Math.min(2.5, Math.max(1, dpr));
+            var isIOS = (typeof navigator !== 'undefined') && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+            var maxDpr = isIOS ? 1.5 : 2.5;
+            devicePixelRatio = view._devicePixelRatio = Math.min(maxDpr, Math.max(1, dpr));
         }
         // Setup canvas
         locCanvas.width = Math.round(w * devicePixelRatio);
