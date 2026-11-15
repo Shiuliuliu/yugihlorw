@@ -2535,6 +2535,29 @@
 		return 'res/new/buttons/' + kind + '_' + bestW + 'x' + bestH + '.png';
 	}
 
+	if (cc.Sprite && cc.Sprite.prototype) {
+		var baseSpriteInitWithFile = cc.Sprite.prototype.initWithFile;
+		cc.Sprite.prototype.initWithFile = function (filename, rect) {
+			if (!filename) return false;
+			var tex = cc.textureCache.getTextureForKey(filename);
+			if (!tex || !tex._contentSize) {
+				var self = this;
+				tex = cc.textureCache.addImage(filename, function (loadedTex) {
+					if (!loadedTex || !self.initWithTexture) return;
+					var sz = loadedTex.getContentSize ? loadedTex.getContentSize() : loadedTex._contentSize;
+					var w = sz ? sz.width : (loadedTex.width || 0);
+					var h = sz ? sz.height : (loadedTex.height || 0);
+					self.initWithTexture(loadedTex, rect || cc.rect(0, 0, w, h));
+				});
+				var cw = (tex && tex._contentSize) ? tex._contentSize.width : 0;
+				var ch = (tex && tex._contentSize) ? tex._contentSize.height : 0;
+				var r = rect || cc.rect(0, 0, cw, ch);
+				return this.initWithTexture(tex, r);
+			}
+			return baseSpriteInitWithFile.apply(this, arguments);
+		};
+	}
+
 	var baseButtonLoadTextureNormal = ccui.Button.prototype.loadTextureNormal;
 	ccui.Button.prototype.loadTextureNormal = function (normal, texType) {
 		if (normal && typeof normal === 'string') {
@@ -2599,6 +2622,9 @@
 		var baseScale9InitWithSpriteFrameName = ccui.Scale9Sprite.prototype.initWithSpriteFrameName;
 		ccui.Scale9Sprite.prototype.initWithSpriteFrameName = function (spriteFrameName, capInsets) {
 			if (spriteFrameName && typeof spriteFrameName === 'string') {
+				if (spriteFrameName === 'img_com_bg_23' || spriteFrameName === 'img_com_bg_23_r') {
+					return this.initWithFile('res/new/bg.png', cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744));
+				}
 				var kind = CUSTOM_BTN_FRAMES[spriteFrameName];
 				if (kind) {
 					var isSmall = (spriteFrameName.indexOf('_s') !== -1);

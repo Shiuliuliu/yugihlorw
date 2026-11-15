@@ -2832,17 +2832,23 @@ end
 
 function var_0_0.createFrameBox(arg_95_0)
 	local var_95_0 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_21_r") ~= nil and "img_com_bg_21_r" or "img_com_bg_21"
-	local var_95_1 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_23_r") ~= nil and "img_com_bg_23_r" or "img_com_bg_23"
 	local var_95_2 = lc.createSprite({
 		_name = var_95_0,
 		_crect = ClientView.CRECT_COM_BG21,
 		_size = arg_95_0
 	})
-	local var_95_3 = lc.createSprite({
-		_name = var_95_1,
-		_crect = ClientView.CRECT_COM_BG23,
-		_size = cc.size(lc.w(var_95_2) - 66, lc.h(var_95_2) - 66)
-	})
+	local bgW = lc.w(var_95_2) - 66
+	local bgH = lc.h(var_95_2) - 66
+	local var_95_3 = ccui.Scale9Sprite:create("res/new/bg.png", cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744))
+	if var_95_3 then
+		var_95_3:setContentSize(cc.size(bgW, bgH))
+	else
+		var_95_3 = lc.createSprite({
+			_name = "img_com_bg_23",
+			_crect = ClientView.CRECT_COM_BG23,
+			_size = cc.size(bgW, bgH)
+		})
+	end
 
 	lc.addChildToCenter(var_95_2, var_95_3, -2)
 
