@@ -4647,18 +4647,64 @@
 		var s9WebGL = ccui.Scale9Sprite.WebGLRenderCmd &&
 			ccui.Scale9Sprite.WebGLRenderCmd.prototype;
 		if (s9WebGL) {
-			var TRANSFORM_DIRTY = cc.Node._dirtyFlags.transformDirty;
-			var s9Visit = s9WebGL.visit, s9VisitChildren = s9WebGL.visitChildren;
 			s9WebGL.visit = function (parentCmd) {
-				if (this._dirtyFlag & TRANSFORM_DIRTY) this.__childrenMoved = true;
-				return s9Visit.apply(this, arguments);
-			};
-			s9WebGL.visitChildren = function () {
-				if (this.__childrenMoved) {
-					this.__childrenMoved = false;
-					this._dirtyFlag |= TRANSFORM_DIRTY;
+				var node = this._node;
+				if (!node._visible || !node._scale9Image) return;
+
+				if (node._positionsAreDirty) {
+					node._updatePositions();
+					node._positionsAreDirty = false;
 				}
-				return s9VisitChildren.apply(this, arguments);
+
+				parentCmd = parentCmd || this.getParentRenderCmd();
+				if (node._parent && node._parent._renderCmd)
+					this._curLevel = node._parent._renderCmd._curLevel + 1;
+
+				this._syncStatus(parentCmd);
+
+				healEmptyScale9(node);
+
+				var children = node._children, len = children ? children.length : 0, i = 0;
+				if (len > 0) {
+					node.sortAllChildren();
+					// Draw children with localZOrder < 0 FIRST (e.g. dialog background sits BEHIND the frame)
+					for (i = 0; i < len; i++) {
+						var child = children[i];
+						if (child && child._localZOrder < 0) {
+							if (child._renderCmd) child._renderCmd.visit(this);
+						} else {
+							break;
+						}
+					}
+				}
+
+				// Draw scale9 slices (the frame itself)
+				if (node._scale9Enabled) {
+					var locRenderers = node._renderers;
+					var rendererLen = locRenderers ? locRenderers.length : 0;
+					for (var j = 0; j < rendererLen; j++) {
+						var locRenderer = locRenderers[j];
+						if (locRenderer && locRenderer._renderCmd) {
+							locRenderer._renderCmd.visit(this);
+						}
+					}
+				} else {
+					node._adjustScale9ImageScale();
+					node._adjustScale9ImagePosition();
+					if (node._scale9Image && node._scale9Image._renderCmd) {
+						node._scale9Image._renderCmd.visit(this);
+					}
+				}
+
+				// Draw children with localZOrder >= 0 AFTER the frame
+				if (len > 0) {
+					for (; i < len; i++) {
+						var ch = children[i];
+						if (ch && ch._renderCmd) ch._renderCmd.visit(this);
+					}
+				}
+
+				this._dirtyFlag = 0;
 			};
 		}
 

@@ -90,7 +90,7 @@ var_0_0.CRECT_COM_BG18 = cc.rect(257, 0, 1, 1)
 var_0_0.CRECT_COM_BG20 = cc.rect(6, 6, 1, 1)
 var_0_0.CRECT_COM_BG21 = cc.rect(88, 78, 1, 1)
 var_0_0.CRECT_COM_BG22 = cc.rect(30, 32, 2, 2)
-var_0_0.CRECT_COM_BG23 = cc.rect(20, 20, 24, 24)
+var_0_0.CRECT_COM_BG23 = cc.rect(4, 4, 2, 2)
 var_0_0.CRECT_COM_BG24 = cc.rect(63, 63, 1, 1)
 var_0_0.CRECT_COM_BG25 = cc.rect(24, 26, 2, 2)
 var_0_0.CRECT_COM_BG26 = cc.rect(11, 0, 2, 28)
@@ -2829,7 +2829,7 @@ function var_0_0.createFrameBox(arg_95_0)
 	local var_95_3 = lc.createSprite({
 		_name = var_95_1,
 		_crect = ClientView.CRECT_COM_BG23,
-		_size = cc.size(lc.w(var_95_2) - 40, lc.h(var_95_2) - 40)
+		_size = cc.size(lc.w(var_95_2) - 66, lc.h(var_95_2) - 66)
 	})
 
 	lc.addChildToCenter(var_95_2, var_95_3, -2)
