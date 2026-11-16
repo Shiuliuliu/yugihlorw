@@ -2630,12 +2630,6 @@
 			var customBtnScale9Init = ccui.Scale9Sprite.prototype.initWithSpriteFrameName;
 			ccui.Scale9Sprite.prototype.initWithSpriteFrameName = function (spriteFrameName, capInsets) {
 				if (spriteFrameName && typeof spriteFrameName === 'string') {
-					if (spriteFrameName === 'img_com_bg_23' || spriteFrameName === 'img_com_bg_23_r') {
-						return this.initWithFile('res/new/bg.png', cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744));
-					}
-					if (spriteFrameName === 'img_com_bg_21' || spriteFrameName === 'img_com_bg_21_r') {
-						return this.initWithFile('res/new/khung.png', cc.rect(0, 0, 797, 797), cc.rect(55, 55, 687, 687));
-					}
 					var kind = CUSTOM_BTN_FRAMES[spriteFrameName];
 					if (kind) {
 						var isSmall = (spriteFrameName.indexOf('_s') !== -1);

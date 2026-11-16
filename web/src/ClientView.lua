@@ -88,7 +88,7 @@ var_0_0.CRECT_COM_BG16 = cc.rect(70, 75, 1, 1)
 var_0_0.CRECT_COM_BG17 = cc.rect(51, 65, 1, 1)
 var_0_0.CRECT_COM_BG18 = cc.rect(257, 0, 1, 1)
 var_0_0.CRECT_COM_BG20 = cc.rect(6, 6, 1, 1)
-var_0_0.CRECT_COM_BG21 = cc.rect(55, 55, 687, 687)
+var_0_0.CRECT_COM_BG21 = cc.rect(88, 78, 1, 1)
 var_0_0.CRECT_COM_BG22 = cc.rect(30, 32, 2, 2)
 var_0_0.CRECT_COM_BG23 = cc.rect(4, 4, 2, 2)
 var_0_0.CRECT_COM_BG24 = cc.rect(63, 63, 1, 1)
@@ -2843,31 +2843,44 @@ function var_0_0.addFixityName(arg_94_0, arg_94_1, arg_94_2, arg_94_3, arg_94_4)
 end
 
 function var_0_0.createFrameBox(arg_95_0)
-	local targetW = (type(arg_95_0) == "table" and arg_95_0.width) or 500
-	local targetH = (type(arg_95_0) == "table" and arg_95_0.height) or 400
+	local targetW = (type(arg_95_0) == "table" and (arg_95_0.width or arg_95_0[1])) or 500
+	local targetH = (type(arg_95_0) == "table" and (arg_95_0.height or arg_95_0[2])) or 400
 	local targetSize = cc.size(targetW, targetH)
 
-	local var_95_0 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_21_r") ~= nil and "img_com_bg_21_r" or "img_com_bg_21"
-	local var_95_2 = lc.createSprite({
-		_name = var_95_0,
-		_crect = ClientView.CRECT_COM_BG21,
-		_size = targetSize
-	})
+	-- Outer sci-fi metallic frame (res/new/khung.png 797x797 with 55px margins)
+	local var_95_2 = ccui.Scale9Sprite:create("res/new/khung.png", cc.rect(0, 0, 797, 797), cc.rect(55, 55, 687, 687))
+	if not var_95_2 then
+		local var_95_0 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_21_r") ~= nil and "img_com_bg_21_r" or "img_com_bg_21"
+		var_95_2 = lc.createSprite({
+			_name = var_95_0,
+			_crect = ClientView.CRECT_COM_BG21,
+			_size = targetSize
+		})
+	end
 	if var_95_2.setContentSize then
 		var_95_2:setContentSize(targetSize)
 	end
+	if var_95_2.setPreferredSize then
+		var_95_2:setPreferredSize(targetSize)
+	end
 
-	local bgW = targetW - 40
-	local bgH = targetH - 40
+	-- Inner cosmic background (res/new/bg.png 1024x1024 with 140px margins)
+	local bgW = math.max(10, targetW - 40)
+	local bgH = math.max(10, targetH - 40)
 	local var_95_3 = ccui.Scale9Sprite:create("res/new/bg.png", cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744))
-	if var_95_3 then
-		var_95_3:setContentSize(cc.size(bgW, bgH))
-	else
+	if not var_95_3 then
+		local var_95_1 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_23_r") ~= nil and "img_com_bg_23_r" or "img_com_bg_23"
 		var_95_3 = lc.createSprite({
-			_name = "img_com_bg_23",
+			_name = var_95_1,
 			_crect = ClientView.CRECT_COM_BG23,
 			_size = cc.size(bgW, bgH)
 		})
+	end
+	if var_95_3.setContentSize then
+		var_95_3:setContentSize(cc.size(bgW, bgH))
+	end
+	if var_95_3.setPreferredSize then
+		var_95_3:setPreferredSize(cc.size(bgW, bgH))
 	end
 
 	var_95_3:setAnchorPoint(0.5, 0.5)
@@ -2879,10 +2892,21 @@ function var_0_0.createFrameBox(arg_95_0)
 	local origSetContentSize = var_95_2.setContentSize
 	function var_95_2.setContentSize(self, w_or_size, h)
 		origSetContentSize(self, w_or_size, h)
-		local nw = (type(w_or_size) == "table" and w_or_size.width) or w_or_size or lc.w(self)
-		local nh = (type(w_or_size) == "table" and w_or_size.height) or h or lc.h(self)
-		if self._bg and self._bg.setContentSize then
-			self._bg:setContentSize(cc.size(nw - 40, nh - 40))
+		local nw = (type(w_or_size) == "table" and (w_or_size.width or w_or_size[1])) or w_or_size or lc.w(self)
+		local nh = (type(w_or_size) == "table" and (w_or_size.height or w_or_size[2])) or h or lc.h(self)
+		if self.setPreferredSize then
+			self:setPreferredSize(cc.size(nw, nh))
+		end
+		if self._bg then
+			local curBgW = math.max(10, nw - 40)
+			local curBgH = math.max(10, nh - 40)
+			if self._bg.setContentSize then
+				self._bg:setContentSize(cc.size(curBgW, curBgH))
+			end
+			if self._bg.setPreferredSize then
+				self._bg:setPreferredSize(cc.size(curBgW, curBgH))
+			end
+			self._bg:setAnchorPoint(0.5, 0.5)
 			self._bg:setPosition(nw / 2, nh / 2)
 		end
 	end
