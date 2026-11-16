@@ -4557,6 +4557,8 @@
 			if (res.exists(file)) {
 				cc.textureCache.addImage(file, function (texture) {
 					if (!texture) return;
+					var wanted = pendingSize || sprite.__wantedSize;
+					sprite.setContentSize = origSetContentSize;
 					/* Re-initialize with the loaded texture */
 					if (sourceRect) {
 						sprite.initWithFile(file, sourceRect, caps);
@@ -4567,11 +4569,10 @@
 					}
 					attachTexture(sprite, texture);
 					/* Restore the game's intended content size */
-					if (pendingSize) {
-						sprite.setContentSize = origSetContentSize;
-						sprite.setContentSize(pendingSize);
-					} else {
-						sprite.setContentSize = origSetContentSize;
+					if (wanted) {
+						sprite._preferredSize = cc.size(wanted.width, wanted.height);
+						sprite.__wantedSize = cc.size(wanted.width, wanted.height);
+						origSetContentSize(wanted);
 					}
 				});
 			} else {
@@ -4669,7 +4670,8 @@
 		var baseScale9SetContentSize = ccui.Scale9Sprite.prototype.setContentSize;
 		ccui.Scale9Sprite.prototype.setContentSize = function (size, height) {
 			var s = (typeof size === 'object') ? size : cc.size(size, height || 0);
-			if (s && (s.width || s.height) && !(this._originalSize && this._originalSize.width)) {
+			if (s && (s.width || s.height)) {
+				this._preferredSize = cc.size(s.width, s.height);
 				this.__wantedSize = cc.size(s.width, s.height);
 			}
 			return baseScale9SetContentSize.apply(this, arguments);
@@ -4687,17 +4689,10 @@
 		ccui.Scale9Sprite.prototype.updateWithSprite = function () {
 			var wasVisible = this._visible;
 			var ret = baseScale9UpdateWithSprite.apply(this, arguments);
-			/* "The atlas is not up yet" is answered by hiding the node and
-			 * waiting on that texture object's own 'load' event
-			 * (UIScale9Sprite.js:874-882). removeTextureForKey throws the
-			 * texture away and the loader builds a fresh one under the same
-			 * key, so for this object that event can never come: the node is
-			 * hidden for the rest of the session. A hidden Scale9Sprite is not
-			 * drawn at all -- its render command returns before drawing its
-			 * children (UIScale9SpriteWebGLRenderCmd.js:37-40) -- so the plate
-			 * takes the title label and the glow inside it down with it. An
-			 * empty nine-slice draws nothing anyway; stay visible, keep the
-			 * children, and let the frame arrive. */
+			if (this.__wantedSize) {
+				this._preferredSize = cc.size(this.__wantedSize.width, this.__wantedSize.height);
+				baseScale9SetContentSize.call(this, this.__wantedSize);
+			}
 			if (wasVisible && this._visible === false && !this._textureLoaded) {
 				this.setVisible(true);
 			}

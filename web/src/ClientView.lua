@@ -2843,19 +2843,22 @@ function var_0_0.addFixityName(arg_94_0, arg_94_1, arg_94_2, arg_94_3, arg_94_4)
 end
 
 function var_0_0.createFrameBox(arg_95_0)
-	local var_95_2 = ccui.Scale9Sprite:create("res/new/khung.png", cc.rect(0, 0, 797, 797), cc.rect(55, 55, 687, 687))
-	if not var_95_2 then
-		local var_95_0 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_21_r") ~= nil and "img_com_bg_21_r" or "img_com_bg_21"
-		var_95_2 = lc.createSprite({
-			_name = var_95_0,
-			_crect = ClientView.CRECT_COM_BG21,
-			_size = arg_95_0
-		})
-	else
-		var_95_2:setContentSize(arg_95_0)
+	local targetW = (type(arg_95_0) == "table" and arg_95_0.width) or 500
+	local targetH = (type(arg_95_0) == "table" and arg_95_0.height) or 400
+	local targetSize = cc.size(targetW, targetH)
+
+	local var_95_0 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_21_r") ~= nil and "img_com_bg_21_r" or "img_com_bg_21"
+	local var_95_2 = lc.createSprite({
+		_name = var_95_0,
+		_crect = ClientView.CRECT_COM_BG21,
+		_size = targetSize
+	})
+	if var_95_2.setContentSize then
+		var_95_2:setContentSize(targetSize)
 	end
-	local bgW = lc.w(var_95_2) - 50
-	local bgH = lc.h(var_95_2) - 50
+
+	local bgW = targetW - 40
+	local bgH = targetH - 40
 	local var_95_3 = ccui.Scale9Sprite:create("res/new/bg.png", cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744))
 	if var_95_3 then
 		var_95_3:setContentSize(cc.size(bgW, bgH))
@@ -2867,17 +2870,20 @@ function var_0_0.createFrameBox(arg_95_0)
 		})
 	end
 
-	lc.addChildToCenter(var_95_2, var_95_3, -2)
+	var_95_3:setAnchorPoint(0.5, 0.5)
+	var_95_3:setPosition(targetW / 2, targetH / 2)
+	var_95_2:addChild(var_95_3, -2)
 
 	var_95_2._bg = var_95_3
 
 	local origSetContentSize = var_95_2.setContentSize
 	function var_95_2.setContentSize(self, w_or_size, h)
 		origSetContentSize(self, w_or_size, h)
+		local nw = (type(w_or_size) == "table" and w_or_size.width) or w_or_size or lc.w(self)
+		local nh = (type(w_or_size) == "table" and w_or_size.height) or h or lc.h(self)
 		if self._bg and self._bg.setContentSize then
-			local curW = lc.w(self) - 50
-			local curH = lc.h(self) - 50
-			self._bg:setContentSize(cc.size(curW, curH))
+			self._bg:setContentSize(cc.size(nw - 40, nh - 40))
+			self._bg:setPosition(nw / 2, nh / 2)
 		end
 	end
 

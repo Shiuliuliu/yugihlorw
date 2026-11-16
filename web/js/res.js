@@ -1650,6 +1650,8 @@
 	/* Preload custom icons (Linh Thach, Linh Thach Cao Cap) and custom buttons */
 	R.preloadCustomAssets = function () {
 		var assets = [
+			'res/new/bg.png',
+			'res/new/khung.png',
 			'res/jpg/city_bg_01.jpg',
 			'res/updater/loading.jpg',
 			'res/new/linh_thach_34.png',
