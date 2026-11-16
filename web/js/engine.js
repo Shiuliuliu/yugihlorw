@@ -457,6 +457,7 @@
 		if (typeof key === 'string' && /\.pvr\.ccz$/i.test(key)) return;
 		if (typeof key === 'string' && /bat_scene_.*_bg\.jpg$/i.test(key)) return;
 		if (typeof key === 'string' && /battle_frame_bg\.jpg$/i.test(key)) return;
+		if (typeof key === 'string' && /effects\//i.test(key)) return;
 		if (typeof key === 'string') {
 			if (res.maskedInflight) delete res.maskedInflight[key];
 			if (res.pending) delete res.pending[key];
@@ -465,10 +466,9 @@
 				if (container) delete res.loaded[container];
 			}
 		}
-		var tex = cc.textureCache.getTextureForKey(key);
-		if (tex && typeof tex.releaseTexture === 'function') {
-			try { tex.releaseTexture(); } catch (e) {}
-		}
+		// Never call tex.releaseTexture() (gl.deleteTexture) forcibly on active WebGL textures;
+		// living sprites and DragonBones nodes referencing the texture would sample empty WebGL
+		// handles and render as solid black rectangles!
 		return baseRemoveTextureForKey(key);
 	};
 
@@ -2632,6 +2632,9 @@
 				if (spriteFrameName && typeof spriteFrameName === 'string') {
 					if (spriteFrameName === 'img_com_bg_23' || spriteFrameName === 'img_com_bg_23_r') {
 						return this.initWithFile('res/new/bg.png', cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744));
+					}
+					if (spriteFrameName === 'img_com_bg_21' || spriteFrameName === 'img_com_bg_21_r') {
+						return this.initWithFile('res/new/khung.png', cc.rect(0, 0, 797, 797), cc.rect(55, 55, 687, 687));
 					}
 					var kind = CUSTOM_BTN_FRAMES[spriteFrameName];
 					if (kind) {

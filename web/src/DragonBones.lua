@@ -24,28 +24,8 @@ function var_0_0.create(arg_2_0)
 end
 
 function var_0_0.onCleanup(arg_4_0)
-	-- In battle scenes, never unload DragonBones effects to keep 60 FPS smooth
-	-- and prevent synchronous network fetching / canvas rebuilding during combat.
-	if lc._runningScene and (lc._runningScene._sceneId == ClientData.SceneId.battle or lc._runningScene._sceneId == ClientData.SceneId.battle_test) then
-		return
-	end
-
-	if ClientData._dragonBonesTexture[arg_4_0._name] ~= nil then
-		ClientData._dragonBonesTexture[arg_4_0._name] = ClientData._dragonBonesTexture[arg_4_0._name] - 1
-	end
-
-	if ClientData._dragonBonesTexture[arg_4_0._name] == 0 then
-		if string.find(arg_4_0._name, "chaoliang") then
-			return
-		end
-
-		local var_4_0 = arg_4_0._name .. ".png"
-
-		if lc.TextureCache:getTextureForKey(var_4_0) ~= nil then
-			cc.DragonBonesNode:removeTextureAtlas(arg_4_0._name)
-			lc.TextureCache:removeTextureForKey(var_4_0)
-		end
-	end
+	-- On web, keep DragonBones textures resident in memory to prevent black boxes and frame drops
+	return
 end
 
 function var_0_0.init(arg_5_0, arg_5_1)

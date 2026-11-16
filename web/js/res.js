@@ -1207,7 +1207,10 @@
 	}
 
 	R.isResident = function (path) {
-		return !!(RESIDENT_CONTAINERS[path]);
+		if (!path) return false;
+		if (RESIDENT_CONTAINERS[path]) return true;
+		if (path.indexOf('res/effects/') === 0 || path.indexOf('effects/') === 0) return true;
+		return false;
 	};
 
 	R.unloadContainer = function (name) {
@@ -1215,6 +1218,10 @@
 		var path = typeof name === 'string' ? (name.indexOf('res/') === 0 ? name : 'res/' + name) : '';
 		if (path && !/\.lcres$/i.test(path)) path = path + '.lcres';
 		if (R.isResident(path) || R.isResident(name)) {
+			return;
+		}
+		// Only unload card thumbnail containers on mobile; never unload UI, general, or effects
+		if (!/thumb_/i.test(path)) {
 			return;
 		}
 		if (isIOS || (typeof cc !== 'undefined' && cc.sys && cc.sys.isMobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
@@ -1571,6 +1578,9 @@
 		}
 		if (path === 'res/new/bg.png' || path === 'new/bg.png') {
 			return [1024, 1024];
+		}
+		if (path === 'res/new/khung.png' || path === 'new/khung.png' || path === 'res/new/ui/khung.png' || path === 'new/ui/khung.png') {
+			return [797, 797];
 		}
 		var mBtn = path.match(/(?:res\/)?new\/buttons\/[a-z]+_(\d+)x(\d+)\.png/);
 		if (mBtn) {

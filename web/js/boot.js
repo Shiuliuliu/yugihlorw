@@ -405,9 +405,9 @@
 
 			setInterval(function () {
 				if (global.jdzcLua && global.jdzcLua.run) {
-					try { global.jdzcLua.run('collectgarbage("step", 300); if TextureManager and TextureManager.trim then TextureManager.trim(50) end'); } catch (e) {}
+					try { global.jdzcLua.run('collectgarbage("step", 200)'); } catch (e) {}
 				}
-			}, 15000);
+			}, 30000);
 		}
 
 		/* Entering fullscreen and rotating both change the frame, and mobile

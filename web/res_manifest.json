@@ -24146,7 +24146,11 @@
     "res/updater/loading_skin.jpg",
     "res/updater/loadingr.jpg",
     "res/updater/logo_10037.jpg",
-    "res/updater/logo_ASDK.jpg"
+    "res/updater/logo_ASDK.jpg",
+    "res/new/khung.png",
+    "new/khung.png",
+    "res/new/ui/khung.png",
+    "new/ui/khung.png"
   ],
   "sizes": {
     "res/bat_loading/bat_loading_bg1.jpg": [
@@ -41906,6 +41910,22 @@
     "new/ui/test_frame_box.png": [
       640,
       360
+    ],
+    "res/new/khung.png": [
+      797,
+      797
+    ],
+    "new/khung.png": [
+      797,
+      797
+    ],
+    "res/new/ui/khung.png": [
+      797,
+      797
+    ],
+    "new/ui/khung.png": [
+      797,
+      797
     ]
   },
   "thumbs": {

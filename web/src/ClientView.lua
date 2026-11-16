@@ -88,7 +88,7 @@ var_0_0.CRECT_COM_BG16 = cc.rect(70, 75, 1, 1)
 var_0_0.CRECT_COM_BG17 = cc.rect(51, 65, 1, 1)
 var_0_0.CRECT_COM_BG18 = cc.rect(257, 0, 1, 1)
 var_0_0.CRECT_COM_BG20 = cc.rect(6, 6, 1, 1)
-var_0_0.CRECT_COM_BG21 = cc.rect(88, 78, 1, 1)
+var_0_0.CRECT_COM_BG21 = cc.rect(55, 55, 687, 687)
 var_0_0.CRECT_COM_BG22 = cc.rect(30, 32, 2, 2)
 var_0_0.CRECT_COM_BG23 = cc.rect(4, 4, 2, 2)
 var_0_0.CRECT_COM_BG24 = cc.rect(63, 63, 1, 1)
@@ -2843,14 +2843,19 @@ function var_0_0.addFixityName(arg_94_0, arg_94_1, arg_94_2, arg_94_3, arg_94_4)
 end
 
 function var_0_0.createFrameBox(arg_95_0)
-	local var_95_0 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_21_r") ~= nil and "img_com_bg_21_r" or "img_com_bg_21"
-	local var_95_2 = lc.createSprite({
-		_name = var_95_0,
-		_crect = ClientView.CRECT_COM_BG21,
-		_size = arg_95_0
-	})
-	local bgW = lc.w(var_95_2) - 66
-	local bgH = lc.h(var_95_2) - 66
+	local var_95_2 = ccui.Scale9Sprite:create("res/new/khung.png", cc.rect(0, 0, 797, 797), cc.rect(55, 55, 687, 687))
+	if not var_95_2 then
+		local var_95_0 = ClientData.isAppStoreReviewing() and lc.FrameCache:getSpriteFrame("img_com_bg_21_r") ~= nil and "img_com_bg_21_r" or "img_com_bg_21"
+		var_95_2 = lc.createSprite({
+			_name = var_95_0,
+			_crect = ClientView.CRECT_COM_BG21,
+			_size = arg_95_0
+		})
+	else
+		var_95_2:setContentSize(arg_95_0)
+	end
+	local bgW = lc.w(var_95_2) - 50
+	local bgH = lc.h(var_95_2) - 50
 	local var_95_3 = ccui.Scale9Sprite:create("res/new/bg.png", cc.rect(0, 0, 1024, 1024), cc.rect(140, 140, 744, 744))
 	if var_95_3 then
 		var_95_3:setContentSize(cc.size(bgW, bgH))
@@ -2865,6 +2870,16 @@ function var_0_0.createFrameBox(arg_95_0)
 	lc.addChildToCenter(var_95_2, var_95_3, -2)
 
 	var_95_2._bg = var_95_3
+
+	local origSetContentSize = var_95_2.setContentSize
+	function var_95_2.setContentSize(self, w_or_size, h)
+		origSetContentSize(self, w_or_size, h)
+		if self._bg and self._bg.setContentSize then
+			local curW = lc.w(self) - 50
+			local curH = lc.h(self) - 50
+			self._bg:setContentSize(cc.size(curW, curH))
+		end
+	end
 
 	return var_95_2
 end
